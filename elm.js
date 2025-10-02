@@ -5422,6 +5422,8 @@ var $elm$core$Task$perform = F2(
 var $elm$browser$Browser$document = _Browser_document;
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$askForAutoSave = _Platform_outgoingPort('askForAutoSave', $elm$json$Json$Encode$string);
+var $author$project$Main$askForStandings = _Platform_outgoingPort('askForStandings', $elm$json$Json$Encode$string);
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$History$History = function (a) {
 	return {$: 'History', a: a};
 };
@@ -5476,7 +5478,6 @@ var $author$project$League$init = $author$project$League$League(
 var $author$project$Main$GotNextMatch = function (a) {
 	return {$: 'GotNextMatch', a: a};
 };
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$History$current = function (_v0) {
 	var guts = _v0.a;
 	return guts.current;
@@ -5986,7 +5987,12 @@ var $author$project$Main$init = function (_v0) {
 				newPlayerName: '',
 				status: $elm$core$Maybe$Nothing
 			},
-			$author$project$Main$askForAutoSave('init')));
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						$author$project$Main$askForAutoSave('init'),
+						$author$project$Main$askForStandings('init')
+					]))));
 };
 var $author$project$League$Draw = function (a) {
 	return {$: 'Draw', a: a};

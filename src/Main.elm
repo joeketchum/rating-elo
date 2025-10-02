@@ -92,7 +92,7 @@ init _ =
             , status = Nothing
             , lastSynced = Nothing
             }
-        , askForAutoSave "init"
+    , Cmd.batch [ askForAutoSave "init", askForStandings "init" ]
         )
                 |> startNextMatchIfPossible
 
