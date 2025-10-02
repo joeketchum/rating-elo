@@ -8221,6 +8221,7 @@ var $author$project$League$retirePlayer = F2(
 	});
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
+var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -8452,6 +8453,24 @@ var $author$project$Main$update = F2(
 								$elm$core$Task$succeed(
 									$author$project$Main$ShowStatus('Exported rankings')))
 							])));
+			case 'KeeperWantsToSaveToDrive':
+				return _Utils_Tuple2(
+					model,
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$saveToPublicDrive(
+								A2(
+									$elm$json$Json$Encode$encode,
+									2,
+									$author$project$League$encode(
+										$author$project$History$current(model.history)))),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Saving to Drive...')))
+							])));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
@@ -8562,6 +8581,15 @@ var $author$project$Main$update = F2(
 						model,
 						{autoSave: value}),
 					$elm$core$Platform$Cmd$none);
+			case 'ReceivedPublicDriveStatus':
+				var msgStr = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							status: $elm$core$Maybe$Just(msgStr)
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'ToggleAutoSave':
 				var newVal = !model.autoSave;
 				return _Utils_Tuple2(
@@ -8599,7 +8627,9 @@ var $author$project$Main$update = F2(
 		}
 	});
 var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
+var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
+var $author$project$Main$KeeperWantsToSaveToDrive = {$: 'KeeperWantsToSaveToDrive'};
 var $author$project$Main$ToggleAutoSave = {$: 'ToggleAutoSave'};
 var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
@@ -10777,7 +10807,6 @@ var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 	return {$: 'KeeperWantsToIgnorePlayer', a: a};
 };
-var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
@@ -13251,6 +13280,14 @@ var $author$project$Main$view = function (model) {
 												$author$project$Main$blueButton,
 												'Export rankings',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveStandings)),
+												A2(
+												$author$project$Main$blueButton,
+												'Save to Drive',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveToDrive)),
+												A2(
+												$author$project$Main$blueButton,
+												'Load from Drive',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
 												A2(
 												$author$project$Main$goldButton,
 												model.autoSave ? 'Auto-save: On' : 'Auto-save: Off',

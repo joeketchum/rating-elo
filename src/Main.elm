@@ -36,6 +36,11 @@ port saveAutoSave : Bool -> Cmd msg
 port askForAutoSave : String -> Cmd msg
 port receiveAutoSave : (Bool -> msg) -> Sub msg
 
+-- Public Drive (Apps Script) ports
+port saveToPublicDrive : String -> Cmd msg
+port loadFromPublicDrive : String -> Cmd msg
+port receivePublicDriveStatus : (String -> msg) -> Sub msg
+
 
 type alias Flags =
     ()
@@ -61,6 +66,7 @@ type Msg
     | GotNextMatch (Maybe League.Match)
     | MatchFinished League.Outcome
     | KeeperWantsToSaveStandings
+    | KeeperWantsToSaveToDrive
     | KeeperWantsToLoadStandings
     | SelectedStandingsFile File
     | KeeperWantsToUndo
@@ -71,6 +77,7 @@ type Msg
     | ToggleAutoSave
     | ShowStatus String
     | ClearStatus
+    | ReceivedPublicDriveStatus String
     | IgnoredKey
 
 
@@ -154,6 +161,14 @@ update msg model =
                 ]
             )
 
+        KeeperWantsToSaveToDrive ->
+            ( model
+            , Cmd.batch
+                [ saveToPublicDrive (encode 2 (League.encode (History.current model.history)))
+                , Task.succeed (ShowStatus "Saving to Drive...") |> Task.perform identity
+                ]
+            )
+
         KeeperWantsToLoadStandings ->
             ( model
             , Select.file [ "application/json" ] SelectedStandingsFile
@@ -212,6 +227,11 @@ update msg model =
 
         ReceivedAutoSave value ->
             ( { model | autoSave = value }
+            , Cmd.none
+            )
+
+        ReceivedPublicDriveStatus msgStr ->
+            ( { model | status = Just msgStr }
             , Cmd.none
             )
 
@@ -323,6 +343,8 @@ view model =
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
                     [ blueButton "Export rankings" (Just KeeperWantsToSaveStandings)
+                    , blueButton "Save to Drive" (Just KeeperWantsToSaveToDrive)
+                    , blueButton "Load from Drive" (Just KeeperWantsToLoadStandings)
                     , goldButton (if model.autoSave then "Auto-save: On" else "Auto-save: Off") (Just ToggleAutoSave)
                     ]
                 ]

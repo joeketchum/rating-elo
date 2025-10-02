@@ -5433,7 +5433,7 @@ var $author$project$Main$askForAutoSave = _Platform_outgoingPort('askForAutoSave
 var $author$project$History$History = $elm$core$Basics$identity;
 var $author$project$History$init = F2(
 	function (retention, initial) {
-		return {L: initial, an: _List_Nil, af: _List_Nil, cN: retention};
+		return {L: initial, ao: _List_Nil, af: _List_Nil, cN: retention};
 	});
 var $author$project$League$League = $elm$core$Basics$identity;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Leaf = function (a) {
@@ -5627,7 +5627,7 @@ var $author$project$Player$id = function (_v0) {
 };
 var $author$project$Player$matchesPlayed = function (_v0) {
 	var player = _v0;
-	return player.ar;
+	return player.as;
 };
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
@@ -5967,25 +5967,25 @@ var $author$project$Main$init = function (_v0) {
 	return $author$project$Main$startNextMatchIfPossible(
 		_Utils_Tuple2(
 			{
-				aj: true,
+				ak: true,
 				c: A2($author$project$History$init, 50, $author$project$League$init),
 				aN: '',
-				av: $elm$core$Maybe$Nothing
+				ah: $elm$core$Maybe$Nothing
 			},
 			$author$project$Main$askForAutoSave('init')));
 };
 var $author$project$League$Draw = function (a) {
 	return {$: 1, a: a};
 };
-var $author$project$Main$IgnoredKey = {$: 19};
+var $author$project$Main$IgnoredKey = {$: 21};
 var $author$project$Main$MatchFinished = function (a) {
 	return {$: 7, a: a};
 };
 var $author$project$Main$ReceivedAutoSave = function (a) {
-	return {$: 15, a: a};
+	return {$: 16, a: a};
 };
 var $author$project$Main$ReceivedStandings = function (a) {
-	return {$: 14, a: a};
+	return {$: 15, a: a};
 };
 var $author$project$League$Win = function (a) {
 	return {$: 0, a: a};
@@ -6492,13 +6492,13 @@ var $author$project$Main$subscriptions = function (model) {
 	}
 };
 var $author$project$Main$LoadedLeague = function (a) {
-	return {$: 13, a: a};
+	return {$: 14, a: a};
 };
 var $author$project$Main$SelectedStandingsFile = function (a) {
-	return {$: 10, a: a};
+	return {$: 11, a: a};
 };
 var $author$project$Main$ShowStatus = function (a) {
-	return {$: 17, a: a};
+	return {$: 18, a: a};
 };
 var $author$project$Elo$initialRating = 1200;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = 0;
@@ -6772,7 +6772,7 @@ var $author$project$Player$decoder = A5(
 	$elm$json$Json$Decode$map4,
 	F4(
 		function (id_, name_, rating_, matches) {
-			return {a4: id_, ar: matches, bq: name_, ba: rating_};
+			return {a4: id_, as: matches, bq: name_, ba: rating_};
 		}),
 	A2(
 		$elm$json$Json$Decode$map,
@@ -7285,7 +7285,7 @@ var $author$project$Player$encode = function (_v0) {
 				$elm$json$Json$Encode$int(player.ba)),
 				_Utils_Tuple2(
 				'matches',
-				$elm$json$Json$Encode$int(player.ar))
+				$elm$json$Json$Encode$int(player.as))
 			]));
 };
 var $elm$json$Json$Encode$list = F2(
@@ -7577,7 +7577,7 @@ var $author$project$Player$incrementMatchesPlayed = function (_v0) {
 	var player = _v0;
 	return _Utils_update(
 		player,
-		{ar: player.ar + 1});
+		{as: player.as + 1});
 };
 var $author$project$League$updateRatingsIncludingPlayInPeriod = F2(
 	function (ratings, players_) {
@@ -7661,7 +7661,7 @@ var $author$project$History$goBack = function (_v0) {
 				guts,
 				{
 					L: mostRecent,
-					an: A2($elm$core$List$cons, guts.L, guts.an),
+					ao: A2($elm$core$List$cons, guts.L, guts.ao),
 					af: rest
 				}));
 	} else {
@@ -7670,7 +7670,7 @@ var $author$project$History$goBack = function (_v0) {
 };
 var $author$project$History$goForward = function (_v0) {
 	var guts = _v0;
-	var _v1 = guts.an;
+	var _v1 = guts.ao;
 	if (_v1.b) {
 		var nextRecent = _v1.a;
 		var rest = _v1.b;
@@ -7679,7 +7679,7 @@ var $author$project$History$goForward = function (_v0) {
 				guts,
 				{
 					L: nextRecent,
-					an: rest,
+					ao: rest,
 					af: A2($elm$core$List$cons, guts.L, guts.af)
 				}));
 	} else {
@@ -7699,7 +7699,7 @@ var $author$project$League$ignorePlayer = F2(
 var $author$project$Player$init = function (name_) {
 	return {
 		a4: A2($robinheghan$murmur3$Murmur3$hashString, 0, name_),
-		ar: 0,
+		as: 0,
 		bq: name_,
 		ba: $author$project$Elo$initialRating
 	};
@@ -7720,7 +7720,7 @@ var $author$project$History$push = F2(
 			guts,
 			{
 				L: a,
-				an: _List_Nil,
+				ao: _List_Nil,
 				af: A2(
 					$elm$core$List$take,
 					guts.cN,
@@ -7739,7 +7739,7 @@ var $author$project$Main$saveStandings = _Platform_outgoingPort('saveStandings',
 var $author$project$Main$maybeAutoSave = function (_v0) {
 	var model = _v0.a;
 	var cmd = _v0.b;
-	return model.aj ? _Utils_Tuple2(
+	return model.ak ? _Utils_Tuple2(
 		model,
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
@@ -8187,6 +8187,7 @@ var $author$project$League$retirePlayer = F2(
 	});
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
+var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (!maybeValue.$) {
@@ -8419,12 +8420,30 @@ var $author$project$Main$update = F2(
 			case 9:
 				return _Utils_Tuple2(
 					model,
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$saveToPublicDrive(
+								A2(
+									$elm$json$Json$Encode$encode,
+									2,
+									$author$project$League$encode(
+										$author$project$History$current(model.c)))),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Saving to Drive...')))
+							])));
+			case 10:
+				return _Utils_Tuple2(
+					model,
 					A2(
 						$elm$file$File$Select$file,
 						_List_fromArray(
 							['application/json']),
 						$author$project$Main$SelectedStandingsFile));
-			case 10:
+			case 11:
 				var file = msg.a;
 				return _Utils_Tuple2(
 					model,
@@ -8445,7 +8464,7 @@ var $author$project$Main$update = F2(
 								}
 							},
 							$elm$file$File$toString(file))));
-			case 11:
+			case 12:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -8456,7 +8475,7 @@ var $author$project$Main$update = F2(
 								$author$project$History$goBack(model.c))
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 12:
+			case 13:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
@@ -8467,7 +8486,7 @@ var $author$project$Main$update = F2(
 								$author$project$History$goForward(model.c))
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 13:
+			case 14:
 				if (!msg.a.$) {
 					var league = msg.a.a;
 					return $author$project$Main$startNextMatchIfPossible(
@@ -8488,11 +8507,11 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								av: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
+								ah: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 14:
+			case 15:
 				var jsonString = msg.a;
 				var _v3 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
 				if (!_v3.$) {
@@ -8515,23 +8534,32 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								av: $elm$core$Maybe$Just('Saved standings malformed or unreadable')
+								ah: $elm$core$Maybe$Just('Saved standings malformed or unreadable')
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 15:
+			case 16:
 				var value = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aj: value}),
+						{ak: value}),
 					$elm$core$Platform$Cmd$none);
-			case 16:
-				var newVal = !model.aj;
+			case 20:
+				var msgStr = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aj: newVal}),
+						{
+							ah: $elm$core$Maybe$Just(msgStr)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 17:
+				var newVal = !model.ak;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{ak: newVal}),
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
@@ -8543,28 +8571,30 @@ var $author$project$Main$update = F2(
 									$author$project$Main$ShowStatus(
 										newVal ? 'Auto-save enabled' : 'Auto-save disabled')))
 							])));
-			case 17:
+			case 18:
 				var message = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							av: $elm$core$Maybe$Just(message)
+							ah: $elm$core$Maybe$Just(message)
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 18:
+			case 19:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{av: $elm$core$Maybe$Nothing}),
+						{ah: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$ClearStatus = {$: 18};
+var $author$project$Main$ClearStatus = {$: 19};
+var $author$project$Main$KeeperWantsToLoadStandings = {$: 10};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 8};
-var $author$project$Main$ToggleAutoSave = {$: 16};
+var $author$project$Main$KeeperWantsToSaveToDrive = {$: 9};
+var $author$project$Main$ToggleAutoSave = {$: 17};
 var $rtfeldman$elm_css$Css$Structure$Compatible = 0;
 var $rtfeldman$elm_css$Css$auto = {c7: 0, b: 0, aG: 0, bn: 0, dy: 0, aK: 0, ab: 0, U: 0, aO: 0, P: 0, bA: 0, aT: 0, I: 0, W: 'auto'};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
@@ -10454,7 +10484,7 @@ var $rtfeldman$elm_css$Css$int = function (val) {
 	return {
 		aa: 0,
 		bn: 0,
-		aq: 0,
+		ar: 0,
 		U: 0,
 		a8: 0,
 		br: 0,
@@ -10514,8 +10544,8 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			ab: 0,
 			aL: 0,
 			aM: 0,
-			ap: 0,
 			aq: 0,
+			ar: 0,
 			U: 0,
 			ae: numericValue,
 			aS: 0,
@@ -10564,7 +10594,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
 };
 var $rtfeldman$elm_css$Html$Styled$text = $rtfeldman$elm_css$VirtualDom$Styled$text;
 var $tesk9$accessible_html_with_css$Accessibility$Styled$text = $rtfeldman$elm_css$Html$Styled$text;
-var $rtfeldman$elm_css$Css$zero = {o: 0, aK: 0, ab: 0, aL: 0, aM: 0, ap: 0, aq: 0, a8: 0, ae: 0, bt: 0, aU: '', bg: 0, W: '0'};
+var $rtfeldman$elm_css$Css$zero = {o: 0, aK: 0, ab: 0, aL: 0, aM: 0, aq: 0, ar: 0, a8: 0, ae: 0, bt: 0, aU: '', bg: 0, W: '0'};
 var $author$project$Main$button = F3(
 	function (baseColor, label, maybeMsg) {
 		return A2(
@@ -10687,7 +10717,7 @@ var $rtfeldman$elm_css$Css$Global$typeSelector = F2(
 	});
 var $rtfeldman$elm_css$Css$Global$html = $rtfeldman$elm_css$Css$Global$typeSelector('html');
 var $rtfeldman$elm_css$Css$Internal$IncompatibleUnits = 0;
-var $rtfeldman$elm_css$Css$initial = {b_: 0, s: 0, a$: 0, b0: 0, aA: 0, b1: 0, aB: 0, Y: 0, F: 0, bj: 0, S: 0, b: 0, l: 0, aG: 0, bH: 0, a2: 0, bm: 0, al: 0, B: 0, aH: 0, g: 0, aa: 0, bn: 0, cp: 0, bK: 0, o: 0, aK: 0, ab: 0, aL: 0, aM: 0, ap: 0, aq: 0, U: 0, bo: 0, e: 0, d: 0, bN: 0, a8: 0, ae: 0, bt: 0, aO: 0, P: 0, bA: 0, aR: 0, aw: 0, aS: 0, aT: 0, ax: 0, I: 0, aU: '', bg: 0, W: 'initial', bh: 0, ai: 0};
+var $rtfeldman$elm_css$Css$initial = {b_: 0, s: 0, a$: 0, b0: 0, aA: 0, b1: 0, aB: 0, Y: 0, F: 0, bj: 0, S: 0, b: 0, l: 0, aG: 0, bH: 0, a2: 0, bm: 0, am: 0, B: 0, aH: 0, g: 0, aa: 0, bn: 0, cp: 0, bK: 0, o: 0, aK: 0, ab: 0, aL: 0, aM: 0, aq: 0, ar: 0, U: 0, bo: 0, e: 0, d: 0, bN: 0, a8: 0, ae: 0, bt: 0, aO: 0, P: 0, bA: 0, aR: 0, aw: 0, aS: 0, aT: 0, ax: 0, I: 0, aU: '', bg: 0, W: 'initial', bh: 0, aj: 0};
 var $rtfeldman$elm_css$Css$inherit = _Utils_update(
 	$rtfeldman$elm_css$Css$initial,
 	{W: 'inherit'});
@@ -10719,10 +10749,9 @@ var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 	return {$: 3, a: a};
 };
-var $author$project$Main$KeeperWantsToLoadStandings = {$: 9};
-var $author$project$Main$KeeperWantsToRedo = {$: 12};
+var $author$project$Main$KeeperWantsToRedo = {$: 13};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 5};
-var $author$project$Main$KeeperWantsToUndo = {$: 11};
+var $author$project$Main$KeeperWantsToUndo = {$: 12};
 var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
 var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
 var $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
@@ -10969,7 +10998,7 @@ var $author$project$History$peekBack = function (_v0) {
 };
 var $author$project$History$peekForward = function (_v0) {
 	var guts = _v0;
-	return $elm$core$List$head(guts.an);
+	return $elm$core$List$head(guts.ao);
 };
 var $rtfeldman$elm_css$Html$Styled$section = $rtfeldman$elm_css$Html$Styled$node('section');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (attributes) {
@@ -11484,7 +11513,7 @@ var $rtfeldman$elm_css$Css$listStyle = $rtfeldman$elm_css$Css$prop1('list-style'
 var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$Global$menu = $rtfeldman$elm_css$Css$Global$typeSelector('menu');
 var $rtfeldman$elm_css$Css$Global$nav = $rtfeldman$elm_css$Css$Global$typeSelector('nav');
-var $rtfeldman$elm_css$Css$none = {aA: 0, b2: 0, F: 0, b: 0, l: 0, dt: 0, co: 0, bK: 0, aM: 0, ap: 0, U: 0, e: 0, d: 0, bN: 0, bt: 0, dQ: 0, P: 0, bu: 0, dW: 0, aR: 0, ax: 0, I: 0, i: 0, d2: 0, W: 'none'};
+var $rtfeldman$elm_css$Css$none = {aA: 0, b2: 0, F: 0, b: 0, l: 0, dt: 0, co: 0, bK: 0, aM: 0, aq: 0, U: 0, e: 0, d: 0, bN: 0, bt: 0, dQ: 0, P: 0, bu: 0, dW: 0, aR: 0, ax: 0, I: 0, i: 0, d2: 0, W: 'none'};
 var $rtfeldman$elm_css$Css$Global$ol = $rtfeldman$elm_css$Css$Global$typeSelector('ol');
 var $rtfeldman$elm_css$Css$Global$p = $rtfeldman$elm_css$Css$Global$typeSelector('p');
 var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
@@ -11722,7 +11751,7 @@ var $rtfeldman$elm_css$Css$calc = F3(
 			'calc',
 			_List_fromArray(
 				[calcs]));
-		return {b5: 0, aG: 0, B: 0, o: 0, aK: 0, ab: 0, aL: 0, aM: 0, ap: 0, aq: 0, U: 0, aS: 0, W: value};
+		return {b5: 0, aG: 0, B: 0, o: 0, aK: 0, ab: 0, aL: 0, aM: 0, aq: 0, ar: 0, U: 0, aS: 0, W: value};
 	});
 var $author$project$Main$circle = function (color) {
 	return A2(
@@ -13192,15 +13221,23 @@ var $author$project$Main$view = function (model) {
 												'Export rankings',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveStandings)),
 												A2(
+												$author$project$Main$blueButton,
+												'Save to Drive',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveToDrive)),
+												A2(
+												$author$project$Main$blueButton,
+												'Load from Drive',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
+												A2(
 												$author$project$Main$goldButton,
-												model.aj ? 'Auto-save: On' : 'Auto-save: Off',
+												model.ak ? 'Auto-save: On' : 'Auto-save: Off',
 												$elm$core$Maybe$Just($author$project$Main$ToggleAutoSave))
 											]))
 									]))
 							]))
 					]),
 				function () {
-					var _v0 = model.av;
+					var _v0 = model.ah;
 					if (!_v0.$) {
 						var message = _v0.a;
 						return _List_fromArray(
