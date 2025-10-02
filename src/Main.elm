@@ -299,9 +299,11 @@ viewPlayerCard model pid mItem isLeft =
         , span [ style "display" "inline-block", style "margin-bottom" "8px", style "color" "#666" ]
             [ text ("Rating: " ++ String.fromFloat (round1 rating_)) ]
         , div [ style "display" "flex", style "gap" "8px", style "flex-wrap" "wrap" ]
-            [ button [ onClick (if isLeft then ChooseLeft else ChooseRight), primaryBtn ] [ text (if isLeft then "◀︎ Left wins" else "Right wins ▶︎") ]
-            , button [ onClick (SkipAndIgnore pid), linkBtn ]
-                [ text "Skip and don’t ask about this player again" ]
+            button ([ onClick (if isLeft then ChooseLeft else ChooseRight) ] ++ primaryBtn)
+    [ text (if isLeft then "◀︎ Left wins" else "Right wins ▶︎") ]
+
+button ([ onClick (SkipAndIgnore pid) ] ++ linkBtn)
+    [ text "Skip and don’t ask about this player again" ]
             ]
         ]
 
