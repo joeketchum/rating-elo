@@ -78,7 +78,7 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
         ( { history = History.init 50 League.init
             , newPlayerName = ""
-            , autoSave = False
+            , autoSave = True
             , status = Nothing
             }
         , askForAutoSave "init"

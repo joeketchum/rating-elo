@@ -5980,7 +5980,7 @@ var $author$project$Main$init = function (_v0) {
 	return $author$project$Main$startNextMatchIfPossible(
 		_Utils_Tuple2(
 			{
-				autoSave: false,
+				autoSave: true,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				newPlayerName: '',
 				status: $elm$core$Maybe$Nothing
