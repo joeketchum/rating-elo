@@ -47,6 +47,7 @@ type alias Model =
     -- view state: new player form
     , newPlayerName : String
     , autoSave : Bool
+    , status : Maybe String
     }
 
 
@@ -68,6 +69,8 @@ type Msg
     | ReceivedStandings String
     | ReceivedAutoSave Bool
     | ToggleAutoSave
+    | ShowStatus String
+    | ClearStatus
     | IgnoredKey
 
 
@@ -76,6 +79,7 @@ init _ =
         ( { history = History.init 50 League.init
             , newPlayerName = ""
             , autoSave = False
+            , status = Nothing
             }
         , askForAutoSave "init"
         )
@@ -141,7 +145,11 @@ update msg model =
 
         KeeperWantsToSaveStandings ->
             ( model
-            , saveStandings (encode 2 (League.encode (History.current model.history)))
+            , Cmd.batch
+                [ saveStandings (encode 2 (League.encode (History.current model.history)))
+                , Task.succeed (ShowStatus "Standings saved")
+                    |> Task.perform identity
+                ]
             )
 
         KeeperWantsToLoadStandings ->
@@ -178,25 +186,29 @@ update msg model =
 
         LoadedLeague (Ok league) ->
             ( { model | history = History.init 50 league }
-            , Cmd.none
+            , Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity
             )
                 |> startNextMatchIfPossible
 
         LoadedLeague (Err problem) ->
-            -- TODO: show a problem
-            ( model, Cmd.none )
+            -- show an error
+            ( { model | status = Just ("Failed to load standings: " ++ problem) }
+            , Cmd.none
+            )
 
         ReceivedStandings jsonString ->
             case Decode.decodeString League.decoder jsonString of
                 Ok league ->
                     ( { model | history = History.init 50 league }
-                    , Cmd.none
+                    , Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity
                     )
                         |> startNextMatchIfPossible
                         |> maybeAutoSave
                 Err _ ->
-                    -- ignore malformed saved data for now
-                    ( model, Cmd.none )
+                    -- show malformed error
+                    ( { model | status = Just "Saved standings malformed or unreadable" }
+                    , Cmd.none
+                    )
 
         ReceivedAutoSave value ->
             ( { model | autoSave = value }
@@ -208,7 +220,17 @@ update msg model =
                 newVal = not model.autoSave
             in
             ( { model | autoSave = newVal }
-            , saveAutoSave newVal
+            , Cmd.batch [ saveAutoSave newVal, Task.succeed (ShowStatus (if newVal then "Auto-save enabled" else "Auto-save disabled")) |> Task.perform identity ]
+            )
+
+        ShowStatus message ->
+            ( { model | status = Just message }
+            , Cmd.none
+            )
+
+        ClearStatus ->
+            ( { model | status = Nothing }
+            , Cmd.none
             )
 
         IgnoredKey ->
@@ -307,6 +329,28 @@ view model =
                 ]
             ]
         ]
+        ++ (case model.status of
+                Just message ->
+                    [ Html.div
+                        [ css
+                            [ Css.position Css.fixed
+                            , Css.top (Css.px 20)
+                            , Css.right (Css.px 20)
+                            , Css.backgroundColor (Css.hex "333")
+                            , Css.color (Css.hex "FFF")
+                            , Css.padding4 (Css.px 8) (Css.px 12) (Css.px 8) (Css.px 12)
+                            , Css.borderRadius (Css.px 6)
+                            , openSans
+                            ]
+                        ]
+                        [ Html.span [] [ Html.text message ]
+                        , Html.span [ css [ Css.marginLeft (Css.px 8) ] ] [ smallRedXButton (Just ClearStatus) ]
+                        ]
+                    ]
+
+                Nothing ->
+                    []
+           )
             |> List.map Html.toUnstyled
     }
 

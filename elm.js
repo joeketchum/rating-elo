@@ -5982,7 +5982,8 @@ var $author$project$Main$init = function (_v0) {
 			{
 				autoSave: false,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
-				newPlayerName: ''
+				newPlayerName: '',
+				status: $elm$core$Maybe$Nothing
 			},
 			$author$project$Main$askForAutoSave('init')));
 };
@@ -6507,6 +6508,9 @@ var $author$project$Main$subscriptions = function (model) {
 };
 var $author$project$Main$LoadedLeague = function (a) {
 	return {$: 'LoadedLeague', a: a};
+};
+var $author$project$Main$ShowStatus = function (a) {
+	return {$: 'ShowStatus', a: a};
 };
 var $author$project$Elo$initialRating = 1200;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
@@ -8414,12 +8418,21 @@ var $author$project$Main$update = F2(
 			case 'KeeperWantsToSaveStandings':
 				return _Utils_Tuple2(
 					model,
-					$author$project$Main$saveStandings(
-						A2(
-							$elm$json$Json$Encode$encode,
-							2,
-							$author$project$League$encode(
-								$author$project$History$current(model.history)))));
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$saveStandings(
+								A2(
+									$elm$json$Json$Encode$encode,
+									2,
+									$author$project$League$encode(
+										$author$project$History$current(model.history)))),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Standings saved')))
+							])));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
@@ -8477,10 +8490,20 @@ var $author$project$Main$update = F2(
 								{
 									history: A2($author$project$History$init, 50, league)
 								}),
-							$elm$core$Platform$Cmd$none));
+							A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Standings loaded')))));
 				} else {
 					var problem = msg.a.a;
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
+							}),
+						$elm$core$Platform$Cmd$none);
 				}
 			case 'ReceivedStandings':
 				var jsonString = msg.a;
@@ -8495,9 +8518,19 @@ var $author$project$Main$update = F2(
 									{
 										history: A2($author$project$History$init, 50, league)
 									}),
-								$elm$core$Platform$Cmd$none)));
+								A2(
+									$elm$core$Task$perform,
+									$elm$core$Basics$identity,
+									$elm$core$Task$succeed(
+										$author$project$Main$ShowStatus('Standings loaded'))))));
 				} else {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Saved standings malformed or unreadable')
+							}),
+						$elm$core$Platform$Cmd$none);
 				}
 			case 'ReceivedAutoSave':
 				var value = msg.a;
@@ -8512,11 +8545,37 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{autoSave: newVal}),
-					$author$project$Main$saveAutoSave(newVal));
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$saveAutoSave(newVal),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus(
+										newVal ? 'Auto-save enabled' : 'Auto-save disabled')))
+							])));
+			case 'ShowStatus':
+				var message = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							status: $elm$core$Maybe$Just(message)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ClearStatus':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{status: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
+var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$ToggleAutoSave = {$: 'ToggleAutoSave'};
@@ -11315,11 +11374,13 @@ var $author$project$Main$currentMatch = function (model) {
 				]));
 	}
 };
+var $rtfeldman$elm_css$Css$fixed = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, position: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fixed'};
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$main_(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
+var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
@@ -11661,6 +11722,7 @@ var $BrianHicks$elm_css_reset$Css$Reset$meyerV2 = $rtfeldman$elm_css$Css$Global$
 					$rtfeldman$elm_css$Css$borderSpacing($rtfeldman$elm_css$Css$zero)
 				]))
 		]));
+var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $author$project$Main$KeeperUpdatedNewPlayerName = function (a) {
 	return {$: 'KeeperUpdatedNewPlayerName', a: a};
 };
@@ -12500,6 +12562,71 @@ var $author$project$Main$rankings = function (model) {
 						$author$project$League$players(
 							$author$project$History$current(model.history)))))));
 };
+var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
+var $author$project$Main$smallRedXButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(8)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(36)),
+						function () {
+						if (maybeMsg.$ === 'Just') {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('E02020'));
+						} else {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('DDD'));
+						}
+					}(),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(4)),
+						A6(
+						$rtfeldman$elm_css$Css$boxShadow6,
+						$rtfeldman$elm_css$Css$inset,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(-4),
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$zero,
+						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(14)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF'))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var msg = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(msg);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
+			]));
+};
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {
 		var isCssStyles = _v0.b;
@@ -13035,82 +13162,148 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
 var $tesk9$accessible_html_with_css$Accessibility$Styled$toUnstyled = $rtfeldman$elm_css$Html$Styled$toUnstyled;
+var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
 var $author$project$Main$view = function (model) {
 	return {
 		body: A2(
 			$elm$core$List$map,
 			$tesk9$accessible_html_with_css$Accessibility$Styled$toUnstyled,
-			_List_fromArray(
-				[
-					$BrianHicks$elm_css_reset$Css$Reset$meyerV2,
-					$BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408,
-					A3(
-					$rtfeldman$elm_css$Html$Styled$node,
-					'style',
-					_List_Nil,
-					_List_fromArray(
-						[
-							$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
-						])),
-					A2(
-					$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Html$Styled$Attributes$css(
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$pct(100))
-								]))
-						]),
-					_List_fromArray(
-						[
-							A2(
-							$tesk9$accessible_html_with_css$Accessibility$Styled$main_,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$css(
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Css$maxWidth(
-											$rtfeldman$elm_css$Css$px(1024)),
-											A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto)
-										]))
-								]),
-							_List_fromArray(
-								[
-									$author$project$Main$currentMatch(model),
-									$author$project$Main$rankings(model),
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$section,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-													$rtfeldman$elm_css$Css$marginTop(
-													$rtfeldman$elm_css$Css$px(32))
-												]))
-										]),
-									_List_fromArray(
-										[
-											A2(
-											$author$project$Main$blueButton,
-											'Save Standings',
-											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveStandings)),
-											A2(
-											$author$project$Main$blueButton,
-											'Load Standings',
-											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
-											A2(
-											$author$project$Main$goldButton,
-											model.autoSave ? 'Auto-save: On' : 'Auto-save: Off',
-											$elm$core$Maybe$Just($author$project$Main$ToggleAutoSave))
-										]))
-								]))
-						]))
-				])),
+			_Utils_ap(
+				_List_fromArray(
+					[
+						$BrianHicks$elm_css_reset$Css$Reset$meyerV2,
+						$BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408,
+						A3(
+						$rtfeldman$elm_css$Html$Styled$node,
+						'style',
+						_List_Nil,
+						_List_fromArray(
+							[
+								$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
+							])),
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$width(
+										$rtfeldman$elm_css$Css$pct(100))
+									]))
+							]),
+						_List_fromArray(
+							[
+								A2(
+								$tesk9$accessible_html_with_css$Accessibility$Styled$main_,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Css$maxWidth(
+												$rtfeldman$elm_css$Css$px(1024)),
+												A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto)
+											]))
+									]),
+								_List_fromArray(
+									[
+										$author$project$Main$currentMatch(model),
+										$author$project$Main$rankings(model),
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$section,
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+														$rtfeldman$elm_css$Css$marginTop(
+														$rtfeldman$elm_css$Css$px(32))
+													]))
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$author$project$Main$blueButton,
+												'Save Standings',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveStandings)),
+												A2(
+												$author$project$Main$blueButton,
+												'Load Standings',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
+												A2(
+												$author$project$Main$goldButton,
+												model.autoSave ? 'Auto-save: On' : 'Auto-save: Off',
+												$elm$core$Maybe$Just($author$project$Main$ToggleAutoSave))
+											]))
+									]))
+							]))
+					]),
+				function () {
+					var _v0 = model.status;
+					if (_v0.$ === 'Just') {
+						var message = _v0.a;
+						return _List_fromArray(
+							[
+								A2(
+								$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
+												$rtfeldman$elm_css$Css$top(
+												$rtfeldman$elm_css$Css$px(20)),
+												$rtfeldman$elm_css$Css$right(
+												$rtfeldman$elm_css$Css$px(20)),
+												$rtfeldman$elm_css$Css$backgroundColor(
+												$rtfeldman$elm_css$Css$hex('333')),
+												$rtfeldman$elm_css$Css$color(
+												$rtfeldman$elm_css$Css$hex('FFF')),
+												A4(
+												$rtfeldman$elm_css$Css$padding4,
+												$rtfeldman$elm_css$Css$px(8),
+												$rtfeldman$elm_css$Css$px(12),
+												$rtfeldman$elm_css$Css$px(8),
+												$rtfeldman$elm_css$Css$px(12)),
+												$rtfeldman$elm_css$Css$borderRadius(
+												$rtfeldman$elm_css$Css$px(6)),
+												$author$project$Main$openSans
+											]))
+									]),
+								_List_fromArray(
+									[
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+										_List_Nil,
+										_List_fromArray(
+											[
+												$tesk9$accessible_html_with_css$Accessibility$Styled$text(message)
+											])),
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$marginLeft(
+														$rtfeldman$elm_css$Css$px(8))
+													]))
+											]),
+										_List_fromArray(
+											[
+												$author$project$Main$smallRedXButton(
+												$elm$core$Maybe$Just($author$project$Main$ClearStatus))
+											]))
+									]))
+							]);
+					} else {
+						return _List_Nil;
+					}
+				}())),
 		title: 'Elo Anything!'
 	};
 };
