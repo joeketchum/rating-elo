@@ -1,6 +1,6 @@
 module Player exposing
     ( Player, init, htmlKey
-    , PlayerId, id, idSorter
+    , PlayerId(..), id, idSorter
     , name
     , rating, setRating
     , matchesPlayed, setMatchesPlayedTestOnly, incrementMatchesPlayed

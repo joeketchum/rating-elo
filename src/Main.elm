@@ -17,7 +17,7 @@ import Html.Styled.Keyed as Keyed
 import Json.Decode as Decode
 import Json.Encode as Encode exposing (encode)
 import Keyboard
-import League exposing (League)
+import League exposing (League, isPlayerIgnored)
 import Player exposing (Player)
 import Random
 import Task
@@ -39,6 +39,9 @@ type Msg
     = KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
     | KeeperWantsToRetirePlayer Player
+    | KeeperWantsToIgnorePlayer Player
+    | KeeperWantsToUnignorePlayer Player
+    | KeeperWantsToSkipMatch
     | GotNextMatch (Maybe League.Match)
     | MatchFinished League.Outcome
     | KeeperWantsToSaveStandings
@@ -79,6 +82,26 @@ update msg model =
 
         KeeperWantsToRetirePlayer player ->
             ( { model | history = History.mapPush (League.retirePlayer player) model.history }
+            , Cmd.none
+            )
+                |> startNextMatchIfPossible
+
+        KeeperWantsToIgnorePlayer player ->
+            ( { model | history = History.mapPush (League.ignorePlayer player) model.history }
+            , Cmd.none
+            )
+                |> startNextMatchIfPossible
+
+        KeeperWantsToUnignorePlayer player ->
+            ( { model | history = History.mapPush (League.unignorePlayer player) model.history }
+            , Cmd.none
+            )
+                |> startNextMatchIfPossible
+
+        KeeperWantsToSkipMatch ->
+            -- Clear the current match without updating ratings; then get
+            -- the next one.
+            ( { model | history = History.mapPush League.clearMatch model.history }
             , Cmd.none
             )
                 |> startNextMatchIfPossible
@@ -331,12 +354,30 @@ currentMatch model =
                 , Html.div
                     [ css
                         [ Css.displayFlex
+                        , Css.justifyContent Css.spaceBetween
+                        , Css.paddingTop (Css.px 12)
+                        ]
+                    ]
+                    [ Html.div
+                        [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
+                        [ redButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerA)) ]
+                    , Html.div
+                        [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
+                        [ Html.text "" ]
+                    , Html.div
+                        [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
+                        [ redButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerB)) ]
+                    ]
+                , Html.div
+                    [ css
+                        [ Css.displayFlex
                         , Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
                         , Css.justifyContent Css.spaceAround
                         ]
                     ]
                     [ blueButton "Undo" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
                     , blueButton "Redo" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
+                    , button (Css.hex "999") "Skip" (Just KeeperWantsToSkipMatch)
                     ]
                 ]
 
@@ -532,7 +573,14 @@ rankings model =
                         [ Html.text (Player.name player) ]
                     , Html.td
                         [ css [ textual, shrinkWidth, center ] ]
-                        [ redButton "Retire" (Just (KeeperWantsToRetirePlayer player)) ]
+                        (if isPlayerIgnored player (History.current model.history) then
+                            [ greenButton "Unignore" (Just (KeeperWantsToUnignorePlayer player)) ]
+
+                         else
+                            [ redButton "Retire" (Just (KeeperWantsToRetirePlayer player))
+                            , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ] [ redButton "Ignore" (Just (KeeperWantsToIgnorePlayer player)) ]
+                            ]
+                        )
                     ]
                 )
             )

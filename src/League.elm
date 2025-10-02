@@ -1,7 +1,8 @@
 module League exposing
     ( League, init, decoder, encode
     , addPlayer, players, getPlayer, retirePlayer
-    , Match(..), currentMatch, nextMatch, startMatch, Outcome(..), finishMatch, kFactor
+    , Match(..), currentMatch, nextMatch, startMatch, Outcome(..), finishMatch, kFactor, clearMatch
+    , ignorePlayer, unignorePlayer, isPlayerIgnored
     )
 
 {-|
@@ -18,7 +19,7 @@ import Dict as ComparableDict
 import Elo
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode
-import Player exposing (Player, PlayerId)
+import Player exposing (Player, PlayerId(..))
 import Random exposing (Generator)
 import Sort.Dict as Dict exposing (Dict)
 
@@ -27,6 +28,7 @@ type League
     = League
         { players : Dict PlayerId Player
         , currentMatch : Maybe Match
+        , ignored : List PlayerId
         }
 
 
@@ -43,27 +45,37 @@ init =
     League
         { players = Dict.empty Player.idSorter
         , currentMatch = Nothing
+        , ignored = []
         }
 
 
 decoder : Decoder League
 decoder =
-    Decode.map
-        (\newPlayers ->
-            League
-                { players = newPlayers
-                , currentMatch = Nothing
-                }
-        )
-        (Decode.oneOf
-            [ playersDecoder
-            , -- old format: only players as a dict
-              Decode.dict Player.decoder
-                |> Decode.map ComparableDict.toList
-                |> Decode.map (List.map (\( _, player ) -> ( Player.id player, player )))
-                |> Decode.map (Dict.fromList Player.idSorter)
-            ]
-        )
+    let
+        ignoredDecoder =
+            Decode.oneOf
+                [ Decode.field "ignored" (Decode.list Decode.int) |> Decode.map (List.map PlayerId)
+                , Decode.succeed []
+                ]
+    in
+    Decode.oneOf
+        [ Decode.map2
+            (\newPlayers ignored ->
+                League
+                    { players = newPlayers
+                    , currentMatch = Nothing
+                    , ignored = ignored
+                    }
+            )
+            playersDecoder
+            ignoredDecoder
+        , -- old format: only players as a dict
+          Decode.dict Player.decoder
+            |> Decode.map ComparableDict.toList
+            |> Decode.map (List.map (\( _, player ) -> ( Player.id player, player )))
+            |> Decode.map (Dict.fromList Player.idSorter)
+            |> Decode.map (\playersDict -> League { players = playersDict, currentMatch = Nothing, ignored = [] })
+        ]
 
 
 playersDecoder : Decoder (Dict PlayerId Player)
@@ -77,6 +89,7 @@ encode : League -> Encode.Value
 encode (League league) =
     Encode.object
         [ ( "players", Encode.list Player.encode (Dict.values league.players) )
+        , ( "ignored", Encode.list Encode.int (List.map (\(PlayerId i) -> i) league.ignored) )
         ]
 
 
@@ -87,6 +100,32 @@ encode (League league) =
 players : League -> List Player
 players (League league) =
     Dict.values league.players
+
+
+{-| Mark a player as ignored so they won't be scheduled for future matches.
+-}
+ignorePlayer : Player -> League -> League
+ignorePlayer player (League league) =
+    let
+        pid = Player.id player
+    in
+    if List.member pid league.ignored then
+        League league
+    else
+        League { league | ignored = pid :: league.ignored }
+
+
+unignorePlayer : Player -> League -> League
+unignorePlayer player (League league) =
+    let
+        pid = Player.id player
+    in
+    League { league | ignored = List.filter ((/=) pid) league.ignored }
+
+
+isPlayerIgnored : Player -> League -> Bool
+isPlayerIgnored player (League league) =
+    List.member (Player.id player) league.ignored
 
 
 getPlayer : PlayerId -> League -> Maybe Player
@@ -130,6 +169,7 @@ retirePlayer player (League league) =
 
                         else
                             league.currentMatch
+            , ignored = List.filter ((/=) (Player.id player)) league.ignored
         }
 
 
@@ -161,8 +201,11 @@ new match.
 nextMatch : League -> Generator (Maybe Match)
 nextMatch (League league) =
     let
-        allPlayers =
+        allPlayersRaw =
             Dict.values league.players
+
+        allPlayers =
+            List.filter (\p -> not (List.member (Player.id p) league.ignored)) allPlayersRaw
     in
     case allPlayers of
         -- at least two
