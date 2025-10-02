@@ -360,13 +360,13 @@ currentMatch model =
                     ]
                     [ Html.div
                         [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
-                        [ redButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerA)) ]
+                        [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerA)) ]
                     , Html.div
                         [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
                         [ Html.text "" ]
                     , Html.div
                         [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
-                        [ redButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerB)) ]
+                        [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerB)) ]
                     ]
                 , Html.div
                     [ css
@@ -431,6 +431,78 @@ greenButton =
 redButton : String -> Maybe Msg -> Html Msg
 redButton =
     button (Css.hex "E02020")
+
+
+goldButton : String -> Maybe Msg -> Html Msg
+goldButton label maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 6)
+            , Css.paddingBottom (Css.px 10)
+            , Css.paddingLeft (Css.px 15)
+            , Css.paddingRight (Css.px 15)
+            , Css.margin2 Css.zero (Css.px 10)
+            , Css.minWidth (Css.px 100)
+            , case maybeMsg of
+                Just _ ->
+                    Css.backgroundColor (Css.hex "EFE700")
+
+                Nothing ->
+                    Css.backgroundColor (Css.hex "DDD")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 4)
+            , Css.boxShadow6 Css.inset Css.zero (Css.px -4) Css.zero Css.zero (Css.rgba 0 0 0 0.1)
+            , Css.cursor Css.pointer
+
+            -- font
+            , Css.fontSize (Css.px 14)
+            , Css.fontWeight (Css.int 600)
+            , Css.color (Css.hex "333")
+            ]
+        , case maybeMsg of
+            Just msg ->
+                Events.onClick msg
+
+            Nothing ->
+                Attributes.disabled True
+        ]
+        [ Html.text label ]
+
+
+smallRedXButton : Maybe Msg -> Html Msg
+smallRedXButton maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 4)
+            , Css.paddingBottom (Css.px 4)
+            , Css.paddingLeft (Css.px 8)
+            , Css.paddingRight (Css.px 8)
+            , Css.margin2 Css.zero (Css.px 6)
+            , Css.minWidth (Css.px 36)
+            , case maybeMsg of
+                Just _ ->
+                    Css.backgroundColor (Css.hex "E02020")
+
+                Nothing ->
+                    Css.backgroundColor (Css.hex "DDD")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 4)
+            , Css.boxShadow6 Css.inset Css.zero (Css.px -4) Css.zero Css.zero (Css.rgba 0 0 0 0.1)
+            , Css.cursor Css.pointer
+
+            -- font
+            , Css.fontSize (Css.px 14)
+            , Css.fontWeight (Css.int 600)
+            , Css.color (Css.hex "FFF")
+            ]
+        , case maybeMsg of
+            Just msg ->
+                Events.onClick msg
+
+            Nothing ->
+                Attributes.disabled True
+        ]
+        [ Html.text "X" ]
 
 
 activePlayer : Player -> Html msg
@@ -578,7 +650,7 @@ rankings model =
 
                          else
                             [ redButton "Retire" (Just (KeeperWantsToRetirePlayer player))
-                            , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ] [ redButton "Ignore" (Just (KeeperWantsToIgnorePlayer player)) ]
+                            , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ] [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer player)) ]
                             ]
                         )
                     ]

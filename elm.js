@@ -10805,6 +10805,71 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attribu
 	return $rtfeldman$elm_css$Html$Styled$div(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
+var $author$project$Main$goldButton = F2(
+	function (label, maybeMsg) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$paddingTop(
+							$rtfeldman$elm_css$Css$px(6)),
+							$rtfeldman$elm_css$Css$paddingBottom(
+							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$paddingLeft(
+							$rtfeldman$elm_css$Css$px(15)),
+							$rtfeldman$elm_css$Css$paddingRight(
+							$rtfeldman$elm_css$Css$px(15)),
+							A2(
+							$rtfeldman$elm_css$Css$margin2,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$minWidth(
+							$rtfeldman$elm_css$Css$px(100)),
+							function () {
+							if (maybeMsg.$ === 'Just') {
+								return $rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex('EFE700'));
+							} else {
+								return $rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex('DDD'));
+							}
+						}(),
+							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(4)),
+							A6(
+							$rtfeldman$elm_css$Css$boxShadow6,
+							$rtfeldman$elm_css$Css$inset,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(-4),
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$zero,
+							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(14)),
+							$rtfeldman$elm_css$Css$fontWeight(
+							$rtfeldman$elm_css$Css$int(600)),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('333'))
+						])),
+					function () {
+					if (maybeMsg.$ === 'Just') {
+						var msg = maybeMsg.a;
+						return $rtfeldman$elm_css$Html$Styled$Events$onClick(msg);
+					} else {
+						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+					}
+				}()
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$h1(
@@ -10840,8 +10905,6 @@ var $author$project$History$peekForward = function (_v0) {
 	var guts = _v0.a;
 	return $elm$core$List$head(guts.future);
 };
-var $author$project$Main$redButton = $author$project$Main$button(
-	$rtfeldman$elm_css$Css$hex('E02020'));
 var $rtfeldman$elm_css$Html$Styled$section = $rtfeldman$elm_css$Html$Styled$node('section');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$section(
@@ -11121,7 +11184,7 @@ var $author$project$Main$currentMatch = function (model) {
 							_List_fromArray(
 								[
 									A2(
-									$author$project$Main$redButton,
+									$author$project$Main$goldButton,
 									'Ignore',
 									$elm$core$Maybe$Just(
 										$author$project$Main$KeeperWantsToIgnorePlayer(playerA)))
@@ -11157,7 +11220,7 @@ var $author$project$Main$currentMatch = function (model) {
 							_List_fromArray(
 								[
 									A2(
-									$author$project$Main$redButton,
+									$author$project$Main$goldButton,
 									'Ignore',
 									$elm$core$Maybe$Just(
 										$author$project$Main$KeeperWantsToIgnorePlayer(playerB)))
@@ -11784,6 +11847,8 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
+var $author$project$Main$redButton = $author$project$Main$button(
+	$rtfeldman$elm_css$Css$hex('E02020'));
 var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$span(
@@ -12376,7 +12441,7 @@ var $author$project$Main$rankings = function (model) {
 													_List_fromArray(
 														[
 															A2(
-															$author$project$Main$redButton,
+															$author$project$Main$goldButton,
 															'Ignore',
 															$elm$core$Maybe$Just(
 																$author$project$Main$KeeperWantsToIgnorePlayer(player)))
