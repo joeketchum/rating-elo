@@ -5420,6 +5420,8 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$document = _Browser_document;
+var $elm$json$Json$Encode$string = _Json_wrap;
+var $author$project$Main$askForAutoSave = _Platform_outgoingPort('askForAutoSave', $elm$json$Json$Encode$string);
 var $author$project$History$History = function (a) {
 	return {$: 'History', a: a};
 };
@@ -5471,11 +5473,10 @@ var $author$project$League$init = $author$project$League$League(
 		ignored: _List_Nil,
 		players: $rtfeldman$elm_sorter_experiment$Sort$Dict$empty($author$project$Player$idSorter)
 	});
-var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$GotNextMatch = function (a) {
 	return {$: 'GotNextMatch', a: a};
 };
+var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$History$current = function (_v0) {
 	var guts = _v0.a;
 	return guts.current;
@@ -5979,10 +5980,11 @@ var $author$project$Main$init = function (_v0) {
 	return $author$project$Main$startNextMatchIfPossible(
 		_Utils_Tuple2(
 			{
+				autoSave: false,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				newPlayerName: ''
 			},
-			$elm$core$Platform$Cmd$none));
+			$author$project$Main$askForAutoSave('init')));
 };
 var $author$project$League$Draw = function (a) {
 	return {$: 'Draw', a: a};
@@ -5991,9 +5993,16 @@ var $author$project$Main$IgnoredKey = {$: 'IgnoredKey'};
 var $author$project$Main$MatchFinished = function (a) {
 	return {$: 'MatchFinished', a: a};
 };
+var $author$project$Main$ReceivedAutoSave = function (a) {
+	return {$: 'ReceivedAutoSave', a: a};
+};
+var $author$project$Main$ReceivedStandings = function (a) {
+	return {$: 'ReceivedStandings', a: a};
+};
 var $author$project$League$Win = function (a) {
 	return {$: 'Win', a: a};
 };
+var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $ohanhi$keyboard$Keyboard$RawKey = function (a) {
 	return {$: 'RawKey', a: a};
 };
@@ -6446,8 +6455,9 @@ var $ohanhi$keyboard$Keyboard$navigationKey = function (_v0) {
 			return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $elm$core$Platform$Sub$none = $elm$core$Platform$Sub$batch(_List_Nil);
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
+var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
+var $author$project$Main$receiveStandings = _Platform_incomingPort('receiveStandings', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (model) {
 	var _v0 = $author$project$League$currentMatch(
 		$author$project$History$current(model.history));
@@ -6487,14 +6497,16 @@ var $author$project$Main$subscriptions = function (model) {
 				return $author$project$Main$IgnoredKey;
 			});
 	} else {
-		return $elm$core$Platform$Sub$none;
+		return $elm$core$Platform$Sub$batch(
+			_List_fromArray(
+				[
+					$author$project$Main$receiveStandings($author$project$Main$ReceivedStandings),
+					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave)
+				]));
 	}
 };
 var $author$project$Main$LoadedLeague = function (a) {
 	return {$: 'LoadedLeague', a: a};
-};
-var $author$project$Main$SelectedStandingsFile = function (a) {
-	return {$: 'SelectedStandingsFile', a: a};
 };
 var $author$project$Elo$initialRating = 1200;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
@@ -6664,6 +6676,7 @@ var $author$project$League$addPlayer = F2(
 						league.players)
 				}));
 	});
+var $author$project$Main$askForStandings = _Platform_outgoingPort('askForStandings', $elm$json$Json$Encode$string);
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
@@ -7274,7 +7287,6 @@ var $elm$json$Json$Encode$object = function (pairs) {
 			_Json_emptyObject(_Utils_Tuple0),
 			pairs));
 };
-var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Player$encode = function (_v0) {
 	var player = _v0.a;
 	var _v1 = player.id;
@@ -7331,13 +7343,6 @@ var $author$project$League$encode = function (_v0) {
 			]));
 };
 var $elm$core$Task$fail = _Scheduler_fail;
-var $elm$file$File$Select$file = F2(
-	function (mimes, toMsg) {
-		return A2(
-			$elm$core$Task$perform,
-			toMsg,
-			_File_uploadOne(mimes));
-	});
 var $author$project$Elo$odds = F2(
 	function (a, b) {
 		var rB = A2($elm$core$Basics$pow, 10, b / 400);
@@ -7750,6 +7755,25 @@ var $author$project$History$mapPush = F2(
 				$author$project$History$current(history)),
 			history);
 	});
+var $author$project$Main$saveStandings = _Platform_outgoingPort('saveStandings', $elm$json$Json$Encode$string);
+var $author$project$Main$maybeAutoSave = function (_v0) {
+	var model = _v0.a;
+	var cmd = _v0.b;
+	return model.autoSave ? _Utils_Tuple2(
+		model,
+		$elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					cmd,
+					$author$project$Main$saveStandings(
+					A2(
+						$elm$json$Json$Encode$encode,
+						2,
+						$author$project$League$encode(
+							$author$project$History$current(model.history))))
+				]))) : _Utils_Tuple2(model, cmd);
+};
+var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -8182,6 +8206,8 @@ var $author$project$League$retirePlayer = F2(
 						league.players)
 				}));
 	});
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -8267,13 +8293,6 @@ var $author$project$League$startMatch = F2(
 								$author$project$Player$id(playerB),
 								league.players)))
 				}));
-	});
-var $elm$file$File$Download$string = F3(
-	function (name, mime, content) {
-		return A2(
-			$elm$core$Task$perform,
-			$elm$core$Basics$never,
-			A3(_File_download, name, mime, content));
 	});
 var $elm$file$File$toString = _File_toString;
 var $author$project$League$unignorePlayer = F2(
@@ -8395,10 +8414,7 @@ var $author$project$Main$update = F2(
 			case 'KeeperWantsToSaveStandings':
 				return _Utils_Tuple2(
 					model,
-					A3(
-						$elm$file$File$Download$string,
-						'standings.json',
-						'application/json',
+					$author$project$Main$saveStandings(
 						A2(
 							$elm$json$Json$Encode$encode,
 							2,
@@ -8407,11 +8423,7 @@ var $author$project$Main$update = F2(
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
-					A2(
-						$elm$file$File$Select$file,
-						_List_fromArray(
-							['application/json']),
-						$author$project$Main$SelectedStandingsFile));
+					$author$project$Main$askForStandings('give-me-standings'));
 			case 'SelectedStandingsFile':
 				var file = msg.a;
 				return _Utils_Tuple2(
@@ -8470,12 +8482,44 @@ var $author$project$Main$update = F2(
 					var problem = msg.a.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
+			case 'ReceivedStandings':
+				var jsonString = msg.a;
+				var _v3 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+				if (_v3.$ === 'Ok') {
+					var league = _v3.a;
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2($author$project$History$init, 50, league)
+									}),
+								$elm$core$Platform$Cmd$none)));
+				} else {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				}
+			case 'ReceivedAutoSave':
+				var value = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{autoSave: value}),
+					$elm$core$Platform$Cmd$none);
+			case 'ToggleAutoSave':
+				var newVal = !model.autoSave;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{autoSave: newVal}),
+					$author$project$Main$saveAutoSave(newVal));
 			default:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
+var $author$project$Main$ToggleAutoSave = {$: 'ToggleAutoSave'};
 var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
@@ -9963,7 +10007,6 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
 var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
 		return A2(
@@ -13007,7 +13050,7 @@ var $author$project$Main$view = function (model) {
 					_List_Nil,
 					_List_fromArray(
 						[
-							$tesk9$accessible_html_with_css$Accessibility$Styled$text('\n            @font-face {\n                font-family: "Open Sans";\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\n                font-weight: 500;\n            }\n\n            @font-face {\n                font-family: "Open Sans";\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\n                font-weight: 600;\n            }\n          ')
+							$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
 						])),
 					A2(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -13059,7 +13102,11 @@ var $author$project$Main$view = function (model) {
 											A2(
 											$author$project$Main$blueButton,
 											'Load Standings',
-											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings))
+											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
+											A2(
+											$author$project$Main$goldButton,
+											model.autoSave ? 'Auto-save: On' : 'Auto-save: Off',
+											$elm$core$Maybe$Just($author$project$Main$ToggleAutoSave))
 										]))
 								]))
 						]))

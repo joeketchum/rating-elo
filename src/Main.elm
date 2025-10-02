@@ -1,4 +1,4 @@
-module Main exposing (..)
+port module Main exposing (..)
 
 import Accessibility.Styled as Html exposing (Html)
 import Browser exposing (Document)
@@ -22,6 +22,20 @@ import Player exposing (Player)
 import Random
 import Task
 
+-- Ports for persisting standings in the browser (localStorage)
+port saveStandings : String -> Cmd msg
+
+-- Elm will send a simple request (any string) and JS should reply via `receiveStandings`
+port askForStandings : String -> Cmd msg
+
+-- JS can send saved standings JSON strings into Elm through this port
+port receiveStandings : (String -> msg) -> Sub msg
+
+-- Auto-save preference ports
+port saveAutoSave : Bool -> Cmd msg
+port askForAutoSave : String -> Cmd msg
+port receiveAutoSave : (Bool -> msg) -> Sub msg
+
 
 type alias Flags =
     ()
@@ -32,6 +46,7 @@ type alias Model =
 
     -- view state: new player form
     , newPlayerName : String
+    , autoSave : Bool
     }
 
 
@@ -50,17 +65,21 @@ type Msg
     | KeeperWantsToUndo
     | KeeperWantsToRedo
     | LoadedLeague (Result String League)
+    | ReceivedStandings String
+    | ReceivedAutoSave Bool
+    | ToggleAutoSave
     | IgnoredKey
 
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
-    ( { history = History.init 50 League.init
-      , newPlayerName = ""
-      }
-    , Cmd.none
-    )
-        |> startNextMatchIfPossible
+        ( { history = History.init 50 League.init
+            , newPlayerName = ""
+            , autoSave = False
+            }
+        , askForAutoSave "init"
+        )
+                |> startNextMatchIfPossible
 
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -122,15 +141,14 @@ update msg model =
 
         KeeperWantsToSaveStandings ->
             ( model
-            , Download.string
-                "standings.json"
-                "application/json"
-                (encode 2 (League.encode (History.current model.history)))
+            , saveStandings (encode 2 (League.encode (History.current model.history)))
             )
 
         KeeperWantsToLoadStandings ->
+            -- Ask the hosting page (JS) for any saved standings. JS will reply
+            -- by sending the JSON string into the `receiveStandings` port.
             ( model
-            , Select.file [ "application/json" ] SelectedStandingsFile
+            , askForStandings "give-me-standings"
             )
 
         SelectedStandingsFile file ->
@@ -168,8 +186,41 @@ update msg model =
             -- TODO: show a problem
             ( model, Cmd.none )
 
+        ReceivedStandings jsonString ->
+            case Decode.decodeString League.decoder jsonString of
+                Ok league ->
+                    ( { model | history = History.init 50 league }
+                    , Cmd.none
+                    )
+                        |> startNextMatchIfPossible
+                        |> maybeAutoSave
+                Err _ ->
+                    -- ignore malformed saved data for now
+                    ( model, Cmd.none )
+
+        ReceivedAutoSave value ->
+            ( { model | autoSave = value }
+            , Cmd.none
+            )
+
+        ToggleAutoSave ->
+            let
+                newVal = not model.autoSave
+            in
+            ( { model | autoSave = newVal }
+            , saveAutoSave newVal
+            )
+
         IgnoredKey ->
             ( model, Cmd.none )
+
+
+maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+maybeAutoSave ( model, cmd ) =
+    if model.autoSave then
+        ( model, Cmd.batch [ cmd, saveStandings (encode 2 (League.encode (History.current model.history))) ] )
+    else
+        ( model, cmd )
 
 
 subscriptions : Model -> Sub Msg
@@ -193,7 +244,10 @@ subscriptions model =
                 )
 
         Nothing ->
-            Sub.none
+            Sub.batch
+                [ receiveStandings ReceivedStandings
+                , receiveAutoSave ReceivedAutoSave
+                ]
 
 
 startNextMatchIfPossible : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -248,6 +302,7 @@ view model =
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
                     [ blueButton "Save Standings" (Just KeeperWantsToSaveStandings)
                     , blueButton "Load Standings" (Just KeeperWantsToLoadStandings)
+                    , goldButton (if model.autoSave then "Auto-save: On" else "Auto-save: Off") (Just ToggleAutoSave)
                     ]
                 ]
             ]
@@ -421,8 +476,6 @@ button baseColor label maybeMsg =
 blueButton : String -> Maybe Msg -> Html Msg
 blueButton =
     button (Css.hex "0091FF")
-
-
 greenButton : String -> Maybe Msg -> Html Msg
 greenButton =
     button (Css.hex "6DD400")
