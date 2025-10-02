@@ -5982,6 +5982,7 @@ var $author$project$Main$init = function (_v0) {
 			{
 				autoSave: true,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
+				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
 				status: $elm$core$Maybe$Nothing
 			},
@@ -7279,6 +7280,27 @@ var $author$project$League$decoder = function () {
 							$elm$json$Json$Decode$dict($author$project$Player$decoder)))))
 			]));
 }();
+var $elm$core$List$drop = F2(
+	function (n, list) {
+		drop:
+		while (true) {
+			if (n <= 0) {
+				return list;
+			} else {
+				if (!list.b) {
+					return list;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs;
+					n = $temp$n;
+					list = $temp$list;
+					continue drop;
+				}
+			}
+		}
+	});
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -7381,27 +7403,6 @@ var $author$project$League$higherRankedPlayer = F2(
 			$author$project$Player$rating(b)) > 0) ? a : b;
 	});
 var $elm$core$Basics$ge = _Utils_ge;
-var $elm$core$List$drop = F2(
-	function (n, list) {
-		drop:
-		while (true) {
-			if (n <= 0) {
-				return list;
-			} else {
-				if (!list.b) {
-					return list;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs;
-					n = $temp$n;
-					list = $temp$list;
-					continue drop;
-				}
-			}
-		}
-	});
 var $elm$core$List$head = function (list) {
 	if (list.b) {
 		var x = list.a;
@@ -8583,11 +8584,27 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'ReceivedPublicDriveStatus':
 				var msgStr = msg.a;
+				var parts = A2($elm$core$String$split, '|', msgStr);
+				var maybeTs = function () {
+					var _v4 = $elm$core$List$head(
+						A2($elm$core$List$drop, 1, parts));
+					if (_v4.$ === 'Just') {
+						var t = _v4.a;
+						return $elm$core$Maybe$Just(t);
+					} else {
+						return $elm$core$Maybe$Nothing;
+					}
+				}();
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							status: $elm$core$Maybe$Just(msgStr)
+							lastSynced: maybeTs,
+							status: $elm$core$Maybe$Just(
+								A2(
+									$elm$core$Maybe$withDefault,
+									msgStr,
+									$elm$core$List$head(parts)))
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'ToggleAutoSave':
@@ -11426,7 +11443,9 @@ var $author$project$Main$currentMatch = function (model) {
 				]));
 	}
 };
+var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $rtfeldman$elm_css$Css$fixed = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, position: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fixed'};
+var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$main_(
@@ -11450,7 +11469,6 @@ var $rtfeldman$elm_css$Css$Global$code = $rtfeldman$elm_css$Css$Global$typeSelec
 var $rtfeldman$elm_css$Css$collapse = {borderCollapse: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'collapse', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
 var $rtfeldman$elm_css$Css$Global$dd = $rtfeldman$elm_css$Css$Global$typeSelector('dd');
 var $rtfeldman$elm_css$Css$Global$details = $rtfeldman$elm_css$Css$Global$typeSelector('details');
-var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $rtfeldman$elm_css$Css$Global$div = $rtfeldman$elm_css$Css$Global$typeSelector('div');
 var $rtfeldman$elm_css$Css$Global$dl = $rtfeldman$elm_css$Css$Global$typeSelector('dl');
 var $rtfeldman$elm_css$Css$Global$dt = $rtfeldman$elm_css$Css$Global$typeSelector('dt');
@@ -11835,7 +11853,6 @@ var $author$project$Main$circle = function (color) {
 };
 var $rtfeldman$elm_css$Css$borderLeft3 = $rtfeldman$elm_css$Css$prop3('border-left');
 var $rtfeldman$elm_css$Css$borderTop3 = $rtfeldman$elm_css$Css$prop3('border-top');
-var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
 var $rtfeldman$elm_css$Css$margin4 = $rtfeldman$elm_css$Css$prop4('margin');
 var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
@@ -13332,12 +13349,50 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										A2(
-										$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+										$tesk9$accessible_html_with_css$Accessibility$Styled$div,
 										_List_Nil,
 										_List_fromArray(
 											[
-												$tesk9$accessible_html_with_css$Accessibility$Styled$text(message)
+												A2(
+												$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+												_List_Nil,
+												_List_fromArray(
+													[
+														$tesk9$accessible_html_with_css$Accessibility$Styled$text(message)
+													]))
 											])),
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+										_List_Nil,
+										function () {
+											var _v1 = model.lastSynced;
+											if (_v1.$ === 'Just') {
+												var ts = _v1.a;
+												return _List_fromArray(
+													[
+														A2(
+														$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$fontSize(
+																		$rtfeldman$elm_css$Css$px(12)),
+																		$rtfeldman$elm_css$Css$marginTop(
+																		$rtfeldman$elm_css$Css$px(6)),
+																		$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock)
+																	]))
+															]),
+														_List_fromArray(
+															[
+																$tesk9$accessible_html_with_css$Accessibility$Styled$text('Last-synced: ' + ts)
+															]))
+													]);
+											} else {
+												return _List_Nil;
+											}
+										}()),
 										A2(
 										$tesk9$accessible_html_with_css$Accessibility$Styled$span,
 										_List_fromArray(

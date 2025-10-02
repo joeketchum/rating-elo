@@ -16,6 +16,8 @@ import Html.Styled.Events as Events
 import Html.Styled.Keyed as Keyed
 import Json.Decode as Decode
 import Json.Encode as Encode exposing (encode)
+import String
+import List exposing (head, drop)
 import Keyboard
 import League exposing (League, isPlayerIgnored)
 import Player exposing (Player)
@@ -53,6 +55,7 @@ type alias Model =
     , newPlayerName : String
     , autoSave : Bool
     , status : Maybe String
+    , lastSynced : Maybe String
     }
 
 
@@ -87,6 +90,7 @@ init _ =
             , newPlayerName = ""
             , autoSave = True
             , status = Nothing
+            , lastSynced = Nothing
             }
         , askForAutoSave "init"
         )
@@ -231,7 +235,13 @@ update msg model =
             )
 
         ReceivedPublicDriveStatus msgStr ->
-            ( { model | status = Just msgStr }
+            let
+                parts = String.split "|" msgStr
+                maybeTs = case List.drop 1 parts |> head of
+                    Just t -> Just t
+                    Nothing -> Nothing
+            in
+            ( { model | status = Just (List.head parts |> Maybe.withDefault msgStr), lastSynced = maybeTs }
             , Cmd.none
             )
 
@@ -364,7 +374,12 @@ view model =
                             , openSans
                             ]
                         ]
-                        [ Html.span [] [ Html.text message ]
+                        [ Html.div [] [ Html.span [] [ Html.text message ] ]
+                        , Html.div [] (
+                            case model.lastSynced of
+                                Just ts -> [ Html.span [ css [ Css.fontSize (Css.px 12), Css.marginTop (Css.px 6), Css.display Css.inlineBlock ] ] [ Html.text ("Last-synced: " ++ ts) ] ]
+                                Nothing -> []
+                          )
                         , Html.span [ css [ Css.marginLeft (Css.px 8) ] ] [ smallRedXButton (Just ClearStatus) ]
                         ]
                     ]
