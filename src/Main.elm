@@ -5,7 +5,6 @@ import Dict exposing (Dict)
 import Html exposing (Html, button, div, h2, h3, li, span, text, ul)
 import Html.Attributes exposing (class, style)
 import Html.Events exposing (onClick)
-import List.Extra as List
 import Set exposing (Set)
 
 
