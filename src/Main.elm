@@ -294,7 +294,7 @@ openSans =
 
 view : Model -> Document Msg
 view model =
-    { title = "Elo Anything!"
+    { title = "The Rating Game ❤️"
     , body =
         [ Css.Reset.meyerV2
         , Css.Reset.borderBoxV201408
@@ -323,7 +323,6 @@ view model =
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
                     [ blueButton "Export rankings" (Just KeeperWantsToSaveStandings)
-                    , blueButton "Import rankings" (Just KeeperWantsToLoadStandings)
                     , goldButton (if model.autoSave then "Auto-save: On" else "Auto-save: Off") (Just ToggleAutoSave)
                     ]
                 ]
@@ -374,7 +373,7 @@ currentMatch model =
                         , Css.fontWeight (Css.int 600)
                         ]
                     ]
-                    [ Html.text "Elo Anything" ]
+                    [ Html.text "The Rating Game ❤️" ]
                 , Html.p
                     [ css
                         [ Css.fontSize (Css.px 24)
@@ -746,7 +745,7 @@ rankings model =
                             [ greenButton "Unignore" (Just (KeeperWantsToUnignorePlayer player)) ]
 
                          else
-                            [ redButton "Retire" (Just (KeeperWantsToRetirePlayer player))
+                            [ redButton "Delete" (Just (KeeperWantsToRetirePlayer player))
                             , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ] [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer player)) ]
                             ]
                         )

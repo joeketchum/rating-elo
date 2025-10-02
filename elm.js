@@ -8599,7 +8599,6 @@ var $author$project$Main$update = F2(
 		}
 	});
 var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
-var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$ToggleAutoSave = {$: 'ToggleAutoSave'};
 var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
@@ -10778,6 +10777,7 @@ var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 	return {$: 'KeeperWantsToIgnorePlayer', a: a};
 };
+var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
@@ -11077,7 +11077,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$tesk9$accessible_html_with_css$Accessibility$Styled$text('Elo Anything')
+							$tesk9$accessible_html_with_css$Accessibility$Styled$text('The Rating Game ❤️')
 						])),
 					A2(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$p,
@@ -12552,7 +12552,7 @@ var $author$project$Main$rankings = function (model) {
 												[
 													A2(
 													$author$project$Main$redButton,
-													'Retire',
+													'Delete',
 													$elm$core$Maybe$Just(
 														$author$project$Main$KeeperWantsToRetirePlayer(player))),
 													A2(
@@ -13252,10 +13252,6 @@ var $author$project$Main$view = function (model) {
 												'Export rankings',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveStandings)),
 												A2(
-												$author$project$Main$blueButton,
-												'Import rankings',
-												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
-												A2(
 												$author$project$Main$goldButton,
 												model.autoSave ? 'Auto-save: On' : 'Auto-save: Off',
 												$elm$core$Maybe$Just($author$project$Main$ToggleAutoSave))
@@ -13327,7 +13323,7 @@ var $author$project$Main$view = function (model) {
 						return _List_Nil;
 					}
 				}())),
-		title: 'Elo Anything!'
+		title: 'The Rating Game ❤️'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
