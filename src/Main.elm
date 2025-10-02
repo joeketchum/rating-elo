@@ -146,17 +146,17 @@ update msg model =
         KeeperWantsToSaveStandings ->
             ( model
             , Cmd.batch
-                [ saveStandings (encode 2 (League.encode (History.current model.history)))
-                , Task.succeed (ShowStatus "Standings saved")
-                    |> Task.perform identity
+                [ Download.string
+                    "standings.json"
+                    "application/json"
+                    (encode 2 (League.encode (History.current model.history)))
+                , Task.succeed (ShowStatus "Exported rankings") |> Task.perform identity
                 ]
             )
 
         KeeperWantsToLoadStandings ->
-            -- Ask the hosting page (JS) for any saved standings. JS will reply
-            -- by sending the JSON string into the `receiveStandings` port.
             ( model
-            , askForStandings "give-me-standings"
+            , Select.file [ "application/json" ] SelectedStandingsFile
             )
 
         SelectedStandingsFile file ->
@@ -186,7 +186,7 @@ update msg model =
 
         LoadedLeague (Ok league) ->
             ( { model | history = History.init 50 league }
-            , Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity
+            , Task.succeed (ShowStatus "Imported rankings") |> Task.perform identity
             )
                 |> startNextMatchIfPossible
 
@@ -322,8 +322,8 @@ view model =
                 , rankings model
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
-                    [ blueButton "Save Standings" (Just KeeperWantsToSaveStandings)
-                    , blueButton "Load Standings" (Just KeeperWantsToLoadStandings)
+                    [ blueButton "Export rankings" (Just KeeperWantsToSaveStandings)
+                    , blueButton "Import rankings" (Just KeeperWantsToLoadStandings)
                     , goldButton (if model.autoSave then "Auto-save: On" else "Auto-save: Off") (Just ToggleAutoSave)
                     ]
                 ]

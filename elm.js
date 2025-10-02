@@ -6509,6 +6509,9 @@ var $author$project$Main$subscriptions = function (model) {
 var $author$project$Main$LoadedLeague = function (a) {
 	return {$: 'LoadedLeague', a: a};
 };
+var $author$project$Main$SelectedStandingsFile = function (a) {
+	return {$: 'SelectedStandingsFile', a: a};
+};
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
@@ -6680,7 +6683,6 @@ var $author$project$League$addPlayer = F2(
 						league.players)
 				}));
 	});
-var $author$project$Main$askForStandings = _Platform_outgoingPort('askForStandings', $elm$json$Json$Encode$string);
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
 		return g(
@@ -7347,6 +7349,13 @@ var $author$project$League$encode = function (_v0) {
 			]));
 };
 var $elm$core$Task$fail = _Scheduler_fail;
+var $elm$file$File$Select$file = F2(
+	function (mimes, toMsg) {
+		return A2(
+			$elm$core$Task$perform,
+			toMsg,
+			_File_uploadOne(mimes));
+	});
 var $author$project$Elo$odds = F2(
 	function (a, b) {
 		var rB = A2($elm$core$Basics$pow, 10, b / 400);
@@ -8298,6 +8307,13 @@ var $author$project$League$startMatch = F2(
 								league.players)))
 				}));
 	});
+var $elm$file$File$Download$string = F3(
+	function (name, mime, content) {
+		return A2(
+			$elm$core$Task$perform,
+			$elm$core$Basics$never,
+			A3(_File_download, name, mime, content));
+	});
 var $elm$file$File$toString = _File_toString;
 var $author$project$League$unignorePlayer = F2(
 	function (player, _v0) {
@@ -8421,7 +8437,10 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
-								$author$project$Main$saveStandings(
+								A3(
+								$elm$file$File$Download$string,
+								'standings.json',
+								'application/json',
 								A2(
 									$elm$json$Json$Encode$encode,
 									2,
@@ -8431,12 +8450,16 @@ var $author$project$Main$update = F2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
 								$elm$core$Task$succeed(
-									$author$project$Main$ShowStatus('Standings saved')))
+									$author$project$Main$ShowStatus('Exported rankings')))
 							])));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
-					$author$project$Main$askForStandings('give-me-standings'));
+					A2(
+						$elm$file$File$Select$file,
+						_List_fromArray(
+							['application/json']),
+						$author$project$Main$SelectedStandingsFile));
 			case 'SelectedStandingsFile':
 				var file = msg.a;
 				return _Utils_Tuple2(
@@ -8494,7 +8517,7 @@ var $author$project$Main$update = F2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
 								$elm$core$Task$succeed(
-									$author$project$Main$ShowStatus('Standings loaded')))));
+									$author$project$Main$ShowStatus('Imported rankings')))));
 				} else {
 					var problem = msg.a.a;
 					return _Utils_Tuple2(
@@ -13226,11 +13249,11 @@ var $author$project$Main$view = function (model) {
 											[
 												A2(
 												$author$project$Main$blueButton,
-												'Save Standings',
+												'Export rankings',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveStandings)),
 												A2(
 												$author$project$Main$blueButton,
-												'Load Standings',
+												'Import rankings',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
 												A2(
 												$author$project$Main$goldButton,
