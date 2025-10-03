@@ -7696,6 +7696,9 @@ var $author$project$Main$MatchFinished = function (a) {
 var $author$project$Main$ReceivedAutoSave = function (a) {
 	return {$: 'ReceivedAutoSave', a: a};
 };
+var $author$project$Main$ReceivedPublicDriveStatus = function (a) {
+	return {$: 'ReceivedPublicDriveStatus', a: a};
+};
 var $author$project$Main$ReceivedStandings = function (a) {
 	return {$: 'ReceivedStandings', a: a};
 };
@@ -8013,6 +8016,7 @@ var $ohanhi$keyboard$Keyboard$navigationKey = function (_v0) {
 };
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
+var $author$project$Main$receivePublicDriveStatus = _Platform_incomingPort('receivePublicDriveStatus', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveStandings = _Platform_incomingPort('receiveStandings', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (model) {
 	var _v0 = $author$project$League$currentMatch(
@@ -8057,7 +8061,8 @@ var $author$project$Main$subscriptions = function (model) {
 			_List_fromArray(
 				[
 					$author$project$Main$receiveStandings($author$project$Main$ReceivedStandings),
-					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave)
+					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
+					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus)
 				]));
 	}
 };
@@ -8571,6 +8576,23 @@ var $author$project$History$goForward = function (_v0) {
 				}));
 	} else {
 		return $elm$core$Maybe$Nothing;
+	}
+};
+var $author$project$Main$httpErrorToString = function (err) {
+	switch (err.$) {
+		case 'BadUrl':
+			var u = err.a;
+			return 'Bad URL: ' + u;
+		case 'Timeout':
+			return 'Request timed out';
+		case 'NetworkError':
+			return 'Network error';
+		case 'BadStatus':
+			var s = err.a;
+			return 'Bad status: ' + $elm$core$String$fromInt(s);
+		default:
+			var b = err.a;
+			return 'Bad body: ' + b;
 	}
 };
 var $author$project$League$ignorePlayer = F2(
@@ -9174,7 +9196,6 @@ var $elm$file$File$Download$string = F3(
 			$elm$core$Basics$never,
 			A3(_File_download, name, mime, content));
 	});
-var $elm$core$Debug$toString = _Debug_toString;
 var $elm$file$File$toString = _File_toString;
 var $author$project$League$unignorePlayer = F2(
 	function (player, _v0) {
@@ -9201,58 +9222,62 @@ var $author$project$Main$update = F2(
 						{newPlayerName: newPlayerName}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToAddNewPlayer':
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								history: A2(
-									$author$project$History$mapPush,
-									$author$project$League$addPlayer(
-										$author$project$Player$init(model.newPlayerName)),
-									model.history),
-								newPlayerName: ''
-							}),
-						$elm$core$Platform$Cmd$none));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										$author$project$League$addPlayer(
+											$author$project$Player$init(model.newPlayerName)),
+										model.history),
+									newPlayerName: ''
+								}),
+							$elm$core$Platform$Cmd$none)));
 			case 'KeeperWantsToRetirePlayer':
 				var player = msg.a;
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								history: A2(
-									$author$project$History$mapPush,
-									$author$project$League$retirePlayer(player),
-									model.history)
-							}),
-						$elm$core$Platform$Cmd$none));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										$author$project$League$retirePlayer(player),
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none)));
 			case 'KeeperWantsToIgnorePlayer':
 				var player = msg.a;
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								history: A2(
-									$author$project$History$mapPush,
-									$author$project$League$ignorePlayer(player),
-									model.history)
-							}),
-						$elm$core$Platform$Cmd$none));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										$author$project$League$ignorePlayer(player),
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none)));
 			case 'KeeperWantsToUnignorePlayer':
 				var player = msg.a;
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								history: A2(
-									$author$project$History$mapPush,
-									$author$project$League$unignorePlayer(player),
-									model.history)
-							}),
-						$elm$core$Platform$Cmd$none));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										$author$project$League$unignorePlayer(player),
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none)));
 			case 'KeeperWantsToSkipMatch':
 				return $author$project$Main$startNextMatchIfPossible(
 					_Utils_Tuple2(
@@ -9281,17 +9306,18 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								history: A2(
-									$author$project$History$mapPush,
-									$author$project$League$finishMatch(outcome),
-									model.history)
-							}),
-						$elm$core$Platform$Cmd$none));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										$author$project$League$finishMatch(outcome),
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none)));
 			case 'KeeperWantsToSaveStandings':
 				return _Utils_Tuple2(
 					model,
@@ -9385,18 +9411,19 @@ var $author$project$Main$update = F2(
 			case 'LoadedLeague':
 				if (msg.a.$ === 'Ok') {
 					var league = msg.a.a;
-					return $author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									history: A2($author$project$History$init, 50, league)
-								}),
-							A2(
-								$elm$core$Task$perform,
-								$elm$core$Basics$identity,
-								$elm$core$Task$succeed(
-									$author$project$Main$ShowStatus('Imported rankings')))));
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2($author$project$History$init, 50, league)
+									}),
+								A2(
+									$elm$core$Task$perform,
+									$elm$core$Basics$identity,
+									$elm$core$Task$succeed(
+										$author$project$Main$ShowStatus('Imported rankings'))))));
 				} else {
 					var problem = msg.a.a;
 					return _Utils_Tuple2(
@@ -9430,7 +9457,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								status: $elm$core$Maybe$Just(
-									'Failed to fetch players from Drive: ' + $elm$core$Debug$toString(httpErr))
+									'Failed to fetch players from Drive: ' + $author$project$Main$httpErrorToString(httpErr))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -11583,8 +11610,8 @@ var $author$project$Main$button = F3(
 						])),
 					function () {
 					if (maybeMsg.$ === 'Just') {
-						var msg = maybeMsg.a;
-						return $rtfeldman$elm_css$Html$Styled$Events$onClick(msg);
+						var m = maybeMsg.a;
+						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 					} else {
 						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
 					}
@@ -11899,8 +11926,8 @@ var $author$project$Main$goldButton = F2(
 						])),
 					function () {
 					if (maybeMsg.$ === 'Just') {
-						var msg = maybeMsg.a;
-						return $rtfeldman$elm_css$Html$Styled$Events$onClick(msg);
+						var m = maybeMsg.a;
+						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 					} else {
 						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
 					}
@@ -12016,7 +12043,7 @@ var $author$project$Main$currentMatch = function (model) {
 						])),
 					A2(
 					$author$project$Main$blueButton,
-					'Load Standings',
+					'Load from file',
 					$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings))
 				]));
 	} else {
@@ -13523,8 +13550,8 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 					])),
 				function () {
 				if (maybeMsg.$ === 'Just') {
-					var msg = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(msg);
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
 					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
 				}
@@ -14087,7 +14114,7 @@ var $author$project$Main$view = function (model) {
 						_List_Nil,
 						_List_fromArray(
 							[
-								$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
+								$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
 							])),
 						A2(
 						$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -14142,7 +14169,7 @@ var $author$project$Main$view = function (model) {
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveToDrive)),
 												A2(
 												$author$project$Main$blueButton,
-												'Load from Drive',
+												'Load from file',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
 												A2(
 												$author$project$Main$goldButton,
