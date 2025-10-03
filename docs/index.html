@@ -14303,6 +14303,41 @@ catch (e)
   throw e;
 }
 </script>
+<script src="elm.js"></script>
 
+<script>
+  // Your Apps Script Web App URL (Deployment type: Web app; Execute as: Me; Who has access: Anyone)
+  const SAVE_URL = "https://script.google.com/macros/s/AKfycbxc5UWCVkDzwOy2MwkHpxkPb8H6PIoVIPQRSw72wRyIHdTBaUi81TvDglWpVEeP79VKiw/exec";
+  // If you added a secret guard in your Apps Script, append it:
+  // const SAVE_URL = "https://script.google.com/macros/s/.../exec?secret=YOUR_SECRET";
+
+  // IMPORTANT: For Browser.document, do NOT pass { node: ... }
+  const app = Elm.Main.init({ flags: null });
+
+  // Subscribe to the Elm port and POST to Apps Script
+  if (app.ports && app.ports.saveToPublicDrive) {
+    app.ports.saveToPublicDrive.subscribe(async (jsonText) => {
+      try {
+        const res = await fetch(SAVE_URL, {
+          method: "POST",
+          headers: { "Content-Type": "text/plain" }, // simple request = no CORS preflight
+          body: jsonText
+        });
+
+        // Tell Elm it worked (with a timestamp)
+        const ts = new Date().toLocaleString();
+        app.ports.receivePublicDriveStatus?.send(`Saved to Drive|${ts}`);
+
+        // Optional: log for debugging
+        console.log("Save to Drive status:", res.status);
+      } catch (e) {
+        app.ports.receivePublicDriveStatus?.send("Save failed");
+        console.error("Save failed:", e);
+      }
+    });
+  } else {
+    console.error("saveToPublicDrive port not found — check your compiled Elm and module name.");
+  }
+</script>
 </body>
 </html>
