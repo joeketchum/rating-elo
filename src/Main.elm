@@ -95,7 +95,7 @@ init : Flags -> ( Model, Cmd Msg )
 init _ =
     let
         url =
-            "https://www.googleapis.com/drive/v3/files/1dMiPZqpcj7sMr9aKMxNhWKQNc2vzcJJD?alt=media&keyAIzaSyCuUxgmuh4ca0E-KQjE3VB-m5G4hm2c5Bc"
+            "https://www.googleapis.com/drive/v3/files/1dMiPZqpcj7sMr9aKMxNhWKQNc2vzcJJD?alt=media&key=AIzaSyCuUxgmuh4ca0E-KQjE3VB-m5G4hm2c5Bc"
 
         httpRequest =
             Http.get
