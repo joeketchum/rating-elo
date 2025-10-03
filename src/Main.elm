@@ -20,9 +20,11 @@ import String
 import List exposing (head, drop)
 import Keyboard
 import League exposing (League, isPlayerIgnored)
-import Player exposing (Player)
+import Player exposing (Player, PlayerId)
 import Random
 import Task
+import Http
+import Debug exposing (toString)
 
 -- Ports for persisting standings in the browser (localStorage)
 port saveStandings : String -> Cmd msg
@@ -75,6 +77,7 @@ type Msg
     | KeeperWantsToUndo
     | KeeperWantsToRedo
     | LoadedLeague (Result String League)
+    | GotPlayers (Result Http.Error League)
     | ReceivedStandings String
     | ReceivedAutoSave Bool
     | ToggleAutoSave
@@ -86,13 +89,23 @@ type Msg
 
 init : Flags -> ( Model, Cmd Msg )
 init _ =
+        let
+            url =
+                "https://www.googleapis.com/drive/v3/files/1dMiPZqpcj7sMr9aKMxNhWKQNc2vzcJJD?alt=media&key=AIzaSyCuUxgmuh4ca0E-KQjE3VB-m5G4hm2c5Bc"
+
+            httpRequest =
+                Http.get
+                    { url = url
+                    , expect = Http.expectJson GotPlayers League.decoder
+                    }
+        in
         ( { history = History.init 50 League.init
             , newPlayerName = ""
             , autoSave = True
             , status = Nothing
             , lastSynced = Nothing
             }
-    , Cmd.batch [ askForAutoSave "init", askForStandings "init" ]
+    , Cmd.batch [ askForAutoSave "init", httpRequest ]
         )
                 |> startNextMatchIfPossible
 
@@ -214,6 +227,19 @@ update msg model =
             ( { model | status = Just ("Failed to load standings: " ++ problem) }
             , Cmd.none
             )
+
+        GotPlayers result ->
+            case result of
+                Ok league ->
+                    ( { model | history = History.init 50 league }
+                    , Task.succeed (ShowStatus "Standings loaded from Drive") |> Task.perform identity
+                    )
+                        |> startNextMatchIfPossible
+
+                Err httpErr ->
+                    ( { model | status = Just ("Failed to fetch players from Drive: " ++ Debug.toString httpErr) }
+                    , Cmd.none
+                    )
 
         ReceivedStandings jsonString ->
             case Decode.decodeString League.decoder jsonString of

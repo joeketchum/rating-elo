@@ -1,5 +1,5 @@
 module League exposing
-    ( League, init, decoder, encode
+    ( League, init, decoder, playersDecoder, encode
     , addPlayer, players, getPlayer, retirePlayer
     , Match(..), currentMatch, nextMatch, startMatch, Outcome(..), finishMatch, kFactor, clearMatch
     , ignorePlayer, unignorePlayer, isPlayerIgnored
