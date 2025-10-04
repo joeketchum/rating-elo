@@ -14456,7 +14456,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
       console.log('POSTing to:', SAVE_URL);
       fetch(SAVE_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+        headers: { 'Content-Type': 'text/plain' },
         body: json
       })
       .then(function(res) {
