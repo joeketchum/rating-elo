@@ -12005,6 +12005,9 @@ var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
+var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
+	return {$: 'KeeperWantsToUnignorePlayer', a: a};
+};
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
 var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
@@ -12166,71 +12169,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attribu
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$fontStyle = $rtfeldman$elm_css$Css$prop1('font-style');
-var $author$project$Main$goldButton = F2(
-	function (label, maybeMsg) {
-		return A2(
-			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$paddingTop(
-							$rtfeldman$elm_css$Css$px(6)),
-							$rtfeldman$elm_css$Css$paddingBottom(
-							$rtfeldman$elm_css$Css$px(10)),
-							$rtfeldman$elm_css$Css$paddingLeft(
-							$rtfeldman$elm_css$Css$px(15)),
-							$rtfeldman$elm_css$Css$paddingRight(
-							$rtfeldman$elm_css$Css$px(15)),
-							A2(
-							$rtfeldman$elm_css$Css$margin2,
-							$rtfeldman$elm_css$Css$zero,
-							$rtfeldman$elm_css$Css$px(10)),
-							$rtfeldman$elm_css$Css$minWidth(
-							$rtfeldman$elm_css$Css$px(100)),
-							function () {
-							if (maybeMsg.$ === 'Just') {
-								return $rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex('EFE700'));
-							} else {
-								return $rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex('DDD'));
-							}
-						}(),
-							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-							$rtfeldman$elm_css$Css$borderRadius(
-							$rtfeldman$elm_css$Css$px(4)),
-							A6(
-							$rtfeldman$elm_css$Css$boxShadow6,
-							$rtfeldman$elm_css$Css$inset,
-							$rtfeldman$elm_css$Css$zero,
-							$rtfeldman$elm_css$Css$px(-4),
-							$rtfeldman$elm_css$Css$zero,
-							$rtfeldman$elm_css$Css$zero,
-							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
-							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$px(14)),
-							$rtfeldman$elm_css$Css$fontWeight(
-							$rtfeldman$elm_css$Css$int(600)),
-							$rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex('333'))
-						])),
-					function () {
-					if (maybeMsg.$ === 'Just') {
-						var m = maybeMsg.a;
-						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-					} else {
-						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-					}
-				}()
-				]),
-			_List_fromArray(
-				[
-					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
-				]));
-	});
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$h1(
@@ -12238,6 +12176,14 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attribut
 };
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $author$project$League$isPlayerIgnored = F2(
+	function (player, _v0) {
+		var league = _v0.a;
+		return A2(
+			$elm$core$List$member,
+			$author$project$Player$id(player),
+			league.ignored);
+	});
 var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
 var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 	return A3(
@@ -12278,6 +12224,171 @@ var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-aro
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
+var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
+	function (a, b) {
+		return {$: 'ExtendSelector', a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
+	return {$: 'PseudoClassSelector', a: a};
+};
+var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
+	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
+		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
+};
+var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
+var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
+var $rtfeldman$elm_css$Css$outline3 = $rtfeldman$elm_css$Css$prop3('outline');
+var $rtfeldman$elm_css$Css$outlineOffset = $rtfeldman$elm_css$Css$prop1('outline-offset');
+var $author$project$Main$zzzIgnoreButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(12)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(44)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('6B7280')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(13)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$hover(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('4B5563'))
+							])),
+						$rtfeldman$elm_css$Css$active(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('374151'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								A3(
+								$rtfeldman$elm_css$Css$outline3,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('93C5FD')),
+								$rtfeldman$elm_css$Css$outlineOffset(
+								$rtfeldman$elm_css$Css$px(2))
+							]))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
+var $rtfeldman$elm_css$Css$lineThrough = {textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'line-through'};
+var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
+var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(12)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(44)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('374151')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(13)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
+						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$hover(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('1F2937'))
+							])),
+						$rtfeldman$elm_css$Css$active(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('111827'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								A3(
+								$rtfeldman$elm_css$Css$outline3,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('93C5FD')),
+								$rtfeldman$elm_css$Css$outlineOffset(
+								$rtfeldman$elm_css$Css$px(2))
+							]))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
 var $author$project$Main$currentMatch = function (model) {
 	var _v0 = $author$project$League$currentMatch(
 		$author$project$History$current(model.history));
@@ -12711,11 +12822,17 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
 										]))
 								]),
-							_List_fromArray(
+							A2(
+								$author$project$League$isPlayerIgnored,
+								playerA,
+								$author$project$History$current(model.history)) ? _List_fromArray(
 								[
-									A2(
-									$author$project$Main$goldButton,
-									'Ignore',
+									$author$project$Main$zzzUnignoreButton(
+									$elm$core$Maybe$Just(
+										$author$project$Main$KeeperWantsToUnignorePlayer(playerA)))
+								]) : _List_fromArray(
+								[
+									$author$project$Main$zzzIgnoreButton(
 									$elm$core$Maybe$Just(
 										$author$project$Main$KeeperWantsToIgnorePlayer(playerA)))
 								])),
@@ -12747,11 +12864,17 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
 										]))
 								]),
-							_List_fromArray(
+							A2(
+								$author$project$League$isPlayerIgnored,
+								playerB,
+								$author$project$History$current(model.history)) ? _List_fromArray(
 								[
-									A2(
-									$author$project$Main$goldButton,
-									'Ignore',
+									$author$project$Main$zzzUnignoreButton(
+									$elm$core$Maybe$Just(
+										$author$project$Main$KeeperWantsToUnignorePlayer(playerB)))
+								]) : _List_fromArray(
+								[
+									$author$project$Main$zzzIgnoreButton(
 									$elm$core$Maybe$Just(
 										$author$project$Main$KeeperWantsToIgnorePlayer(playerB)))
 								]))
@@ -13158,9 +13281,6 @@ var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPla
 var $author$project$Main$KeeperWantsToRetirePlayer = function (a) {
 	return {$: 'KeeperWantsToRetirePlayer', a: a};
 };
-var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
-	return {$: 'KeeperWantsToUnignorePlayer', a: a};
-};
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
@@ -13277,25 +13397,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$inputText = F2(
 				attributes),
 			_List_Nil);
 	});
-var $author$project$League$isPlayerIgnored = F2(
-	function (player, _v0) {
-		var league = _v0.a;
-		return A2(
-			$elm$core$List$member,
-			$author$project$Player$id(player),
-			league.ignored);
-	});
-var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
-	function (a, b) {
-		return {$: 'ExtendSelector', a: a, b: b};
-	});
-var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
-	return {$: 'PseudoClassSelector', a: a};
-};
-var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
-	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
-		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
-};
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
 var $rtfeldman$elm_css$Css$Subtraction = {$: 'Subtraction'};
@@ -13390,7 +13491,8 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$fontWeight(
 						$rtfeldman$elm_css$Css$int(600)),
 						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF'))
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$author$project$Main$modernSansSerif
 					])),
 				function () {
 				if (maybeMsg.$ === 'Just') {
@@ -13462,158 +13564,6 @@ var $author$project$Main$upArrow = function (color) {
 					]))
 			]),
 		_List_Nil);
-};
-var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
-var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
-var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
-var $rtfeldman$elm_css$Css$outline3 = $rtfeldman$elm_css$Css$prop3('outline');
-var $rtfeldman$elm_css$Css$outlineOffset = $rtfeldman$elm_css$Css$prop1('outline-offset');
-var $author$project$Main$zzzIgnoreButton = function (maybeMsg) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(12)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(12)),
-						A2(
-						$rtfeldman$elm_css$Css$margin2,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(44)),
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('6B7280')),
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(9999)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(13)),
-						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF')),
-						$rtfeldman$elm_css$Css$hover(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('4B5563'))
-							])),
-						$rtfeldman$elm_css$Css$active(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('374151'))
-							])),
-						$rtfeldman$elm_css$Css$focus(
-						_List_fromArray(
-							[
-								A3(
-								$rtfeldman$elm_css$Css$outline3,
-								$rtfeldman$elm_css$Css$px(2),
-								$rtfeldman$elm_css$Css$solid,
-								$rtfeldman$elm_css$Css$hex('93C5FD')),
-								$rtfeldman$elm_css$Css$outlineOffset(
-								$rtfeldman$elm_css$Css$px(2))
-							]))
-					])),
-				function () {
-				if (maybeMsg.$ === 'Just') {
-					var m = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-				} else {
-					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-				}
-			}()
-			]),
-		_List_fromArray(
-			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
-			]));
-};
-var $rtfeldman$elm_css$Css$lineThrough = {textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'line-through'};
-var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
-var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(12)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(12)),
-						A2(
-						$rtfeldman$elm_css$Css$margin2,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(44)),
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('374151')),
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(9999)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(13)),
-						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF')),
-						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
-						$rtfeldman$elm_css$Css$hover(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('1F2937'))
-							])),
-						$rtfeldman$elm_css$Css$active(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('111827'))
-							])),
-						$rtfeldman$elm_css$Css$focus(
-						_List_fromArray(
-							[
-								A3(
-								$rtfeldman$elm_css$Css$outline3,
-								$rtfeldman$elm_css$Css$px(2),
-								$rtfeldman$elm_css$Css$solid,
-								$rtfeldman$elm_css$Css$hex('93C5FD')),
-								$rtfeldman$elm_css$Css$outlineOffset(
-								$rtfeldman$elm_css$Css$px(2))
-							]))
-					])),
-				function () {
-				if (maybeMsg.$ === 'Just') {
-					var m = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-				} else {
-					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-				}
-			}()
-			]),
-		_List_fromArray(
-			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
-			]));
 };
 var $author$project$Main$rankings = function (model) {
 	var textual = $rtfeldman$elm_css$Css$batch(

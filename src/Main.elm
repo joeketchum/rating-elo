@@ -722,11 +722,19 @@ currentMatch model =
                         ]
                     ]
                     [ Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
-                        [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerA)) ]
+                        (if isPlayerIgnored playerA (History.current model.history) then
+                            [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerA)) ]
+                        else
+                            [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerA)) ]
+                        )
                     , Html.div [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
                         [ Html.text "" ]
                     , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
-                        [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer playerB)) ]
+                        (if isPlayerIgnored playerB (History.current model.history) then
+                            [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerB)) ]
+                        else
+                            [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerB)) ]
+                        )
                     ]
                 , Html.div
                     [ css
@@ -984,6 +992,7 @@ goldButton label maybeMsg =
             , Css.fontSize (Css.px 14)
             , Css.fontWeight (Css.int 600)
             , Css.color (Css.hex "333")
+            , modernSansSerif
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1012,6 +1021,7 @@ smallRedXButton maybeMsg =
             , Css.fontSize (Css.px 14)
             , Css.fontWeight (Css.int 600)
             , Css.color (Css.hex "FFF")
+            , modernSansSerif
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1037,6 +1047,7 @@ zzzIgnoreButton maybeMsg =
             , Css.fontSize (Css.px 13)
             , Css.fontWeight (Css.int 600)
             , Css.color (Css.hex "FFF")
+            , modernSansSerif
             , Css.hover
                 [ Css.backgroundColor (Css.hex "4B5563") ]
             , Css.active
@@ -1070,6 +1081,7 @@ zzzUnignoreButton maybeMsg =
             , Css.fontWeight (Css.int 600)
             , Css.color (Css.hex "FFF")
             , Css.textDecoration Css.lineThrough
+            , modernSansSerif
             , Css.hover
                 [ Css.backgroundColor (Css.hex "1F2937") ]
             , Css.active

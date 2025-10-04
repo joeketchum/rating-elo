@@ -7666,7 +7666,7 @@ var $author$project$Main$init = function (_v0) {
 				newPlayerName: '',
 				shouldStartNextMatchAfterLoad: false,
 				status: $elm$core$Maybe$Nothing,
-				votesUntilDriveSync: 5
+				votesUntilDriveSync: 20
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -8837,7 +8837,10 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 							$author$project$History$current(model.history))))
 				]))) : _Utils_Tuple2(model, cmd);
 };
+var $author$project$Main$AutoSaveTimeout = {$: 'AutoSaveTimeout'};
 var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
+var $author$project$Main$sendVoteCount = _Platform_outgoingPort('sendVoteCount', $elm$json$Json$Encode$int);
+var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 	var model = _v0.a;
 	var cmd = _v0.b;
@@ -8848,7 +8851,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 			{
 				autoSaveInProgress: true,
 				status: $elm$core$Maybe$Just('Saving to Google Sheets...'),
-				votesUntilDriveSync: 5
+				votesUntilDriveSync: 20
 			}),
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
@@ -8863,12 +8866,24 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 					$elm$core$Task$perform,
 					$elm$core$Basics$identity,
 					$elm$core$Task$succeed(
-						$author$project$Main$ShowStatus('Auto-saving to Drive...')))
+						$author$project$Main$ShowStatus('Auto-saving to Drive...'))),
+					A2(
+					$elm$core$Task$perform,
+					function (_v1) {
+						return $author$project$Main$AutoSaveTimeout;
+					},
+					$elm$core$Process$sleep(10000)),
+					$author$project$Main$sendVoteCount(20)
 				]))) : _Utils_Tuple2(
 		_Utils_update(
 			model,
 			{votesUntilDriveSync: newCount}),
-		cmd);
+		$elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					cmd,
+					$author$project$Main$sendVoteCount(newCount)
+				])));
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
@@ -9305,7 +9320,6 @@ var $author$project$League$retirePlayer = F2(
 	});
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
-var $elm$core$Process$sleep = _Process_sleep;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -9582,11 +9596,31 @@ var $author$project$Main$update = F2(
 					model,
 					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'AutoSaveCompleted':
-				return _Utils_Tuple2(
+				return model.autoSaveInProgress ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{shouldStartNextMatchAfterLoad: true}),
+						{
+							autoSaveInProgress: false,
+							shouldStartNextMatchAfterLoad: true,
+							status: $elm$core$Maybe$Just('Auto-save completed! Loading next match...')
+						}),
+					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							shouldStartNextMatchAfterLoad: false,
+							status: $elm$core$Maybe$Just('Manual save completed! Reloading data...')
+						}),
 					$author$project$Main$loadFromPublicDrive(''));
+			case 'AutoSaveTimeout':
+				return model.autoSaveInProgress ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							autoSaveInProgress: false,
+							status: $elm$core$Maybe$Just('Auto-save timed out. Voting re-enabled.')
+						}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
@@ -11971,6 +12005,9 @@ var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
+var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
+	return {$: 'KeeperWantsToUnignorePlayer', a: a};
+};
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
 var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
@@ -11993,10 +12030,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h2 = function (attribut
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
 var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
 	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
 		value: A2($elm$core$String$join, ', ', list)
@@ -12006,9 +12039,13 @@ var $rtfeldman$elm_css$Css$fontFamilies = A2(
 	$elm$core$Basics$composeL,
 	$rtfeldman$elm_css$Css$prop1('font-family'),
 	$rtfeldman$elm_css$Css$stringsToValue);
-var $author$project$Main$openSans = $rtfeldman$elm_css$Css$fontFamilies(
+var $author$project$Main$modernSansSerif = $rtfeldman$elm_css$Css$fontFamilies(
 	_List_fromArray(
-		['\'Open Sans\'', 'sans-serif']));
+		['system-ui', '-apple-system', 'BlinkMacSystemFont', '\'Segoe UI\'', '\'Roboto\'', '\'Inter\'', '\'Helvetica Neue\'', 'Arial', 'sans-serif']));
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
@@ -12099,7 +12136,7 @@ var $author$project$Main$activePlayer = function (player) {
 						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 						$rtfeldman$elm_css$Css$fontSize(
 						$rtfeldman$elm_css$Css$px(24)),
-						$author$project$Main$openSans
+						$author$project$Main$modernSansSerif
 					]))
 			]),
 		_List_fromArray(
@@ -12131,71 +12168,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attribu
 	return $rtfeldman$elm_css$Html$Styled$div(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $author$project$Main$goldButton = F2(
-	function (label, maybeMsg) {
-		return A2(
-			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$paddingTop(
-							$rtfeldman$elm_css$Css$px(6)),
-							$rtfeldman$elm_css$Css$paddingBottom(
-							$rtfeldman$elm_css$Css$px(10)),
-							$rtfeldman$elm_css$Css$paddingLeft(
-							$rtfeldman$elm_css$Css$px(15)),
-							$rtfeldman$elm_css$Css$paddingRight(
-							$rtfeldman$elm_css$Css$px(15)),
-							A2(
-							$rtfeldman$elm_css$Css$margin2,
-							$rtfeldman$elm_css$Css$zero,
-							$rtfeldman$elm_css$Css$px(10)),
-							$rtfeldman$elm_css$Css$minWidth(
-							$rtfeldman$elm_css$Css$px(100)),
-							function () {
-							if (maybeMsg.$ === 'Just') {
-								return $rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex('EFE700'));
-							} else {
-								return $rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex('DDD'));
-							}
-						}(),
-							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-							$rtfeldman$elm_css$Css$borderRadius(
-							$rtfeldman$elm_css$Css$px(4)),
-							A6(
-							$rtfeldman$elm_css$Css$boxShadow6,
-							$rtfeldman$elm_css$Css$inset,
-							$rtfeldman$elm_css$Css$zero,
-							$rtfeldman$elm_css$Css$px(-4),
-							$rtfeldman$elm_css$Css$zero,
-							$rtfeldman$elm_css$Css$zero,
-							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
-							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$px(14)),
-							$rtfeldman$elm_css$Css$fontWeight(
-							$rtfeldman$elm_css$Css$int(600)),
-							$rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex('333'))
-						])),
-					function () {
-					if (maybeMsg.$ === 'Just') {
-						var m = maybeMsg.a;
-						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-					} else {
-						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-					}
-				}()
-				]),
-			_List_fromArray(
-				[
-					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
-				]));
-	});
+var $rtfeldman$elm_css$Css$fontStyle = $rtfeldman$elm_css$Css$prop1('font-style');
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$h1(
@@ -12203,6 +12176,15 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attribut
 };
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $author$project$League$isPlayerIgnored = F2(
+	function (player, _v0) {
+		var league = _v0.a;
+		return A2(
+			$elm$core$List$member,
+			$author$project$Player$id(player),
+			league.ignored);
+	});
+var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
 var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -12214,7 +12196,6 @@ var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$p = function (attributes) {
@@ -12243,33 +12224,171 @@ var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-aro
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
-var $rtfeldman$elm_css$Css$valuesOrNone = function (list) {
-	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
-		value: A3(
-			$rtfeldman$elm_css$Css$String$mapJoin,
-			function ($) {
-				return $.value;
-			},
-			' ',
-			list)
-	};
+var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
+	function (a, b) {
+		return {$: 'ExtendSelector', a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
+	return {$: 'PseudoClassSelector', a: a};
 };
-var $rtfeldman$elm_css$Css$transforms = A2(
-	$elm$core$Basics$composeL,
-	$rtfeldman$elm_css$Css$prop1('transform'),
-	$rtfeldman$elm_css$Css$valuesOrNone);
-var $rtfeldman$elm_css$Css$translateX = function (_v0) {
-	var value = _v0.value;
-	return {
-		transform: $rtfeldman$elm_css$Css$Structure$Compatible,
-		value: A2(
-			$rtfeldman$elm_css$Css$cssFunction,
-			'translateX',
-			_List_fromArray(
-				[value]))
-	};
+var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
+	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
+		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
 };
-var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
+var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
+var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
+var $rtfeldman$elm_css$Css$outline3 = $rtfeldman$elm_css$Css$prop3('outline');
+var $rtfeldman$elm_css$Css$outlineOffset = $rtfeldman$elm_css$Css$prop1('outline-offset');
+var $author$project$Main$zzzIgnoreButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(12)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(44)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('6B7280')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(13)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$hover(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('4B5563'))
+							])),
+						$rtfeldman$elm_css$Css$active(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('374151'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								A3(
+								$rtfeldman$elm_css$Css$outline3,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('93C5FD')),
+								$rtfeldman$elm_css$Css$outlineOffset(
+								$rtfeldman$elm_css$Css$px(2))
+							]))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
+var $rtfeldman$elm_css$Css$lineThrough = {textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'line-through'};
+var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
+var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(12)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(44)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('374151')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(13)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
+						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$hover(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('1F2937'))
+							])),
+						$rtfeldman$elm_css$Css$active(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('111827'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								A3(
+								$rtfeldman$elm_css$Css$outline3,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('93C5FD')),
+								$rtfeldman$elm_css$Css$outlineOffset(
+								$rtfeldman$elm_css$Css$px(2))
+							]))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
 var $author$project$Main$currentMatch = function (model) {
 	var _v0 = $author$project$League$currentMatch(
 		$author$project$History$current(model.history));
@@ -12281,7 +12400,7 @@ var $author$project$Main$currentMatch = function (model) {
 					$rtfeldman$elm_css$Html$Styled$Attributes$css(
 					_List_fromArray(
 						[
-							$author$project$Main$openSans,
+							$author$project$Main$modernSansSerif,
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 							$rtfeldman$elm_css$Css$width(
 							$rtfeldman$elm_css$Css$pct(50)),
@@ -12310,7 +12429,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$tesk9$accessible_html_with_css$Accessibility$Styled$text('The Rating Game ❤️')
+							$tesk9$accessible_html_with_css$Accessibility$Styled$text('Hockey Rater 🏒')
 						])),
 					A2(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$p,
@@ -12388,12 +12507,13 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$color(
 											$rtfeldman$elm_css$Css$hex('555')),
 											$rtfeldman$elm_css$Css$letterSpacing(
-											$rtfeldman$elm_css$Css$px(1))
+											$rtfeldman$elm_css$Css$px(1)),
+											$author$project$Main$modernSansSerif
 										]))
 								]),
 							_List_fromArray(
 								[
-									$tesk9$accessible_html_with_css$Accessibility$Styled$text('⚔️ BATTLE PREDICTION ⚔️')
+									$tesk9$accessible_html_with_css$Accessibility$Styled$text('🏒 HOCKEY RATER 🏒')
 								])),
 							A2(
 							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -12437,11 +12557,15 @@ var $author$project$Main$currentMatch = function (model) {
 											_List_fromArray(
 												[
 													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
+													$rtfeldman$elm_css$Css$pct(
+														A2(
+															$elm$core$Basics$max,
+															($elm$core$Basics$round(chanceAWins * 100) >= 100) ? 20 : 16,
+															100 * chanceAWins))),
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
-													$rtfeldman$elm_css$Css$hex('FF6B6B')),
+													$rtfeldman$elm_css$Css$hex('EF4444')),
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$left(
 													$rtfeldman$elm_css$Css$px(0)),
@@ -12464,11 +12588,15 @@ var $author$project$Main$currentMatch = function (model) {
 											_List_fromArray(
 												[
 													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(100 * (1 - chanceAWins))),
+													$rtfeldman$elm_css$Css$pct(
+														A2(
+															$elm$core$Basics$max,
+															($elm$core$Basics$round((1 - chanceAWins) * 100) >= 100) ? 20 : 16,
+															100 * (1 - chanceAWins)))),
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
-													$rtfeldman$elm_css$Css$hex('4ECDC4')),
+													$rtfeldman$elm_css$Css$hex('3B82F6')),
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$right(
 													$rtfeldman$elm_css$Css$px(0)),
@@ -12492,41 +12620,14 @@ var $author$project$Main$currentMatch = function (model) {
 												[
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$top(
-													$rtfeldman$elm_css$Css$px(-8)),
+													$rtfeldman$elm_css$Css$px(4)),
 													$rtfeldman$elm_css$Css$left(
-													$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
+													$rtfeldman$elm_css$Css$px(8)),
 													$rtfeldman$elm_css$Css$fontSize(
-													$rtfeldman$elm_css$Css$px(24)),
-													$rtfeldman$elm_css$Css$transforms(
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Css$translateX(
-															$rtfeldman$elm_css$Css$pct(-50))
-														])),
-													$rtfeldman$elm_css$Css$zIndex(
-													$rtfeldman$elm_css$Css$int(10))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text('⚡')
-										])),
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-													$rtfeldman$elm_css$Css$top(
-													$rtfeldman$elm_css$Css$px(6)),
-													$rtfeldman$elm_css$Css$left(
-													$rtfeldman$elm_css$Css$px(12)),
-													$rtfeldman$elm_css$Css$fontSize(
-													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$px(16)),
 													$rtfeldman$elm_css$Css$fontWeight(
 													$rtfeldman$elm_css$Css$int(700)),
+													$rtfeldman$elm_css$Css$fontStyle($rtfeldman$elm_css$Css$italic),
 													$rtfeldman$elm_css$Css$color(
 													$rtfeldman$elm_css$Css$hex('FFF')),
 													A4(
@@ -12534,98 +12635,49 @@ var $author$project$Main$currentMatch = function (model) {
 													$rtfeldman$elm_css$Css$px(1),
 													$rtfeldman$elm_css$Css$px(1),
 													$rtfeldman$elm_css$Css$px(2),
-													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text('💪')
-										])),
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-													$rtfeldman$elm_css$Css$top(
-													$rtfeldman$elm_css$Css$px(6)),
-													$rtfeldman$elm_css$Css$right(
-													$rtfeldman$elm_css$Css$px(12)),
-													$rtfeldman$elm_css$Css$fontSize(
-													$rtfeldman$elm_css$Css$px(12)),
-													$rtfeldman$elm_css$Css$fontWeight(
-													$rtfeldman$elm_css$Css$int(700)),
-													$rtfeldman$elm_css$Css$color(
-													$rtfeldman$elm_css$Css$hex('FFF')),
-													A4(
-													$rtfeldman$elm_css$Css$textShadow4,
-													$rtfeldman$elm_css$Css$px(1),
-													$rtfeldman$elm_css$Css$px(1),
-													$rtfeldman$elm_css$Css$px(2),
-													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text('💪')
-										]))
-								])),
-							A2(
-							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$css(
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-											$rtfeldman$elm_css$Css$fontSize(
-											$rtfeldman$elm_css$Css$px(12)),
-											$rtfeldman$elm_css$Css$fontWeight(
-											$rtfeldman$elm_css$Css$int(600)),
-											$rtfeldman$elm_css$Css$marginTop(
-											$rtfeldman$elm_css$Css$px(8)),
-											$rtfeldman$elm_css$Css$color(
-											$rtfeldman$elm_css$Css$hex('777'))
-										]))
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$color(
-													$rtfeldman$elm_css$Css$hex('FF6B6B'))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-											'🔥 ' + ($elm$core$String$fromInt(
-												$elm$core$Basics$round(chanceAWins * 100)) + '% chance'))
-										])),
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$color(
-													$rtfeldman$elm_css$Css$hex('4ECDC4'))
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.7)),
+													$author$project$Main$modernSansSerif
 												]))
 										]),
 									_List_fromArray(
 										[
 											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
 											$elm$core$String$fromInt(
-												$elm$core$Basics$round((1 - chanceAWins) * 100)) + '% chance 🔥')
+												$elm$core$Basics$round(chanceAWins * 100)) + '%')
+										])),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(4)),
+													$rtfeldman$elm_css$Css$right(
+													$rtfeldman$elm_css$Css$px(8)),
+													$rtfeldman$elm_css$Css$fontSize(
+													$rtfeldman$elm_css$Css$px(16)),
+													$rtfeldman$elm_css$Css$fontWeight(
+													$rtfeldman$elm_css$Css$int(700)),
+													$rtfeldman$elm_css$Css$fontStyle($rtfeldman$elm_css$Css$italic),
+													$rtfeldman$elm_css$Css$color(
+													$rtfeldman$elm_css$Css$hex('FFF')),
+													A4(
+													$rtfeldman$elm_css$Css$textShadow4,
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$px(2),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.7)),
+													$author$project$Main$modernSansSerif
+												]))
+										]),
+									_List_fromArray(
+										[
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+											$elm$core$String$fromInt(
+												$elm$core$Basics$round((1 - chanceAWins) * 100)) + '%')
 										]))
 								]))
 						])),
@@ -12652,7 +12704,7 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Html$Styled$Attributes$css(
 									_List_fromArray(
 										[
-											$author$project$Main$openSans,
+											$author$project$Main$modernSansSerif,
 											$rtfeldman$elm_css$Css$width(
 											$rtfeldman$elm_css$Css$pct(20)),
 											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
@@ -12770,11 +12822,17 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
 										]))
 								]),
-							_List_fromArray(
+							A2(
+								$author$project$League$isPlayerIgnored,
+								playerA,
+								$author$project$History$current(model.history)) ? _List_fromArray(
 								[
-									A2(
-									$author$project$Main$goldButton,
-									'Ignore',
+									$author$project$Main$zzzUnignoreButton(
+									$elm$core$Maybe$Just(
+										$author$project$Main$KeeperWantsToUnignorePlayer(playerA)))
+								]) : _List_fromArray(
+								[
+									$author$project$Main$zzzIgnoreButton(
 									$elm$core$Maybe$Just(
 										$author$project$Main$KeeperWantsToIgnorePlayer(playerA)))
 								])),
@@ -12806,11 +12864,17 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
 										]))
 								]),
-							_List_fromArray(
+							A2(
+								$author$project$League$isPlayerIgnored,
+								playerB,
+								$author$project$History$current(model.history)) ? _List_fromArray(
 								[
-									A2(
-									$author$project$Main$goldButton,
-									'Ignore',
+									$author$project$Main$zzzUnignoreButton(
+									$elm$core$Maybe$Just(
+										$author$project$Main$KeeperWantsToUnignorePlayer(playerB)))
+								]) : _List_fromArray(
+								[
+									$author$project$Main$zzzIgnoreButton(
 									$elm$core$Maybe$Just(
 										$author$project$Main$KeeperWantsToIgnorePlayer(playerB)))
 								]))
@@ -12870,6 +12934,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attri
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
 var $rtfeldman$elm_css$Css$Global$aside = $rtfeldman$elm_css$Css$Global$typeSelector('aside');
@@ -13216,9 +13281,6 @@ var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPla
 var $author$project$Main$KeeperWantsToRetirePlayer = function (a) {
 	return {$: 'KeeperWantsToRetirePlayer', a: a};
 };
-var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
-	return {$: 'KeeperWantsToUnignorePlayer', a: a};
-};
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
@@ -13335,25 +13397,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$inputText = F2(
 				attributes),
 			_List_Nil);
 	});
-var $author$project$League$isPlayerIgnored = F2(
-	function (player, _v0) {
-		var league = _v0.a;
-		return A2(
-			$elm$core$List$member,
-			$author$project$Player$id(player),
-			league.ignored);
-	});
-var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
-	function (a, b) {
-		return {$: 'ExtendSelector', a: a, b: b};
-	});
-var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
-	return {$: 'PseudoClassSelector', a: a};
-};
-var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
-	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
-		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
-};
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
 var $rtfeldman$elm_css$Css$Subtraction = {$: 'Subtraction'};
@@ -13448,7 +13491,8 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$fontWeight(
 						$rtfeldman$elm_css$Css$int(600)),
 						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF'))
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$author$project$Main$modernSansSerif
 					])),
 				function () {
 				if (maybeMsg.$ === 'Just') {
@@ -13521,158 +13565,6 @@ var $author$project$Main$upArrow = function (color) {
 			]),
 		_List_Nil);
 };
-var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
-var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
-var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
-var $rtfeldman$elm_css$Css$outline3 = $rtfeldman$elm_css$Css$prop3('outline');
-var $rtfeldman$elm_css$Css$outlineOffset = $rtfeldman$elm_css$Css$prop1('outline-offset');
-var $author$project$Main$zzzIgnoreButton = function (maybeMsg) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(12)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(12)),
-						A2(
-						$rtfeldman$elm_css$Css$margin2,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(44)),
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('6B7280')),
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(9999)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(13)),
-						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF')),
-						$rtfeldman$elm_css$Css$hover(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('4B5563'))
-							])),
-						$rtfeldman$elm_css$Css$active(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('374151'))
-							])),
-						$rtfeldman$elm_css$Css$focus(
-						_List_fromArray(
-							[
-								A3(
-								$rtfeldman$elm_css$Css$outline3,
-								$rtfeldman$elm_css$Css$px(2),
-								$rtfeldman$elm_css$Css$solid,
-								$rtfeldman$elm_css$Css$hex('93C5FD')),
-								$rtfeldman$elm_css$Css$outlineOffset(
-								$rtfeldman$elm_css$Css$px(2))
-							]))
-					])),
-				function () {
-				if (maybeMsg.$ === 'Just') {
-					var m = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-				} else {
-					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-				}
-			}()
-			]),
-		_List_fromArray(
-			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
-			]));
-};
-var $rtfeldman$elm_css$Css$lineThrough = {textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'line-through'};
-var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
-var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(12)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(12)),
-						A2(
-						$rtfeldman$elm_css$Css$margin2,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(44)),
-						$rtfeldman$elm_css$Css$backgroundColor(
-						$rtfeldman$elm_css$Css$hex('374151')),
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(9999)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(13)),
-						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF')),
-						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
-						$rtfeldman$elm_css$Css$hover(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('1F2937'))
-							])),
-						$rtfeldman$elm_css$Css$active(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('111827'))
-							])),
-						$rtfeldman$elm_css$Css$focus(
-						_List_fromArray(
-							[
-								A3(
-								$rtfeldman$elm_css$Css$outline3,
-								$rtfeldman$elm_css$Css$px(2),
-								$rtfeldman$elm_css$Css$solid,
-								$rtfeldman$elm_css$Css$hex('93C5FD')),
-								$rtfeldman$elm_css$Css$outlineOffset(
-								$rtfeldman$elm_css$Css$px(2))
-							]))
-					])),
-				function () {
-				if (maybeMsg.$ === 'Just') {
-					var m = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-				} else {
-					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-				}
-			}()
-			]),
-		_List_fromArray(
-			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
-			]));
-};
 var $author$project$Main$rankings = function (model) {
 	var textual = $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
@@ -13684,7 +13576,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$lineHeight(
 				$rtfeldman$elm_css$Css$px(24)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-				$author$project$Main$openSans,
+				$author$project$Main$modernSansSerif,
 				$rtfeldman$elm_css$Css$paddingLeft(
 				$rtfeldman$elm_css$Css$px(15))
 			]));
@@ -13725,7 +13617,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$fontSize(
 				$rtfeldman$elm_css$Css$px(21)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-				$author$project$Main$openSans
+				$author$project$Main$modernSansSerif
 			]));
 	var left = $rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left);
 	var header = $rtfeldman$elm_css$Css$batch(
@@ -13736,7 +13628,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$paddingLeft(
 				$rtfeldman$elm_css$Css$px(15)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-				$author$project$Main$openSans,
+				$author$project$Main$modernSansSerif,
 				$rtfeldman$elm_css$Css$fontWeight(
 				$rtfeldman$elm_css$Css$int(600)),
 				A3(
@@ -14075,7 +13967,7 @@ var $author$project$Main$rankings = function (model) {
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
 																[
-																	$author$project$Main$openSans,
+																	$author$project$Main$modernSansSerif,
 																	$rtfeldman$elm_css$Css$color(
 																	$rtfeldman$elm_css$Css$hex('6DD400')),
 																	$rtfeldman$elm_css$Css$fontSize(
@@ -14098,7 +13990,7 @@ var $author$project$Main$rankings = function (model) {
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
 																[
-																	$author$project$Main$openSans,
+																	$author$project$Main$modernSansSerif,
 																	$rtfeldman$elm_css$Css$color(
 																	$rtfeldman$elm_css$Css$hex('E02020')),
 																	$rtfeldman$elm_css$Css$fontSize(
@@ -14763,14 +14655,6 @@ var $author$project$Main$view = function (model) {
 					[
 						$BrianHicks$elm_css_reset$Css$Reset$meyerV2,
 						$BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408,
-						A3(
-						$rtfeldman$elm_css$Html$Styled$node,
-						'style',
-						_List_Nil,
-						_List_fromArray(
-							[
-								$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
-							])),
 						A2(
 						$tesk9$accessible_html_with_css$Accessibility$Styled$div,
 						_List_fromArray(
@@ -14860,7 +14744,7 @@ var $author$project$Main$view = function (model) {
 												$rtfeldman$elm_css$Css$px(12)),
 												$rtfeldman$elm_css$Css$borderRadius(
 												$rtfeldman$elm_css$Css$px(6)),
-												$author$project$Main$openSans
+												$author$project$Main$modernSansSerif
 											]))
 									]),
 								_List_fromArray(
@@ -14947,7 +14831,7 @@ var $author$project$Main$view = function (model) {
 						return _List_Nil;
 					}
 				}())),
-		title: 'The Rating Game ❤️'
+		title: 'Hockey Rater 🏒'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
