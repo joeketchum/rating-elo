@@ -14967,4 +14967,111 @@ var $author$project$Main$view = function (model) {
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+        $elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+
+var app = Elm.Main.init({
+  node: document.getElementById('elm')
+});
+
+try
+{
+// Send initial config
+if (app.ports.askForAutoSave && app.ports.askForAutoSave.send) {
+  app.ports.askForAutoSave.send('');
+}
+
+// Set up all the port subscriptions
+var LS_KEY = "EloTrackerData";
+var LS_PUBLIC = "EloTrackerPublic";
+
+if (app.ports.autoSave && app.ports.autoSave.subscribe) {
+  app.ports.autoSave.subscribe(function(json) {
+    try { localStorage.setItem(LS_KEY, json); } catch (_) {}
+  });
+}
+
+if (app.ports.loadStandings && app.ports.loadStandings.subscribe) {
+  app.ports.loadStandings.subscribe(function(useless) {
+    var json = '';
+    try { json = localStorage.getItem(LS_KEY) || ''; } catch (_) {}
+    if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+      app.ports.receiveStandings.send(json);
+    } 
+  });
+}
+
+// Subscribe to the automatic save for matches 
+if (app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
+  app.ports.saveToPublicDrive.subscribe(function(json) {
+    try { localStorage.setItem(LS_PUBLIC, json); } catch (_) {}
+
+    // Google Apps Script URL for your deployed web app
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Vo9hj74V_bOIRzpP9jrDrC1EhBBdnfUKUHlOGhElCDmGjSJm6LZdN4yXY5ZkEWLnzA/exec';
+    
+    // Send to Google Apps Script
+    fetch(APPS_SCRIPT_URL, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        data: json,
+        timestamp: new Date().toISOString()
+      })
+    })
+    .then(function(response) {
+      console.log('Apps Script Response Status:', response.status);
+      return response.text().then(function(text) {
+        console.log('Apps Script Response Text:', text);
+        var ok = response.ok;
+        var msg = ok ? 'Saved successfully to Google Sheets' : ('Save failed: ' + response.status + ' ' + text);
+        
+        // Check if this was a match save (compact JSON) vs manual save (formatted JSON)
+        var isMatchSave = json.indexOf('\n') === -1; // No newlines = compact = match save
+
+        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+          var ts = new Date().toISOString();
+          app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));      
+        }
+
+        // If this was a successful match save, trigger the completion port
+        if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+          app.ports.receiveMatchSaveComplete.send(null);        
+        }
+      });
+    })
+    .catch(function(err) {
+      console.error('Drive save failed:', err);
+      if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+        app.ports.receivePublicDriveStatus.send('Drive save failed: ' + String(err)); 
+      }
+    });
+  });
+}
+
+// Load from public copy in localStorage (fallback)
+if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
+  app.ports.loadFromPublicDrive.subscribe(function(){
+    var json = '';  
+    try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
+    if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+      app.ports.receiveStandings.send(json);
+    }
+  });
+}
+}
+catch (e)
+{
+// display initialization errors (e.g. bad flags, infinite recursion)
+var header = document.createElement("h1");
+header.style.fontFamily = "monospace";    
+header.innerText = "Initialization Error";
+var pre = document.getElementById("elm"); 
+document.body.insertBefore(header, pre);  
+pre.innerText = e;  
+throw e;
+}
+</script>
+
+</body>
+</html>
