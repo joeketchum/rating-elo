@@ -332,13 +332,22 @@ update msg model =
 
         AutoSaveCompleted ->
             -- Save completed, reload data. Only continue to next match if it was an auto-save
+            let
+                _ = Debug.log "🔄 AutoSaveCompleted received" { autoSaveInProgress = model.autoSaveInProgress }
+            in
             if model.autoSaveInProgress then
                 -- This was an auto-save, continue to next match after reload
+                let
+                    _ = Debug.log "📤 Scheduling auto-save reload" "1.5s delay"
+                in
                 ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Auto-save completed! Reloading data..." }
                 , Process.sleep 1500 |> Task.perform (\_ -> TriggerReload)
                 )
             else
                 -- This was a manual save, just reload without starting next match
+                let
+                    _ = Debug.log "📤 Scheduling manual save reload" "1.0s delay"
+                in
                 ( { model | shouldStartNextMatchAfterLoad = False, status = Just "Manual save completed! Reloading data..." }
                 , Process.sleep 1000 |> Task.perform (\_ -> TriggerReload)
                 )
@@ -355,6 +364,9 @@ update msg model =
 
         TriggerReload ->
             -- Trigger the actual reload after save completion delay
+            let
+                _ = Debug.log "🔄 TriggerReload executing" "calling loadFromPublicDrive"
+            in
             ( model, loadFromPublicDrive "" )
 
         KeeperWantsToLoadStandings ->

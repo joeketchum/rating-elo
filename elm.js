@@ -8787,6 +8787,7 @@ var $author$project$Player$init = function (name_) {
 		});
 };
 var $author$project$Main$loadFromPublicDrive = _Platform_outgoingPort('loadFromPublicDrive', $elm$json$Json$Encode$string);
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$History$mapInPlace = F2(
 	function (fn, _v0) {
 		var guts = _v0.a;
@@ -9597,32 +9598,42 @@ var $author$project$Main$update = F2(
 					model,
 					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'AutoSaveCompleted':
-				return model.autoSaveInProgress ? _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							autoSaveInProgress: false,
-							shouldStartNextMatchAfterLoad: true,
-							status: $elm$core$Maybe$Just('Auto-save completed! Reloading data...')
-						}),
-					A2(
-						$elm$core$Task$perform,
-						function (_v2) {
-							return $author$project$Main$TriggerReload;
-						},
-						$elm$core$Process$sleep(1500))) : _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							shouldStartNextMatchAfterLoad: false,
-							status: $elm$core$Maybe$Just('Manual save completed! Reloading data...')
-						}),
-					A2(
-						$elm$core$Task$perform,
-						function (_v3) {
-							return $author$project$Main$TriggerReload;
-						},
-						$elm$core$Process$sleep(1000)));
+				var _v2 = A2(
+					$elm$core$Debug$log,
+					'🔄 AutoSaveCompleted received',
+					{autoSaveInProgress: model.autoSaveInProgress});
+				if (model.autoSaveInProgress) {
+					var _v3 = A2($elm$core$Debug$log, '📤 Scheduling auto-save reload', '1.5s delay');
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								autoSaveInProgress: false,
+								shouldStartNextMatchAfterLoad: true,
+								status: $elm$core$Maybe$Just('Auto-save completed! Reloading data...')
+							}),
+						A2(
+							$elm$core$Task$perform,
+							function (_v4) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(1500)));
+				} else {
+					var _v5 = A2($elm$core$Debug$log, '📤 Scheduling manual save reload', '1.0s delay');
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								shouldStartNextMatchAfterLoad: false,
+								status: $elm$core$Maybe$Just('Manual save completed! Reloading data...')
+							}),
+						A2(
+							$elm$core$Task$perform,
+							function (_v6) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(1000)));
+				}
 			case 'AutoSaveTimeout':
 				return model.autoSaveInProgress ? _Utils_Tuple2(
 					_Utils_update(
@@ -9633,6 +9644,7 @@ var $author$project$Main$update = F2(
 						}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'TriggerReload':
+				var _v7 = A2($elm$core$Debug$log, '🔄 TriggerReload executing', 'calling loadFromPublicDrive');
 				return _Utils_Tuple2(
 					model,
 					$author$project$Main$loadFromPublicDrive(''));
@@ -9654,12 +9666,12 @@ var $author$project$Main$update = F2(
 						A2(
 							$elm$core$Task$andThen,
 							function (jsonString) {
-								var _v4 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-								if (_v4.$ === 'Ok') {
-									var decoded = _v4.a;
+								var _v8 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+								if (_v8.$ === 'Ok') {
+									var decoded = _v8.a;
 									return $elm$core$Task$succeed(decoded);
 								} else {
-									var err = _v4.a;
+									var err = _v8.a;
 									return $elm$core$Task$fail(
 										$elm$json$Json$Decode$errorToString(err));
 								}
@@ -9751,9 +9763,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'ReceivedStandings':
 				var jsonString = msg.a;
-				var _v6 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-				if (_v6.$ === 'Ok') {
-					var league = _v6.a;
+				var _v10 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+				if (_v10.$ === 'Ok') {
+					var league = _v10.a;
 					var updatedModel = _Utils_update(
 						model,
 						{
@@ -9792,10 +9804,10 @@ var $author$project$Main$update = F2(
 				var msgStr = msg.a;
 				var parts = A2($elm$core$String$split, '|', msgStr);
 				var maybeTs = function () {
-					var _v7 = $elm$core$List$head(
+					var _v11 = $elm$core$List$head(
 						A2($elm$core$List$drop, 1, parts));
-					if (_v7.$ === 'Just') {
-						var t = _v7.a;
+					if (_v11.$ === 'Just') {
+						var t = _v11.a;
 						return $elm$core$Maybe$Just(t);
 					} else {
 						return $elm$core$Maybe$Nothing;
@@ -9840,7 +9852,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v8) {
+						function (_v12) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(3500)));
