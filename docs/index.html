@@ -110,19 +110,25 @@ try {
           }
 
           // Send completion signal for both auto-saves and manual saves to ensure data reload
+          console.log('📊 SAVE RESULT:', { 
+            ok: ok, 
+            isMatchSave: isMatchSave, 
+            bytes: result.bytes,
+            jsonHasNewlines: json.indexOf('\n') !== -1,
+            jsonLength: json.length
+          });
+          
           if (ok && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
             if (isMatchSave) {
-              console.log('AUTO-SAVE COMPLETED: Sending completion signal to Elm');
+              console.log('🔄 AUTO-SAVE COMPLETED: Sending completion signal to Elm');
             } else {
-              console.log('MANUAL SAVE COMPLETED: Sending completion signal to Elm');
+              console.log('💾 MANUAL SAVE COMPLETED: Sending completion signal to Elm');
             }
             app.ports.receiveMatchSaveComplete.send(null);        
           } else {
-            console.log('SAVE COMPLETION CHECK:', { 
+            console.log('❌ NO COMPLETION SIGNAL SENT:', { 
               ok: ok, 
-              isMatchSave: isMatchSave, 
-              hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send),
-              willSendSignal: ok 
+              hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send)
             });
           }
         });
@@ -146,6 +152,7 @@ try {
   // Load from Google Drive, fallback to localStorage
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
+      console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
       var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
       
       // Try to load from Google Drive first
@@ -158,9 +165,12 @@ try {
           }
         })
         .then(function(json) {
-          console.log('Loaded data from Google Drive:', json.length, 'bytes');
+          console.log('✅ RELOAD SUCCESS: Loaded', json.length, 'bytes from Google Drive');
           if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+            console.log('📤 Sending data to Elm app...');
             app.ports.receiveStandings.send(json);
+          } else {
+            console.log('❌ receiveStandings port not available');
           }
         })
         .catch(function(error) {
@@ -176,6 +186,13 @@ try {
   }
   
   console.log("All port subscriptions set up successfully");
+  
+  // Add debug info to page title for vote count tracking
+  if (app.ports.sendVoteCount && app.ports.sendVoteCount.subscribe) {
+    app.ports.sendVoteCount.subscribe(function(count) {
+      document.title = `ELO Ratings (${count} votes until auto-save)`;
+    });
+  }
 }
 catch (e) {
   console.error("Initialization error:", e);

@@ -45,6 +45,8 @@ port loadFromPublicDrive : String -> Cmd msg
 port receivePublicDriveStatus : (String -> msg) -> Sub msg
 port receiveMatchSaveComplete : (() -> msg) -> Sub msg
 
+-- DEBUG PORT
+port sendVoteCount : Int -> Cmd msg
 
 
 -- FLAGS / MODEL
@@ -219,10 +221,11 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
             [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
             , Process.sleep 10000 |> Task.perform (\_ -> AutoSaveTimeout) -- 10 second timeout
+            , sendVoteCount 20  -- Reset to 20
             ]
         )
     else
-        ( { model | votesUntilDriveSync = newCount }, cmd )
+        ( { model | votesUntilDriveSync = newCount }, Cmd.batch [ cmd, sendVoteCount newCount ] )
 
 
 

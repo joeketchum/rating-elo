@@ -8839,6 +8839,7 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 };
 var $author$project$Main$AutoSaveTimeout = {$: 'AutoSaveTimeout'};
 var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
+var $author$project$Main$sendVoteCount = _Platform_outgoingPort('sendVoteCount', $elm$json$Json$Encode$int);
 var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 	var model = _v0.a;
@@ -8871,12 +8872,18 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 					function (_v1) {
 						return $author$project$Main$AutoSaveTimeout;
 					},
-					$elm$core$Process$sleep(10000))
+					$elm$core$Process$sleep(10000)),
+					$author$project$Main$sendVoteCount(20)
 				]))) : _Utils_Tuple2(
 		_Utils_update(
 			model,
 			{votesUntilDriveSync: newCount}),
-		cmd);
+		$elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					cmd,
+					$author$project$Main$sendVoteCount(newCount)
+				])));
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
