@@ -599,6 +599,7 @@ currentMatch model =
                             , Css.marginBottom (Css.px 12)
                             , Css.color (Css.hex "555")
                             , Css.letterSpacing (Css.px 1)
+                            , modernSansSerif
                             ]
                         ]
                         [ Html.text "⚔️ BATTLE PREDICTION ⚔️" ]
@@ -616,7 +617,7 @@ currentMatch model =
                         ]
                         [ Html.div
                             [ css
-                                [ Css.width (Css.pct (100 * chanceAWins))
+                                [ Css.width (Css.pct (max 15 (100 * chanceAWins)))
                                 , Css.height (Css.pct 100)
                                 , Css.backgroundColor (Css.hex "FF6B6B")
                                 , Css.position Css.absolute
@@ -628,7 +629,7 @@ currentMatch model =
                             []
                         , Html.div
                             [ css
-                                [ Css.width (Css.pct (100 * (1 - chanceAWins)))
+                                [ Css.width (Css.pct (max 15 (100 * (1 - chanceAWins))))
                                 , Css.height (Css.pct 100)
                                 , Css.backgroundColor (Css.hex "4ECDC4")
                                 , Css.position Css.absolute
@@ -652,45 +653,33 @@ currentMatch model =
                         , Html.div
                             [ css
                                 [ Css.position Css.absolute
-                                , Css.top (Css.px 6)
-                                , Css.left (Css.px 12)
-                                , Css.fontSize (Css.px 12)
+                                , Css.top (Css.px 4)
+                                , Css.left (Css.px 8)
+                                , Css.fontSize (Css.px 16)
                                 , Css.fontWeight (Css.int 700)
+                                , Css.fontStyle Css.italic
                                 , Css.color (Css.hex "FFF")
-                                , Css.textShadow4 (Css.px 1) (Css.px 1) (Css.px 2) (Css.rgba 0 0 0 0.5)
+                                , Css.textShadow4 (Css.px 1) (Css.px 1) (Css.px 2) (Css.rgba 0 0 0 0.7)
+                                , modernSansSerif
                                 ]
                             ]
-                            [ Html.text "💪" ]
+                            [ Html.text (String.fromInt (round (chanceAWins * 100)) ++ "%") ]
                         , Html.div
                             [ css
                                 [ Css.position Css.absolute
-                                , Css.top (Css.px 6)
-                                , Css.right (Css.px 12)
-                                , Css.fontSize (Css.px 12)
+                                , Css.top (Css.px 4)
+                                , Css.right (Css.px 8)
+                                , Css.fontSize (Css.px 16)
                                 , Css.fontWeight (Css.int 700)
+                                , Css.fontStyle Css.italic
                                 , Css.color (Css.hex "FFF")
-                                , Css.textShadow4 (Css.px 1) (Css.px 1) (Css.px 2) (Css.rgba 0 0 0 0.5)
+                                , Css.textShadow4 (Css.px 1) (Css.px 1) (Css.px 2) (Css.rgba 0 0 0 0.7)
+                                , modernSansSerif
                                 ]
                             ]
-                            [ Html.text "💪" ]
+                            [ Html.text (String.fromInt (round ((1 - chanceAWins) * 100)) ++ "%") ]
                         ]
-                    , Html.div
-                        [ css
-                            [ Css.displayFlex
-                            , Css.justifyContent Css.spaceBetween
-                            , Css.fontSize (Css.px 12)
-                            , Css.fontWeight (Css.int 600)
-                            , Css.marginTop (Css.px 8)
-                            , Css.color (Css.hex "777")
-                            ]
-                        ]
-                        [ Html.div 
-                            [ css [ Css.color (Css.hex "FF6B6B") ] ]
-                            [ Html.text ("🔥 " ++ String.fromInt (round (chanceAWins * 100)) ++ "% chance") ]
-                        , Html.div 
-                            [ css [ Css.color (Css.hex "4ECDC4") ] ]
-                            [ Html.text (String.fromInt (round ((1 - chanceAWins) * 100)) ++ "% chance 🔥") ]
-                        ]
+
                     ]
                 , Html.div
                     [ css

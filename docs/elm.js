@@ -12151,6 +12151,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attribu
 	return $rtfeldman$elm_css$Html$Styled$div(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
+var $rtfeldman$elm_css$Css$fontStyle = $rtfeldman$elm_css$Css$prop1('font-style');
 var $author$project$Main$goldButton = F2(
 	function (label, maybeMsg) {
 		return A2(
@@ -12223,6 +12224,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attribut
 };
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
 var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -12234,7 +12236,6 @@ var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$p = function (attributes) {
@@ -12408,7 +12409,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$color(
 											$rtfeldman$elm_css$Css$hex('555')),
 											$rtfeldman$elm_css$Css$letterSpacing(
-											$rtfeldman$elm_css$Css$px(1))
+											$rtfeldman$elm_css$Css$px(1)),
+											$author$project$Main$modernSansSerif
 										]))
 								]),
 							_List_fromArray(
@@ -12457,7 +12459,8 @@ var $author$project$Main$currentMatch = function (model) {
 											_List_fromArray(
 												[
 													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
+													$rtfeldman$elm_css$Css$pct(
+														A2($elm$core$Basics$max, 15, 100 * chanceAWins))),
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
@@ -12484,7 +12487,8 @@ var $author$project$Main$currentMatch = function (model) {
 											_List_fromArray(
 												[
 													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(100 * (1 - chanceAWins))),
+													$rtfeldman$elm_css$Css$pct(
+														A2($elm$core$Basics$max, 15, 100 * (1 - chanceAWins)))),
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
@@ -12540,13 +12544,14 @@ var $author$project$Main$currentMatch = function (model) {
 												[
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$top(
-													$rtfeldman$elm_css$Css$px(6)),
+													$rtfeldman$elm_css$Css$px(4)),
 													$rtfeldman$elm_css$Css$left(
-													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$px(8)),
 													$rtfeldman$elm_css$Css$fontSize(
-													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$px(16)),
 													$rtfeldman$elm_css$Css$fontWeight(
 													$rtfeldman$elm_css$Css$int(700)),
+													$rtfeldman$elm_css$Css$fontStyle($rtfeldman$elm_css$Css$italic),
 													$rtfeldman$elm_css$Css$color(
 													$rtfeldman$elm_css$Css$hex('FFF')),
 													A4(
@@ -12554,12 +12559,15 @@ var $author$project$Main$currentMatch = function (model) {
 													$rtfeldman$elm_css$Css$px(1),
 													$rtfeldman$elm_css$Css$px(1),
 													$rtfeldman$elm_css$Css$px(2),
-													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5))
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.7)),
+													$author$project$Main$modernSansSerif
 												]))
 										]),
 									_List_fromArray(
 										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text('💪')
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+											$elm$core$String$fromInt(
+												$elm$core$Basics$round(chanceAWins * 100)) + '%')
 										])),
 									A2(
 									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -12570,13 +12578,14 @@ var $author$project$Main$currentMatch = function (model) {
 												[
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$top(
-													$rtfeldman$elm_css$Css$px(6)),
+													$rtfeldman$elm_css$Css$px(4)),
 													$rtfeldman$elm_css$Css$right(
-													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$px(8)),
 													$rtfeldman$elm_css$Css$fontSize(
-													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$px(16)),
 													$rtfeldman$elm_css$Css$fontWeight(
 													$rtfeldman$elm_css$Css$int(700)),
+													$rtfeldman$elm_css$Css$fontStyle($rtfeldman$elm_css$Css$italic),
 													$rtfeldman$elm_css$Css$color(
 													$rtfeldman$elm_css$Css$hex('FFF')),
 													A4(
@@ -12584,68 +12593,15 @@ var $author$project$Main$currentMatch = function (model) {
 													$rtfeldman$elm_css$Css$px(1),
 													$rtfeldman$elm_css$Css$px(1),
 													$rtfeldman$elm_css$Css$px(2),
-													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text('💪')
-										]))
-								])),
-							A2(
-							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$css(
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-											$rtfeldman$elm_css$Css$fontSize(
-											$rtfeldman$elm_css$Css$px(12)),
-											$rtfeldman$elm_css$Css$fontWeight(
-											$rtfeldman$elm_css$Css$int(600)),
-											$rtfeldman$elm_css$Css$marginTop(
-											$rtfeldman$elm_css$Css$px(8)),
-											$rtfeldman$elm_css$Css$color(
-											$rtfeldman$elm_css$Css$hex('777'))
-										]))
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$color(
-													$rtfeldman$elm_css$Css$hex('FF6B6B'))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-											'🔥 ' + ($elm$core$String$fromInt(
-												$elm$core$Basics$round(chanceAWins * 100)) + '% chance'))
-										])),
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$color(
-													$rtfeldman$elm_css$Css$hex('4ECDC4'))
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.7)),
+													$author$project$Main$modernSansSerif
 												]))
 										]),
 									_List_fromArray(
 										[
 											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
 											$elm$core$String$fromInt(
-												$elm$core$Basics$round((1 - chanceAWins) * 100)) + '% chance 🔥')
+												$elm$core$Basics$round((1 - chanceAWins) * 100)) + '%')
 										]))
 								]))
 						])),
@@ -12890,6 +12846,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attri
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
 var $rtfeldman$elm_css$Css$Global$aside = $rtfeldman$elm_css$Css$Global$typeSelector('aside');
