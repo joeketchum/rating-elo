@@ -326,7 +326,7 @@ update msg model =
 
         AutoSaveCompleted ->
             -- Auto-save to Drive completed, now reload and continue to next match
-            ( { model | shouldStartNextMatchAfterLoad = True }
+            ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Saved successfully! Loading next match..." }
             , loadFromPublicDrive ""
             )
 

@@ -9585,7 +9585,11 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{shouldStartNextMatchAfterLoad: true}),
+						{
+							autoSaveInProgress: false,
+							shouldStartNextMatchAfterLoad: true,
+							status: $elm$core$Maybe$Just('Saved successfully! Loading next match...')
+						}),
 					$author$project$Main$loadFromPublicDrive(''));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
