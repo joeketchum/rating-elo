@@ -1,65 +1,71 @@
 const FILE_ID = '1dMiPZqpcj7sMr9aKMxNhWKQNc2vzcJJD';
 
-function corsWrap(callback) {
-  // Generic wrapper that handles CORS and JSON response for any endpoint
-  return (e) => {
-    const output = ContentService.createTextOutput();
-    
-    // Add CORS headers to all responses FIRST
-    output.setHeaders({
-      'Access-Control-Allow-Origin': '*',
-      'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
-      'Access-Control-Allow-Headers': 'Content-Type',
-      'Access-Control-Max-Age': '3600'
-    });
-    
-    // Handle preflight OPTIONS request
-    if (e.parameter && e.parameter.method === 'options') {
-      output.setContent('');
-      output.setMimeType(ContentService.MimeType.TEXT);
-      return output;
-    }
-    
-    // Normal request - call the actual handler
-    try {
-      const result = callback(e);
-      output.setContent(typeof result === 'string' ? result : JSON.stringify(result));
-      output.setMimeType(ContentService.MimeType.JSON);
-    } catch (err) {
-      output.setContent(JSON.stringify({ ok: false, error: String(err) }));
-      output.setMimeType(ContentService.MimeType.JSON);
-    }
-    
+function doGet(e) {
+  try {
+    const f = DriveApp.getFileById(FILE_ID);
+    const content = f.getBlob().getDataAsString();
+    const output = ContentService.createTextOutput(content);
+    output.setMimeType(ContentService.MimeType.JSON);
     return output;
-  };
+  } catch (err) {
+    const output = ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    return output;
+  }
 }
 
-const doPost = corsWrap((e) => {
+function doPost(e) {
+  // Add CORS headers first
+  const headers = {
+    'Access-Control-Allow-Origin': '*',
+    'Access-Control-Allow-Methods': 'GET, POST, OPTIONS',
+    'Access-Control-Allow-Headers': 'Content-Type'
+  };
+  
   try {
-    const body = e?.postData?.contents;
-    if (!body) return { ok: false, error: 'empty body' };
+    const body = e.postData ? e.postData.contents : null;
+    if (!body) {
+      const output = ContentService.createTextOutput(JSON.stringify({ ok: false, error: 'empty body' }));
+      output.setMimeType(ContentService.MimeType.JSON);
+      Object.keys(headers).forEach(key => output.setHeader ? output.setHeader(key, headers[key]) : null);
+      return output;
+    }
 
     const f = DriveApp.getFileById(FILE_ID);
     f.setContent(body);
 
-    console.log('WROTE bytes:', body.length, 'at', new Date().toISOString());
-    return { ok: true, bytes: body.length, ts: new Date().toISOString() };
+    const result = { ok: true, bytes: body.length, ts: new Date().toISOString() };
+    const output = ContentService.createTextOutput(JSON.stringify(result));
+    output.setMimeType(ContentService.MimeType.JSON);
+    
+    // Try to set CORS headers (Apps Script API varies)
+    try {
+      Object.keys(headers).forEach(key => output.setHeader(key, headers[key]));
+    } catch (e) {
+      // Fallback - some Apps Script versions don't support setHeader
+      console.log('Could not set headers:', e);
+    }
+    
+    return output;
   } catch (err) {
-    console.error('WRITE ERROR:', err);
-    return { ok: false, error: String(err) };
+    const output = ContentService.createTextOutput(JSON.stringify({ ok: false, error: String(err) }));
+    output.setMimeType(ContentService.MimeType.JSON);
+    return output;
   }
-});
+}
 
-const doGet = corsWrap((e) => {
+function doOptions(e) {
+  const output = ContentService.createTextOutput('');
+  output.setMimeType(ContentService.MimeType.TEXT);
+  
+  // Try to set CORS headers
   try {
-    const f = DriveApp.getFileById(FILE_ID);
-    return f.getBlob().getDataAsString();
-  } catch (err) {
-    return { ok: false, error: String(err) };
+    output.setHeader('Access-Control-Allow-Origin', '*');
+    output.setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS');
+    output.setHeader('Access-Control-Allow-Headers', 'Content-Type');
+  } catch (e) {
+    console.log('Could not set headers:', e);
   }
-});
-
-// Handle OPTIONS requests for CORS preflight
-const doOptions = corsWrap((e) => {
-  return { ok: true, message: 'CORS preflight' };
-});
+  
+  return output;
+}

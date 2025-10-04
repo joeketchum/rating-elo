@@ -14467,9 +14467,18 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
           try { payload = JSON.parse(text); } catch(_) { payload = { ok:false, status: res.status, body: text }; }
           var ok = payload && payload.ok === true;
           var msg = ok ? 'Saved to Drive' : ('Drive save failed: ' + (payload.error || ('status ' + res.status)));
+          
+          // Check if this was a match save (compact JSON) vs manual save (formatted JSON)
+          var isMatchSave = json.indexOf('\n') === -1; // No newlines = compact = match save
+          
           if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
             var ts = new Date().toISOString();
             app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));
+          }
+          
+          // If this was a successful match save, trigger the completion port
+          if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+            app.ports.receiveMatchSaveComplete.send(null);
           }
         });
       })

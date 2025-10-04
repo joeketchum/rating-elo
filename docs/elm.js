@@ -7679,6 +7679,7 @@ var $author$project$Main$IgnoredKey = {$: 'IgnoredKey'};
 var $author$project$Main$MatchFinished = function (a) {
 	return {$: 'MatchFinished', a: a};
 };
+var $author$project$Main$MatchSavedToDrive = {$: 'MatchSavedToDrive'};
 var $author$project$Main$ReceivedAutoSave = function (a) {
 	return {$: 'ReceivedAutoSave', a: a};
 };
@@ -8002,6 +8003,10 @@ var $ohanhi$keyboard$Keyboard$navigationKey = function (_v0) {
 };
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
+var $elm$json$Json$Decode$null = _Json_decodeNull;
+var $author$project$Main$receiveMatchSaveComplete = _Platform_incomingPort(
+	'receiveMatchSaveComplete',
+	$elm$json$Json$Decode$null(_Utils_Tuple0));
 var $author$project$Main$receivePublicDriveStatus = _Platform_incomingPort('receivePublicDriveStatus', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveStandings = _Platform_incomingPort('receiveStandings', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (model) {
@@ -8048,10 +8053,15 @@ var $author$project$Main$subscriptions = function (model) {
 				[
 					$author$project$Main$receiveStandings($author$project$Main$ReceivedStandings),
 					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
-					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus)
+					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus),
+					$author$project$Main$receiveMatchSaveComplete(
+					function (_v6) {
+						return $author$project$Main$MatchSavedToDrive;
+					})
 				]));
 	}
 };
+var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$Main$LoadedLeague = function (a) {
 	return {$: 'LoadedLeague', a: a};
 };
@@ -9090,6 +9100,7 @@ var $author$project$League$retirePlayer = F2(
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
 var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
+var $elm$core$Process$sleep = _Process_sleep;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -9293,18 +9304,32 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
+				var updatedModel = _Utils_update(
+					model,
+					{
+						history: A2(
+							$author$project$History$mapPush,
+							$author$project$League$finishMatch(outcome),
+							model.history)
+					});
 				return $author$project$Main$maybeAutoSave(
-					$author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									history: A2(
-										$author$project$History$mapPush,
-										$author$project$League$finishMatch(outcome),
-										model.history)
-								}),
-							$elm$core$Platform$Cmd$none)));
+					_Utils_Tuple2(
+						updatedModel,
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[
+									A2(
+									$elm$core$Task$perform,
+									$elm$core$Basics$identity,
+									$elm$core$Task$succeed(
+										$author$project$Main$ShowStatus('Saving match result...'))),
+									$author$project$Main$saveToPublicDrive(
+									A2(
+										$elm$json$Json$Encode$encode,
+										0,
+										$author$project$League$encode(
+											$author$project$History$current(updatedModel.history))))
+								]))));
 			case 'KeeperWantsToSaveStandings':
 				return _Utils_Tuple2(
 					model,
@@ -9343,6 +9368,19 @@ var $author$project$Main$update = F2(
 								$elm$core$Basics$identity,
 								$elm$core$Task$succeed(
 									$author$project$Main$ShowStatus('Saving to Drive...')))
+							])));
+			case 'MatchSavedToDrive':
+				return _Utils_Tuple2(
+					model,
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$loadFromPublicDrive(''),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Loading latest data...')))
 							])));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
@@ -9541,7 +9579,12 @@ var $author$project$Main$update = F2(
 						{
 							status: $elm$core$Maybe$Just(message)
 						}),
-					$elm$core$Platform$Cmd$none);
+					A2(
+						$elm$core$Task$perform,
+						function (_v6) {
+							return $author$project$Main$ClearStatus;
+						},
+						$elm$core$Process$sleep(3500)));
 			case 'ClearStatus':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9552,7 +9595,6 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$KeeperWantsToSaveToDrive = {$: 'KeeperWantsToSaveToDrive'};
@@ -12883,8 +12925,70 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
-var $author$project$Main$redButton = $author$project$Main$button(
-	$rtfeldman$elm_css$Css$hex('E02020'));
+var $author$project$Main$smallRedXButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(8)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(36)),
+						function () {
+						if (maybeMsg.$ === 'Just') {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('E02020'));
+						} else {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('DDD'));
+						}
+					}(),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(4)),
+						A6(
+						$rtfeldman$elm_css$Css$boxShadow6,
+						$rtfeldman$elm_css$Css$inset,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(-4),
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$zero,
+						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(14)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF'))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
+			]));
+};
 var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$span(
@@ -12941,6 +13045,158 @@ var $author$project$Main$upArrow = function (color) {
 					]))
 			]),
 		_List_Nil);
+};
+var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
+var $rtfeldman$elm_css$Css$focus = $rtfeldman$elm_css$Css$pseudoClass('focus');
+var $rtfeldman$elm_css$Css$hover = $rtfeldman$elm_css$Css$pseudoClass('hover');
+var $rtfeldman$elm_css$Css$outline3 = $rtfeldman$elm_css$Css$prop3('outline');
+var $rtfeldman$elm_css$Css$outlineOffset = $rtfeldman$elm_css$Css$prop1('outline-offset');
+var $author$project$Main$zzzIgnoreButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(12)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(44)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('6B7280')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(13)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$rtfeldman$elm_css$Css$hover(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('4B5563'))
+							])),
+						$rtfeldman$elm_css$Css$active(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('374151'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								A3(
+								$rtfeldman$elm_css$Css$outline3,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('93C5FD')),
+								$rtfeldman$elm_css$Css$outlineOffset(
+								$rtfeldman$elm_css$Css$px(2))
+							]))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
+var $rtfeldman$elm_css$Css$lineThrough = {textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'line-through'};
+var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
+var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(12)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(44)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('374151')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(13)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
+						$rtfeldman$elm_css$Css$hover(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('1F2937'))
+							])),
+						$rtfeldman$elm_css$Css$active(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('111827'))
+							])),
+						$rtfeldman$elm_css$Css$focus(
+						_List_fromArray(
+							[
+								A3(
+								$rtfeldman$elm_css$Css$outline3,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$solid,
+								$rtfeldman$elm_css$Css$hex('93C5FD')),
+								$rtfeldman$elm_css$Css$outlineOffset(
+								$rtfeldman$elm_css$Css$px(2))
+							]))
+					])),
+				function () {
+				if (maybeMsg.$ === 'Just') {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
 };
 var $author$project$Main$rankings = function (model) {
 	var textual = $rtfeldman$elm_css$Css$batch(
@@ -13451,16 +13707,12 @@ var $author$project$Main$rankings = function (model) {
 												player,
 												$author$project$History$current(model.history)) ? _List_fromArray(
 												[
-													A2(
-													$author$project$Main$greenButton,
-													'Unignore',
+													$author$project$Main$zzzUnignoreButton(
 													$elm$core$Maybe$Just(
 														$author$project$Main$KeeperWantsToUnignorePlayer(player)))
 												]) : _List_fromArray(
 												[
-													A2(
-													$author$project$Main$redButton,
-													'Delete',
+													$author$project$Main$smallRedXButton(
 													$elm$core$Maybe$Just(
 														$author$project$Main$KeeperWantsToRetirePlayer(player))),
 													A2(
@@ -13476,9 +13728,7 @@ var $author$project$Main$rankings = function (model) {
 														]),
 													_List_fromArray(
 														[
-															A2(
-															$author$project$Main$goldButton,
-															'Ignore',
+															$author$project$Main$zzzIgnoreButton(
 															$elm$core$Maybe$Just(
 																$author$project$Main$KeeperWantsToIgnorePlayer(player)))
 														]))
@@ -13494,70 +13744,6 @@ var $author$project$Main$rankings = function (model) {
 							$author$project$History$current(model.history)))))));
 };
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
-var $author$project$Main$smallRedXButton = function (maybeMsg) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(8)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(8)),
-						A2(
-						$rtfeldman$elm_css$Css$margin2,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(36)),
-						function () {
-						if (maybeMsg.$ === 'Just') {
-							return $rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('E02020'));
-						} else {
-							return $rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('DDD'));
-						}
-					}(),
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(4)),
-						A6(
-						$rtfeldman$elm_css$Css$boxShadow6,
-						$rtfeldman$elm_css$Css$inset,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(-4),
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$zero,
-						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(14)),
-						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF'))
-					])),
-				function () {
-				if (maybeMsg.$ === 'Just') {
-					var m = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-				} else {
-					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-				}
-			}()
-			]),
-		_List_fromArray(
-			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
-			]));
-};
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {
 		var isCssStyles = _v0.b;

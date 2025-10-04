@@ -42,6 +42,7 @@ port receiveAutoSave : (Bool -> msg) -> Sub msg
 port saveToPublicDrive : String -> Cmd msg
 port loadFromPublicDrive : String -> Cmd msg
 port receivePublicDriveStatus : (String -> msg) -> Sub msg
+port receiveMatchSaveComplete : (() -> msg) -> Sub msg
 
 
 
@@ -74,6 +75,7 @@ type Msg
     | MatchFinished League.Outcome
     | KeeperWantsToSaveStandings
     | KeeperWantsToSaveToDrive
+    | MatchSavedToDrive
     | KeeperWantsToLoadStandings
     | SelectedStandingsFile File
     | KeeperWantsToUndo
@@ -176,6 +178,7 @@ subscriptions model =
                 [ receiveStandings ReceivedStandings
                 , receiveAutoSave ReceivedAutoSave
                 , receivePublicDriveStatus ReceivedPublicDriveStatus
+                , receiveMatchSaveComplete (\_ -> MatchSavedToDrive)
                 ]
 
 
@@ -249,10 +252,15 @@ update msg model =
             ( model, Cmd.none )
 
         MatchFinished outcome ->
-            ( { model | history = History.mapPush (League.finishMatch outcome) model.history }
-            , Cmd.none
+            let
+                updatedModel = { model | history = History.mapPush (League.finishMatch outcome) model.history }
+            in
+            ( updatedModel
+            , Cmd.batch
+                [ Task.succeed (ShowStatus "Saving match result...") |> Task.perform identity
+                , saveToPublicDrive (encode 0 (League.encode (History.current updatedModel.history)))
+                ]
             )
-                |> startNextMatchIfPossible
                 |> maybeAutoSave
 
         KeeperWantsToSaveStandings ->
@@ -271,6 +279,14 @@ update msg model =
             , Cmd.batch
                 [ saveToPublicDrive (encode 2 (League.encode (History.current model.history)))
                 , Task.succeed (ShowStatus "Saving to Drive...") |> Task.perform identity
+                ]
+            )
+
+        MatchSavedToDrive ->
+            ( model
+            , Cmd.batch
+                [ loadFromPublicDrive ""
+                , Task.succeed (ShowStatus "Loading latest data...") |> Task.perform identity
                 ]
             )
 
