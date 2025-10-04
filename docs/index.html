@@ -95,18 +95,28 @@ try {
           
           // Check if this was a match save (compact JSON) vs manual save (formatted JSON)
           var isMatchSave = json.indexOf('\n') === -1; // No newlines = compact = match save
+          
+          // Debug: Log what we're checking
+          console.log('SAVE COMPLETION CHECK:', { 
+            ok: ok, 
+            isMatchSave: isMatchSave, 
+            jsonLength: json.length,
+            hasNewlines: json.indexOf('\n') !== -1,
+            jsonPreview: json.substring(0, 100) + '...'
+          });
 
           if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
             var ts = new Date().toISOString();
             app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));      
           }
 
-          // If this was a successful match save, trigger the completion port
-          if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+          // Always send completion signal for successful saves (auto-save or manual)
+          // The Elm code can determine if it should reload based on its state
+          if (ok && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
             console.log('AUTO-SAVE COMPLETED: Sending completion signal to Elm');
             app.ports.receiveMatchSaveComplete.send(null);        
           } else {
-            console.log('AUTO-SAVE COMPLETION CONDITIONS:', { ok: ok, isMatchSave: isMatchSave, hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) });
+            console.log('AUTO-SAVE COMPLETION CONDITIONS:', { ok: ok, hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) });
           }
         });
       })
