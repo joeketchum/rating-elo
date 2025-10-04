@@ -157,8 +157,9 @@ try {
       console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
       var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
       
-      // Try to load from Google Drive first
-      fetch(APPS_SCRIPT_URL, { method: 'GET' })
+      // Try to load from Google Drive first (add cache-busting parameter)
+      var cacheBuster = '?_=' + Date.now();
+      fetch(APPS_SCRIPT_URL + cacheBuster, { method: 'GET' })
         .then(function(response) {
           if (response.ok) {
             return response.text();
@@ -168,9 +169,12 @@ try {
         })
         .then(function(json) {
           console.log('✅ RELOAD SUCCESS: Loaded', json.length, 'bytes from Google Drive');
+          console.log('📊 RELOAD DATA PREVIEW:', json.substring(0, 200) + '...');
+          
           if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-            console.log('📤 Sending data to Elm app...');
+            console.log('📤 Sending reloaded data to Elm app...');
             app.ports.receiveStandings.send(json);
+            console.log('✅ Data sent to Elm successfully');
           } else {
             console.log('❌ receiveStandings port not available');
           }

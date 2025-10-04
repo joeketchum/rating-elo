@@ -8249,6 +8249,7 @@ var $author$project$Main$SelectedStandingsFile = function (a) {
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
+var $author$project$Main$TriggerReload = {$: 'TriggerReload'};
 var $author$project$Elo$initialRating = 1200;
 var $author$project$Player$setRating = F2(
 	function (rating_, _v0) {
@@ -9602,16 +9603,26 @@ var $author$project$Main$update = F2(
 						{
 							autoSaveInProgress: false,
 							shouldStartNextMatchAfterLoad: true,
-							status: $elm$core$Maybe$Just('Auto-save completed! Loading next match...')
+							status: $elm$core$Maybe$Just('Auto-save completed! Reloading data...')
 						}),
-					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(
+					A2(
+						$elm$core$Task$perform,
+						function (_v2) {
+							return $author$project$Main$TriggerReload;
+						},
+						$elm$core$Process$sleep(1500))) : _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
 							shouldStartNextMatchAfterLoad: false,
 							status: $elm$core$Maybe$Just('Manual save completed! Reloading data...')
 						}),
-					$author$project$Main$loadFromPublicDrive(''));
+					A2(
+						$elm$core$Task$perform,
+						function (_v3) {
+							return $author$project$Main$TriggerReload;
+						},
+						$elm$core$Process$sleep(1000)));
 			case 'AutoSaveTimeout':
 				return model.autoSaveInProgress ? _Utils_Tuple2(
 					_Utils_update(
@@ -9621,6 +9632,10 @@ var $author$project$Main$update = F2(
 							status: $elm$core$Maybe$Just('Auto-save timed out. Voting re-enabled.')
 						}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'TriggerReload':
+				return _Utils_Tuple2(
+					model,
+					$author$project$Main$loadFromPublicDrive(''));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
@@ -9639,12 +9654,12 @@ var $author$project$Main$update = F2(
 						A2(
 							$elm$core$Task$andThen,
 							function (jsonString) {
-								var _v2 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-								if (_v2.$ === 'Ok') {
-									var decoded = _v2.a;
+								var _v4 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+								if (_v4.$ === 'Ok') {
+									var decoded = _v4.a;
 									return $elm$core$Task$succeed(decoded);
 								} else {
-									var err = _v2.a;
+									var err = _v4.a;
 									return $elm$core$Task$fail(
 										$elm$json$Json$Decode$errorToString(err));
 								}
@@ -9736,9 +9751,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'ReceivedStandings':
 				var jsonString = msg.a;
-				var _v4 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-				if (_v4.$ === 'Ok') {
-					var league = _v4.a;
+				var _v6 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+				if (_v6.$ === 'Ok') {
+					var league = _v6.a;
 					var updatedModel = _Utils_update(
 						model,
 						{
@@ -9777,10 +9792,10 @@ var $author$project$Main$update = F2(
 				var msgStr = msg.a;
 				var parts = A2($elm$core$String$split, '|', msgStr);
 				var maybeTs = function () {
-					var _v5 = $elm$core$List$head(
+					var _v7 = $elm$core$List$head(
 						A2($elm$core$List$drop, 1, parts));
-					if (_v5.$ === 'Just') {
-						var t = _v5.a;
+					if (_v7.$ === 'Just') {
+						var t = _v7.a;
 						return $elm$core$Maybe$Just(t);
 					} else {
 						return $elm$core$Maybe$Nothing;
@@ -9825,7 +9840,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v6) {
+						function (_v8) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(3500)));

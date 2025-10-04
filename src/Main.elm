@@ -87,6 +87,7 @@ type Msg
     | PeriodicSync
     | AutoSaveCompleted
     | AutoSaveTimeout
+    | TriggerReload
     | KeeperWantsToUndo
     | KeeperWantsToRedo
     | LoadedLeague (Result String League)
@@ -333,13 +334,13 @@ update msg model =
             -- Save completed, reload data. Only continue to next match if it was an auto-save
             if model.autoSaveInProgress then
                 -- This was an auto-save, continue to next match after reload
-                ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Auto-save completed! Loading next match..." }
-                , loadFromPublicDrive ""
+                ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Auto-save completed! Reloading data..." }
+                , Process.sleep 1500 |> Task.perform (\_ -> TriggerReload)
                 )
             else
                 -- This was a manual save, just reload without starting next match
                 ( { model | shouldStartNextMatchAfterLoad = False, status = Just "Manual save completed! Reloading data..." }
-                , loadFromPublicDrive ""
+                , Process.sleep 1000 |> Task.perform (\_ -> TriggerReload)
                 )
 
         AutoSaveTimeout ->
@@ -351,6 +352,10 @@ update msg model =
             else
                 -- Timeout arrived after completion, ignore it
                 ( model, Cmd.none )
+
+        TriggerReload ->
+            -- Trigger the actual reload after save completion delay
+            ( model, loadFromPublicDrive "" )
 
         KeeperWantsToLoadStandings ->
             ( model, Select.file [ "application/json" ] SelectedStandingsFile )
