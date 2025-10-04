@@ -14227,6 +14227,150 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 
   var app = Elm.Main.init({ node: document.getElementById("elm") });
 
+  // Port handlers for localStorage and Drive save
+  (function(){
+    const LS_STANDINGS = "rating-elo.standings";
+    const LS_AUTOSAVE = "rating-elo.autosave";
+    const LS_PUBLIC = "rating-elo.public_copy";
+    const SAVE_URL = "https://script.google.com/macros/s/AKfycbxc5UWCVkDzwOy2MwkHpxkPb8H6PIoVIPQRSw72wRyIHdTBaUi81TvDglWpVEeP79VKiw/exec";
+
+    function toast(msg, duration) {
+      console.log('TOAST:', msg);
+      var t = document.getElementById('toast');
+      if(!t) {
+        t = document.createElement('div');
+        t.id = 'toast';
+        t.style.position = 'fixed';
+        t.style.right = '12px';
+        t.style.bottom = '12px';
+        t.style.padding = '8px 12px';
+        t.style.background = 'rgba(0,0,0,0.75)';
+        t.style.color = 'white';
+        t.style.borderRadius = '6px';
+        t.style.zIndex = 9999;
+        t.style.display = 'none';
+        document.body.appendChild(t);
+      }
+      t.innerText = msg;
+      t.style.display = 'block';
+      if(t._timeout) clearTimeout(t._timeout);
+      t._timeout = setTimeout(function(){ t.style.display = 'none'; }, duration || 3500);
+    }
+
+    if (app && app.ports) {
+      // Save standings locally
+      if(app.ports.saveStandings && app.ports.saveStandings.subscribe) {
+        app.ports.saveStandings.subscribe(function(json) {
+          try {
+            localStorage.setItem(LS_STANDINGS, json);
+            localStorage.setItem(LS_PUBLIC, json);
+            toast('Standings saved locally');
+          } catch(e) {
+            console.error('Failed to save standings locally:', e);
+            toast('Failed to save locally: ' + e);
+          }
+        });
+      }
+
+      // Load standings
+      if(app.ports.askForStandings && app.ports.askForStandings.subscribe) {
+        app.ports.askForStandings.subscribe(function() {
+          var json = localStorage.getItem(LS_STANDINGS) || "";
+          if(app.ports.receiveStandings && app.ports.receiveStandings.send) {
+            app.ports.receiveStandings.send(json);
+          }
+        });
+      }
+
+      // Save autosave preference
+      if(app.ports.saveAutoSave && app.ports.saveAutoSave.subscribe) {
+        app.ports.saveAutoSave.subscribe(function(enabled) {
+          try {
+            localStorage.setItem(LS_AUTOSAVE, JSON.stringify(enabled));
+          } catch(e) {
+            console.error('Failed to save autosave setting:', e);
+          }
+        });
+      }
+
+      // Load autosave preference
+      if(app.ports.askForAutoSave && app.ports.askForAutoSave.subscribe) {
+        app.ports.askForAutoSave.subscribe(function() {
+          var enabled = true;
+          try {
+            enabled = JSON.parse(localStorage.getItem(LS_AUTOSAVE) || 'true');
+          } catch(e) {}
+          if(app.ports.receiveAutoSave && app.ports.receiveAutoSave.send) {
+            app.ports.receiveAutoSave.send(enabled);
+          }
+        });
+      }
+
+      // Save to Drive
+      if(app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
+        app.ports.saveToPublicDrive.subscribe(function(json) {
+          console.log('Save to Drive requested');
+          try {
+            localStorage.setItem(LS_PUBLIC, json);
+            
+            if(SAVE_URL) {
+              toast('Saving to Drive...');
+              console.log('POSTing to Drive:', SAVE_URL);
+              
+              fetch(SAVE_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: json
+              })
+              .then(function(res) {
+                console.log('Drive response:', res.status);
+                return res.json().catch(function() {
+                  return { ok: false, status: res.status };
+                });
+              })
+              .then(function(body) {
+                console.log('Drive response body:', body);
+                var msg = body && body.ok ? 'Saved to Drive' : ('Drive save failed: ' + JSON.stringify(body));
+                if(app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+                  app.ports.receivePublicDriveStatus.send(msg + '|' + new Date().toISOString());
+                }
+                toast(msg);
+              })
+              .catch(function(err) {
+                console.error('Drive save failed:', err);
+                var msg = 'Drive save failed: ' + String(err);
+                if(app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+                  app.ports.receivePublicDriveStatus.send(msg);
+                }
+                toast(msg);
+              });
+            } else {
+              console.log('No SAVE_URL configured - saving only locally');
+              if(app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+                app.ports.receivePublicDriveStatus.send('Saved locally only (no SAVE_URL configured)');
+              }
+              toast('Saved locally (Drive save not configured)');
+            }
+          } catch(e) {
+            console.error('Save failed:', e);
+            toast('Save failed: ' + e);
+          }
+        });
+      }
+
+      // Load public copy for Drive fallback
+      if(app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {
+        app.ports.loadFromPublicDrive.subscribe(function() {
+          var json = localStorage.getItem(LS_PUBLIC) || "";
+          if(app.ports.receiveStandings && app.ports.receiveStandings.send) {
+            app.ports.receiveStandings.send(json);
+          }
+          toast('Loaded public copy from local storage');
+        });
+      }
+    }
+  })();
+
   // Add debug button and logging for Drive save testing
   (function(){
     const SAVE_URL = "https://script.google.com/macros/s/AKfycbxc5UWCVkDzwOy2MwkHpxkPb8H6PIoVIPQRSw72wRyIHdTBaUi81TvDglWpVEeP79VKiw/exec";
