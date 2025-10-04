@@ -322,8 +322,13 @@ update msg model =
                         |> startNextMatchIfPossible
 
                 Err httpErr ->
+                    -- If Drive fetch fails (or Drive file is malformed), ask the host to return
+                    -- the last saved public copy from localStorage as a fallback.
                     ( { model | status = Just ("Failed to fetch players from Drive: " ++ httpErrorToString httpErr) }
-                    , Cmd.none
+                    , Cmd.batch
+                        [ loadFromPublicDrive ""
+                        , Task.succeed (ShowStatus "Failed to load Drive, falling back to saved public copy") |> Task.perform identity
+                        ]
                     )
 
         ReceivedStandings jsonString ->
