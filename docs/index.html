@@ -7674,6 +7674,7 @@ var $author$project$Main$init = function (_v0) {
 		_Utils_Tuple2(
 			{
 				autoSave: true,
+				autoSaveInProgress: false,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
@@ -8859,6 +8860,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 		_Utils_update(
 			model,
 			{
+				autoSaveInProgress: true,
 				status: $elm$core$Maybe$Just('Saving to Google Sheets...'),
 				votesUntilDriveSync: 5
 			}),
@@ -9521,7 +9523,7 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
-				return $author$project$Main$maybeAutoSave(
+				return model.autoSaveInProgress ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : $author$project$Main$maybeAutoSave(
 					$author$project$Main$startNextMatchIfPossible(
 						$author$project$Main$maybeSaveToDriveAfterVote(
 							_Utils_Tuple2(
@@ -9720,6 +9722,7 @@ var $author$project$Main$update = F2(
 					var updatedModel = _Utils_update(
 						model,
 						{
+							autoSaveInProgress: false,
 							history: A2($author$project$History$init, 50, league),
 							shouldStartNextMatchAfterLoad: false
 						});
@@ -9737,6 +9740,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
+								autoSaveInProgress: false,
 								shouldStartNextMatchAfterLoad: false,
 								status: $elm$core$Maybe$Just('Saved standings malformed or unreadable')
 							}),
@@ -12433,7 +12437,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'Winner!',
-									$elm$core$Maybe$Just(
+									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{lost: playerB, won: playerA}))))
@@ -12454,7 +12458,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'Tie!',
-									$elm$core$Maybe$Just(
+									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Draw(
 												{playerA: playerA, playerB: playerB}))))
@@ -12475,7 +12479,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'Winner!',
-									$elm$core$Maybe$Just(
+									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{lost: playerA, won: playerB}))))
@@ -14605,7 +14609,7 @@ var $author$project$Main$view = function (model) {
 												$rtfeldman$elm_css$Css$right(
 												$rtfeldman$elm_css$Css$px(20)),
 												$rtfeldman$elm_css$Css$backgroundColor(
-												$rtfeldman$elm_css$Css$hex('333')),
+												model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('E02020') : $rtfeldman$elm_css$Css$hex('333')),
 												$rtfeldman$elm_css$Css$color(
 												$rtfeldman$elm_css$Css$hex('FFF')),
 												A4(
@@ -14632,7 +14636,22 @@ var $author$project$Main$view = function (model) {
 												_List_fromArray(
 													[
 														$tesk9$accessible_html_with_css$Accessibility$Styled$text(message)
-													]))
+													])),
+												model.autoSaveInProgress ? A2(
+												$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$marginLeft(
+																$rtfeldman$elm_css$Css$px(8))
+															]))
+													]),
+												_List_fromArray(
+													[
+														$tesk9$accessible_html_with_css$Accessibility$Styled$text('(Voting disabled)')
+													])) : $tesk9$accessible_html_with_css$Accessibility$Styled$text('')
 											])),
 										A2(
 										$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -14695,146 +14714,3 @@ var $author$project$Main$main = $elm$browser$Browser$document(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
-
-  var app = Elm.Main.init({ node: document.getElementById("elm") });
-
-  // Host wiring for Drive save/load and autosave
-  var LS_STANDINGS = 'rating-elo.standings';
-  var LS_AUTOSAVE = 'rating-elo.autosave';
-  var LS_PUBLIC = 'rating-elo.public_copy';
-  var SAVE_URL = 'https://script.google.com/macros/s/AKfycby6tSur1CGXPK3zshaarc0Nry1dBJGNfSoLpTHqtoevjnVIcRMubgHbBO71P6qUXFNneg/exec';
-
-  // Regular save to localStorage
-  if (app.ports.saveStandings && app.ports.saveStandings.subscribe) {
-    app.ports.saveStandings.subscribe(function(json) {
-      try {
-        localStorage.setItem(LS_STANDINGS, json);
-        console.log('Saved standings to localStorage');
-      } catch (e) {
-        console.error('Failed to save standings:', e);
-      }
-    });
-  }
-
-  // Load standings from localStorage on request
-  if (app.ports.askForStandings && app.ports.askForStandings.subscribe) {
-    app.ports.askForStandings.subscribe(function() {
-      var json = '';
-      try {
-        json = localStorage.getItem(LS_STANDINGS) || '';
-      } catch (e) {
-        console.error('Failed to load standings:', e);
-      }
-      if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-        app.ports.receiveStandings.send(json);
-      }
-    });
-  }
-
-  // Autosave setting
-  if (app.ports.saveAutoSave && app.ports.saveAutoSave.subscribe) {
-    app.ports.saveAutoSave.subscribe(function(enabled) {
-      try {
-        localStorage.setItem(LS_AUTOSAVE, JSON.stringify(enabled));
-      } catch (e) {
-        console.error('Failed to save autosave setting:', e);
-      }
-    });
-  }
-
-  // Load autosave setting
-  if (app.ports.askForAutoSave && app.ports.askForAutoSave.subscribe) {
-    app.ports.askForAutoSave.subscribe(function() {
-      var enabled = true;
-      try {
-        enabled = JSON.parse(localStorage.getItem(LS_AUTOSAVE) || 'true');
-      } catch (e) {
-        console.error('Failed to load autosave setting:', e);
-      }
-      if (app.ports.receiveAutoSave && app.ports.receiveAutoSave.send) {
-        app.ports.receiveAutoSave.send(enabled);
-      }
-    });
-  }
-
-  // Save to Drive via POST
-  if (app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
-    app.ports.saveToPublicDrive.subscribe(function(json) {
-      console.log('Drive save requested, payload length:', json.length);
-      try {
-        localStorage.setItem(LS_PUBLIC, json);
-      } catch (e) {
-        console.warn('Could not persist public copy to localStorage:', e);
-      }
-
-      if (!SAVE_URL) {
-        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-          app.ports.receivePublicDriveStatus.send('Saved locally only (no SAVE_URL configured)');
-        }
-        return;
-      }
-
-      console.log('POSTing to:', SAVE_URL);
-      fetch(SAVE_URL, {
-        method: 'POST',
-        headers: { 'Content-Type': 'text/plain' },
-        body: json
-      })
-      .then(function(res) {
-        console.log('Drive response status:', res.status);
-        return res.text().then(function(text){
-          console.log('Drive response text:', text);
-          var payload;
-          try { payload = JSON.parse(text); } catch(_) { payload = { ok:false, status: res.status, body: text }; }
-          var ok = payload && payload.ok === true;
-          var msg = ok ? 'Saved to Drive' : ('Drive save failed: ' + (payload.error || ('status ' + res.status)));
-          
-          // Check if this was a match save (compact JSON) vs manual save (formatted JSON)
-          var isMatchSave = json.indexOf('\n') === -1; // No newlines = compact = match save
-          
-          if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-            var ts = new Date().toISOString();
-            app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));
-          }
-          
-          // If this was a successful match save, trigger the completion port
-          if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
-            app.ports.receiveMatchSaveComplete.send(null);
-          }
-        });
-      })
-      .catch(function(err) {
-        console.error('Drive save failed:', err);
-        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-          app.ports.receivePublicDriveStatus.send('Drive save failed: ' + String(err));
-        }
-      });
-    });
-  }
-
-  // Load from public copy in localStorage (fallback)
-  if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {
-    app.ports.loadFromPublicDrive.subscribe(function(){
-      var json = '';
-      try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
-      if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-        app.ports.receiveStandings.send(json);
-      }
-    });
-  }
-}
-catch (e)
-{
-  // display initialization errors (e.g. bad flags, infinite recursion)
-  var header = document.createElement("h1");
-  header.style.fontFamily = "monospace";
-  header.innerText = "Initialization Error";
-  var pre = document.getElementById("elm");
-  document.body.insertBefore(header, pre);
-  pre.innerText = e;
-  throw e;
-}
-</script>
-
-</body>
-</html>

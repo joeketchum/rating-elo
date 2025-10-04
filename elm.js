@@ -7660,6 +7660,7 @@ var $author$project$Main$init = function (_v0) {
 		_Utils_Tuple2(
 			{
 				autoSave: true,
+				autoSaveInProgress: false,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
@@ -8845,6 +8846,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 		_Utils_update(
 			model,
 			{
+				autoSaveInProgress: true,
 				status: $elm$core$Maybe$Just('Saving to Google Sheets...'),
 				votesUntilDriveSync: 5
 			}),
@@ -9507,7 +9509,7 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
-				return $author$project$Main$maybeAutoSave(
+				return model.autoSaveInProgress ? _Utils_Tuple2(model, $elm$core$Platform$Cmd$none) : $author$project$Main$maybeAutoSave(
 					$author$project$Main$startNextMatchIfPossible(
 						$author$project$Main$maybeSaveToDriveAfterVote(
 							_Utils_Tuple2(
@@ -9706,6 +9708,7 @@ var $author$project$Main$update = F2(
 					var updatedModel = _Utils_update(
 						model,
 						{
+							autoSaveInProgress: false,
 							history: A2($author$project$History$init, 50, league),
 							shouldStartNextMatchAfterLoad: false
 						});
@@ -9723,6 +9726,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
+								autoSaveInProgress: false,
 								shouldStartNextMatchAfterLoad: false,
 								status: $elm$core$Maybe$Just('Saved standings malformed or unreadable')
 							}),
@@ -12419,7 +12423,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'Winner!',
-									$elm$core$Maybe$Just(
+									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{lost: playerB, won: playerA}))))
@@ -12440,7 +12444,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'Tie!',
-									$elm$core$Maybe$Just(
+									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Draw(
 												{playerA: playerA, playerB: playerB}))))
@@ -12461,7 +12465,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'Winner!',
-									$elm$core$Maybe$Just(
+									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{lost: playerA, won: playerB}))))
@@ -14591,7 +14595,7 @@ var $author$project$Main$view = function (model) {
 												$rtfeldman$elm_css$Css$right(
 												$rtfeldman$elm_css$Css$px(20)),
 												$rtfeldman$elm_css$Css$backgroundColor(
-												$rtfeldman$elm_css$Css$hex('333')),
+												model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('E02020') : $rtfeldman$elm_css$Css$hex('333')),
 												$rtfeldman$elm_css$Css$color(
 												$rtfeldman$elm_css$Css$hex('FFF')),
 												A4(
@@ -14618,7 +14622,22 @@ var $author$project$Main$view = function (model) {
 												_List_fromArray(
 													[
 														$tesk9$accessible_html_with_css$Accessibility$Styled$text(message)
-													]))
+													])),
+												model.autoSaveInProgress ? A2(
+												$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$marginLeft(
+																$rtfeldman$elm_css$Css$px(8))
+															]))
+													]),
+												_List_fromArray(
+													[
+														$tesk9$accessible_html_with_css$Accessibility$Styled$text('(Voting disabled)')
+													])) : $tesk9$accessible_html_with_css$Accessibility$Styled$text('')
 											])),
 										A2(
 										$tesk9$accessible_html_with_css$Accessibility$Styled$div,

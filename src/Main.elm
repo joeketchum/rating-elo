@@ -61,6 +61,7 @@ type alias Model =
     , lastSynced : Maybe String
     , votesUntilDriveSync : Int
     , shouldStartNextMatchAfterLoad : Bool
+    , autoSaveInProgress : Bool
     }
 
 
@@ -118,6 +119,7 @@ init _ =
       , lastSynced = Nothing
       , votesUntilDriveSync = 5
       , shouldStartNextMatchAfterLoad = False
+      , autoSaveInProgress = False
       }
     , Cmd.batch [ askForAutoSave "init", httpRequest ]
     )
@@ -211,7 +213,7 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
     in
     if newCount <= 0 then
         -- Save to Drive and don't start next match until reload completes
-        ( { model | votesUntilDriveSync = 5, status = Just "Saving to Google Sheets..." }
+        ( { model | votesUntilDriveSync = 5, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
         , Cmd.batch
             [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
@@ -277,12 +279,16 @@ update msg model =
             ( model, Cmd.none )
 
         MatchFinished outcome ->
-            ( { model | history = History.mapPush (League.finishMatch outcome) model.history }
-            , Cmd.none
-            )
-                |> maybeSaveToDriveAfterVote
-                |> startNextMatchIfPossible
-                |> maybeAutoSave
+            if model.autoSaveInProgress then
+                -- Ignore votes during auto-save to prevent race conditions
+                ( model, Cmd.none )
+            else
+                ( { model | history = History.mapPush (League.finishMatch outcome) model.history }
+                , Cmd.none
+                )
+                    |> maybeSaveToDriveAfterVote
+                    |> startNextMatchIfPossible
+                    |> maybeAutoSave
 
         KeeperWantsToSaveStandings ->
             ( model
@@ -386,7 +392,7 @@ update msg model =
             case Decode.decodeString League.decoder jsonString of
                 Ok league ->
                     let
-                        updatedModel = { model | history = History.init 50 league, shouldStartNextMatchAfterLoad = False }
+                        updatedModel = { model | history = History.init 50 league, shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False }
                         baseResult = ( updatedModel, Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity )
                     in
                     if model.shouldStartNextMatchAfterLoad then
@@ -398,7 +404,7 @@ update msg model =
                             |> maybeAutoSave
 
                 Err _ ->
-                    ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False }
+                    ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False }
                     , Cmd.none
                     )
 
@@ -500,14 +506,17 @@ view model =
                             [ Css.position Css.fixed
                             , Css.top (Css.px 20)
                             , Css.right (Css.px 20)
-                            , Css.backgroundColor (Css.hex "333")
+                            , Css.backgroundColor (if model.autoSaveInProgress then Css.hex "E02020" else Css.hex "333")
                             , Css.color (Css.hex "FFF")
                             , Css.padding4 (Css.px 8) (Css.px 12) (Css.px 8) (Css.px 12)
                             , Css.borderRadius (Css.px 6)
                             , openSans
                             ]
                         ]
-                        [ Html.div [] [ Html.span [] [ Html.text message ] ]
+                        [ Html.div [] 
+                            [ Html.span [] [ Html.text message ]
+                            , if model.autoSaveInProgress then Html.span [ css [ Css.marginLeft (Css.px 8) ] ] [ Html.text "(Voting disabled)" ] else Html.text ""
+                            ]
                         , Html.div []
                             (case model.lastSynced of
                                 Just ts ->
@@ -617,11 +626,17 @@ currentMatch model =
                         ]
                     ]
                     [ Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "Winner!" (Just (MatchFinished (League.Win { lost = playerB, won = playerA }))) ]
+                        [ blueButton "Winner!" 
+                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
+                        ]
                     , Html.div [ css [ Css.width (Css.pct 20) ] ]
-                        [ blueButton "Tie!" (Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB }))) ]
+                        [ blueButton "Tie!" 
+                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
+                        ]
                     , Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "Winner!" (Just (MatchFinished (League.Win { won = playerB, lost = playerA }))) ]
+                        [ blueButton "Winner!" 
+                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
+                        ]
                     ]
                 , Html.div
                     [ css
