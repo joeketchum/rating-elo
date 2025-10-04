@@ -12318,7 +12318,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$tesk9$accessible_html_with_css$Accessibility$Styled$text('The Rating Game ❤️')
+							$tesk9$accessible_html_with_css$Accessibility$Styled$text('Hockey Rater 🏒')
 						])),
 					A2(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$p,
@@ -12402,7 +12402,7 @@ var $author$project$Main$currentMatch = function (model) {
 								]),
 							_List_fromArray(
 								[
-									$tesk9$accessible_html_with_css$Accessibility$Styled$text('⚔️ BATTLE PREDICTION ⚔️')
+									$tesk9$accessible_html_with_css$Accessibility$Styled$text('🏒 HOCKEY RATER 🏒')
 								])),
 							A2(
 							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -12454,7 +12454,7 @@ var $author$project$Main$currentMatch = function (model) {
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
-													$rtfeldman$elm_css$Css$hex('FF6B6B')),
+													$rtfeldman$elm_css$Css$hex('EF4444')),
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$left(
 													$rtfeldman$elm_css$Css$px(0)),
@@ -12485,7 +12485,7 @@ var $author$project$Main$currentMatch = function (model) {
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
-													$rtfeldman$elm_css$Css$hex('4ECDC4')),
+													$rtfeldman$elm_css$Css$hex('3B82F6')),
 													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
 													$rtfeldman$elm_css$Css$right(
 													$rtfeldman$elm_css$Css$px(0)),
@@ -14881,7 +14881,7 @@ var $author$project$Main$view = function (model) {
 						return _List_Nil;
 					}
 				}())),
-		title: 'The Rating Game ❤️'
+		title: 'Hockey Rater 🏒'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(

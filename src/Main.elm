@@ -485,7 +485,7 @@ modernSansSerif =
 
 view : Model -> Document Msg
 view model =
-    { title = "The Rating Game ❤️"
+    { title = "Hockey Rater 🏒"
     , body =
         [ Css.Reset.meyerV2
         , Css.Reset.borderBoxV201408
@@ -573,7 +573,7 @@ currentMatch model =
                         , Css.fontWeight (Css.int 600)
                         ]
                     ]
-                    [ Html.text "The Rating Game ❤️" ]
+                    [ Html.text "Hockey Rater 🏒" ]
                 , Html.p
                     [ css
                         [ Css.fontSize (Css.px 24)
@@ -612,7 +612,7 @@ currentMatch model =
                             , modernSansSerif
                             ]
                         ]
-                        [ Html.text "⚔️ BATTLE PREDICTION ⚔️" ]
+                        [ Html.text "🏒 HOCKEY RATER 🏒" ]
                     , Html.div
                         [ css
                             [ Css.position Css.relative
@@ -629,7 +629,7 @@ currentMatch model =
                             [ css
                                 [ Css.width (Css.pct (max (if round (chanceAWins * 100) >= 100 then 20 else 16) (100 * chanceAWins)))
                                 , Css.height (Css.pct 100)
-                                , Css.backgroundColor (Css.hex "FF6B6B")
+                                , Css.backgroundColor (Css.hex "EF4444")  -- Modern red
                                 , Css.position Css.absolute
                                 , Css.left (Css.px 0)
                                 , Css.top (Css.px 0)
@@ -641,7 +641,7 @@ currentMatch model =
                             [ css
                                 [ Css.width (Css.pct (max (if round ((1 - chanceAWins) * 100) >= 100 then 20 else 16) (100 * (1 - chanceAWins))))
                                 , Css.height (Css.pct 100)
-                                , Css.backgroundColor (Css.hex "4ECDC4")
+                                , Css.backgroundColor (Css.hex "3B82F6")  -- Modern blue
                                 , Css.position Css.absolute
                                 , Css.right (Css.px 0)
                                 , Css.top (Css.px 0)
