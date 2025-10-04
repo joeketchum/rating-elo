@@ -75,15 +75,15 @@ try {
       try { localStorage.setItem(LS_PUBLIC, json); } catch (_) {}
 
       // Google Apps Script URL for your deployed web app
-      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMKDAGq7vWDi8lh-MBCwTYUlOLMqTiGol877LO2R2Mt5wL_fm1-LDYXAq-m1eEN3WJTg/exec';
+      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
       
-      // Send to Google Apps Script (send raw JSON data)
+      // Send to Google Apps Script (use form data to avoid CORS preflight)
+      var formData = new FormData();
+      formData.append('data', json);
+      
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: json
+        body: formData
       })
       .then(function(response) {
         console.log('Apps Script Response Status:', response.status);
@@ -138,7 +138,7 @@ try {
   // Load from Google Drive, fallback to localStorage
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
-      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwMKDAGq7vWDi8lh-MBCwTYUlOLMqTiGol877LO2R2Mt5wL_fm1-LDYXAq-m1eEN3WJTg/exec';
+      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
       
       // Try to load from Google Drive first
       fetch(APPS_SCRIPT_URL, { method: 'GET' })
