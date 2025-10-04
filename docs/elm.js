@@ -7666,7 +7666,7 @@ var $author$project$Main$init = function (_v0) {
 				newPlayerName: '',
 				shouldStartNextMatchAfterLoad: false,
 				status: $elm$core$Maybe$Nothing,
-				votesUntilDriveSync: 10
+				votesUntilDriveSync: 20
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -8850,7 +8850,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 			{
 				autoSaveInProgress: true,
 				status: $elm$core$Maybe$Just('Saving to Google Sheets...'),
-				votesUntilDriveSync: 10
+				votesUntilDriveSync: 20
 			}),
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
@@ -9589,13 +9589,20 @@ var $author$project$Main$update = F2(
 					model,
 					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'AutoSaveCompleted':
-				return _Utils_Tuple2(
+				return model.autoSaveInProgress ? _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
 							autoSaveInProgress: false,
 							shouldStartNextMatchAfterLoad: true,
-							status: $elm$core$Maybe$Just('Saved successfully! Loading next match...')
+							status: $elm$core$Maybe$Just('Auto-save completed! Loading next match...')
+						}),
+					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							shouldStartNextMatchAfterLoad: false,
+							status: $elm$core$Maybe$Just('Manual save completed! Reloading data...')
 						}),
 					$author$project$Main$loadFromPublicDrive(''));
 			case 'AutoSaveTimeout':

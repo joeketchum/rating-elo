@@ -109,16 +109,20 @@ try {
             app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));      
           }
 
-          // Send completion signal only for auto-saves (compact JSON without newlines)
-          if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
-            console.log('AUTO-SAVE COMPLETED: Sending completion signal to Elm');
+          // Send completion signal for both auto-saves and manual saves to ensure data reload
+          if (ok && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+            if (isMatchSave) {
+              console.log('AUTO-SAVE COMPLETED: Sending completion signal to Elm');
+            } else {
+              console.log('MANUAL SAVE COMPLETED: Sending completion signal to Elm');
+            }
             app.ports.receiveMatchSaveComplete.send(null);        
           } else {
             console.log('SAVE COMPLETION CHECK:', { 
               ok: ok, 
               isMatchSave: isMatchSave, 
               hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send),
-              willSendSignal: ok && isMatchSave 
+              willSendSignal: ok 
             });
           }
         });

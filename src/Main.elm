@@ -118,7 +118,7 @@ init _ =
       , autoSave = True
       , status = Nothing
       , lastSynced = Nothing
-      , votesUntilDriveSync = 10
+      , votesUntilDriveSync = 20
       , shouldStartNextMatchAfterLoad = False
       , autoSaveInProgress = False
       }
@@ -214,7 +214,7 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
     in
     if newCount <= 0 then
         -- Save to Drive and don't start next match until reload completes
-        ( { model | votesUntilDriveSync = 10, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
+        ( { model | votesUntilDriveSync = 20, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
         , Cmd.batch
             [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
@@ -327,10 +327,17 @@ update msg model =
                 ( model, Cmd.none )
 
         AutoSaveCompleted ->
-            -- Auto-save to Drive completed, now reload and continue to next match
-            ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Saved successfully! Loading next match..." }
-            , loadFromPublicDrive ""
-            )
+            -- Save completed, reload data. Only continue to next match if it was an auto-save
+            if model.autoSaveInProgress then
+                -- This was an auto-save, continue to next match after reload
+                ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Auto-save completed! Loading next match..." }
+                , loadFromPublicDrive ""
+                )
+            else
+                -- This was a manual save, just reload without starting next match
+                ( { model | shouldStartNextMatchAfterLoad = False, status = Just "Manual save completed! Reloading data..." }
+                , loadFromPublicDrive ""
+                )
 
         AutoSaveTimeout ->
             -- Auto-save timed out, reset state and continue
