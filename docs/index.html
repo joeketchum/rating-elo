@@ -75,7 +75,7 @@ try {
       try { localStorage.setItem(LS_PUBLIC, json); } catch (_) {}
 
       // Google Apps Script URL for your deployed web app
-      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Vo9hj74V_bOIRzpP9jrDrC1EhBBdnfUKUHlOGhElCDmGjSJm6LZdN4yXY5ZkEWLnzA/exec';
+      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH418oXfqyyo2JLSrw8c_2OWVnM31yWXlvTcN8GKMDJ09BlEvp4ldp0fjudLazeLVFkg/exec';
       
       // Send to Google Apps Script (send raw JSON data)
       fetch(APPS_SCRIPT_URL, {
@@ -138,7 +138,7 @@ try {
   // Load from Google Drive, fallback to localStorage
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
-      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Vo9hj74V_bOIRzpP9jrDrC1EhBBdnfUKUHlOGhElCDmGjSJm6LZdN4yXY5ZkEWLnzA/exec';
+      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbwH418oXfqyyo2JLSrw8c_2OWVnM31yWXlvTcN8GKMDJ09BlEvp4ldp0fjudLazeLVFkg/exec';
       
       // Try to load from Google Drive first
       fetch(APPS_SCRIPT_URL, { method: 'GET' })
