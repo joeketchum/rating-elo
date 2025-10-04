@@ -12013,10 +12013,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h2 = function (attribut
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
 var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
 	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
 		value: A2($elm$core$String$join, ', ', list)
@@ -12026,9 +12022,13 @@ var $rtfeldman$elm_css$Css$fontFamilies = A2(
 	$elm$core$Basics$composeL,
 	$rtfeldman$elm_css$Css$prop1('font-family'),
 	$rtfeldman$elm_css$Css$stringsToValue);
-var $author$project$Main$openSans = $rtfeldman$elm_css$Css$fontFamilies(
+var $author$project$Main$modernSansSerif = $rtfeldman$elm_css$Css$fontFamilies(
 	_List_fromArray(
-		['\'Open Sans\'', 'sans-serif']));
+		['system-ui', '-apple-system', 'BlinkMacSystemFont', '\'Segoe UI\'', '\'Roboto\'', '\'Inter\'', '\'Helvetica Neue\'', 'Arial', 'sans-serif']));
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
@@ -12119,7 +12119,7 @@ var $author$project$Main$activePlayer = function (player) {
 						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 						$rtfeldman$elm_css$Css$fontSize(
 						$rtfeldman$elm_css$Css$px(24)),
-						$author$project$Main$openSans
+						$author$project$Main$modernSansSerif
 					]))
 			]),
 		_List_fromArray(
@@ -12301,7 +12301,7 @@ var $author$project$Main$currentMatch = function (model) {
 					$rtfeldman$elm_css$Html$Styled$Attributes$css(
 					_List_fromArray(
 						[
-							$author$project$Main$openSans,
+							$author$project$Main$modernSansSerif,
 							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 							$rtfeldman$elm_css$Css$width(
 							$rtfeldman$elm_css$Css$pct(50)),
@@ -12672,7 +12672,7 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Html$Styled$Attributes$css(
 									_List_fromArray(
 										[
-											$author$project$Main$openSans,
+											$author$project$Main$modernSansSerif,
 											$rtfeldman$elm_css$Css$width(
 											$rtfeldman$elm_css$Css$pct(20)),
 											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
@@ -13704,7 +13704,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$lineHeight(
 				$rtfeldman$elm_css$Css$px(24)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-				$author$project$Main$openSans,
+				$author$project$Main$modernSansSerif,
 				$rtfeldman$elm_css$Css$paddingLeft(
 				$rtfeldman$elm_css$Css$px(15))
 			]));
@@ -13745,7 +13745,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$fontSize(
 				$rtfeldman$elm_css$Css$px(21)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-				$author$project$Main$openSans
+				$author$project$Main$modernSansSerif
 			]));
 	var left = $rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left);
 	var header = $rtfeldman$elm_css$Css$batch(
@@ -13756,7 +13756,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$paddingLeft(
 				$rtfeldman$elm_css$Css$px(15)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-				$author$project$Main$openSans,
+				$author$project$Main$modernSansSerif,
 				$rtfeldman$elm_css$Css$fontWeight(
 				$rtfeldman$elm_css$Css$int(600)),
 				A3(
@@ -14095,7 +14095,7 @@ var $author$project$Main$rankings = function (model) {
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
 																[
-																	$author$project$Main$openSans,
+																	$author$project$Main$modernSansSerif,
 																	$rtfeldman$elm_css$Css$color(
 																	$rtfeldman$elm_css$Css$hex('6DD400')),
 																	$rtfeldman$elm_css$Css$fontSize(
@@ -14118,7 +14118,7 @@ var $author$project$Main$rankings = function (model) {
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
 																[
-																	$author$project$Main$openSans,
+																	$author$project$Main$modernSansSerif,
 																	$rtfeldman$elm_css$Css$color(
 																	$rtfeldman$elm_css$Css$hex('E02020')),
 																	$rtfeldman$elm_css$Css$fontSize(
@@ -14783,14 +14783,6 @@ var $author$project$Main$view = function (model) {
 					[
 						$BrianHicks$elm_css_reset$Css$Reset$meyerV2,
 						$BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408,
-						A3(
-						$rtfeldman$elm_css$Html$Styled$node,
-						'style',
-						_List_Nil,
-						_List_fromArray(
-							[
-								$tesk9$accessible_html_with_css$Accessibility$Styled$text('\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Regular-webfont.woff");\r\n                font-weight: 500;\r\n            }\r\n            @font-face {\r\n                font-family: "Open Sans";\r\n                src: url("/fonts/OpenSans-Semibold-webfont.woff");\r\n                font-weight: 600;\r\n            }\r\n          ')
-							])),
 						A2(
 						$tesk9$accessible_html_with_css$Accessibility$Styled$div,
 						_List_fromArray(
@@ -14880,7 +14872,7 @@ var $author$project$Main$view = function (model) {
 												$rtfeldman$elm_css$Css$px(12)),
 												$rtfeldman$elm_css$Css$borderRadius(
 												$rtfeldman$elm_css$Css$px(6)),
-												$author$project$Main$openSans
+												$author$project$Main$modernSansSerif
 											]))
 									]),
 								_List_fromArray(

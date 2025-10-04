@@ -468,9 +468,9 @@ update msg model =
 
 -- VIEW
 
-openSans : Css.Style
-openSans =
-    Css.fontFamilies [ "'Open Sans'", "sans-serif" ]
+modernSansSerif : Css.Style
+modernSansSerif =
+    Css.fontFamilies [ "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "'Roboto'", "'Inter'", "'Helvetica Neue'", "Arial", "sans-serif" ]
 
 
 view : Model -> Document Msg
@@ -479,18 +479,7 @@ view model =
     , body =
         [ Css.Reset.meyerV2
         , Css.Reset.borderBoxV201408
-        , WildWildHtml.node "style" [] [ Html.text """
-            @font-face {
-                font-family: "Open Sans";
-                src: url("/fonts/OpenSans-Regular-webfont.woff");
-                font-weight: 500;
-            }
-            @font-face {
-                font-family: "Open Sans";
-                src: url("/fonts/OpenSans-Semibold-webfont.woff");
-                font-weight: 600;
-            }
-          """ ]
+
         , Html.div [ css [ Css.width (Css.pct 100) ] ]
             [ Html.main_
                 [ css
@@ -520,7 +509,7 @@ view model =
                             , Css.color (Css.hex "FFF")
                             , Css.padding4 (Css.px 8) (Css.px 12) (Css.px 8) (Css.px 12)
                             , Css.borderRadius (Css.px 6)
-                            , openSans
+                            , modernSansSerif
                             ]
                         ]
                         [ Html.div [] 
@@ -561,7 +550,7 @@ currentMatch model =
         Nothing ->
             Html.div
                 [ css
-                    [ openSans
+                    [ modernSansSerif
                     , Css.textAlign Css.center
                     , Css.width (Css.pct 50)
                     , Css.margin2 (Css.px 32) Css.auto
@@ -712,7 +701,7 @@ currentMatch model =
                     ]
                     [ activePlayer playerA
                     , Html.p
-                        [ css [ openSans, Css.width (Css.pct 20), Css.textAlign Css.center ] ]
+                        [ css [ modernSansSerif, Css.width (Css.pct 20), Css.textAlign Css.center ] ]
                         [ Html.text "vs." ]
                     , activePlayer playerB
                     ]
@@ -780,7 +769,7 @@ rankings model =
                 [ Css.fontWeight (Css.int 600)
                 , Css.fontSize (Css.px 21)
                 , Css.verticalAlign Css.middle
-                , openSans
+                , modernSansSerif
                 ]
 
         textual =
@@ -789,7 +778,7 @@ rankings model =
                 , Css.fontSize (Css.px 18)
                 , Css.lineHeight (Css.px 24)
                 , Css.verticalAlign Css.middle
-                , openSans
+                , modernSansSerif
                 , Css.paddingLeft (Css.px 15)
                 ]
 
@@ -811,7 +800,7 @@ rankings model =
                 [ Css.paddingRight (Css.px 15)
                 , Css.paddingLeft (Css.px 15)
                 , Css.verticalAlign Css.middle
-                , openSans
+                , modernSansSerif
                 , Css.fontWeight (Css.int 600)
                 , Css.borderRight3 (Css.px 1) Css.solid (Css.hex "B1BECE")
                 , Css.lastChild [ Css.borderRightWidth Css.zero ]
@@ -848,14 +837,14 @@ rankings model =
                          else if rank < previousRank then
                             [ upArrow (Css.hex "6DD400")
                             , Html.span
-                                [ css [ openSans, Css.color (Css.hex "6DD400"), Css.fontSize (Css.px 14) ] ]
+                                [ css [ modernSansSerif, Css.color (Css.hex "6DD400"), Css.fontSize (Css.px 14) ] ]
                                 [ Html.text (String.fromInt (previousRank - rank)) ]
                             ]
 
                          else if rank > previousRank then
                             [ downArrow (Css.hex "E02020")
                             , Html.span
-                                [ css [ openSans, Css.color (Css.hex "E02020"), Css.fontSize (Css.px 14) ] ]
+                                [ css [ modernSansSerif, Css.color (Css.hex "E02020"), Css.fontSize (Css.px 14) ] ]
                                 [ Html.text (String.fromInt (abs (previousRank - rank))) ]
                             ]
 
@@ -1116,7 +1105,7 @@ activePlayer player =
             , Css.maxWidth (Css.pct 45)
             , Css.textAlign Css.center
             , Css.fontSize (Css.px 24)
-            , openSans
+            , modernSansSerif
             ]
         ]
         [ Html.text (Player.name player) ]
