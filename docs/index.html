@@ -8030,6 +8030,7 @@ var $author$project$Main$subscriptions = function (model) {
 				]));
 	}
 };
+var $author$project$Main$ClearStatus = {$: 20};
 var $author$project$Main$LoadedLeague = function (a) {
 	return {$: 14, a: a};
 };
@@ -9056,6 +9057,7 @@ var $author$project$League$retirePlayer = F2(
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
 var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
+var $elm$core$Process$sleep = _Process_sleep;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (!maybeValue.$) {
@@ -9505,7 +9507,12 @@ var $author$project$Main$update = F2(
 						{
 							W: $elm$core$Maybe$Just(message)
 						}),
-					$elm$core$Platform$Cmd$none);
+					A2(
+						$elm$core$Task$perform,
+						function (_v6) {
+							return $author$project$Main$ClearStatus;
+						},
+						$elm$core$Process$sleep(3500)));
 			case 20:
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9516,7 +9523,6 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$ClearStatus = {$: 20};
 var $author$project$Main$KeeperWantsToLoadStandings = {$: 10};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 8};
 var $author$project$Main$KeeperWantsToSaveToDrive = {$: 9};
@@ -12823,8 +12829,70 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.r);
 };
-var $author$project$Main$redButton = $author$project$Main$button(
-	$rtfeldman$elm_css$Css$hex('E02020'));
+var $author$project$Main$smallRedXButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(8)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(36)),
+						function () {
+						if (!maybeMsg.$) {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('E02020'));
+						} else {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('DDD'));
+						}
+					}(),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(4)),
+						A6(
+						$rtfeldman$elm_css$Css$boxShadow6,
+						$rtfeldman$elm_css$Css$inset,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(-4),
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$zero,
+						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(14)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF'))
+					])),
+				function () {
+				if (!maybeMsg.$) {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
+			]));
+};
 var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$span(
@@ -13398,9 +13466,7 @@ var $author$project$Main$rankings = function (model) {
 														$author$project$Main$KeeperWantsToUnignorePlayer(player)))
 												]) : _List_fromArray(
 												[
-													A2(
-													$author$project$Main$redButton,
-													'Delete',
+													$author$project$Main$smallRedXButton(
 													$elm$core$Maybe$Just(
 														$author$project$Main$KeeperWantsToRetirePlayer(player))),
 													A2(
@@ -13434,70 +13500,6 @@ var $author$project$Main$rankings = function (model) {
 							$author$project$History$current(model.b)))))));
 };
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
-var $author$project$Main$smallRedXButton = function (maybeMsg) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(8)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(8)),
-						A2(
-						$rtfeldman$elm_css$Css$margin2,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(36)),
-						function () {
-						if (!maybeMsg.$) {
-							return $rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('E02020'));
-						} else {
-							return $rtfeldman$elm_css$Css$backgroundColor(
-								$rtfeldman$elm_css$Css$hex('DDD'));
-						}
-					}(),
-						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(4)),
-						A6(
-						$rtfeldman$elm_css$Css$boxShadow6,
-						$rtfeldman$elm_css$Css$inset,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(-4),
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$zero,
-						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
-						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(14)),
-						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
-						$rtfeldman$elm_css$Css$color(
-						$rtfeldman$elm_css$Css$hex('FFF'))
-					])),
-				function () {
-				if (!maybeMsg.$) {
-					var m = maybeMsg.a;
-					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
-				} else {
-					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
-				}
-			}()
-			]),
-		_List_fromArray(
-			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
-			]));
-};
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {
 		var isCssStyles = _v0.b;
@@ -14226,191 +14228,6 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
   var app = Elm.Main.init({ node: document.getElementById("elm") });
-
-  // Port handlers for localStorage and Drive save
-  (function(){
-    const LS_STANDINGS = "rating-elo.standings";
-    const LS_AUTOSAVE = "rating-elo.autosave";
-    const LS_PUBLIC = "rating-elo.public_copy";
-    const SAVE_URL = "https://script.google.com/macros/s/AKfycbz91BOGNOwt_hCg4lh2_x0f1XjgAyRruB_0ym4FegBHPsajK7jAeGweWxQO9pRhrwEVow/exec";
-
-    function toast(msg, duration) {
-      console.log('TOAST:', msg);
-      var t = document.getElementById('toast');
-      if(!t) {
-        t = document.createElement('div');
-        t.id = 'toast';
-        t.style.position = 'fixed';
-        t.style.right = '12px';
-        t.style.bottom = '12px';
-        t.style.padding = '8px 12px';
-        t.style.background = 'rgba(0,0,0,0.75)';
-        t.style.color = 'white';
-        t.style.borderRadius = '6px';
-        t.style.zIndex = 9999;
-        document.body.appendChild(t);
-      }
-      t.innerText = msg;
-      t.style.display = 'block';
-      if(t._timeout) clearTimeout(t._timeout);
-      t._timeout = setTimeout(function(){ t.style.display = 'none'; }, duration || 3500);
-    }
-
-    if (app && app.ports) {
-      // Save standings locally
-      if(app.ports.saveStandings && app.ports.saveStandings.subscribe) {
-        app.ports.saveStandings.subscribe(function(json) {
-          try {
-            localStorage.setItem(LS_STANDINGS, json);
-            localStorage.setItem(LS_PUBLIC, json);
-            toast('Standings saved locally');
-          } catch(e) {
-            console.error('Failed to save standings locally:', e);
-            toast('Failed to save locally: ' + e);
-          }
-        });
-      }
-
-      // Load standings
-      if(app.ports.askForStandings && app.ports.askForStandings.subscribe) {
-        app.ports.askForStandings.subscribe(function() {
-          var json = localStorage.getItem(LS_STANDINGS) || "";
-          if(app.ports.receiveStandings && app.ports.receiveStandings.send) {
-            app.ports.receiveStandings.send(json);
-          }
-        });
-      }
-
-      // Save autosave preference
-      if(app.ports.saveAutoSave && app.ports.saveAutoSave.subscribe) {
-        app.ports.saveAutoSave.subscribe(function(enabled) {
-          try {
-            localStorage.setItem(LS_AUTOSAVE, JSON.stringify(enabled));
-          } catch(e) {
-            console.error('Failed to save autosave setting:', e);
-          }
-        });
-      }
-
-      // Load autosave preference
-      if(app.ports.askForAutoSave && app.ports.askForAutoSave.subscribe) {
-        app.ports.askForAutoSave.subscribe(function() {
-          var enabled = true;
-          try {
-            enabled = JSON.parse(localStorage.getItem(LS_AUTOSAVE) || 'true');
-          } catch(e) {}
-          if(app.ports.receiveAutoSave && app.ports.receiveAutoSave.send) {
-            app.ports.receiveAutoSave.send(enabled);
-          }
-        });
-      }
-
-      // Save to Drive
-      if(app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
-        app.ports.saveToPublicDrive.subscribe(function(json) {
-          console.log('Save to Drive requested');
-          try {
-            localStorage.setItem(LS_PUBLIC, json);
-            
-            if(SAVE_URL) {
-              toast('Saving to Drive...');
-              console.log('POSTing to Drive:', SAVE_URL);
-              
-              fetch(SAVE_URL, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: json
-              })
-              .then(function(res) {
-                console.log('Drive response:', res.status);
-                return res.json().catch(function() {
-                  return { ok: false, status: res.status };
-                });
-              })
-              .then(function(body) {
-                console.log('Drive response body:', body);
-                var msg = body && body.ok ? 'Saved to Drive' : ('Drive save failed: ' + JSON.stringify(body));
-                if(app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-                  app.ports.receivePublicDriveStatus.send(msg + '|' + new Date().toISOString());
-                }
-                toast(msg);
-              })
-              .catch(function(err) {
-                console.error('Drive save failed:', err);
-                var msg = 'Drive save failed: ' + String(err);
-                if(app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-                  app.ports.receivePublicDriveStatus.send(msg);
-                }
-                toast(msg);
-              });
-            } else {
-              console.log('No SAVE_URL configured - saving only locally');
-              if(app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-                app.ports.receivePublicDriveStatus.send('Saved locally only (no SAVE_URL configured)');
-              }
-              toast('Saved locally (Drive save not configured)');
-            }
-          } catch(e) {
-            console.error('Save failed:', e);
-            toast('Save failed: ' + e);
-          }
-        });
-      }
-
-      // Load public copy for Drive fallback
-      if(app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {
-        app.ports.loadFromPublicDrive.subscribe(function() {
-          var json = localStorage.getItem(LS_PUBLIC) || "";
-          if(app.ports.receiveStandings && app.ports.receiveStandings.send) {
-            app.ports.receiveStandings.send(json);
-          }
-          toast('Loaded public copy from local storage');
-        });
-      }
-    }
-
-    // Add test button
-    var div = document.createElement('div');
-    div.style.position = 'fixed';
-    div.style.bottom = '12px';
-    div.style.left = '12px';
-    div.style.padding = '8px';
-    div.style.background = 'rgba(0,0,0,0.1)';
-    div.style.borderRadius = '6px';
-    div.style.zIndex = 9999;
-
-    var btn = document.createElement('button');
-    btn.innerText = 'Test Drive Save';
-    btn.onclick = async function() {
-      try {
-        var json = localStorage.getItem(LS_PUBLIC);
-        if (!json) {
-          console.error('No public copy in localStorage to test with');
-          alert('No standings found in localStorage to test with');
-          return;
-        }
-        console.log('Attempting Drive save to URL:', SAVE_URL);
-        console.log('Payload:', json);
-        
-        var res = await fetch(SAVE_URL, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: json
-        });
-        var text = await res.text();
-        console.log('Response:', res.status, text);
-        try { console.log('Parsed:', JSON.parse(text)); } catch(e) {}
-        
-        alert('Drive save test complete - check console for details');
-      } catch(e) {
-        console.error('Drive save test failed:', e);
-        alert('Drive save failed: ' + e);
-      }
-    };
-    div.appendChild(btn);
-    document.body.appendChild(div);
-  })();
-
 }
 catch (e)
 {
