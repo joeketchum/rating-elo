@@ -9805,11 +9805,9 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
 var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$KeeperWantsToSaveToDrive = {$: 'KeeperWantsToSaveToDrive'};
-var $author$project$Main$ToggleAutoSave = {$: 'ToggleAutoSave'};
 var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
@@ -11973,6 +11971,7 @@ var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
+var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
 var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
 var $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
@@ -12116,6 +12115,16 @@ var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 		'align-items',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
+var $rtfeldman$elm_css$Css$prop3 = F4(
+	function (key, argA, argB, argC) {
+		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + argC.value))));
+	});
+var $rtfeldman$elm_css$Css$border3 = $rtfeldman$elm_css$Css$prop3('border');
+var $rtfeldman$elm_css$Css$prop4 = F5(
+	function (key, argA, argB, argC, argD) {
+		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
+	});
+var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
 var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
 var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attributes) {
@@ -12201,18 +12210,17 @@ var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
 		'justify-content',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
+var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
+var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$p = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$p(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$prop4 = F5(
-	function (key, argA, argB, argC, argD) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
-	});
 var $rtfeldman$elm_css$Css$padding4 = $rtfeldman$elm_css$Css$prop4('padding');
 var $author$project$History$peekBack = function (_v0) {
 	var guts = _v0.a;
@@ -12222,13 +12230,46 @@ var $author$project$History$peekForward = function (_v0) {
 	var guts = _v0.a;
 	return $elm$core$List$head(guts.future);
 };
+var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
+var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
+var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
 var $rtfeldman$elm_css$Html$Styled$section = $rtfeldman$elm_css$Html$Styled$node('section');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$section(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
+var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-around');
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
+var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
+var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
+var $rtfeldman$elm_css$Css$valuesOrNone = function (list) {
+	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
+		value: A3(
+			$rtfeldman$elm_css$Css$String$mapJoin,
+			function ($) {
+				return $.value;
+			},
+			' ',
+			list)
+	};
+};
+var $rtfeldman$elm_css$Css$transforms = A2(
+	$elm$core$Basics$composeL,
+	$rtfeldman$elm_css$Css$prop1('transform'),
+	$rtfeldman$elm_css$Css$valuesOrNone);
+var $rtfeldman$elm_css$Css$translateX = function (_v0) {
+	var value = _v0.value;
+	return {
+		transform: $rtfeldman$elm_css$Css$Structure$Compatible,
+		value: A2(
+			$rtfeldman$elm_css$Css$cssFunction,
+			'translateX',
+			_List_fromArray(
+				[value]))
+	};
+};
+var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
 var $author$project$Main$currentMatch = function (model) {
 	var _v0 = $author$project$League$currentMatch(
 		$author$project$History$current(model.history));
@@ -12289,11 +12330,7 @@ var $author$project$Main$currentMatch = function (model) {
 					_List_fromArray(
 						[
 							$tesk9$accessible_html_with_css$Accessibility$Styled$text('No current match. To get started, add at least two players!')
-						])),
-					A2(
-					$author$project$Main$blueButton,
-					'Load from file',
-					$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings))
+						]))
 				]));
 	} else {
 		var _v1 = _v0.a;
@@ -12327,15 +12364,9 @@ var $author$project$Main$currentMatch = function (model) {
 							$rtfeldman$elm_css$Html$Styled$Attributes$css(
 							_List_fromArray(
 								[
-									$rtfeldman$elm_css$Css$borderRadius(
-									$rtfeldman$elm_css$Css$px(5)),
-									$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
-									$rtfeldman$elm_css$Css$height(
-									$rtfeldman$elm_css$Css$px(5)),
-									$rtfeldman$elm_css$Css$width(
-									$rtfeldman$elm_css$Css$pct(100)),
-									$rtfeldman$elm_css$Css$backgroundColor(
-									$rtfeldman$elm_css$Css$hex('EEE'))
+									$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
+									$rtfeldman$elm_css$Css$marginBottom(
+									$rtfeldman$elm_css$Css$px(20))
 								]))
 						]),
 					_List_fromArray(
@@ -12347,15 +12378,256 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Html$Styled$Attributes$css(
 									_List_fromArray(
 										[
-											$rtfeldman$elm_css$Css$width(
-											$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
-											$rtfeldman$elm_css$Css$height(
-											$rtfeldman$elm_css$Css$pct(100)),
-											$rtfeldman$elm_css$Css$backgroundColor(
-											$rtfeldman$elm_css$Css$hex('6DD400'))
+											$rtfeldman$elm_css$Css$fontSize(
+											$rtfeldman$elm_css$Css$px(14)),
+											$rtfeldman$elm_css$Css$fontWeight(
+											$rtfeldman$elm_css$Css$int(700)),
+											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$marginBottom(
+											$rtfeldman$elm_css$Css$px(12)),
+											$rtfeldman$elm_css$Css$color(
+											$rtfeldman$elm_css$Css$hex('555')),
+											$rtfeldman$elm_css$Css$letterSpacing(
+											$rtfeldman$elm_css$Css$px(1))
 										]))
 								]),
-							_List_Nil)
+							_List_fromArray(
+								[
+									$tesk9$accessible_html_with_css$Accessibility$Styled$text('⚔️ BATTLE PREDICTION ⚔️')
+								])),
+							A2(
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$relative),
+											$rtfeldman$elm_css$Css$borderRadius(
+											$rtfeldman$elm_css$Css$px(20)),
+											$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden),
+											$rtfeldman$elm_css$Css$height(
+											$rtfeldman$elm_css$Css$px(32)),
+											$rtfeldman$elm_css$Css$width(
+											$rtfeldman$elm_css$Css$pct(100)),
+											$rtfeldman$elm_css$Css$backgroundColor(
+											$rtfeldman$elm_css$Css$hex('E8E8E8')),
+											A6(
+											$rtfeldman$elm_css$Css$boxShadow6,
+											$rtfeldman$elm_css$Css$inset,
+											$rtfeldman$elm_css$Css$px(0),
+											$rtfeldman$elm_css$Css$px(3),
+											$rtfeldman$elm_css$Css$px(6),
+											$rtfeldman$elm_css$Css$px(0),
+											A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
+											A3(
+											$rtfeldman$elm_css$Css$border3,
+											$rtfeldman$elm_css$Css$px(2),
+											$rtfeldman$elm_css$Css$solid,
+											$rtfeldman$elm_css$Css$hex('DDD'))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
+													$rtfeldman$elm_css$Css$height(
+													$rtfeldman$elm_css$Css$pct(100)),
+													$rtfeldman$elm_css$Css$backgroundColor(
+													$rtfeldman$elm_css$Css$hex('FF6B6B')),
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+													$rtfeldman$elm_css$Css$left(
+													$rtfeldman$elm_css$Css$px(0)),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(0)),
+													A4(
+													$rtfeldman$elm_css$Css$boxShadow4,
+													$rtfeldman$elm_css$Css$px(2),
+													$rtfeldman$elm_css$Css$px(0),
+													$rtfeldman$elm_css$Css$px(4),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.2))
+												]))
+										]),
+									_List_Nil),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100 * (1 - chanceAWins))),
+													$rtfeldman$elm_css$Css$height(
+													$rtfeldman$elm_css$Css$pct(100)),
+													$rtfeldman$elm_css$Css$backgroundColor(
+													$rtfeldman$elm_css$Css$hex('4ECDC4')),
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+													$rtfeldman$elm_css$Css$right(
+													$rtfeldman$elm_css$Css$px(0)),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(0)),
+													A4(
+													$rtfeldman$elm_css$Css$boxShadow4,
+													$rtfeldman$elm_css$Css$px(-2),
+													$rtfeldman$elm_css$Css$px(0),
+													$rtfeldman$elm_css$Css$px(4),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.2))
+												]))
+										]),
+									_List_Nil),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(-8)),
+													$rtfeldman$elm_css$Css$left(
+													$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
+													$rtfeldman$elm_css$Css$fontSize(
+													$rtfeldman$elm_css$Css$px(24)),
+													$rtfeldman$elm_css$Css$transforms(
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$translateX(
+															$rtfeldman$elm_css$Css$pct(-50))
+														])),
+													$rtfeldman$elm_css$Css$zIndex(
+													$rtfeldman$elm_css$Css$int(10))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text('⚡')
+										])),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(6)),
+													$rtfeldman$elm_css$Css$left(
+													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$fontSize(
+													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$fontWeight(
+													$rtfeldman$elm_css$Css$int(700)),
+													$rtfeldman$elm_css$Css$color(
+													$rtfeldman$elm_css$Css$hex('FFF')),
+													A4(
+													$rtfeldman$elm_css$Css$textShadow4,
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$px(2),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text('💪')
+										])),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(6)),
+													$rtfeldman$elm_css$Css$right(
+													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$fontSize(
+													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$fontWeight(
+													$rtfeldman$elm_css$Css$int(700)),
+													$rtfeldman$elm_css$Css$color(
+													$rtfeldman$elm_css$Css$hex('FFF')),
+													A4(
+													$rtfeldman$elm_css$Css$textShadow4,
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$px(2),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text('💪')
+										]))
+								])),
+							A2(
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$displayFlex,
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
+											$rtfeldman$elm_css$Css$fontSize(
+											$rtfeldman$elm_css$Css$px(12)),
+											$rtfeldman$elm_css$Css$fontWeight(
+											$rtfeldman$elm_css$Css$int(600)),
+											$rtfeldman$elm_css$Css$marginTop(
+											$rtfeldman$elm_css$Css$px(8)),
+											$rtfeldman$elm_css$Css$color(
+											$rtfeldman$elm_css$Css$hex('777'))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$color(
+													$rtfeldman$elm_css$Css$hex('FF6B6B'))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+											'🔥 ' + ($elm$core$String$fromInt(
+												$elm$core$Basics$round(chanceAWins * 100)) + '% chance'))
+										])),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$color(
+													$rtfeldman$elm_css$Css$hex('4ECDC4'))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+											$elm$core$String$fromInt(
+												$elm$core$Basics$round((1 - chanceAWins) * 100)) + '% chance 🔥')
+										]))
+								]))
 						])),
 					A2(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -12598,7 +12870,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attri
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
 var $rtfeldman$elm_css$Css$Global$aside = $rtfeldman$elm_css$Css$Global$typeSelector('aside');
@@ -12938,7 +13209,6 @@ var $BrianHicks$elm_css_reset$Css$Reset$meyerV2 = $rtfeldman$elm_css$Css$Global$
 					$rtfeldman$elm_css$Css$borderSpacing($rtfeldman$elm_css$Css$zero)
 				]))
 		]));
-var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $author$project$Main$KeeperUpdatedNewPlayerName = function (a) {
 	return {$: 'KeeperUpdatedNewPlayerName', a: a};
 };
@@ -12951,10 +13221,6 @@ var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
-var $rtfeldman$elm_css$Css$prop3 = F4(
-	function (key, argA, argB, argC) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + argC.value))));
-	});
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
 var $rtfeldman$elm_css$Css$borderRightWidth = $rtfeldman$elm_css$Css$prop1('border-right-width');
 var $rtfeldman$elm_css$Css$calcExpressionToString = function (expression) {
@@ -13000,7 +13266,6 @@ var $author$project$Main$circle = function (color) {
 var $rtfeldman$elm_css$Css$borderLeft3 = $rtfeldman$elm_css$Css$prop3('border-left');
 var $rtfeldman$elm_css$Css$borderTop3 = $rtfeldman$elm_css$Css$prop3('border-top');
 var $rtfeldman$elm_css$Css$margin4 = $rtfeldman$elm_css$Css$prop4('margin');
-var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
 var $author$project$Main$downArrow = function (color) {
 	return A2(
@@ -13090,7 +13355,6 @@ var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
 		$rtfeldman$elm_css$Css$Structure$PseudoClassSelector(_class));
 };
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
-var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
 var $rtfeldman$elm_css$Css$Subtraction = {$: 'Subtraction'};
 var $rtfeldman$elm_css$Css$minus = $rtfeldman$elm_css$Css$Subtraction;
@@ -13954,7 +14218,6 @@ var $author$project$Main$rankings = function (model) {
 						$author$project$League$players(
 							$author$project$History$current(model.history)))))));
 };
-var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {
 		var isCssStyles = _v0.b;
@@ -14490,7 +14753,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
 var $tesk9$accessible_html_with_css$Accessibility$Styled$toUnstyled = $rtfeldman$elm_css$Html$Styled$toUnstyled;
-var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
 var $author$project$Main$view = function (model) {
 	return {
 		body: A2(
@@ -14563,15 +14825,7 @@ var $author$project$Main$view = function (model) {
 												A2(
 												$author$project$Main$blueButton,
 												'Refresh from Drive',
-												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive)),
-												A2(
-												$author$project$Main$blueButton,
-												'Load from file',
-												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToLoadStandings)),
-												A2(
-												$author$project$Main$goldButton,
-												model.autoSave ? 'Auto-save: On' : 'Auto-save: Off',
-												$elm$core$Maybe$Just($author$project$Main$ToggleAutoSave))
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive))
 											]))
 									]))
 							]))

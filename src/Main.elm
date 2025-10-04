@@ -493,8 +493,6 @@ view model =
                     [ blueButton "Export rankings" (Just KeeperWantsToSaveStandings)
                     , blueButton "Save to Drive" (Just KeeperWantsToSaveToDrive)
                     , blueButton "Refresh from Drive" (Just KeeperWantsToRefreshFromDrive)
-                    , blueButton "Load from file" (Just KeeperWantsToLoadStandings)
-                    , goldButton (if model.autoSave then "Auto-save: On" else "Auto-save: Off") (Just ToggleAutoSave)
                     ]
                 ]
             ]
@@ -573,7 +571,6 @@ currentMatch model =
                         ]
                     ]
                     [ Html.text "No current match. To get started, add at least two players!" ]
-                , blueButton "Load from file" (Just KeeperWantsToLoadStandings)
                 ]
 
         Just (League.Match playerA playerB) ->
@@ -589,21 +586,110 @@ currentMatch model =
                 ]
                 [ Html.div
                     [ css
-                        [ Css.borderRadius (Css.px 5)
-                        , Css.overflow Css.hidden
-                        , Css.height (Css.px 5)
-                        , Css.width (Css.pct 100)
-                        , Css.backgroundColor (Css.hex "EEE")
+                        [ Css.position Css.relative
+                        , Css.marginBottom (Css.px 20)
                         ]
                     ]
                     [ Html.div
                         [ css
-                            [ Css.width (Css.pct (100 * chanceAWins))
-                            , Css.height (Css.pct 100)
-                            , Css.backgroundColor (Css.hex "6DD400")
+                            [ Css.fontSize (Css.px 14)
+                            , Css.fontWeight (Css.int 700)
+                            , Css.textAlign Css.center
+                            , Css.marginBottom (Css.px 12)
+                            , Css.color (Css.hex "555")
+                            , Css.letterSpacing (Css.px 1)
                             ]
                         ]
-                        []
+                        [ Html.text "⚔️ BATTLE PREDICTION ⚔️" ]
+                    , Html.div
+                        [ css
+                            [ Css.position Css.relative
+                            , Css.borderRadius (Css.px 20)
+                            , Css.overflow Css.hidden
+                            , Css.height (Css.px 32)
+                            , Css.width (Css.pct 100)
+                            , Css.backgroundColor (Css.hex "E8E8E8")
+                            , Css.boxShadow6 Css.inset (Css.px 0) (Css.px 3) (Css.px 6) (Css.px 0) (Css.rgba 0 0 0 0.15)
+                            , Css.border3 (Css.px 2) Css.solid (Css.hex "DDD")
+                            ]
+                        ]
+                        [ Html.div
+                            [ css
+                                [ Css.width (Css.pct (100 * chanceAWins))
+                                , Css.height (Css.pct 100)
+                                , Css.backgroundColor (Css.hex "FF6B6B")
+                                , Css.position Css.absolute
+                                , Css.left (Css.px 0)
+                                , Css.top (Css.px 0)
+                                , Css.boxShadow4 (Css.px 2) (Css.px 0) (Css.px 4) (Css.rgba 0 0 0 0.2)
+                                ]
+                            ]
+                            []
+                        , Html.div
+                            [ css
+                                [ Css.width (Css.pct (100 * (1 - chanceAWins)))
+                                , Css.height (Css.pct 100)
+                                , Css.backgroundColor (Css.hex "4ECDC4")
+                                , Css.position Css.absolute
+                                , Css.right (Css.px 0)
+                                , Css.top (Css.px 0)
+                                , Css.boxShadow4 (Css.px -2) (Css.px 0) (Css.px 4) (Css.rgba 0 0 0 0.2)
+                                ]
+                            ]
+                            []
+                        , Html.div
+                            [ css
+                                [ Css.position Css.absolute
+                                , Css.top (Css.px -8)
+                                , Css.left (Css.pct (100 * chanceAWins))
+                                , Css.fontSize (Css.px 24)
+                                , Css.transforms [ Css.translateX (Css.pct -50) ]
+                                , Css.zIndex (Css.int 10)
+                                ]
+                            ]
+                            [ Html.text "⚡" ]
+                        , Html.div
+                            [ css
+                                [ Css.position Css.absolute
+                                , Css.top (Css.px 6)
+                                , Css.left (Css.px 12)
+                                , Css.fontSize (Css.px 12)
+                                , Css.fontWeight (Css.int 700)
+                                , Css.color (Css.hex "FFF")
+                                , Css.textShadow4 (Css.px 1) (Css.px 1) (Css.px 2) (Css.rgba 0 0 0 0.5)
+                                ]
+                            ]
+                            [ Html.text "💪" ]
+                        , Html.div
+                            [ css
+                                [ Css.position Css.absolute
+                                , Css.top (Css.px 6)
+                                , Css.right (Css.px 12)
+                                , Css.fontSize (Css.px 12)
+                                , Css.fontWeight (Css.int 700)
+                                , Css.color (Css.hex "FFF")
+                                , Css.textShadow4 (Css.px 1) (Css.px 1) (Css.px 2) (Css.rgba 0 0 0 0.5)
+                                ]
+                            ]
+                            [ Html.text "💪" ]
+                        ]
+                    , Html.div
+                        [ css
+                            [ Css.displayFlex
+                            , Css.justifyContent Css.spaceBetween
+                            , Css.fontSize (Css.px 12)
+                            , Css.fontWeight (Css.int 600)
+                            , Css.marginTop (Css.px 8)
+                            , Css.color (Css.hex "777")
+                            ]
+                        ]
+                        [ Html.div 
+                            [ css [ Css.color (Css.hex "FF6B6B") ] ]
+                            [ Html.text ("🔥 " ++ String.fromInt (round (chanceAWins * 100)) ++ "% chance") ]
+                        , Html.div 
+                            [ css [ Css.color (Css.hex "4ECDC4") ] ]
+                            [ Html.text (String.fromInt (round ((1 - chanceAWins) * 100)) ++ "% chance 🔥") ]
+                        ]
                     ]
                 , Html.div
                     [ css
