@@ -698,12 +698,12 @@ rankings model =
                     , Html.td [ css [ textual, left ] ] [ Html.text (Player.name player) ]
                     , Html.td [ css [ textual, shrinkWidth, center ] ]
                         (if isPlayerIgnored player (History.current model.history) then
-                            [ greenButton "Unignore" (Just (KeeperWantsToUnignorePlayer player)) ]
+                            [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer player)) ]
 
                          else
                             [ smallRedXButton (Just (KeeperWantsToRetirePlayer player))
                             , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ]
-                                [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer player)) ]
+                                [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer player)) ]
                             ]
                         )
                     ]
@@ -870,6 +870,72 @@ smallRedXButton maybeMsg =
             Nothing -> Attributes.disabled True
         ]
         [ Html.text "X" ]
+
+
+zzzIgnoreButton : Maybe Msg -> Html Msg
+zzzIgnoreButton maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 4)
+            , Css.paddingBottom (Css.px 6)
+            , Css.paddingLeft (Css.px 12)
+            , Css.paddingRight (Css.px 12)
+            , Css.margin2 Css.zero (Css.px 6)
+            , Css.minWidth (Css.px 44)
+            , Css.backgroundColor (Css.hex "6B7280") -- neutral gray
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 9999)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 13)
+            , Css.fontWeight (Css.int 600)
+            , Css.color (Css.hex "FFF")
+            , Css.hover
+                [ Css.backgroundColor (Css.hex "4B5563") ]
+            , Css.active
+                [ Css.backgroundColor (Css.hex "374151") ]
+            , Css.focus
+                [ Css.outline3 (Css.px 2) Css.solid (Css.hex "93C5FD")
+                , Css.outlineOffset (Css.px 2)
+                ]
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "Zzz" ]
+
+zzzUnignoreButton : Maybe Msg -> Html Msg
+zzzUnignoreButton maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 4)
+            , Css.paddingBottom (Css.px 6)
+            , Css.paddingLeft (Css.px 12)
+            , Css.paddingRight (Css.px 12)
+            , Css.margin2 Css.zero (Css.px 6)
+            , Css.minWidth (Css.px 44)
+            , Css.backgroundColor (Css.hex "374151") -- darker neutral
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 9999)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 13)
+            , Css.fontWeight (Css.int 600)
+            , Css.color (Css.hex "FFF")
+            , Css.textDecoration Css.lineThrough
+            , Css.hover
+                [ Css.backgroundColor (Css.hex "1F2937") ]
+            , Css.active
+                [ Css.backgroundColor (Css.hex "111827") ]
+            , Css.focus
+                [ Css.outline3 (Css.px 2) Css.solid (Css.hex "93C5FD")
+                , Css.outlineOffset (Css.px 2)
+                ]
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "Zzz" ]
 
 
 activePlayer : Player -> Html msg
