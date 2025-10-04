@@ -84,6 +84,7 @@ type Msg
     | SelectedStandingsFile File
     | PeriodicSync
     | AutoSaveCompleted
+    | AutoSaveTimeout
     | KeeperWantsToUndo
     | KeeperWantsToRedo
     | LoadedLeague (Result String League)
@@ -217,6 +218,7 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
         , Cmd.batch
             [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
+            , Process.sleep 10000 |> Task.perform (\_ -> AutoSaveTimeout) -- 10 second timeout
             ]
         )
     else
@@ -329,6 +331,16 @@ update msg model =
             ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Saved successfully! Loading next match..." }
             , loadFromPublicDrive ""
             )
+
+        AutoSaveTimeout ->
+            -- Auto-save timed out, reset state and continue
+            if model.autoSaveInProgress then
+                ( { model | autoSaveInProgress = False, status = Just "Auto-save timed out. Voting re-enabled." }
+                , Cmd.none
+                )
+            else
+                -- Timeout arrived after completion, ignore it
+                ( model, Cmd.none )
 
         KeeperWantsToLoadStandings ->
             ( model, Select.file [ "application/json" ] SelectedStandingsFile )

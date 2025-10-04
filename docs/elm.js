@@ -8837,7 +8837,9 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 							$author$project$History$current(model.history))))
 				]))) : _Utils_Tuple2(model, cmd);
 };
+var $author$project$Main$AutoSaveTimeout = {$: 'AutoSaveTimeout'};
 var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
+var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 	var model = _v0.a;
 	var cmd = _v0.b;
@@ -8863,7 +8865,13 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 					$elm$core$Task$perform,
 					$elm$core$Basics$identity,
 					$elm$core$Task$succeed(
-						$author$project$Main$ShowStatus('Auto-saving to Drive...')))
+						$author$project$Main$ShowStatus('Auto-saving to Drive...'))),
+					A2(
+					$elm$core$Task$perform,
+					function (_v1) {
+						return $author$project$Main$AutoSaveTimeout;
+					},
+					$elm$core$Process$sleep(10000))
 				]))) : _Utils_Tuple2(
 		_Utils_update(
 			model,
@@ -9305,7 +9313,6 @@ var $author$project$League$retirePlayer = F2(
 	});
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
-var $elm$core$Process$sleep = _Process_sleep;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -9591,6 +9598,15 @@ var $author$project$Main$update = F2(
 							status: $elm$core$Maybe$Just('Saved successfully! Loading next match...')
 						}),
 					$author$project$Main$loadFromPublicDrive(''));
+			case 'AutoSaveTimeout':
+				return model.autoSaveInProgress ? _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							autoSaveInProgress: false,
+							status: $elm$core$Maybe$Just('Auto-save timed out. Voting re-enabled.')
+						}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
