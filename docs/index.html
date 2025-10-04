@@ -2,7 +2,9 @@
 <html>
 <head>
   <meta charset="UTF-8">
-  <title>Main</title>
+  <title>The Rating Game</title>
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
+  <link rel="icon" type="image/svg+xml" href="favicon.svg">
   <style>
     body { 
       padding: 0; 
@@ -122,12 +124,14 @@ try {
       })
       .catch(function(err) {
         console.error('Drive save failed:', err);
+        var errorMsg = 'Auto-save temporarily unavailable (CORS/network issue). Data saved locally.';
+        
         if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-          app.ports.receivePublicDriveStatus.send('Drive save failed: ' + String(err)); 
+          app.ports.receivePublicDriveStatus.send(errorMsg); 
         }
-        // Reset auto-save state on error
+        // Reset auto-save state on error so voting can continue
         if (app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
-          console.log('AUTO-SAVE ERROR: Resetting auto-save state');
+          console.log('AUTO-SAVE ERROR: Sending completion signal to re-enable voting');
           app.ports.receiveMatchSaveComplete.send(null);
         }
       });
