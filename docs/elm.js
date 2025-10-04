@@ -12264,33 +12264,6 @@ var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-aro
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
-var $rtfeldman$elm_css$Css$valuesOrNone = function (list) {
-	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
-		value: A3(
-			$rtfeldman$elm_css$Css$String$mapJoin,
-			function ($) {
-				return $.value;
-			},
-			' ',
-			list)
-	};
-};
-var $rtfeldman$elm_css$Css$transforms = A2(
-	$elm$core$Basics$composeL,
-	$rtfeldman$elm_css$Css$prop1('transform'),
-	$rtfeldman$elm_css$Css$valuesOrNone);
-var $rtfeldman$elm_css$Css$translateX = function (_v0) {
-	var value = _v0.value;
-	return {
-		transform: $rtfeldman$elm_css$Css$Structure$Compatible,
-		value: A2(
-			$rtfeldman$elm_css$Css$cssFunction,
-			'translateX',
-			_List_fromArray(
-				[value]))
-	};
-};
-var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
 var $author$project$Main$currentMatch = function (model) {
 	var _v0 = $author$project$League$currentMatch(
 		$author$project$History$current(model.history));
@@ -12460,7 +12433,10 @@ var $author$project$Main$currentMatch = function (model) {
 												[
 													$rtfeldman$elm_css$Css$width(
 													$rtfeldman$elm_css$Css$pct(
-														A2($elm$core$Basics$max, 15, 100 * chanceAWins))),
+														A2(
+															$elm$core$Basics$max,
+															($elm$core$Basics$round(chanceAWins * 100) >= 100) ? 20 : 16,
+															100 * chanceAWins))),
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
@@ -12488,7 +12464,10 @@ var $author$project$Main$currentMatch = function (model) {
 												[
 													$rtfeldman$elm_css$Css$width(
 													$rtfeldman$elm_css$Css$pct(
-														A2($elm$core$Basics$max, 15, 100 * (1 - chanceAWins)))),
+														A2(
+															$elm$core$Basics$max,
+															($elm$core$Basics$round((1 - chanceAWins) * 100) >= 100) ? 20 : 16,
+															100 * (1 - chanceAWins)))),
 													$rtfeldman$elm_css$Css$height(
 													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
@@ -12507,34 +12486,6 @@ var $author$project$Main$currentMatch = function (model) {
 												]))
 										]),
 									_List_Nil),
-									A2(
-									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$absolute),
-													$rtfeldman$elm_css$Css$top(
-													$rtfeldman$elm_css$Css$px(-8)),
-													$rtfeldman$elm_css$Css$left(
-													$rtfeldman$elm_css$Css$pct(100 * chanceAWins)),
-													$rtfeldman$elm_css$Css$fontSize(
-													$rtfeldman$elm_css$Css$px(24)),
-													$rtfeldman$elm_css$Css$transforms(
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Css$translateX(
-															$rtfeldman$elm_css$Css$pct(-50))
-														])),
-													$rtfeldman$elm_css$Css$zIndex(
-													$rtfeldman$elm_css$Css$int(10))
-												]))
-										]),
-									_List_fromArray(
-										[
-											$tesk9$accessible_html_with_css$Accessibility$Styled$text('⚡')
-										])),
 									A2(
 									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
 									_List_fromArray(

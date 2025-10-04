@@ -617,7 +617,7 @@ currentMatch model =
                         ]
                         [ Html.div
                             [ css
-                                [ Css.width (Css.pct (max 15 (100 * chanceAWins)))
+                                [ Css.width (Css.pct (max (if round (chanceAWins * 100) >= 100 then 20 else 16) (100 * chanceAWins)))
                                 , Css.height (Css.pct 100)
                                 , Css.backgroundColor (Css.hex "FF6B6B")
                                 , Css.position Css.absolute
@@ -629,7 +629,7 @@ currentMatch model =
                             []
                         , Html.div
                             [ css
-                                [ Css.width (Css.pct (max 15 (100 * (1 - chanceAWins))))
+                                [ Css.width (Css.pct (max (if round ((1 - chanceAWins) * 100) >= 100 then 20 else 16) (100 * (1 - chanceAWins))))
                                 , Css.height (Css.pct 100)
                                 , Css.backgroundColor (Css.hex "4ECDC4")
                                 , Css.position Css.absolute
@@ -639,17 +639,7 @@ currentMatch model =
                                 ]
                             ]
                             []
-                        , Html.div
-                            [ css
-                                [ Css.position Css.absolute
-                                , Css.top (Css.px -8)
-                                , Css.left (Css.pct (100 * chanceAWins))
-                                , Css.fontSize (Css.px 24)
-                                , Css.transforms [ Css.translateX (Css.pct -50) ]
-                                , Css.zIndex (Css.int 10)
-                                ]
-                            ]
-                            [ Html.text "⚡" ]
+
                         , Html.div
                             [ css
                                 [ Css.position Css.absolute
