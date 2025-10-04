@@ -7663,7 +7663,8 @@ var $author$project$Main$init = function (_v0) {
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
-				status: $elm$core$Maybe$Nothing
+				status: $elm$core$Maybe$Nothing,
+				votesUntilDriveSync: 5
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -7679,7 +7680,6 @@ var $author$project$Main$IgnoredKey = {$: 'IgnoredKey'};
 var $author$project$Main$MatchFinished = function (a) {
 	return {$: 'MatchFinished', a: a};
 };
-var $author$project$Main$MatchSavedToDrive = {$: 'MatchSavedToDrive'};
 var $author$project$Main$ReceivedAutoSave = function (a) {
 	return {$: 'ReceivedAutoSave', a: a};
 };
@@ -8003,10 +8003,6 @@ var $ohanhi$keyboard$Keyboard$navigationKey = function (_v0) {
 };
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
-var $elm$json$Json$Decode$null = _Json_decodeNull;
-var $author$project$Main$receiveMatchSaveComplete = _Platform_incomingPort(
-	'receiveMatchSaveComplete',
-	$elm$json$Json$Decode$null(_Utils_Tuple0));
 var $author$project$Main$receivePublicDriveStatus = _Platform_incomingPort('receivePublicDriveStatus', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveStandings = _Platform_incomingPort('receiveStandings', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (model) {
@@ -8053,11 +8049,7 @@ var $author$project$Main$subscriptions = function (model) {
 				[
 					$author$project$Main$receiveStandings($author$project$Main$ReceivedStandings),
 					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
-					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus),
-					$author$project$Main$receiveMatchSaveComplete(
-					function (_v6) {
-						return $author$project$Main$MatchSavedToDrive;
-					})
+					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus)
 				]));
 	}
 };
@@ -8664,6 +8656,36 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 							$author$project$History$current(model.history))))
 				]))) : _Utils_Tuple2(model, cmd);
 };
+var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
+var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
+	var model = _v0.a;
+	var cmd = _v0.b;
+	var newCount = model.votesUntilDriveSync - 1;
+	return (newCount <= 0) ? _Utils_Tuple2(
+		_Utils_update(
+			model,
+			{votesUntilDriveSync: 5}),
+		$elm$core$Platform$Cmd$batch(
+			_List_fromArray(
+				[
+					cmd,
+					$author$project$Main$saveToPublicDrive(
+					A2(
+						$elm$json$Json$Encode$encode,
+						0,
+						$author$project$League$encode(
+							$author$project$History$current(model.history)))),
+					A2(
+					$elm$core$Task$perform,
+					$elm$core$Basics$identity,
+					$elm$core$Task$succeed(
+						$author$project$Main$ShowStatus('Auto-saving to Drive...')))
+				]))) : _Utils_Tuple2(
+		_Utils_update(
+			model,
+			{votesUntilDriveSync: newCount}),
+		cmd);
+};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
 	getMin:
@@ -9099,7 +9121,6 @@ var $author$project$League$retirePlayer = F2(
 	});
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
-var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
 var $elm$core$Process$sleep = _Process_sleep;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
@@ -9304,32 +9325,19 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
-				var updatedModel = _Utils_update(
-					model,
-					{
-						history: A2(
-							$author$project$History$mapPush,
-							$author$project$League$finishMatch(outcome),
-							model.history)
-					});
 				return $author$project$Main$maybeAutoSave(
-					_Utils_Tuple2(
-						updatedModel,
-						$elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[
-									A2(
-									$elm$core$Task$perform,
-									$elm$core$Basics$identity,
-									$elm$core$Task$succeed(
-										$author$project$Main$ShowStatus('Saving match result...'))),
-									$author$project$Main$saveToPublicDrive(
-									A2(
-										$elm$json$Json$Encode$encode,
-										0,
-										$author$project$League$encode(
-											$author$project$History$current(updatedModel.history))))
-								]))));
+					$author$project$Main$startNextMatchIfPossible(
+						$author$project$Main$maybeSaveToDriveAfterVote(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2(
+											$author$project$History$mapPush,
+											$author$project$League$finishMatch(outcome),
+											model.history)
+									}),
+								$elm$core$Platform$Cmd$none))));
 			case 'KeeperWantsToSaveStandings':
 				return _Utils_Tuple2(
 					model,
@@ -9368,19 +9376,6 @@ var $author$project$Main$update = F2(
 								$elm$core$Basics$identity,
 								$elm$core$Task$succeed(
 									$author$project$Main$ShowStatus('Saving to Drive...')))
-							])));
-			case 'MatchSavedToDrive':
-				return _Utils_Tuple2(
-					model,
-					$elm$core$Platform$Cmd$batch(
-						_List_fromArray(
-							[
-								$author$project$Main$loadFromPublicDrive(''),
-								A2(
-								$elm$core$Task$perform,
-								$elm$core$Basics$identity,
-								$elm$core$Task$succeed(
-									$author$project$Main$ShowStatus('Loading latest data...')))
 							])));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(

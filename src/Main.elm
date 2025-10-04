@@ -42,7 +42,6 @@ port receiveAutoSave : (Bool -> msg) -> Sub msg
 port saveToPublicDrive : String -> Cmd msg
 port loadFromPublicDrive : String -> Cmd msg
 port receivePublicDriveStatus : (String -> msg) -> Sub msg
-port receiveMatchSaveComplete : (() -> msg) -> Sub msg
 
 
 
@@ -58,6 +57,7 @@ type alias Model =
     , autoSave : Bool
     , status : Maybe String
     , lastSynced : Maybe String
+    , votesUntilDriveSync : Int
     }
 
 
@@ -75,7 +75,6 @@ type Msg
     | MatchFinished League.Outcome
     | KeeperWantsToSaveStandings
     | KeeperWantsToSaveToDrive
-    | MatchSavedToDrive
     | KeeperWantsToLoadStandings
     | SelectedStandingsFile File
     | KeeperWantsToUndo
@@ -111,6 +110,7 @@ init _ =
       , autoSave = True
       , status = Nothing
       , lastSynced = Nothing
+      , votesUntilDriveSync = 5
       }
     , Cmd.batch [ askForAutoSave "init", httpRequest ]
     )
@@ -178,7 +178,6 @@ subscriptions model =
                 [ receiveStandings ReceivedStandings
                 , receiveAutoSave ReceivedAutoSave
                 , receivePublicDriveStatus ReceivedPublicDriveStatus
-                , receiveMatchSaveComplete (\_ -> MatchSavedToDrive)
                 ]
 
 
@@ -194,6 +193,23 @@ startNextMatchIfPossible ( model, cmd ) =
             , Random.generate GotNextMatch (League.nextMatch (History.current model.history))
             ]
         )
+
+
+maybeSaveToDriveAfterVote : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
+maybeSaveToDriveAfterVote ( model, cmd ) =
+    let
+        newCount = model.votesUntilDriveSync - 1
+    in
+    if newCount <= 0 then
+        ( { model | votesUntilDriveSync = 5 }  -- Reset counter
+        , Cmd.batch
+            [ cmd
+            , saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
+            , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
+            ]
+        )
+    else
+        ( { model | votesUntilDriveSync = newCount }, cmd )
 
 
 
@@ -252,15 +268,11 @@ update msg model =
             ( model, Cmd.none )
 
         MatchFinished outcome ->
-            let
-                updatedModel = { model | history = History.mapPush (League.finishMatch outcome) model.history }
-            in
-            ( updatedModel
-            , Cmd.batch
-                [ Task.succeed (ShowStatus "Saving match result...") |> Task.perform identity
-                , saveToPublicDrive (encode 0 (League.encode (History.current updatedModel.history)))
-                ]
+            ( { model | history = History.mapPush (League.finishMatch outcome) model.history }
+            , Cmd.none
             )
+                |> maybeSaveToDriveAfterVote
+                |> startNextMatchIfPossible
                 |> maybeAutoSave
 
         KeeperWantsToSaveStandings ->
@@ -279,14 +291,6 @@ update msg model =
             , Cmd.batch
                 [ saveToPublicDrive (encode 2 (League.encode (History.current model.history)))
                 , Task.succeed (ShowStatus "Saving to Drive...") |> Task.perform identity
-                ]
-            )
-
-        MatchSavedToDrive ->
-            ( model
-            , Cmd.batch
-                [ loadFromPublicDrive ""
-                , Task.succeed (ShowStatus "Loading latest data...") |> Task.perform identity
                 ]
             )
 
