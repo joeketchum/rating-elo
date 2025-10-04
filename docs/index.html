@@ -14226,6 +14226,53 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
   var app = Elm.Main.init({ node: document.getElementById("elm") });
+
+  // Add debug button and logging for Drive save testing
+  (function(){
+    const SAVE_URL = "https://script.google.com/macros/s/AKfycbxc5UWCVkDzwOy2MwkHpxkPb8H6PIoVIPQRSw72wRyIHdTBaUi81TvDglWpVEeP79VKiw/exec";
+    const LS_PUBLIC = "rating-elo.public_copy";
+
+    // Create debug UI
+    var div = document.createElement('div');
+    div.style.position = 'fixed';
+    div.style.bottom = '12px';
+    div.style.left = '12px';
+    div.style.padding = '8px';
+    div.style.background = 'rgba(0,0,0,0.1)';
+    div.style.borderRadius = '6px';
+    div.style.zIndex = 9999;
+
+    var btn = document.createElement('button');
+    btn.innerText = 'Test Drive Save';
+    btn.onclick = async function() {
+      try {
+        var json = localStorage.getItem(LS_PUBLIC);
+        if (!json) {
+          console.error('No public copy in localStorage to test with');
+          alert('No standings found in localStorage to test with');
+          return;
+        }
+        console.log('Attempting Drive save to URL:', SAVE_URL);
+        console.log('Payload:', json);
+        
+        var res = await fetch(SAVE_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: json
+        });
+        var text = await res.text();
+        console.log('Response:', res.status, text);
+        try { console.log('Parsed:', JSON.parse(text)); } catch(e) {}
+        
+        alert('Drive save test complete - check console for details');
+      } catch(e) {
+        console.error('Drive save test failed:', e);
+        alert('Drive save failed: ' + e);
+      }
+    };
+    div.appendChild(btn);
+    document.body.appendChild(div);
+  })();
 }
 catch (e)
 {
