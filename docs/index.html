@@ -127,6 +127,12 @@ try {
               console.log('💾 MANUAL SAVE COMPLETED: Sending completion signal to Elm');
             }
             app.ports.receiveMatchSaveComplete.send(null);        
+            // JS-side safety net: also trigger a reload after a brief delay
+            var delayMs = isMatchSave ? 1500 : 1000;
+            setTimeout(function(){
+              console.log('🧩 JS reload fallback: triggering reloadFromPublicDrive after save (delay', delayMs, 'ms)');
+              try { reloadFromPublicDrive(); } catch (e) { console.warn('reloadFromPublicDrive not defined yet:', e); }
+            }, delayMs);
           } else {
             console.log('❌ NO COMPLETION SIGNAL SENT:', { 
               ok: ok, 
@@ -151,43 +157,55 @@ try {
     });
   }
 
+  // Unified reload function (can be called from Elm port or JS fallback)
+  var lastReloadTs = 0;
+  function reloadFromPublicDrive(){
+    if (Date.now() - lastReloadTs < 300) {
+      console.log('⏭️ Skipping duplicate reload trigger');
+      return;
+    }
+    lastReloadTs = Date.now();
+
+    console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
+    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
+    
+    // Try to load from Google Drive first (add cache-busting parameter)
+    var cacheBuster = '?_=' + Date.now();
+    fetch(APPS_SCRIPT_URL + cacheBuster, { method: 'GET' })
+      .then(function(response) {
+        if (response.ok) {
+          return response.text();
+        } else {
+          throw new Error('Failed to load from Google Drive');
+        }
+      })
+      .then(function(json) {
+        console.log('✅ RELOAD SUCCESS: Loaded', json.length, 'bytes from Google Drive');
+        console.log('📊 RELOAD DATA PREVIEW:', json.substring(0, 200) + '...');
+        
+        if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+          console.log('📤 Sending reloaded data to Elm app...');
+          app.ports.receiveStandings.send(json);
+          console.log('✅ Data sent to Elm successfully');
+        } else {
+          console.log('❌ receiveStandings port not available');
+        }
+      })
+      .catch(function(error) {
+        console.log('Loading from Google Drive failed, using localStorage:', error);
+        // Fallback to localStorage
+        var json = '';  
+        try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
+        if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+          app.ports.receiveStandings.send(json);
+        }
+      });
+  }
+
   // Load from Google Drive, fallback to localStorage
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
-      console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
-      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
-      
-      // Try to load from Google Drive first (add cache-busting parameter)
-      var cacheBuster = '?_=' + Date.now();
-      fetch(APPS_SCRIPT_URL + cacheBuster, { method: 'GET' })
-        .then(function(response) {
-          if (response.ok) {
-            return response.text();
-          } else {
-            throw new Error('Failed to load from Google Drive');
-          }
-        })
-        .then(function(json) {
-          console.log('✅ RELOAD SUCCESS: Loaded', json.length, 'bytes from Google Drive');
-          console.log('📊 RELOAD DATA PREVIEW:', json.substring(0, 200) + '...');
-          
-          if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-            console.log('📤 Sending reloaded data to Elm app...');
-            app.ports.receiveStandings.send(json);
-            console.log('✅ Data sent to Elm successfully');
-          } else {
-            console.log('❌ receiveStandings port not available');
-          }
-        })
-        .catch(function(error) {
-          console.log('Loading from Google Drive failed, using localStorage:', error);
-          // Fallback to localStorage
-          var json = '';  
-          try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
-          if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-            app.ports.receiveStandings.send(json);
-          }
-        });
+      reloadFromPublicDrive();
     });
   }
   
