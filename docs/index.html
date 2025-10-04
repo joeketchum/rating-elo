@@ -103,7 +103,10 @@ try {
 
           // If this was a successful match save, trigger the completion port
           if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+            console.log('AUTO-SAVE COMPLETED: Sending completion signal to Elm');
             app.ports.receiveMatchSaveComplete.send(null);        
+          } else {
+            console.log('AUTO-SAVE COMPLETION CONDITIONS:', { ok: ok, isMatchSave: isMatchSave, hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) });
           }
         });
       })
@@ -111,6 +114,11 @@ try {
         console.error('Drive save failed:', err);
         if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
           app.ports.receivePublicDriveStatus.send('Drive save failed: ' + String(err)); 
+        }
+        // Reset auto-save state on error
+        if (app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+          console.log('AUTO-SAVE ERROR: Resetting auto-save state');
+          app.ports.receiveMatchSaveComplete.send(null);
         }
       });
     });
