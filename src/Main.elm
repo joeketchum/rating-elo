@@ -379,7 +379,9 @@ update msg model =
             )
 
         ShowStatus message ->
-            ( { model | status = Just message }, Cmd.none )
+            ( { model | status = Just message }
+            , Process.sleep 3500 |> Task.perform (\_ -> ClearStatus)
+            )
 
         ClearStatus ->
             ( { model | status = Nothing }, Cmd.none )
@@ -698,7 +700,7 @@ rankings model =
                             [ greenButton "Unignore" (Just (KeeperWantsToUnignorePlayer player)) ]
 
                          else
-                            [ redButton "Delete" (Just (KeeperWantsToRetirePlayer player))
+                            [ smallRedXButton (Just (KeeperWantsToRetirePlayer player))
                             , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ]
                                 [ goldButton "Ignore" (Just (KeeperWantsToIgnorePlayer player)) ]
                             ]
