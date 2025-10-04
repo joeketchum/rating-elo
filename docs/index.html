@@ -77,23 +77,20 @@ try {
       // Google Apps Script URL for your deployed web app
       var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Vo9hj74V_bOIRzpP9jrDrC1EhBBdnfUKUHlOGhElCDmGjSJm6LZdN4yXY5ZkEWLnzA/exec';
       
-      // Send to Google Apps Script
+      // Send to Google Apps Script (send raw JSON data)
       fetch(APPS_SCRIPT_URL, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        body: JSON.stringify({
-          data: json,
-          timestamp: new Date().toISOString()
-        })
+        body: json
       })
       .then(function(response) {
         console.log('Apps Script Response Status:', response.status);
-        return response.text().then(function(text) {
-          console.log('Apps Script Response Text:', text);
-          var ok = response.ok;
-          var msg = ok ? 'Saved successfully to Google Sheets' : ('Save failed: ' + response.status + ' ' + text);
+        return response.json().then(function(result) {
+          console.log('Apps Script Response:', result);
+          var ok = response.ok && result.ok;
+          var msg = ok ? 'Saved successfully to Google Drive (' + result.bytes + ' bytes)' : ('Save failed: ' + (result.error || 'Unknown error'));
           
           // Check if this was a match save (compact JSON) vs manual save (formatted JSON)
           var isMatchSave = json.indexOf('\n') === -1; // No newlines = compact = match save
@@ -138,14 +135,35 @@ try {
     });
   }
 
-  // Load from public copy in localStorage (fallback)
+  // Load from Google Drive, fallback to localStorage
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
-      var json = '';  
-      try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
-      if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-        app.ports.receiveStandings.send(json);
-      }
+      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbx4Vo9hj74V_bOIRzpP9jrDrC1EhBBdnfUKUHlOGhElCDmGjSJm6LZdN4yXY5ZkEWLnzA/exec';
+      
+      // Try to load from Google Drive first
+      fetch(APPS_SCRIPT_URL, { method: 'GET' })
+        .then(function(response) {
+          if (response.ok) {
+            return response.text();
+          } else {
+            throw new Error('Failed to load from Google Drive');
+          }
+        })
+        .then(function(json) {
+          console.log('Loaded data from Google Drive:', json.length, 'bytes');
+          if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+            app.ports.receiveStandings.send(json);
+          }
+        })
+        .catch(function(error) {
+          console.log('Loading from Google Drive failed, using localStorage:', error);
+          // Fallback to localStorage
+          var json = '';  
+          try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
+          if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+            app.ports.receiveStandings.send(json);
+          }
+        });
     });
   }
   
