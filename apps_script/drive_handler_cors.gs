@@ -1,45 +1,55 @@
 const FILE_ID = '1dMiPZqpcj7sMr9aKMxNhWKQNc2vzcJJD';
 
-function doOptions(e) {
-  return ContentService.createTextOutput('')
-    .setMimeType(ContentService.MimeType.TEXT)
-    .setHeader('Access-Control-Allow-Origin', 'https://joeketchum.github.io')
-    .setHeader('Access-Control-Allow-Methods', 'GET, POST, OPTIONS')
-    .setHeader('Access-Control-Allow-Headers', 'Content-Type')
-    .setHeader('Access-Control-Max-Age', '3600');
+function corsWrap(callback) {
+  // Generic wrapper that handles CORS and JSON response for any endpoint
+  return (e) => {
+    const origin = e?.parameter?.origin || '*';
+    const output = ContentService.createTextOutput();
+    
+    // Handle preflight OPTIONS request
+    if (e?.parameter?.method === 'options') {
+      output.setContent('');
+      output.setMimeType(ContentService.MimeType.TEXT);
+    } else {
+      // Normal request - call the actual handler
+      const result = callback(e);
+      output.setContent(typeof result === 'string' ? result : JSON.stringify(result));
+      output.setMimeType(ContentService.MimeType.JSON);
+    }
+
+    // Add CORS headers to all responses
+    const headers = output.getHeaders() || {};
+    headers['Access-Control-Allow-Origin'] = '*';
+    headers['Access-Control-Allow-Methods'] = 'GET, POST, OPTIONS';
+    headers['Access-Control-Allow-Headers'] = 'Content-Type';
+    headers['Access-Control-Max-Age'] = '3600';
+    output.setHeaders(headers);
+    
+    return output;
+  };
 }
 
-function doPost(e) {
+const doPost = corsWrap((e) => {
   try {
-    const body = e?.postData?.contents ?? '';
-    if (!body) return respondWithCors({ ok:false, error:'empty body' });
+    const body = e?.postData?.contents;
+    if (!body) return { ok: false, error: 'empty body' };
 
     const f = DriveApp.getFileById(FILE_ID);
     f.setContent(body);
 
     console.log('WROTE bytes:', body.length, 'at', new Date().toISOString());
-    return respondWithCors({ ok:true, bytes: body.length, ts: new Date().toISOString() });
+    return { ok: true, bytes: body.length, ts: new Date().toISOString() };
   } catch (err) {
     console.error('WRITE ERROR:', err);
-    return respondWithCors({ ok:false, error: String(err) });
+    return { ok: false, error: String(err) };
   }
-}
+});
 
-function doGet(e) {
+const doGet = corsWrap((e) => {
   try {
     const f = DriveApp.getFileById(FILE_ID);
-    const text = f.getBlob().getDataAsString();
-    return ContentService.createTextOutput(text)
-      .setMimeType(ContentService.MimeType.JSON)
-      .setHeader('Access-Control-Allow-Origin', 'https://joeketchum.github.io');
+    return f.getBlob().getDataAsString();
   } catch (err) {
-    return respondWithCors({ ok:false, error: String(err) });
+    return { ok: false, error: String(err) };
   }
-}
-
-function respondWithCors(obj) {
-  // Same as your respond() but adds CORS headers
-  return ContentService.createTextOutput(JSON.stringify(obj))
-    .setMimeType(ContentService.MimeType.JSON)
-    .setHeader('Access-Control-Allow-Origin', 'https://joeketchum.github.io');
-}
+});
