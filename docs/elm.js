@@ -7680,6 +7680,7 @@ var $author$project$Main$IgnoredKey = {$: 'IgnoredKey'};
 var $author$project$Main$MatchFinished = function (a) {
 	return {$: 'MatchFinished', a: a};
 };
+var $author$project$Main$PeriodicSync = {$: 'PeriodicSync'};
 var $author$project$Main$ReceivedAutoSave = function (a) {
 	return {$: 'ReceivedAutoSave', a: a};
 };
@@ -7962,6 +7963,174 @@ var $ohanhi$keyboard$Keyboard$downs = function (toMsg) {
 	return $elm$browser$Browser$Events$onKeyDown(
 		A2($elm$json$Json$Decode$map, toMsg, $ohanhi$keyboard$Keyboard$eventKeyDecoder));
 };
+var $elm$time$Time$Every = F2(
+	function (a, b) {
+		return {$: 'Every', a: a, b: b};
+	});
+var $elm$time$Time$State = F2(
+	function (taggers, processes) {
+		return {processes: processes, taggers: taggers};
+	});
+var $elm$time$Time$init = $elm$core$Task$succeed(
+	A2($elm$time$Time$State, $elm$core$Dict$empty, $elm$core$Dict$empty));
+var $elm$time$Time$addMySub = F2(
+	function (_v0, state) {
+		var interval = _v0.a;
+		var tagger = _v0.b;
+		var _v1 = A2($elm$core$Dict$get, interval, state);
+		if (_v1.$ === 'Nothing') {
+			return A3(
+				$elm$core$Dict$insert,
+				interval,
+				_List_fromArray(
+					[tagger]),
+				state);
+		} else {
+			var taggers = _v1.a;
+			return A3(
+				$elm$core$Dict$insert,
+				interval,
+				A2($elm$core$List$cons, tagger, taggers),
+				state);
+		}
+	});
+var $elm$time$Time$setInterval = _Time_setInterval;
+var $elm$time$Time$spawnHelp = F3(
+	function (router, intervals, processes) {
+		if (!intervals.b) {
+			return $elm$core$Task$succeed(processes);
+		} else {
+			var interval = intervals.a;
+			var rest = intervals.b;
+			var spawnTimer = $elm$core$Process$spawn(
+				A2(
+					$elm$time$Time$setInterval,
+					interval,
+					A2($elm$core$Platform$sendToSelf, router, interval)));
+			var spawnRest = function (id) {
+				return A3(
+					$elm$time$Time$spawnHelp,
+					router,
+					rest,
+					A3($elm$core$Dict$insert, interval, id, processes));
+			};
+			return A2($elm$core$Task$andThen, spawnRest, spawnTimer);
+		}
+	});
+var $elm$time$Time$onEffects = F3(
+	function (router, subs, _v0) {
+		var processes = _v0.processes;
+		var rightStep = F3(
+			function (_v6, id, _v7) {
+				var spawns = _v7.a;
+				var existing = _v7.b;
+				var kills = _v7.c;
+				return _Utils_Tuple3(
+					spawns,
+					existing,
+					A2(
+						$elm$core$Task$andThen,
+						function (_v5) {
+							return kills;
+						},
+						$elm$core$Process$kill(id)));
+			});
+		var newTaggers = A3($elm$core$List$foldl, $elm$time$Time$addMySub, $elm$core$Dict$empty, subs);
+		var leftStep = F3(
+			function (interval, taggers, _v4) {
+				var spawns = _v4.a;
+				var existing = _v4.b;
+				var kills = _v4.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, interval, spawns),
+					existing,
+					kills);
+			});
+		var bothStep = F4(
+			function (interval, taggers, id, _v3) {
+				var spawns = _v3.a;
+				var existing = _v3.b;
+				var kills = _v3.c;
+				return _Utils_Tuple3(
+					spawns,
+					A3($elm$core$Dict$insert, interval, id, existing),
+					kills);
+			});
+		var _v1 = A6(
+			$elm$core$Dict$merge,
+			leftStep,
+			bothStep,
+			rightStep,
+			newTaggers,
+			processes,
+			_Utils_Tuple3(
+				_List_Nil,
+				$elm$core$Dict$empty,
+				$elm$core$Task$succeed(_Utils_Tuple0)));
+		var spawnList = _v1.a;
+		var existingDict = _v1.b;
+		var killTask = _v1.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (newProcesses) {
+				return $elm$core$Task$succeed(
+					A2($elm$time$Time$State, newTaggers, newProcesses));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v2) {
+					return A3($elm$time$Time$spawnHelp, router, spawnList, existingDict);
+				},
+				killTask));
+	});
+var $elm$time$Time$onSelfMsg = F3(
+	function (router, interval, state) {
+		var _v0 = A2($elm$core$Dict$get, interval, state.taggers);
+		if (_v0.$ === 'Nothing') {
+			return $elm$core$Task$succeed(state);
+		} else {
+			var taggers = _v0.a;
+			var tellTaggers = function (time) {
+				return $elm$core$Task$sequence(
+					A2(
+						$elm$core$List$map,
+						function (tagger) {
+							return A2(
+								$elm$core$Platform$sendToApp,
+								router,
+								tagger(time));
+						},
+						taggers));
+			};
+			return A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$succeed(state);
+				},
+				A2($elm$core$Task$andThen, tellTaggers, $elm$time$Time$now));
+		}
+	});
+var $elm$core$Basics$composeL = F3(
+	function (g, f, x) {
+		return g(
+			f(x));
+	});
+var $elm$time$Time$subMap = F2(
+	function (f, _v0) {
+		var interval = _v0.a;
+		var tagger = _v0.b;
+		return A2(
+			$elm$time$Time$Every,
+			interval,
+			A2($elm$core$Basics$composeL, f, tagger));
+	});
+_Platform_effectManagers['Time'] = _Platform_createManager($elm$time$Time$init, $elm$time$Time$onEffects, $elm$time$Time$onSelfMsg, 0, $elm$time$Time$subMap);
+var $elm$time$Time$subscription = _Platform_leaf('Time');
+var $elm$time$Time$every = F2(
+	function (interval, tagger) {
+		return $elm$time$Time$subscription(
+			A2($elm$time$Time$Every, interval, tagger));
+	});
 var $ohanhi$keyboard$Keyboard$ArrowDown = {$: 'ArrowDown'};
 var $ohanhi$keyboard$Keyboard$ArrowLeft = {$: 'ArrowLeft'};
 var $ohanhi$keyboard$Keyboard$ArrowRight = {$: 'ArrowRight'};
@@ -8049,7 +8218,13 @@ var $author$project$Main$subscriptions = function (model) {
 				[
 					$author$project$Main$receiveStandings($author$project$Main$ReceivedStandings),
 					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
-					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus)
+					$author$project$Main$receivePublicDriveStatus($author$project$Main$ReceivedPublicDriveStatus),
+					A2(
+					$elm$time$Time$every,
+					30 * 1000,
+					function (_v6) {
+						return $author$project$Main$PeriodicSync;
+					})
 				]));
 	}
 };
@@ -8099,11 +8274,6 @@ var $author$project$League$addPlayer = F2(
 						A2($author$project$Player$setRating, initialRating, player),
 						league.players)
 				}));
-	});
-var $elm$core$Basics$composeL = F3(
-	function (g, f, x) {
-		return g(
-			f(x));
 	});
 var $elm$core$Task$onError = _Scheduler_onError;
 var $elm$core$Task$attempt = F2(
@@ -9377,6 +9547,26 @@ var $author$project$Main$update = F2(
 								$elm$core$Task$succeed(
 									$author$project$Main$ShowStatus('Saving to Drive...')))
 							])));
+			case 'KeeperWantsToRefreshFromDrive':
+				return _Utils_Tuple2(
+					model,
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$loadFromPublicDrive(''),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Refreshing from Drive...')))
+							])));
+			case 'PeriodicSync':
+				return _Utils_eq(
+					$author$project$League$currentMatch(
+						$author$project$History$current(model.history)),
+					$elm$core$Maybe$Nothing) ? _Utils_Tuple2(
+					model,
+					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
 					model,
@@ -9591,6 +9781,7 @@ var $author$project$Main$update = F2(
 		}
 	});
 var $author$project$Main$KeeperWantsToLoadStandings = {$: 'KeeperWantsToLoadStandings'};
+var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$KeeperWantsToSaveToDrive = {$: 'KeeperWantsToSaveToDrive'};
 var $author$project$Main$ToggleAutoSave = {$: 'ToggleAutoSave'};
@@ -14344,6 +14535,10 @@ var $author$project$Main$view = function (model) {
 												$author$project$Main$blueButton,
 												'Save to Drive',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveToDrive)),
+												A2(
+												$author$project$Main$blueButton,
+												'Refresh from Drive',
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive)),
 												A2(
 												$author$project$Main$blueButton,
 												'Load from file',

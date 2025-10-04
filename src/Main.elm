@@ -3,6 +3,7 @@ port module Main exposing (..)
 import Accessibility.Styled as Html exposing (Html)
 import Process
 import Browser exposing (Document)
+import Time
 import Css
 import Css.Reset
 import Dict exposing (Dict)
@@ -76,7 +77,9 @@ type Msg
     | KeeperWantsToSaveStandings
     | KeeperWantsToSaveToDrive
     | KeeperWantsToLoadStandings
+    | KeeperWantsToRefreshFromDrive
     | SelectedStandingsFile File
+    | PeriodicSync
     | KeeperWantsToUndo
     | KeeperWantsToRedo
     | LoadedLeague (Result String League)
@@ -178,6 +181,7 @@ subscriptions model =
                 [ receiveStandings ReceivedStandings
                 , receiveAutoSave ReceivedAutoSave
                 , receivePublicDriveStatus ReceivedPublicDriveStatus
+                , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
                 ]
 
 
@@ -293,6 +297,21 @@ update msg model =
                 , Task.succeed (ShowStatus "Saving to Drive...") |> Task.perform identity
                 ]
             )
+
+        KeeperWantsToRefreshFromDrive ->
+            ( model
+            , Cmd.batch
+                [ loadFromPublicDrive ""
+                , Task.succeed (ShowStatus "Refreshing from Drive...") |> Task.perform identity
+                ]
+            )
+
+        PeriodicSync ->
+            -- Only sync if no current match (don't interrupt voting)
+            if League.currentMatch (History.current model.history) == Nothing then
+                ( model, loadFromPublicDrive "" )
+            else
+                ( model, Cmd.none )
 
         KeeperWantsToLoadStandings ->
             ( model, Select.file [ "application/json" ] SelectedStandingsFile )
@@ -450,6 +469,7 @@ view model =
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
                     [ blueButton "Export rankings" (Just KeeperWantsToSaveStandings)
                     , blueButton "Save to Drive" (Just KeeperWantsToSaveToDrive)
+                    , blueButton "Refresh from Drive" (Just KeeperWantsToRefreshFromDrive)
                     , blueButton "Load from file" (Just KeeperWantsToLoadStandings)
                     , goldButton (if model.autoSave then "Auto-save: On" else "Auto-save: Off") (Just ToggleAutoSave)
                     ]
