@@ -109,13 +109,17 @@ try {
             app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));      
           }
 
-          // Always send completion signal for successful saves (auto-save or manual)
-          // The Elm code can determine if it should reload based on its state
-          if (ok && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
+          // Send completion signal only for auto-saves (compact JSON without newlines)
+          if (ok && isMatchSave && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
             console.log('AUTO-SAVE COMPLETED: Sending completion signal to Elm');
             app.ports.receiveMatchSaveComplete.send(null);        
           } else {
-            console.log('AUTO-SAVE COMPLETION CONDITIONS:', { ok: ok, hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) });
+            console.log('SAVE COMPLETION CHECK:', { 
+              ok: ok, 
+              isMatchSave: isMatchSave, 
+              hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send),
+              willSendSignal: ok && isMatchSave 
+            });
           }
         });
       })
