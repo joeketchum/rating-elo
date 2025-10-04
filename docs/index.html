@@ -14376,6 +14376,122 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(0))(0)}});}(this));
 
   var app = Elm.Main.init({ node: document.getElementById("elm") });
+
+  // Host wiring for Drive save/load and autosave
+  var LS_STANDINGS = 'rating-elo.standings';
+  var LS_AUTOSAVE = 'rating-elo.autosave';
+  var LS_PUBLIC = 'rating-elo.public_copy';
+  var SAVE_URL = 'https://script.google.com/macros/s/AKfycbz91BOGNOwt_hCg4lh2_x0f1XjgAyRruB_0ym4FegBHPsajK7jAeGweWxQO9pRhrwEVow/exec';
+
+  // Regular save to localStorage
+  if (app.ports.saveStandings && app.ports.saveStandings.subscribe) {
+    app.ports.saveStandings.subscribe(function(json) {
+      try {
+        localStorage.setItem(LS_STANDINGS, json);
+        console.log('Saved standings to localStorage');
+      } catch (e) {
+        console.error('Failed to save standings:', e);
+      }
+    });
+  }
+
+  // Load standings from localStorage on request
+  if (app.ports.askForStandings && app.ports.askForStandings.subscribe) {
+    app.ports.askForStandings.subscribe(function() {
+      var json = '';
+      try {
+        json = localStorage.getItem(LS_STANDINGS) || '';
+      } catch (e) {
+        console.error('Failed to load standings:', e);
+      }
+      if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+        app.ports.receiveStandings.send(json);
+      }
+    });
+  }
+
+  // Autosave setting
+  if (app.ports.saveAutoSave && app.ports.saveAutoSave.subscribe) {
+    app.ports.saveAutoSave.subscribe(function(enabled) {
+      try {
+        localStorage.setItem(LS_AUTOSAVE, JSON.stringify(enabled));
+      } catch (e) {
+        console.error('Failed to save autosave setting:', e);
+      }
+    });
+  }
+
+  // Load autosave setting
+  if (app.ports.askForAutoSave && app.ports.askForAutoSave.subscribe) {
+    app.ports.askForAutoSave.subscribe(function() {
+      var enabled = true;
+      try {
+        enabled = JSON.parse(localStorage.getItem(LS_AUTOSAVE) || 'true');
+      } catch (e) {
+        console.error('Failed to load autosave setting:', e);
+      }
+      if (app.ports.receiveAutoSave && app.ports.receiveAutoSave.send) {
+        app.ports.receiveAutoSave.send(enabled);
+      }
+    });
+  }
+
+  // Save to Drive via POST
+  if (app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
+    app.ports.saveToPublicDrive.subscribe(function(json) {
+      console.log('Drive save requested, payload length:', json.length);
+      try {
+        localStorage.setItem(LS_PUBLIC, json);
+      } catch (e) {
+        console.warn('Could not persist public copy to localStorage:', e);
+      }
+
+      if (!SAVE_URL) {
+        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+          app.ports.receivePublicDriveStatus.send('Saved locally only (no SAVE_URL configured)');
+        }
+        return;
+      }
+
+      console.log('POSTing to:', SAVE_URL);
+      fetch(SAVE_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: json
+      })
+      .then(function(res) {
+        console.log('Drive response status:', res.status);
+        return res.text().then(function(text){
+          console.log('Drive response text:', text);
+          var payload;
+          try { payload = JSON.parse(text); } catch(_) { payload = { ok:false, status: res.status, body: text }; }
+          var ok = payload && payload.ok === true;
+          var msg = ok ? 'Saved to Drive' : ('Drive save failed: ' + (payload.error || ('status ' + res.status)));
+          if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+            var ts = new Date().toISOString();
+            app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));
+          }
+        });
+      })
+      .catch(function(err) {
+        console.error('Drive save failed:', err);
+        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+          app.ports.receivePublicDriveStatus.send('Drive save failed: ' + String(err));
+        }
+      });
+    });
+  }
+
+  // Load from public copy in localStorage (fallback)
+  if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {
+    app.ports.loadFromPublicDrive.subscribe(function(){
+      var json = '';
+      try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
+      if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
+        app.ports.receiveStandings.send(json);
+      }
+    });
+  }
 }
 catch (e)
 {
