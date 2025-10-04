@@ -7666,7 +7666,7 @@ var $author$project$Main$init = function (_v0) {
 				newPlayerName: '',
 				shouldStartNextMatchAfterLoad: false,
 				status: $elm$core$Maybe$Nothing,
-				votesUntilDriveSync: 5
+				votesUntilDriveSync: 10
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -8850,7 +8850,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 			{
 				autoSaveInProgress: true,
 				status: $elm$core$Maybe$Just('Saving to Google Sheets...'),
-				votesUntilDriveSync: 5
+				votesUntilDriveSync: 10
 			}),
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(

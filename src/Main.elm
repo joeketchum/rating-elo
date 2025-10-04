@@ -118,7 +118,7 @@ init _ =
       , autoSave = True
       , status = Nothing
       , lastSynced = Nothing
-      , votesUntilDriveSync = 5
+      , votesUntilDriveSync = 10
       , shouldStartNextMatchAfterLoad = False
       , autoSaveInProgress = False
       }
@@ -214,7 +214,7 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
     in
     if newCount <= 0 then
         -- Save to Drive and don't start next match until reload completes
-        ( { model | votesUntilDriveSync = 5, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
+        ( { model | votesUntilDriveSync = 10, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
         , Cmd.batch
             [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
