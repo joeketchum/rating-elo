@@ -14232,7 +14232,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
     const LS_STANDINGS = "rating-elo.standings";
     const LS_AUTOSAVE = "rating-elo.autosave";
     const LS_PUBLIC = "rating-elo.public_copy";
-    const SAVE_URL = "https://script.google.com/macros/s/AKfycbxc5UWCVkDzwOy2MwkHpxkPb8H6PIoVIPQRSw72wRyIHdTBaUi81TvDglWpVEeP79VKiw/exec";
+    const SAVE_URL = "https://script.google.com/macros/s/AKfycbz91BOGNOwt_hCg4lh2_x0f1XjgAyRruB_0ym4FegBHPsajK7jAeGweWxQO9pRhrwEVow/exec";
 
     function toast(msg, duration) {
       console.log('TOAST:', msg);
@@ -14369,15 +14369,8 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
         });
       }
     }
-  })();
 
-  // Add debug button and logging for Drive save testing
-  (function(){
-    // Update this URL after deploying Apps Script with CORS headers
-    const SAVE_URL = "https://script.google.com/macros/s/AKfycbxc5UWCVkDzwOy2MwkHpxkPb8H6PIoVIPQRSw72wRyIHdTBaUi81TvDglWpVEeP79VKiw/exec";
-    const LS_PUBLIC = "rating-elo.public_copy";
-
-    // Create debug UI
+    // Add test button
     var div = document.createElement('div');
     div.style.position = 'fixed';
     div.style.bottom = '12px';
@@ -14418,6 +14411,7 @@ _Platform_export({'Main':{'init':$author$project$Main$main(
     div.appendChild(btn);
     document.body.appendChild(div);
   })();
+
 }
 catch (e)
 {
