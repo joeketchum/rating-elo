@@ -41,8 +41,9 @@ port receiveAutoSave : (Bool -> msg) -> Sub msg
 -- PORTS (Drive via Apps Script)
 
 port saveToPublicDrive : String -> Cmd msg
-port loadFromPublicDrive : String -> Cmd msg
+port loadFromPublicDrive : String -> Cmd msg  
 port receivePublicDriveStatus : (String -> msg) -> Sub msg
+port receiveMatchSaveComplete : (() -> msg) -> Sub msg
 
 
 
@@ -59,6 +60,7 @@ type alias Model =
     , status : Maybe String
     , lastSynced : Maybe String
     , votesUntilDriveSync : Int
+    , shouldStartNextMatchAfterLoad : Bool
     }
 
 
@@ -80,6 +82,7 @@ type Msg
     | KeeperWantsToRefreshFromDrive
     | SelectedStandingsFile File
     | PeriodicSync
+    | AutoSaveCompleted
     | KeeperWantsToUndo
     | KeeperWantsToRedo
     | LoadedLeague (Result String League)
@@ -114,6 +117,7 @@ init _ =
       , status = Nothing
       , lastSynced = Nothing
       , votesUntilDriveSync = 5
+      , shouldStartNextMatchAfterLoad = False
       }
     , Cmd.batch [ askForAutoSave "init", httpRequest ]
     )
@@ -181,6 +185,7 @@ subscriptions model =
                 [ receiveStandings ReceivedStandings
                 , receiveAutoSave ReceivedAutoSave
                 , receivePublicDriveStatus ReceivedPublicDriveStatus
+                , receiveMatchSaveComplete (\_ -> AutoSaveCompleted)
                 , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
                 ]
 
@@ -205,10 +210,10 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
         newCount = model.votesUntilDriveSync - 1
     in
     if newCount <= 0 then
-        ( { model | votesUntilDriveSync = 5 }  -- Reset counter
+        -- Save to Drive and don't start next match until reload completes
+        ( { model | votesUntilDriveSync = 5, status = Just "Saving to Google Sheets..." }
         , Cmd.batch
-            [ cmd
-            , saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
+            [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
             ]
         )
@@ -313,6 +318,12 @@ update msg model =
             else
                 ( model, Cmd.none )
 
+        AutoSaveCompleted ->
+            -- Auto-save to Drive completed, now reload and continue to next match
+            ( { model | shouldStartNextMatchAfterLoad = True }
+            , loadFromPublicDrive ""
+            )
+
         KeeperWantsToLoadStandings ->
             ( model, Select.file [ "application/json" ] SelectedStandingsFile )
 
@@ -374,14 +385,20 @@ update msg model =
         ReceivedStandings jsonString ->
             case Decode.decodeString League.decoder jsonString of
                 Ok league ->
-                    ( { model | history = History.init 50 league }
-                    , Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity
-                    )
-                        |> startNextMatchIfPossible
-                        |> maybeAutoSave
+                    let
+                        updatedModel = { model | history = History.init 50 league, shouldStartNextMatchAfterLoad = False }
+                        baseResult = ( updatedModel, Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity )
+                    in
+                    if model.shouldStartNextMatchAfterLoad then
+                        baseResult
+                            |> startNextMatchIfPossible
+                            |> maybeAutoSave
+                    else
+                        baseResult
+                            |> maybeAutoSave
 
                 Err _ ->
-                    ( { model | status = Just "Saved standings malformed or unreadable" }
+                    ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False }
                     , Cmd.none
                     )
 
