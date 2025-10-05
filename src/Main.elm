@@ -829,9 +829,7 @@ currentMatch model =
                         , Css.alignItems Css.center
                         , Css.paddingTop (Css.px 32)
                         , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
-                            [ Css.flexDirection Css.column
-                            , Css.alignItems Css.stretch
-                            ]
+                            [ Css.display Css.none ]
                         ]
                     ]
                     [ activePlayer playerA
@@ -840,27 +838,58 @@ currentMatch model =
                         [ Html.text "vs." ]
                     , activePlayer playerB
                     ]
+                -- Mobile-specific stacked vote layout
+                , Html.div
+                    [ css
+                        [ Css.display Css.none
+                        , Css.marginTop (Css.px 24)
+                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                            [ Css.display Css.block ]
+                        ]
+                    ]
+                    [ -- Row 1: Player A with WINNER on the right
+                      Html.div
+                        [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween, Css.marginBottom (Css.px 10) ] ]
+                        [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompact playerA ]
+                        , Html.div []
+                            [ blueButtonLarge "WINNER"
+                                (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
+                            ]
+                        ]
+                    , -- Row 2: TIE full width
+                      Html.div [ css [ Css.marginBottom (Css.px 10) ] ]
+                        [ blueButtonLarge "TIE"
+                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
+                        ]
+                    , -- Row 3: Player B with WINNER on the right
+                      Html.div
+                        [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween ] ]
+                        [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompact playerB ]
+                        , Html.div []
+                            [ blueButtonLarge "WINNER"
+                                (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
+                            ]
+                        ]
+                    ]
                 , Html.div
                     [ css
                         [ Css.displayFlex
                         , Css.paddingTop (Css.px 32)
                         , Css.textAlign Css.center
                         , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
-                            [ Css.flexDirection Css.column
-                            , Css.alignItems Css.stretch
-                            ]
+                            [ Css.display Css.none ]
                         ]
                     ]
-                    [ Html.div [ css [ Css.width (Css.pct 40), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100), Css.marginBottom (Css.px 10) ] ] ]
-                        [ blueButtonLarge "WINNER" 
+                    [ Html.div [ css [ Css.width (Css.pct 40) ] ]
+                        [ blueButton "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                         ]
-                    , Html.div [ css [ Css.width (Css.pct 20), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100), Css.marginBottom (Css.px 10) ] ] ]
-                        [ blueButtonLarge "TIE" 
+                    , Html.div [ css [ Css.width (Css.pct 20) ] ]
+                        [ blueButton "TIE" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                         ]
-                    , Html.div [ css [ Css.width (Css.pct 40), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100) ] ] ]
-                        [ blueButtonLarge "WINNER" 
+                    , Html.div [ css [ Css.width (Css.pct 40) ] ]
+                        [ blueButton "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
                         ]
                     ]
@@ -903,17 +932,27 @@ currentMatch model =
                         [ Css.displayFlex
                         , Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
                         , Css.justifyContent Css.spaceAround
-                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
-                            [ Css.padding4 (Css.px 16) (Css.px 12) Css.zero (Css.px 12)
-                            , Css.justifyContent Css.center
-                            ]
                         ]
                     ]
-                    [ Html.div [ css [ Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
-                        [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history)) ]
-                    , Html.div [ css [ Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
-                        [ blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history)) ]
-                    , Html.div [ css [ Css.width (Css.pct 40), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100) ] ] ]
+                    [ -- Desktop controls: Undo/Redo/Skip same size
+                      Html.div
+                        [ css [ Css.display Css.flex, Css.justifyContent Css.spaceAround
+                              , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
+                              ]
+                        ]
+                        [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
+                        , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
+                        , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
+                        ]
+                    , -- Mobile: large Skip button only
+                      Html.div
+                        [ css [ Css.display Css.none
+                              , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                                  [ Css.display Css.block ]
+                              , Css.width (Css.pct 100)
+                              , Css.textAlign Css.center
+                              ]
+                        ]
                         [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                     ]
                 ]
@@ -1415,6 +1454,18 @@ activePlayer player =
         [ css [ Css.width (Css.pct 40), Css.maxWidth (Css.pct 45), Css.textAlign Css.center, modernSansSerif ] ]
         [ Html.h2
             [ css [ Css.fontSize (Css.px 26), Css.marginBottom (Css.px 6), Css.textTransform Css.uppercase, Css.fontWeight (Css.int 700), Css.fontStyle Css.italic ] ]
+            [ Html.text (Player.name player) ]
+        , availabilityBadges player
+        ]
+
+
+-- Compact player block for mobile rows
+activePlayerCompact : Player -> Html msg
+activePlayerCompact player =
+    Html.div
+        [ css [ modernSansSerif ] ]
+        [ Html.h3
+            [ css [ Css.fontSize (Css.px 20), Css.marginBottom (Css.px 4), Css.textTransform Css.uppercase, Css.fontWeight (Css.int 700), Css.fontStyle Css.italic ] ]
             [ Html.text (Player.name player) ]
         , availabilityBadges player
         ]
