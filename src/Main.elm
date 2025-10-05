@@ -644,9 +644,6 @@ view model =
                 ]
                 [ currentMatch model
                 , filterBar model
-                , Html.section
-                    [ css [ Css.width (Css.pct 80), Css.margin2 (Css.px 8) Css.auto, Css.textAlign Css.right ] ]
-                    [ saveIconButton (Just KeeperWantsToSaveToDrive) ]
                 , rankings model
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
@@ -914,15 +911,17 @@ currentMatch model =
                       Html.div
                         [ css [ Css.height (Css.px 4), Css.backgroundColor (Css.hex "D1D5DB"), Css.borderRadius (Css.px 2), Css.margin2 (Css.px 14) Css.zero ] ]
                         []
-                    , -- Row 3: TIE and SKIP in a single row
+                    , -- Row 3: TIE, SKIP, and SAVE in a single row
                       Html.div
                         [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween ] ]
-                        [ Html.div [ css [ Css.width (Css.pct 49) ] ]
+                        [ Html.div [ css [ Css.width (Css.pct 32) ] ]
                             [ blackButtonLarge "TIE"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                             ]
-                        , Html.div [ css [ Css.width (Css.pct 49) ] ]
+                        , Html.div [ css [ Css.width (Css.pct 32) ] ]
                             [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
+                        , Html.div [ css [ Css.width (Css.pct 32) ] ]
+                            [ buttonLarge (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
                         ]
                     ]
                 , Html.div
@@ -997,6 +996,7 @@ currentMatch model =
                                                 [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
                                                 , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
                                                 , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
+                                                , greenButton "SAVE" (Just KeeperWantsToSaveToDrive)
                                                 ]
                                         ]
                 ]
