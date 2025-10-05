@@ -902,11 +902,20 @@ rankings model =
                 |> List.indexedMap (\rank player -> ( Player.name player, rank ))
                 |> Dict.fromList
 
-        numeric =
+        numericRank =
             Css.batch
-                [ Css.fontWeight (Css.int 600)
-                , Css.fontSize (Css.px 16)
+                [ Css.fontWeight (Css.int 700)
+                , Css.fontSize (Css.px 18)
                 , Css.verticalAlign Css.middle
+                , modernSansSerif
+                ]
+
+        numericDim =
+            Css.batch
+                [ Css.fontWeight (Css.int 500)
+                , Css.fontSize (Css.px 12)
+                , Css.verticalAlign Css.middle
+                , Css.color (Css.hex "6B7280")
                 , modernSansSerif
                 ]
 
@@ -991,15 +1000,11 @@ rankings model =
                          else
                             [ Html.text "" ]
                         )
-                    , Html.td [ css [ numeric, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
-                    , Html.td [ css [ numeric, shrinkWidth, center ] ] [ Html.text (String.fromInt (Player.rating player)) ]
-                    , Html.td [ css [ numeric, shrinkWidth, center ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
+                    , Html.td [ css [ numericRank, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
+                    , Html.td [ css [ numericDim, shrinkWidth, center ] ] [ Html.text (String.fromInt (Player.rating player)) ]
+                    , Html.td [ css [ numericDim, shrinkWidth, center ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
                     , Html.td [ css [ textual, left ] ]
-                        [ Html.div []
-                            [ Html.span [] [ Html.text (Player.name player) ]
-                            , Html.span [ css [ Css.marginLeft (Css.px 8) ] ] [ availabilityBadgesSmall player ]
-                            ]
-                        ]
+                        [ Html.span [] [ Html.text (Player.name player) ] ]
                     , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap ] ]
                         (let baseActions =
                                 if isPlayerIgnored player (History.current model.history) then
@@ -1370,30 +1375,7 @@ badge label isOn colorOn =
         ]
         [ Html.text label ]
 
--- Smaller badges for rankings table rows
-availabilityBadgesSmall : Player -> Html msg
-availabilityBadgesSmall player =
-    Html.div
-        [ css [ Css.displayFlex, Css.justifyContent Css.center ] ]
-        [ Html.span [ css [ Css.marginRight (Css.px 4) ] ] [ badgeSmall "AM" (Player.playsAM player) (Css.hex "F59E0B") ]
-        , badgeSmall "PM" (Player.playsPM player) (Css.hex "8B5CF6")
-        ]
-
-badgeSmall : String -> Bool -> Css.Color -> Html msg
-badgeSmall label isOn colorOn =
-    Html.span
-        [ css
-            [ Css.display Css.inlineBlock
-            , Css.padding2 (Css.px 1) (Css.px 6)
-            , Css.borderRadius (Css.px 9999)
-            , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
-            , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
-            , Css.fontSize (Css.px 10)
-            , Css.fontWeight (Css.int 700)
-            , Css.letterSpacing (Css.px 0.4)
-            ]
-        ]
-        [ Html.text label ]
+-- (AM/PM mini badges removed from rankings per request)
 
 
 toggleChip : String -> Bool -> Css.Color -> Msg -> Html Msg
