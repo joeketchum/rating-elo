@@ -1224,7 +1224,10 @@ saveIconButton maybeMsg =
             , Css.fontWeight (Css.int 700)
             , Css.display Css.inlineFlex
             , Css.alignItems Css.center
-            , Css.gap (Css.px 6)
+            , Css.children
+                [ Css.selector "* + *"
+                    [ Css.marginLeft (Css.px 6) ]
+                ]
             , modernSansSerif
             ]
         , case maybeMsg of
