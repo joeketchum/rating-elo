@@ -15035,8 +15035,8 @@ var $author$project$Main$rankings = function (model) {
 				$author$project$Main$modernSansSerif,
 				$rtfeldman$elm_css$Css$paddingLeft(
 				$rtfeldman$elm_css$Css$px(15)),
-				$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap),
-				$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden)
+				$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$normal),
+				$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$visible)
 			]));
 	var shrinkWidth = $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
@@ -15161,7 +15161,7 @@ var $author$project$Main$rankings = function (model) {
 								$rtfeldman$elm_css$Css$pct(80)),
 								A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto),
 								$rtfeldman$elm_css$Css$borderCollapse($rtfeldman$elm_css$Css$collapse),
-								$rtfeldman$elm_css$Css$tableLayout($rtfeldman$elm_css$Css$fixed),
+								$rtfeldman$elm_css$Css$tableLayout($rtfeldman$elm_css$Css$auto),
 								A2(
 								$rtfeldman$elm_css$Css$Media$withMedia,
 								_List_fromArray(
@@ -15364,7 +15364,7 @@ var $author$project$Main$rankings = function (model) {
 												_List_fromArray(
 													[
 														$rtfeldman$elm_css$Css$width(
-														$rtfeldman$elm_css$Css$px(20))
+														$rtfeldman$elm_css$Css$px(24))
 													]))
 											]),
 										_List_Nil),
@@ -15374,7 +15374,14 @@ var $author$project$Main$rankings = function (model) {
 											[
 												$rtfeldman$elm_css$Html$Styled$Attributes$css(
 												_List_fromArray(
-													[header, center]))
+													[
+														header,
+														center,
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$px(60)),
+														$rtfeldman$elm_css$Css$maxWidth(
+														$rtfeldman$elm_css$Css$px(60))
+													]))
 											]),
 										_List_fromArray(
 											[
@@ -15390,7 +15397,7 @@ var $author$project$Main$rankings = function (model) {
 														header,
 														left,
 														$rtfeldman$elm_css$Css$width(
-														$rtfeldman$elm_css$Css$pct(55)),
+														$rtfeldman$elm_css$Css$pct(60)),
 														A2(
 														$rtfeldman$elm_css$Css$Media$withMedia,
 														_List_fromArray(
@@ -15424,6 +15431,10 @@ var $author$project$Main$rankings = function (model) {
 													[
 														header,
 														center,
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$px(80)),
+														$rtfeldman$elm_css$Css$maxWidth(
+														$rtfeldman$elm_css$Css$px(80)),
 														A2(
 														$rtfeldman$elm_css$Css$Media$withMedia,
 														_List_fromArray(
@@ -15456,6 +15467,10 @@ var $author$project$Main$rankings = function (model) {
 													[
 														header,
 														center,
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$px(80)),
+														$rtfeldman$elm_css$Css$maxWidth(
+														$rtfeldman$elm_css$Css$px(80)),
 														A2(
 														$rtfeldman$elm_css$Css$Media$withMedia,
 														_List_fromArray(
@@ -15547,7 +15562,9 @@ var $author$project$Main$rankings = function (model) {
 															_List_fromArray(
 																[
 																	$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
-																	$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+																	$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+																	$rtfeldman$elm_css$Css$width(
+																	$rtfeldman$elm_css$Css$px(24))
 																]))
 														]),
 													isPlaying ? _List_fromArray(
@@ -15611,7 +15628,14 @@ var $author$project$Main$rankings = function (model) {
 														[
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
-																[numericRank, shrinkWidth, center]))
+																[
+																	numericRank,
+																	center,
+																	$rtfeldman$elm_css$Css$width(
+																	$rtfeldman$elm_css$Css$px(60)),
+																	$rtfeldman$elm_css$Css$maxWidth(
+																	$rtfeldman$elm_css$Css$px(60))
+																]))
 														]),
 													_List_fromArray(
 														[
@@ -15628,7 +15652,7 @@ var $author$project$Main$rankings = function (model) {
 																	textual,
 																	left,
 																	$rtfeldman$elm_css$Css$width(
-																	$rtfeldman$elm_css$Css$pct(55)),
+																	$rtfeldman$elm_css$Css$pct(60)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
@@ -15644,8 +15668,6 @@ var $author$project$Main$rankings = function (model) {
 																		]),
 																	_List_fromArray(
 																		[
-																			$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$normal),
-																			$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$visible),
 																			$rtfeldman$elm_css$Css$width(
 																			$rtfeldman$elm_css$Css$pct(70))
 																		]))
@@ -15670,8 +15692,11 @@ var $author$project$Main$rankings = function (model) {
 															_List_fromArray(
 																[
 																	numericDim,
-																	shrinkWidth,
 																	center,
+																	$rtfeldman$elm_css$Css$width(
+																	$rtfeldman$elm_css$Css$px(80)),
+																	$rtfeldman$elm_css$Css$maxWidth(
+																	$rtfeldman$elm_css$Css$px(80)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
@@ -15705,8 +15730,11 @@ var $author$project$Main$rankings = function (model) {
 															_List_fromArray(
 																[
 																	numericDim,
-																	shrinkWidth,
 																	center,
+																	$rtfeldman$elm_css$Css$width(
+																	$rtfeldman$elm_css$Css$px(80)),
+																	$rtfeldman$elm_css$Css$maxWidth(
+																	$rtfeldman$elm_css$Css$px(80)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(

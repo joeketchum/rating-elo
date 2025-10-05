@@ -1038,8 +1038,9 @@ rankings model =
                 , Css.verticalAlign Css.middle
                 , modernSansSerif
                 , Css.paddingLeft (Css.px 15)
-                , Css.whiteSpace Css.noWrap
-                , Css.overflow Css.hidden
+                -- default name text can wrap; specific cells can override
+                , Css.whiteSpace Css.normal
+                , Css.overflow Css.visible
                 ]
 
         shrinkWidth =
@@ -1091,6 +1092,7 @@ rankings model =
                         [ css
                             [ Css.verticalAlign Css.middle
                             , Css.textAlign Css.center
+                            , Css.width (Css.px 24)
                             ]
                         ]
                         (if isPlaying then
@@ -1113,11 +1115,11 @@ rankings model =
                          else
                             [ Html.text "" ]
                         )
-                    , Html.td [ css [ numericRank, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
-                    , Html.td [ css [ textual, left, Css.width (Css.pct 55), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.overflow Css.visible, Css.width (Css.pct 70) ] ] ]
+                    , Html.td [ css [ numericRank, center, Css.width (Css.px 60), Css.maxWidth (Css.px 60) ] ] [ Html.text (String.fromInt (rank + 1)) ]
+                    , Html.td [ css [ textual, left, Css.width (Css.pct 60), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 70) ] ] ]
                         [ Html.span [] [ Html.text (Player.name player) ] ]
-                    , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
-                    , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
+                    , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
+                    , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
                     , Html.td [ css [ Css.verticalAlign Css.middle ] ]
                         [ Html.div
                             [ css
@@ -1152,11 +1154,11 @@ rankings model =
             ( "players-header"
             , Html.tr
                 [ css [ Css.height (Css.px 40), Css.borderBottom3 (Css.px 2) Css.solid (Css.hex "D1D5DB") ] ]
-                [ Html.th [ css [ Css.width (Css.px 20) ] ] []
-                , Html.th [ css [ header, center ] ] [ Html.text "RANK" ]
-                , Html.th [ css [ header, left, Css.width (Css.pct 55), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 70) ] ] ] [ Html.text "NAME" ]
-                , Html.th [ css [ header, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
-                , Html.th [ css [ header, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
+                [ Html.th [ css [ Css.width (Css.px 24) ] ] []
+                , Html.th [ css [ header, center, Css.width (Css.px 60), Css.maxWidth (Css.px 60) ] ] [ Html.text "RANK" ]
+                , Html.th [ css [ header, left, Css.width (Css.pct 60), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 70) ] ] ] [ Html.text "NAME" ]
+                , Html.th [ css [ header, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
+                , Html.th [ css [ header, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
                 , Html.th [ css [ header, center ] ] [ Html.text "ACTIONS" ]
                 ]
             )
@@ -1206,7 +1208,7 @@ rankings model =
                 [ Css.width (Css.pct 80)
                 , Css.margin2 Css.zero Css.auto
                 , Css.borderCollapse Css.collapse
-                , Css.tableLayout Css.fixed
+                , Css.tableLayout Css.auto
                 , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
                     [ Css.width (Css.pct 100) ]
                 ]
