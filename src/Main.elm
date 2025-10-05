@@ -64,6 +64,7 @@ type alias Model =
     , votesUntilDriveSync : Int
     , shouldStartNextMatchAfterLoad : Bool
     , autoSaveInProgress : Bool
+    , timeFilter : TimeFilter
     }
 
 
@@ -99,6 +100,12 @@ type Msg
     | ClearStatus
     | ReceivedPublicDriveStatus String
     | IgnoredKey
+    | SetTimeFilter TimeFilter
+type TimeFilter
+    = All
+    | AMOnly
+    | PMOnly
+
 
 
 
@@ -123,7 +130,8 @@ init _ =
       , lastSynced = Nothing
       , votesUntilDriveSync = 20
       , shouldStartNextMatchAfterLoad = False
-      , autoSaveInProgress = False
+    , autoSaveInProgress = False
+    , timeFilter = All
       }
     , Cmd.batch [ askForAutoSave "init", httpRequest ]
     )
@@ -205,7 +213,17 @@ startNextMatchIfPossible ( model, cmd ) =
         ( model
         , Cmd.batch
             [ cmd
-            , Random.generate GotNextMatch (League.nextMatch (History.current model.history))
+            , Random.generate GotNextMatch (
+                case model.timeFilter of
+                    All ->
+                        League.nextMatch (History.current model.history)
+
+                    AMOnly ->
+                        League.nextMatchFiltered Player.playsAM (History.current model.history)
+
+                    PMOnly ->
+                        League.nextMatchFiltered Player.playsPM (History.current model.history)
+              )
             ]
         )
 
@@ -491,6 +509,12 @@ update msg model =
         IgnoredKey ->
             ( model, Cmd.none )
 
+        SetTimeFilter tf ->
+            ( { model | timeFilter = tf, history = History.mapInPlace League.clearMatch model.history }
+            , Cmd.none
+            )
+                |> startNextMatchIfPossible
+
 
 
 -- VIEW
@@ -515,6 +539,7 @@ view model =
                     ]
                 ]
                 [ currentMatch model
+                , filterBar model
                 , rankings model
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
@@ -569,6 +594,36 @@ view model =
            )
             |> List.map Html.toUnstyled
     }
+
+
+filterBar : Model -> Html Msg
+filterBar model =
+    Html.div
+        [ css [ Css.width (Css.pct 80), Css.margin2 Css.zero Css.auto, Css.marginTop (Css.px 10), Css.marginBottom (Css.px 10), Css.textAlign Css.center ] ]
+        [ Html.span [ css [ Css.marginRight (Css.px 10), modernSansSerif, Css.fontWeight (Css.int 600) ] ] [ Html.text "Filter:" ]
+        , toggleBtn (model.timeFilter == All) "All" (Just (SetTimeFilter All))
+        , toggleBtn (model.timeFilter == AMOnly) "AM" (Just (SetTimeFilter AMOnly))
+        , toggleBtn (model.timeFilter == PMOnly) "PM" (Just (SetTimeFilter PMOnly))
+        ]
+
+toggleBtn : Bool -> String -> Maybe Msg -> Html Msg
+toggleBtn isOn label maybeMsg =
+    Html.button
+        [ css
+            [ Css.padding2 (Css.px 6) (Css.px 12)
+            , Css.margin2 Css.zero (Css.px 6)
+            , Css.borderRadius (Css.px 9999)
+            , Css.backgroundColor (Css.hex (if isOn then "3B82F6" else "6B7280"))
+            , Css.color (Css.hex "FFF")
+            , Css.border Css.zero
+            , Css.cursor Css.pointer
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text label ]
 
 
 currentMatch : Model -> Html Msg

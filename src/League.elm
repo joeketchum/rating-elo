@@ -1,7 +1,7 @@
 module League exposing
     ( League, init, decoder, playersDecoder, encode
-    , addPlayer, players, getPlayer, retirePlayer
-    , Match(..), currentMatch, nextMatch, startMatch, Outcome(..), finishMatch, kFactor, clearMatch
+    , addPlayer, players, getPlayer, retirePlayer, updatePlayer
+    , Match(..), currentMatch, nextMatch, nextMatchFiltered, startMatch, Outcome(..), finishMatch, kFactor, clearMatch
     , ignorePlayer, unignorePlayer, isPlayerIgnored
     )
 
@@ -199,13 +199,18 @@ new match.
 
 -}
 nextMatch : League -> Generator (Maybe Match)
-nextMatch (League league) =
+nextMatch league =
+    nextMatchFiltered (\_ -> True) league
+
+
+nextMatchFiltered : (Player -> Bool) -> League -> Generator (Maybe Match)
+nextMatchFiltered allow (League league) =
     let
         allPlayersRaw =
             Dict.values league.players
 
         allPlayers =
-            List.filter (\p -> not (List.member (Player.id p) league.ignored)) allPlayersRaw
+            List.filter (\p -> allow p && not (List.member (Player.id p) league.ignored)) allPlayersRaw
     in
     case allPlayers of
         -- at least two

@@ -4,6 +4,7 @@ module Player exposing
     , name
     , rating, setRating
     , matchesPlayed, setMatchesPlayedTestOnly, incrementMatchesPlayed
+    , playsAM, playsPM, setAM, setPM
     , encode, decoder
     )
 
@@ -36,6 +37,8 @@ type Player
         , name : String
         , rating : Int
         , matches : Int
+        , am : Bool
+        , pm : Bool
         }
 
 
@@ -46,6 +49,8 @@ init name_ =
         , name = name_
         , rating = Elo.initialRating
         , matches = 0
+        , am = True
+        , pm = True
         }
 
 
@@ -118,19 +123,47 @@ incrementMatchesPlayed (Player player) =
     Player { player | matches = player.matches + 1 }
 
 
+-- AVAILABILITY (AM/PM)
+
+playsAM : Player -> Bool
+playsAM (Player player) =
+    player.am
+
+
+playsPM : Player -> Bool
+playsPM (Player player) =
+    player.pm
+
+
+setAM : Bool -> Player -> Player
+setAM val (Player player) =
+    Player { player | am = val }
+
+
+setPM : Bool -> Player -> Player
+setPM val (Player player) =
+    Player { player | pm = val }
+
+
 
 -- INTEROP
 
 
 decoder : Decoder Player
 decoder =
-    Decode.map4
-        (\id_ name_ rating_ matches ->
+    let
+        amDecoder = Decode.oneOf [ Decode.field "am" Decode.bool, Decode.succeed True ]
+        pmDecoder = Decode.oneOf [ Decode.field "pm" Decode.bool, Decode.succeed True ]
+    in
+    Decode.map6
+        (\id_ name_ rating_ matches am pm ->
             Player
                 { id = id_
                 , name = name_
                 , rating = rating_
                 , matches = matches
+                , am = am
+                , pm = pm
                 }
         )
         (Decode.oneOf
@@ -143,6 +176,8 @@ decoder =
         (Decode.field "name" Decode.string)
         (Decode.field "rating" Decode.int)
         (Decode.field "matches" Decode.int)
+        amDecoder
+        pmDecoder
 
 
 encode : Player -> Value
@@ -156,4 +191,6 @@ encode (Player player) =
         , ( "name", Encode.string player.name )
         , ( "rating", Encode.int player.rating )
         , ( "matches", Encode.int player.matches )
+        , ( "am", Encode.bool player.am )
+        , ( "pm", Encode.bool player.pm )
         ]

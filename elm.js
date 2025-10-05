@@ -5595,6 +5595,7 @@ var $elm$core$Task$perform = F2(
 				A2($elm$core$Task$map, toMessage, task)));
 	});
 var $elm$browser$Browser$document = _Browser_document;
+var $author$project$Main$All = {$: 'All'};
 var $author$project$Main$GotPlayers = function (a) {
 	return {$: 'GotPlayers', a: a};
 };
@@ -5610,6 +5611,7 @@ var $author$project$Player$PlayerId = function (a) {
 var $author$project$Player$Player = function (a) {
 	return {$: 'Player', a: a};
 };
+var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$field = _Json_decodeField;
 var $robinheghan$murmur3$Murmur3$HashData = F4(
 	function (shift, seed, hash, charsProcessed) {
@@ -5686,31 +5688,47 @@ var $robinheghan$murmur3$Murmur3$hashString = F2(
 				str));
 	});
 var $elm$json$Json$Decode$int = _Json_decodeInt;
-var $elm$json$Json$Decode$map4 = _Json_map4;
+var $elm$json$Json$Decode$map6 = _Json_map6;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $elm$json$Json$Decode$string = _Json_decodeString;
-var $author$project$Player$decoder = A5(
-	$elm$json$Json$Decode$map4,
-	F4(
-		function (id_, name_, rating_, matches) {
-			return $author$project$Player$Player(
-				{id: id_, matches: matches, name: name_, rating: rating_});
-		}),
-	A2(
-		$elm$json$Json$Decode$map,
-		$author$project$Player$PlayerId,
-		$elm$json$Json$Decode$oneOf(
-			_List_fromArray(
-				[
-					A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
-					A2(
-					$elm$json$Json$Decode$map,
-					$robinheghan$murmur3$Murmur3$hashString(0),
-					A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string))
-				]))),
-	A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
-	A2($elm$json$Json$Decode$field, 'rating', $elm$json$Json$Decode$int),
-	A2($elm$json$Json$Decode$field, 'matches', $elm$json$Json$Decode$int));
+var $author$project$Player$decoder = function () {
+	var pmDecoder = $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$field, 'pm', $elm$json$Json$Decode$bool),
+				$elm$json$Json$Decode$succeed(true)
+			]));
+	var amDecoder = $elm$json$Json$Decode$oneOf(
+		_List_fromArray(
+			[
+				A2($elm$json$Json$Decode$field, 'am', $elm$json$Json$Decode$bool),
+				$elm$json$Json$Decode$succeed(true)
+			]));
+	return A7(
+		$elm$json$Json$Decode$map6,
+		F6(
+			function (id_, name_, rating_, matches, am, pm) {
+				return $author$project$Player$Player(
+					{am: am, id: id_, matches: matches, name: name_, pm: pm, rating: rating_});
+			}),
+		A2(
+			$elm$json$Json$Decode$map,
+			$author$project$Player$PlayerId,
+			$elm$json$Json$Decode$oneOf(
+				_List_fromArray(
+					[
+						A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
+						A2(
+						$elm$json$Json$Decode$map,
+						$robinheghan$murmur3$Murmur3$hashString(0),
+						A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string))
+					]))),
+		A2($elm$json$Json$Decode$field, 'name', $elm$json$Json$Decode$string),
+		A2($elm$json$Json$Decode$field, 'rating', $elm$json$Json$Decode$int),
+		A2($elm$json$Json$Decode$field, 'matches', $elm$json$Json$Decode$int),
+		amDecoder,
+		pmDecoder);
+}();
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Dict$Black = {$: 'Black'};
@@ -7490,145 +7508,162 @@ var $elm$core$Maybe$withDefault = F2(
 			return _default;
 		}
 	});
-var $author$project$League$nextMatch = function (_v0) {
-	var league = _v0.a;
-	var allPlayersRaw = $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
-	var allPlayers = A2(
-		$elm$core$List$filter,
-		function (p) {
-			return !A2(
-				$elm$core$List$member,
-				$author$project$Player$id(p),
-				league.ignored);
-		},
-		allPlayersRaw);
-	if (allPlayers.b && allPlayers.b.b) {
-		var a = allPlayers.a;
-		var _v2 = allPlayers.b;
-		var b = _v2.a;
-		var rest = _v2.b;
-		var _v3 = function () {
-			var _v4 = A2(
-				$elm$core$List$filter,
-				function (player) {
-					return _Utils_cmp(
-						$author$project$Player$matchesPlayed(player),
-						$author$project$League$playInMatches) < 1;
-				},
-				allPlayers);
-			if (!_v4.b) {
-				return _Utils_Tuple2(
-					a,
-					A2($elm$core$List$cons, b, rest));
-			} else {
-				var firstPlayIn = _v4.a;
-				var restOfPlayIns = _v4.b;
-				return _Utils_Tuple2(firstPlayIn, restOfPlayIns);
-			}
-		}();
-		var firstPossiblePlayer = _v3.a;
-		var restOfPossiblePlayers = _v3.b;
-		var mostMatchesAmongPossiblePlayers = A2(
-			$elm$core$Maybe$withDefault,
-			$author$project$Player$matchesPlayed(firstPossiblePlayer),
-			$elm$core$List$maximum(
-				A2(
-					$elm$core$List$map,
-					$author$project$Player$matchesPlayed,
-					A2($elm$core$List$cons, firstPossiblePlayer, restOfPossiblePlayers))));
-		return A2(
-			$elm$random$Random$map,
-			$elm$core$Maybe$Just,
-			A2(
-				$elm$random$Random$andThen,
-				function (_v6) {
-					var playerA = _v6.a;
-					var playerB = _v6.b;
-					return A2(
-						$elm$random$Random$map,
-						function (flip) {
-							return flip ? A2($author$project$League$Match, playerA, playerB) : A2($author$project$League$Match, playerB, playerA);
-						},
-						A2(
-							$elm$random$Random$uniform,
-							true,
-							_List_fromArray(
-								[false])));
-				},
+var $author$project$League$nextMatchFiltered = F2(
+	function (allow, _v0) {
+		var league = _v0.a;
+		var allPlayersRaw = $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
+		var allPlayers = A2(
+			$elm$core$List$filter,
+			function (p) {
+				return allow(p) && (!A2(
+					$elm$core$List$member,
+					$author$project$Player$id(p),
+					league.ignored));
+			},
+			allPlayersRaw);
+		if (allPlayers.b && allPlayers.b.b) {
+			var a = allPlayers.a;
+			var _v2 = allPlayers.b;
+			var b = _v2.a;
+			var rest = _v2.b;
+			var _v3 = function () {
+				var _v4 = A2(
+					$elm$core$List$filter,
+					function (player) {
+						return _Utils_cmp(
+							$author$project$Player$matchesPlayed(player),
+							$author$project$League$playInMatches) < 1;
+					},
+					allPlayers);
+				if (!_v4.b) {
+					return _Utils_Tuple2(
+						a,
+						A2($elm$core$List$cons, b, rest));
+				} else {
+					var firstPlayIn = _v4.a;
+					var restOfPlayIns = _v4.b;
+					return _Utils_Tuple2(firstPlayIn, restOfPlayIns);
+				}
+			}();
+			var firstPossiblePlayer = _v3.a;
+			var restOfPossiblePlayers = _v3.b;
+			var mostMatchesAmongPossiblePlayers = A2(
+				$elm$core$Maybe$withDefault,
+				$author$project$Player$matchesPlayed(firstPossiblePlayer),
+				$elm$core$List$maximum(
+					A2(
+						$elm$core$List$map,
+						$author$project$Player$matchesPlayed,
+						A2($elm$core$List$cons, firstPossiblePlayer, restOfPossiblePlayers))));
+			return A2(
+				$elm$random$Random$map,
+				$elm$core$Maybe$Just,
 				A2(
 					$elm$random$Random$andThen,
-					function (firstPlayer) {
-						var _v5 = _Utils_eq(firstPlayer, a) ? _Utils_Tuple2(b, rest) : (_Utils_eq(firstPlayer, b) ? _Utils_Tuple2(a, rest) : _Utils_Tuple2(
-							a,
-							A2(
-								$elm$core$List$cons,
-								b,
-								A2(
-									$elm$core$List$filter,
-									function (p) {
-										return !_Utils_eq(p, firstPlayer);
-									},
-									rest))));
-						var head = _v5.a;
-						var tail = _v5.b;
-						var furthestAway = A2(
-							$elm$core$Maybe$withDefault,
-							0,
-							$elm$core$List$maximum(
-								A2(
-									$elm$core$List$map,
-									function (player) {
-										return $elm$core$Basics$abs(
-											$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(player));
-									},
-									A2($elm$core$List$cons, head, tail))));
+					function (_v6) {
+						var playerA = _v6.a;
+						var playerB = _v6.b;
 						return A2(
 							$elm$random$Random$map,
-							$elm$core$Tuple$pair(firstPlayer),
+							function (flip) {
+								return flip ? A2($author$project$League$Match, playerA, playerB) : A2($author$project$League$Match, playerB, playerA);
+							},
 							A2(
-								$elm$random$Random$weighted,
-								_Utils_Tuple2(
-									A2(
-										$elm$core$Basics$pow,
-										furthestAway - $elm$core$Basics$abs(
-											$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(head)),
-										2),
-									head),
-								A2(
-									$elm$core$List$map,
-									function (player) {
-										return _Utils_Tuple2(
-											A2(
-												$elm$core$Basics$pow,
-												furthestAway - $elm$core$Basics$abs(
-													$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(player)),
-												2),
-											player);
-									},
-									tail)));
+								$elm$random$Random$uniform,
+								true,
+								_List_fromArray(
+									[false])));
 					},
 					A2(
-						$elm$random$Random$weighted,
-						_Utils_Tuple2(
-							A2(
-								$elm$core$Basics$pow,
-								mostMatchesAmongPossiblePlayers - $author$project$Player$matchesPlayed(firstPossiblePlayer),
-								2),
-							firstPossiblePlayer),
-						A2(
-							$elm$core$List$map,
-							function (player) {
-								return _Utils_Tuple2(
+						$elm$random$Random$andThen,
+						function (firstPlayer) {
+							var _v5 = _Utils_eq(firstPlayer, a) ? _Utils_Tuple2(b, rest) : (_Utils_eq(firstPlayer, b) ? _Utils_Tuple2(a, rest) : _Utils_Tuple2(
+								a,
+								A2(
+									$elm$core$List$cons,
+									b,
 									A2(
-										$elm$core$Basics$pow,
-										mostMatchesAmongPossiblePlayers - $author$project$Player$matchesPlayed(player),
-										2),
-									player);
-							},
-							restOfPossiblePlayers)))));
-	} else {
-		return $elm$random$Random$constant($elm$core$Maybe$Nothing);
-	}
+										$elm$core$List$filter,
+										function (p) {
+											return !_Utils_eq(p, firstPlayer);
+										},
+										rest))));
+							var head = _v5.a;
+							var tail = _v5.b;
+							var furthestAway = A2(
+								$elm$core$Maybe$withDefault,
+								0,
+								$elm$core$List$maximum(
+									A2(
+										$elm$core$List$map,
+										function (player) {
+											return $elm$core$Basics$abs(
+												$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(player));
+										},
+										A2($elm$core$List$cons, head, tail))));
+							return A2(
+								$elm$random$Random$map,
+								$elm$core$Tuple$pair(firstPlayer),
+								A2(
+									$elm$random$Random$weighted,
+									_Utils_Tuple2(
+										A2(
+											$elm$core$Basics$pow,
+											furthestAway - $elm$core$Basics$abs(
+												$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(head)),
+											2),
+										head),
+									A2(
+										$elm$core$List$map,
+										function (player) {
+											return _Utils_Tuple2(
+												A2(
+													$elm$core$Basics$pow,
+													furthestAway - $elm$core$Basics$abs(
+														$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(player)),
+													2),
+												player);
+										},
+										tail)));
+						},
+						A2(
+							$elm$random$Random$weighted,
+							_Utils_Tuple2(
+								A2(
+									$elm$core$Basics$pow,
+									mostMatchesAmongPossiblePlayers - $author$project$Player$matchesPlayed(firstPossiblePlayer),
+									2),
+								firstPossiblePlayer),
+							A2(
+								$elm$core$List$map,
+								function (player) {
+									return _Utils_Tuple2(
+										A2(
+											$elm$core$Basics$pow,
+											mostMatchesAmongPossiblePlayers - $author$project$Player$matchesPlayed(player),
+											2),
+										player);
+								},
+								restOfPossiblePlayers)))));
+		} else {
+			return $elm$random$Random$constant($elm$core$Maybe$Nothing);
+		}
+	});
+var $author$project$League$nextMatch = function (league) {
+	return A2(
+		$author$project$League$nextMatchFiltered,
+		function (_v0) {
+			return true;
+		},
+		league);
+};
+var $author$project$Player$playsAM = function (_v0) {
+	var player = _v0.a;
+	return player.am;
+};
+var $author$project$Player$playsPM = function (_v0) {
+	var player = _v0.a;
+	return player.pm;
 };
 var $author$project$Main$startNextMatchIfPossible = function (_v0) {
 	var model = _v0.a;
@@ -7645,8 +7680,24 @@ var $author$project$Main$startNextMatchIfPossible = function (_v0) {
 					A2(
 					$elm$random$Random$generate,
 					$author$project$Main$GotNextMatch,
-					$author$project$League$nextMatch(
-						$author$project$History$current(model.history)))
+					function () {
+						var _v1 = model.timeFilter;
+						switch (_v1.$) {
+							case 'All':
+								return $author$project$League$nextMatch(
+									$author$project$History$current(model.history));
+							case 'AMOnly':
+								return A2(
+									$author$project$League$nextMatchFiltered,
+									$author$project$Player$playsAM,
+									$author$project$History$current(model.history));
+							default:
+								return A2(
+									$author$project$League$nextMatchFiltered,
+									$author$project$Player$playsPM,
+									$author$project$History$current(model.history));
+						}
+					}())
 				])));
 };
 var $author$project$Main$init = function (_v0) {
@@ -7666,6 +7717,7 @@ var $author$project$Main$init = function (_v0) {
 				newPlayerName: '',
 				shouldStartNextMatchAfterLoad: false,
 				status: $elm$core$Maybe$Nothing,
+				timeFilter: $author$project$Main$All,
 				votesUntilDriveSync: 20
 			},
 			$elm$core$Platform$Cmd$batch(
@@ -8173,7 +8225,6 @@ var $ohanhi$keyboard$Keyboard$navigationKey = function (_v0) {
 			return $elm$core$Maybe$Nothing;
 	}
 };
-var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $author$project$Main$receiveMatchSaveComplete = _Platform_incomingPort(
@@ -8334,6 +8385,7 @@ var $elm$core$List$drop = F2(
 			}
 		}
 	});
+var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -8366,7 +8418,13 @@ var $author$project$Player$encode = function (_v0) {
 				$elm$json$Json$Encode$int(player.rating)),
 				_Utils_Tuple2(
 				'matches',
-				$elm$json$Json$Encode$int(player.matches))
+				$elm$json$Json$Encode$int(player.matches)),
+				_Utils_Tuple2(
+				'am',
+				$elm$json$Json$Encode$bool(player.am)),
+				_Utils_Tuple2(
+				'pm',
+				$elm$json$Json$Encode$bool(player.pm))
 			]));
 };
 var $elm$json$Json$Encode$list = F2(
@@ -8779,10 +8837,12 @@ var $author$project$League$ignorePlayer = F2(
 var $author$project$Player$init = function (name_) {
 	return $author$project$Player$Player(
 		{
+			am: true,
 			id: $author$project$Player$PlayerId(
 				A2($robinheghan$murmur3$Murmur3$hashString, 0, name_)),
 			matches: 0,
 			name: name_,
+			pm: true,
 			rating: $author$project$Elo$initialRating
 		});
 };
@@ -9320,7 +9380,6 @@ var $author$project$League$retirePlayer = F2(
 						league.players)
 				}));
 	});
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
@@ -9862,8 +9921,19 @@ var $author$project$Main$update = F2(
 						model,
 						{status: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'IgnoredKey':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			default:
+				var tf = msg.a;
+				return $author$project$Main$startNextMatchIfPossible(
+					_Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								history: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.history),
+								timeFilter: tf
+							}),
+						$elm$core$Platform$Cmd$none));
 		}
 	});
 var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
@@ -12953,6 +13023,119 @@ var $author$project$Main$currentMatch = function (model) {
 	}
 };
 var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
+var $author$project$Main$AMOnly = {$: 'AMOnly'};
+var $author$project$Main$PMOnly = {$: 'PMOnly'};
+var $author$project$Main$SetTimeFilter = function (a) {
+	return {$: 'SetTimeFilter', a: a};
+};
+var $rtfeldman$elm_css$Css$marginRight = $rtfeldman$elm_css$Css$prop1('margin-right');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
+var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
+var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
+	return $rtfeldman$elm_css$Html$Styled$span(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
+};
+var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
+var $author$project$Main$toggleBtn = F3(
+	function (isOn, label, maybeMsg) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(6),
+							$rtfeldman$elm_css$Css$px(12)),
+							A2(
+							$rtfeldman$elm_css$Css$margin2,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(6)),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(9999)),
+							$rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex(
+								isOn ? '3B82F6' : '6B7280')),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('FFF')),
+							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							$author$project$Main$modernSansSerif
+						])),
+					function () {
+					if (maybeMsg.$ === 'Just') {
+						var m = maybeMsg.a;
+						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+					} else {
+						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+					}
+				}()
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
+var $author$project$Main$filterBar = function (model) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$pct(80)),
+						A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto),
+						$rtfeldman$elm_css$Css$marginTop(
+						$rtfeldman$elm_css$Css$px(10)),
+						$rtfeldman$elm_css$Css$marginBottom(
+						$rtfeldman$elm_css$Css$px(10)),
+						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginRight(
+								$rtfeldman$elm_css$Css$px(10)),
+								$author$project$Main$modernSansSerif,
+								$rtfeldman$elm_css$Css$fontWeight(
+								$rtfeldman$elm_css$Css$int(600))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$tesk9$accessible_html_with_css$Accessibility$Styled$text('Filter:')
+					])),
+				A3(
+				$author$project$Main$toggleBtn,
+				_Utils_eq(model.timeFilter, $author$project$Main$All),
+				'All',
+				$elm$core$Maybe$Just(
+					$author$project$Main$SetTimeFilter($author$project$Main$All))),
+				A3(
+				$author$project$Main$toggleBtn,
+				_Utils_eq(model.timeFilter, $author$project$Main$AMOnly),
+				'AM',
+				$elm$core$Maybe$Just(
+					$author$project$Main$SetTimeFilter($author$project$Main$AMOnly))),
+				A3(
+				$author$project$Main$toggleBtn,
+				_Utils_eq(model.timeFilter, $author$project$Main$PMOnly),
+				'PM',
+				$elm$core$Maybe$Just(
+					$author$project$Main$SetTimeFilter($author$project$Main$PMOnly)))
+			]));
+};
 var $rtfeldman$elm_css$Css$fixed = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, position: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fixed'};
 var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
@@ -12961,7 +13144,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attri
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
 var $rtfeldman$elm_css$Css$Global$aside = $rtfeldman$elm_css$Css$Global$typeSelector('aside');
@@ -13465,7 +13647,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
-var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
 var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
@@ -13534,11 +13715,6 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 			[
 				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
 			]));
-};
-var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
-var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
-	return $rtfeldman$elm_css$Html$Styled$span(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
 var $rtfeldman$elm_css$Html$Styled$td = $rtfeldman$elm_css$Html$Styled$node('td');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$td = function (attributes) {
@@ -14710,6 +14886,7 @@ var $author$project$Main$view = function (model) {
 								_List_fromArray(
 									[
 										$author$project$Main$currentMatch(model),
+										$author$project$Main$filterBar(model),
 										$author$project$Main$rankings(model),
 										A2(
 										$tesk9$accessible_html_with_css$Accessibility$Styled$section,
