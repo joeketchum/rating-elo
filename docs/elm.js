@@ -13275,27 +13275,6 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Html$Styled$Attributes$css(
 									_List_fromArray(
 										[
-											$rtfeldman$elm_css$Css$marginBottom(
-											$rtfeldman$elm_css$Css$px(10))
-										]))
-								]),
-							_List_fromArray(
-								[
-									A2(
-									$author$project$Main$blueButtonLarge,
-									'TIE',
-									model.k ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
-										$author$project$Main$MatchFinished(
-											$author$project$League$Draw(
-												{cK: playerA, cL: playerB}))))
-								])),
-							A2(
-							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$css(
-									_List_fromArray(
-										[
 											$rtfeldman$elm_css$Css$displayFlex,
 											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
@@ -13330,6 +13309,80 @@ var $author$project$Main$currentMatch = function (model) {
 												$author$project$Main$MatchFinished(
 													$author$project$League$Win(
 														{cA: playerA, dd: playerB}))))
+										]))
+								])),
+							A2(
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$height(
+											$rtfeldman$elm_css$Css$px(4)),
+											$rtfeldman$elm_css$Css$backgroundColor(
+											$rtfeldman$elm_css$Css$hex('D1D5DB')),
+											$rtfeldman$elm_css$Css$borderRadius(
+											$rtfeldman$elm_css$Css$px(2)),
+											A2(
+											$rtfeldman$elm_css$Css$margin2,
+											$rtfeldman$elm_css$Css$px(14),
+											$rtfeldman$elm_css$Css$zero)
+										]))
+								]),
+							_List_Nil),
+							A2(
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$displayFlex,
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(49))
+												]))
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$author$project$Main$blueButtonLarge,
+											'TIE',
+											model.k ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+												$author$project$Main$MatchFinished(
+													$author$project$League$Draw(
+														{cK: playerA, cL: playerB}))))
+										])),
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(49))
+												]))
+										]),
+									_List_fromArray(
+										[
+											A3(
+											$author$project$Main$buttonLarge,
+											$rtfeldman$elm_css$Css$hex('999'),
+											'SKIP',
+											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))
 										]))
 								]))
 						])),
@@ -13656,44 +13709,6 @@ var $author$project$Main$currentMatch = function (model) {
 										$author$project$History$peekForward(model.b))),
 									A3(
 									$author$project$Main$button,
-									$rtfeldman$elm_css$Css$hex('999'),
-									'SKIP',
-									$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))
-								])),
-							A2(
-							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-							_List_fromArray(
-								[
-									$rtfeldman$elm_css$Html$Styled$Attributes$css(
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none),
-											A2(
-											$rtfeldman$elm_css$Css$Media$withMedia,
-											_List_fromArray(
-												[
-													A2(
-													$rtfeldman$elm_css$Css$Media$only,
-													$rtfeldman$elm_css$Css$Media$screen,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Css$Media$maxWidth(
-															$rtfeldman$elm_css$Css$px(640))
-														]))
-												]),
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block)
-												])),
-											$rtfeldman$elm_css$Css$width(
-											$rtfeldman$elm_css$Css$pct(100)),
-											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
-										]))
-								]),
-							_List_fromArray(
-								[
-									A3(
-									$author$project$Main$buttonLarge,
 									$rtfeldman$elm_css$Css$hex('999'),
 									'SKIP',
 									$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))

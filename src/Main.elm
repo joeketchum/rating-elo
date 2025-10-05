@@ -859,12 +859,7 @@ currentMatch model =
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                             ]
                         ]
-                    , -- Row 2: TIE full width
-                      Html.div [ css [ Css.marginBottom (Css.px 10) ] ]
-                        [ blueButtonLarge "TIE"
-                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
-                        ]
-                    , -- Row 3: Player B with WINNER on the right
+                    , -- Row 2: Player B with WINNER on the right
                       Html.div
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween ] ]
                         [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompact playerB ]
@@ -872,6 +867,20 @@ currentMatch model =
                             [ blueButtonLarge "WINNER"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
                             ]
+                        ]
+                    , -- Separator between players and the tie/skip row
+                      Html.div
+                        [ css [ Css.height (Css.px 4), Css.backgroundColor (Css.hex "D1D5DB"), Css.borderRadius (Css.px 2), Css.margin2 (Css.px 14) Css.zero ] ]
+                        []
+                    , -- Row 3: TIE and SKIP in a single row
+                      Html.div
+                        [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween ] ]
+                        [ Html.div [ css [ Css.width (Css.pct 49) ] ]
+                            [ blueButtonLarge "TIE"
+                                (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
+                            ]
+                        , Html.div [ css [ Css.width (Css.pct 49) ] ]
+                            [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                         ]
                     ]
                 , Html.div
@@ -930,34 +939,24 @@ currentMatch model =
                             [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerB)) ]
                         )
                     ]
-                , Html.div
-                    [ css
-                        [ Css.displayFlex
-                        , Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
-                        , Css.justifyContent Css.spaceAround
-                        ]
-                    ]
-                    [ -- Desktop controls: Undo/Redo/Skip same size
+                                , Html.div
+                                        [ css
+                                                [ Css.displayFlex
+                                                , Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
+                                                , Css.justifyContent Css.spaceAround
+                                                ]
+                                        ]
+                                        [ -- Desktop controls: Undo/Redo/Skip same size
                                             Html.div
                                                 [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround
-                              , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
-                              ]
-                        ]
-                        [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
-                        , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
-                        , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
-                        ]
-                    , -- Mobile: large Skip button only
-                      Html.div
-                        [ css [ Css.display Css.none
-                              , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
-                                  [ Css.display Css.block ]
-                              , Css.width (Css.pct 100)
-                              , Css.textAlign Css.center
-                              ]
-                        ]
-                        [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
-                    ]
+                                                            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
+                                                            ]
+                                                ]
+                                                [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
+                                                , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
+                                                , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
+                                                ]
+                                        ]
                 ]
 
 
