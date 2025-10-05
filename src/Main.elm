@@ -1159,7 +1159,7 @@ rankings model =
                 ]
             ]
         |> List.singleton
-        |> Html.table
+        |> Html.div
             [ css
                 [ Css.width (Css.pct 80)
                 , Css.margin2 Css.zero Css.auto

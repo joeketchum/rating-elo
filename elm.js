@@ -14398,11 +14398,6 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
 			]));
 };
-var $rtfeldman$elm_css$Html$Styled$table = $rtfeldman$elm_css$Html$Styled$node('table');
-var $tesk9$accessible_html_with_css$Accessibility$Styled$table = function (attributes) {
-	return $rtfeldman$elm_css$Html$Styled$table(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
-};
 var $rtfeldman$elm_css$Css$tableLayout = $rtfeldman$elm_css$Css$prop1('table-layout');
 var $rtfeldman$elm_css$Html$Styled$td = $rtfeldman$elm_css$Html$Styled$node('td');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$td = function (attributes) {
@@ -14732,7 +14727,7 @@ var $author$project$Main$rankings = function (model) {
 			]));
 	var center = $rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center);
 	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$table,
+		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
