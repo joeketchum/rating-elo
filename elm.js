@@ -13816,6 +13816,17 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$inputText = F2(
 			_List_Nil);
 	});
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
+var $rtfeldman$elm_css$Css$Media$feature = F2(
+	function (key, _v0) {
+		var value = _v0.Y;
+		return {
+			cl: key,
+			Y: $elm$core$Maybe$Just(value)
+		};
+	});
+var $rtfeldman$elm_css$Css$Media$maxWidth = function (value) {
+	return A2($rtfeldman$elm_css$Css$Media$feature, 'max-width', value);
+};
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
 var $rtfeldman$elm_css$Css$Subtraction = 1;
 var $rtfeldman$elm_css$Css$minus = 1;
@@ -13857,10 +13868,18 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
+var $rtfeldman$elm_css$Css$Structure$OnlyQuery = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Media$only = $rtfeldman$elm_css$Css$Structure$OnlyQuery;
+var $rtfeldman$elm_css$Css$overflowX = $rtfeldman$elm_css$Css$prop1('overflow-x');
 var $author$project$League$players = function (_v0) {
 	var league = _v0;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.r);
 };
+var $rtfeldman$elm_css$Css$Structure$Screen = 1;
+var $rtfeldman$elm_css$Css$Media$screen = 1;
 var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -14006,6 +14025,11 @@ var $author$project$Main$upArrow = function (color) {
 		_List_Nil);
 };
 var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
+var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
+	function (a, b) {
+		return {$: 4, a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Media$withMedia = $rtfeldman$elm_css$Css$Preprocess$WithMedia;
 var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -14040,7 +14064,29 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$int(700)),
 						$rtfeldman$elm_css$Css$color(
 						$rtfeldman$elm_css$Css$hex('FFF')),
-						$author$project$Main$modernSansSerif
+						$author$project$Main$modernSansSerif,
+						A2(
+						$rtfeldman$elm_css$Css$Media$withMedia,
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$Media$only,
+								$rtfeldman$elm_css$Css$Media$screen,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$Media$maxWidth(
+										$rtfeldman$elm_css$Css$px(640))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$paddingLeft(
+								$rtfeldman$elm_css$Css$px(6)),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(6)),
+								$rtfeldman$elm_css$Css$fontSize(
+								$rtfeldman$elm_css$Css$px(10))
+							]))
 					])),
 				function () {
 				if (!maybeMsg.$) {
@@ -14091,7 +14137,29 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$color(
 						$rtfeldman$elm_css$Css$hex('FFF')),
 						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
-						$author$project$Main$modernSansSerif
+						$author$project$Main$modernSansSerif,
+						A2(
+						$rtfeldman$elm_css$Css$Media$withMedia,
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$Media$only,
+								$rtfeldman$elm_css$Css$Media$screen,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$Media$maxWidth(
+										$rtfeldman$elm_css$Css$px(640))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$paddingLeft(
+								$rtfeldman$elm_css$Css$px(6)),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(6)),
+								$rtfeldman$elm_css$Css$fontSize(
+								$rtfeldman$elm_css$Css$px(10))
+							]))
 					])),
 				function () {
 				if (!maybeMsg.$) {
@@ -14132,7 +14200,10 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$paddingRight(
 				$rtfeldman$elm_css$Css$px(15)),
 				$rtfeldman$elm_css$Css$width(
-				$rtfeldman$elm_css$Css$pct(1))
+				$rtfeldman$elm_css$Css$pct(1)),
+				$rtfeldman$elm_css$Css$maxWidth(
+				$rtfeldman$elm_css$Css$px(80)),
+				$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
 			]));
 	var previousStandings = $elm$core$Dict$fromList(
 		A2(
@@ -14211,7 +14282,26 @@ var $author$project$Main$rankings = function (model) {
 						$rtfeldman$elm_css$Css$pct(80)),
 						A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto),
 						$rtfeldman$elm_css$Css$borderCollapse($rtfeldman$elm_css$Css$collapse),
-						$rtfeldman$elm_css$Css$tableLayout($rtfeldman$elm_css$Css$fixed)
+						$rtfeldman$elm_css$Css$tableLayout($rtfeldman$elm_css$Css$fixed),
+						$rtfeldman$elm_css$Css$overflowX($rtfeldman$elm_css$Css$hidden),
+						A2(
+						$rtfeldman$elm_css$Css$Media$withMedia,
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$Media$only,
+								$rtfeldman$elm_css$Css$Media$screen,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$Media$maxWidth(
+										$rtfeldman$elm_css$Css$px(640))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$pct(100))
+							]))
 					]))
 			]),
 		function (tableGuts) {
@@ -14418,7 +14508,39 @@ var $author$project$Main$rankings = function (model) {
 									[
 										$rtfeldman$elm_css$Html$Styled$Attributes$css(
 										_List_fromArray(
-											[header, center]))
+											[header, left]))
+									]),
+								_List_fromArray(
+									[
+										$tesk9$accessible_html_with_css$Accessibility$Styled$text('NAME')
+									])),
+								A2(
+								$tesk9$accessible_html_with_css$Accessibility$Styled$th,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												header,
+												center,
+												A2(
+												$rtfeldman$elm_css$Css$Media$withMedia,
+												_List_fromArray(
+													[
+														A2(
+														$rtfeldman$elm_css$Css$Media$only,
+														$rtfeldman$elm_css$Css$Media$screen,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$Media$maxWidth(
+																$rtfeldman$elm_css$Css$px(640))
+															]))
+													]),
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+													]))
+											]))
 									]),
 								_List_fromArray(
 									[
@@ -14430,23 +14552,31 @@ var $author$project$Main$rankings = function (model) {
 									[
 										$rtfeldman$elm_css$Html$Styled$Attributes$css(
 										_List_fromArray(
-											[header, center]))
+											[
+												header,
+												center,
+												A2(
+												$rtfeldman$elm_css$Css$Media$withMedia,
+												_List_fromArray(
+													[
+														A2(
+														$rtfeldman$elm_css$Css$Media$only,
+														$rtfeldman$elm_css$Css$Media$screen,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$Media$maxWidth(
+																$rtfeldman$elm_css$Css$px(640))
+															]))
+													]),
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+													]))
+											]))
 									]),
 								_List_fromArray(
 									[
 										$tesk9$accessible_html_with_css$Accessibility$Styled$text('MATCHES')
-									])),
-								A2(
-								$tesk9$accessible_html_with_css$Accessibility$Styled$th,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$css(
-										_List_fromArray(
-											[header, left]))
-									]),
-								_List_fromArray(
-									[
-										$tesk9$accessible_html_with_css$Accessibility$Styled$text('NAME')
 									])),
 								A2(
 								$tesk9$accessible_html_with_css$Accessibility$Styled$th,
@@ -14593,7 +14723,47 @@ var $author$project$Main$rankings = function (model) {
 												[
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
-														[numericDim, shrinkWidth, center]))
+														[textual, left]))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+													_List_Nil,
+													_List_fromArray(
+														[
+															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+															$author$project$Player$name(player))
+														]))
+												])),
+											A2(
+											$tesk9$accessible_html_with_css$Accessibility$Styled$td,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
+													_List_fromArray(
+														[
+															numericDim,
+															shrinkWidth,
+															center,
+															A2(
+															$rtfeldman$elm_css$Css$Media$withMedia,
+															_List_fromArray(
+																[
+																	A2(
+																	$rtfeldman$elm_css$Css$Media$only,
+																	$rtfeldman$elm_css$Css$Media$screen,
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$Media$maxWidth(
+																			$rtfeldman$elm_css$Css$px(640))
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+																]))
+														]))
 												]),
 											_List_fromArray(
 												[
@@ -14607,32 +14777,34 @@ var $author$project$Main$rankings = function (model) {
 												[
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
-														[numericDim, shrinkWidth, center]))
+														[
+															numericDim,
+															shrinkWidth,
+															center,
+															A2(
+															$rtfeldman$elm_css$Css$Media$withMedia,
+															_List_fromArray(
+																[
+																	A2(
+																	$rtfeldman$elm_css$Css$Media$only,
+																	$rtfeldman$elm_css$Css$Media$screen,
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$Media$maxWidth(
+																			$rtfeldman$elm_css$Css$px(640))
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+																]))
+														]))
 												]),
 											_List_fromArray(
 												[
 													$tesk9$accessible_html_with_css$Accessibility$Styled$text(
 													$elm$core$String$fromInt(
 														$author$project$Player$matchesPlayed(player)))
-												])),
-											A2(
-											$tesk9$accessible_html_with_css$Accessibility$Styled$td,
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Html$Styled$Attributes$css(
-													_List_fromArray(
-														[textual, left]))
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$tesk9$accessible_html_with_css$Accessibility$Styled$span,
-													_List_Nil,
-													_List_fromArray(
-														[
-															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-															$author$project$Player$name(player))
-														]))
 												])),
 											A2(
 											$tesk9$accessible_html_with_css$Accessibility$Styled$td,

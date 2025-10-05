@@ -1006,8 +1006,8 @@ rankings model =
                     , Html.td [ css [ numericRank, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
                     , Html.td [ css [ textual, left ] ]
                         [ Html.span [] [ Html.text (Player.name player) ] ]
-                    , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.maxWidth (Css.px 640) ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
-                    , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.maxWidth (Css.px 640) ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
+                    , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
+                    , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
                     , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap ] ]
                         (let baseActions =
                                 if isPlayerIgnored player (History.current model.history) then
@@ -1034,8 +1034,8 @@ rankings model =
                 [ Html.th [ css [ Css.width (Css.px 20) ] ] []
                 , Html.th [ css [ header, center ] ] [ Html.text "RANK" ]
                 , Html.th [ css [ header, left ] ] [ Html.text "NAME" ]
-                , Html.th [ css [ header, center, Media.withMedia [ Media.maxWidth (Css.px 640) ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
-                , Html.th [ css [ header, center, Media.withMedia [ Media.maxWidth (Css.px 640) ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
+                , Html.th [ css [ header, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
+                , Html.th [ css [ header, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
                 , Html.th [ css [ header, center ] ] [ Html.text "ACTIONS" ]
                 ]
             )
@@ -1087,7 +1087,7 @@ rankings model =
                 , Css.borderCollapse Css.collapse
                 , Css.tableLayout Css.fixed
                 , Css.overflowX Css.hidden
-                , Media.withMedia [ Media.maxWidth (Css.px 640) ]
+                , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
                     [ Css.width (Css.pct 100) ]
                 ]
             ]
@@ -1277,7 +1277,7 @@ zzzIgnoreButtonSmall maybeMsg =
             , Css.fontWeight (Css.int 700)
             , Css.color (Css.hex "FFF")
             , modernSansSerif
-            , Media.withMedia [ Media.maxWidth (Css.px 640) ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1338,7 +1338,7 @@ zzzUnignoreButtonSmall maybeMsg =
             , Css.color (Css.hex "FFF")
             , Css.textDecoration Css.lineThrough
             , modernSansSerif
-            , Media.withMedia [ Media.maxWidth (Css.px 640) ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
