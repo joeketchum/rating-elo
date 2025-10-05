@@ -13699,80 +13699,6 @@ var $author$project$Main$TogglePlayerPM = function (a) {
 	return {$: 29, a: a};
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
-var $author$project$Main$badgeSmall = F3(
-	function (label, isOn, colorOn) {
-		return A2(
-			$tesk9$accessible_html_with_css$Accessibility$Styled$span,
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
-							A2(
-							$rtfeldman$elm_css$Css$padding2,
-							$rtfeldman$elm_css$Css$px(1),
-							$rtfeldman$elm_css$Css$px(6)),
-							$rtfeldman$elm_css$Css$borderRadius(
-							$rtfeldman$elm_css$Css$px(9999)),
-							isOn ? $rtfeldman$elm_css$Css$backgroundColor(colorOn) : $rtfeldman$elm_css$Css$backgroundColor(
-							$rtfeldman$elm_css$Css$hex('E5E7EB')),
-							isOn ? $rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex('FFFFFF')) : $rtfeldman$elm_css$Css$color(
-							$rtfeldman$elm_css$Css$hex('6B7280')),
-							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$px(10)),
-							$rtfeldman$elm_css$Css$fontWeight(
-							$rtfeldman$elm_css$Css$int(700)),
-							$rtfeldman$elm_css$Css$letterSpacing(
-							$rtfeldman$elm_css$Css$px(0.4))
-						]))
-				]),
-			_List_fromArray(
-				[
-					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
-				]));
-	});
-var $author$project$Main$availabilityBadgesSmall = function (player) {
-	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-		_List_fromArray(
-			[
-				$rtfeldman$elm_css$Html$Styled$Attributes$css(
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Css$displayFlex,
-						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
-					]))
-			]),
-		_List_fromArray(
-			[
-				A2(
-				$tesk9$accessible_html_with_css$Accessibility$Styled$span,
-				_List_fromArray(
-					[
-						$rtfeldman$elm_css$Html$Styled$Attributes$css(
-						_List_fromArray(
-							[
-								$rtfeldman$elm_css$Css$marginRight(
-								$rtfeldman$elm_css$Css$px(4))
-							]))
-					]),
-				_List_fromArray(
-					[
-						A3(
-						$author$project$Main$badgeSmall,
-						'AM',
-						$author$project$Player$playsAM(player),
-						$rtfeldman$elm_css$Css$hex('F59E0B'))
-					])),
-				A3(
-				$author$project$Main$badgeSmall,
-				'PM',
-				$author$project$Player$playsPM(player),
-				$rtfeldman$elm_css$Css$hex('8B5CF6'))
-			]));
-};
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
 var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
@@ -14227,14 +14153,26 @@ var $author$project$Main$rankings = function (model) {
 						$elm$core$Maybe$withDefault,
 						$author$project$History$current(model.b),
 						$author$project$History$peekBack(model.b))))));
-	var numeric = $rtfeldman$elm_css$Css$batch(
+	var numericRank = $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Css$fontWeight(
-				$rtfeldman$elm_css$Css$int(600)),
+				$rtfeldman$elm_css$Css$int(700)),
 				$rtfeldman$elm_css$Css$fontSize(
-				$rtfeldman$elm_css$Css$px(16)),
+				$rtfeldman$elm_css$Css$px(18)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
+				$author$project$Main$modernSansSerif
+			]));
+	var numericDim = $rtfeldman$elm_css$Css$batch(
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$fontWeight(
+				$rtfeldman$elm_css$Css$int(500)),
+				$rtfeldman$elm_css$Css$fontSize(
+				$rtfeldman$elm_css$Css$px(12)),
+				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
+				$rtfeldman$elm_css$Css$color(
+				$rtfeldman$elm_css$Css$hex('6B7280')),
 				$author$project$Main$modernSansSerif
 			]));
 	var left = $rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$left);
@@ -14304,7 +14242,7 @@ var $author$project$Main$rankings = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													numeric,
+													numericDim,
 													shrinkWidth,
 													center,
 													$rtfeldman$elm_css$Css$color(
@@ -14322,7 +14260,7 @@ var $author$project$Main$rankings = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													numeric,
+													numericDim,
 													shrinkWidth,
 													center,
 													$rtfeldman$elm_css$Css$color(
@@ -14341,7 +14279,7 @@ var $author$project$Main$rankings = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													numeric,
+													numericDim,
 													shrinkWidth,
 													center,
 													$rtfeldman$elm_css$Css$color(
@@ -14416,7 +14354,7 @@ var $author$project$Main$rankings = function (model) {
 										[
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
-												[numeric, shrinkWidth, center]))
+												[numericDim, shrinkWidth, center]))
 										]),
 									_List_fromArray(
 										[
@@ -14642,7 +14580,7 @@ var $author$project$Main$rankings = function (model) {
 												[
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
-														[numeric, shrinkWidth, center]))
+														[numericRank, shrinkWidth, center]))
 												]),
 											_List_fromArray(
 												[
@@ -14655,7 +14593,7 @@ var $author$project$Main$rankings = function (model) {
 												[
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
-														[numeric, shrinkWidth, center]))
+														[numericDim, shrinkWidth, center]))
 												]),
 											_List_fromArray(
 												[
@@ -14669,7 +14607,7 @@ var $author$project$Main$rankings = function (model) {
 												[
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
-														[numeric, shrinkWidth, center]))
+														[numericDim, shrinkWidth, center]))
 												]),
 											_List_fromArray(
 												[
@@ -14688,33 +14626,12 @@ var $author$project$Main$rankings = function (model) {
 											_List_fromArray(
 												[
 													A2(
-													$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+													$tesk9$accessible_html_with_css$Accessibility$Styled$span,
 													_List_Nil,
 													_List_fromArray(
 														[
-															A2(
-															$tesk9$accessible_html_with_css$Accessibility$Styled$span,
-															_List_Nil,
-															_List_fromArray(
-																[
-																	$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-																	$author$project$Player$name(player))
-																])),
-															A2(
-															$tesk9$accessible_html_with_css$Accessibility$Styled$span,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$marginLeft(
-																			$rtfeldman$elm_css$Css$px(8))
-																		]))
-																]),
-															_List_fromArray(
-																[
-																	$author$project$Main$availabilityBadgesSmall(player)
-																]))
+															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+															$author$project$Player$name(player))
 														]))
 												])),
 											A2(

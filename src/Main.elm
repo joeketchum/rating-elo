@@ -1043,9 +1043,9 @@ rankings model =
                           , Html.tr
                                 [ css [ Css.height (Css.px 60) ] ]
                                 [ Html.td [] []
-                                , Html.td [ css [ numeric, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "-" ]
-                                , Html.td [ css [ numeric, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text (String.fromInt Elo.initialRating) ]
-                                , Html.td [ css [ numeric, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "0" ]
+                                                                , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "-" ]
+                                                                , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text (String.fromInt Elo.initialRating) ]
+                                                                , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "0" ]
                                 , Html.td
                                     [ css [ textual, left ] ]
                                     [ Html.inputText model.newPlayerName
@@ -1071,8 +1071,8 @@ rankings model =
                                             , Css.borderRadius (Css.px 5)
                                             ]
                                         ]
-                                    ]
-                                                                , Html.td [ css [ numeric, shrinkWidth, center ] ] [ greenButton "ADD" (Just KeeperWantsToAddNewPlayer) ]
+                                                                        ]
+                                                                , Html.td [ css [ numericDim, shrinkWidth, center ] ] [ greenButton "ADD" (Just KeeperWantsToAddNewPlayer) ]
                                 ]
                           )
                         ]
