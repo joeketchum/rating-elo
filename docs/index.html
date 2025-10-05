@@ -275,16 +275,7 @@ catch (e) {
   header.innerText = "Initialization Error";
   var pre = document.getElementById("elm");
   document.body.insertBefore(header, pre);
-function doGet(e) {
-  return ContentService.createTextOutput('{"test": "success", "timestamp": "' + new Date().toISOString() + '"}')
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-function doPost(e) {
-  const body = e.postData ? e.postData.contents : 'no body';
-  return ContentService.createTextOutput('{"received": true, "bodyLength": ' + body.length + ', "timestamp": "' + new Date().toISOString() + '"}')
-    .setMimeType(ContentService.MimeType.JSON);
-}  pre.innerText = e.toString();
+  pre.innerText = e.toString();
   pre.style.color = "red";
   pre.style.background = "#ffe6e6";
   pre.style.padding = "10px";
