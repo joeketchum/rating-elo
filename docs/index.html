@@ -23,7 +23,15 @@
 
 <pre id="elm"></pre>
 
-<script src="elm.js"></script>
+<script>
+  // Cache-bust elm.js to ensure latest deploy is loaded
+  (function(){
+    var s = document.createElement('script');
+    var ts = Date.now();
+    s.src = 'elm.js?v=' + ts;
+    document.currentScript && document.currentScript.parentNode.insertBefore(s, document.currentScript.nextSibling);
+  })();
+</script>
 <script>
 try {
   console.log("Initializing Elm app...");

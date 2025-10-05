@@ -199,7 +199,28 @@ subscriptions model =
                             MatchFinished (League.Draw { playerA = left, playerB = right })
 
                         _ ->
-                            IgnoredKey
+                            -- Try other keys: Escape to skip, digits 1/2/0 for vote shortcuts
+                            let
+                                keyStr = Keyboard.rawValue rawKey
+                            in
+                            if keyStr == "Escape" || keyStr == "Esc" then
+                                if model.autoSaveInProgress then
+                                    IgnoredKey
+                                else
+                                    KeeperWantsToSkipMatch
+                            else
+                                case Keyboard.characterKeyUpper rawKey of
+                                    Just (Keyboard.Character "1") ->
+                                        MatchFinished (League.Win { won = left, lost = right })
+
+                                    Just (Keyboard.Character "2") ->
+                                        MatchFinished (League.Win { won = right, lost = left })
+
+                                    Just (Keyboard.Character "0") ->
+                                        MatchFinished (League.Draw { playerA = left, playerB = right })
+
+                                    _ ->
+                                        IgnoredKey
                 )
 
         Nothing ->
@@ -394,22 +415,13 @@ update msg model =
 
         AutoSaveCompleted ->
             -- Save completed, reload data. Only continue to next match if it was an auto-save
-            let
-                _ = Debug.log "🔄 AutoSaveCompleted received" { autoSaveInProgress = model.autoSaveInProgress }
-            in
             if model.autoSaveInProgress then
                 -- This was an auto-save, continue to next match after reload
-                let
-                    _ = Debug.log "📤 Scheduling auto-save reload" "1.5s delay"
-                in
                 ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Auto-save completed! Reloading data..." }
                 , Process.sleep 1500 |> Task.perform (\_ -> TriggerReload)
                 )
             else
                 -- This was a manual save, just reload without starting next match
-                let
-                    _ = Debug.log "📤 Scheduling manual save reload" "1.0s delay"
-                in
                 ( { model | shouldStartNextMatchAfterLoad = False, status = Just "Manual save completed! Reloading data..." }
                 , Process.sleep 1000 |> Task.perform (\_ -> TriggerReload)
                 )
@@ -426,9 +438,6 @@ update msg model =
 
         TriggerReload ->
             -- Trigger the actual reload after save completion delay
-            let
-                _ = Debug.log "🔄 TriggerReload executing" "calling loadFromPublicDrive"
-            in
             ( model, loadFromPublicDrive "" )
 
         KeeperWantsToLoadStandings ->
@@ -595,9 +604,9 @@ view model =
                 , rankings model
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
-                    [ blueButton "Export rankings" (Just KeeperWantsToSaveStandings)
-                    , blueButton "Save to Drive" (Just KeeperWantsToSaveToDrive)
-                    , blueButton "Refresh from Drive" (Just KeeperWantsToRefreshFromDrive)
+                    [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
+                    , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
+                    , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
                     ]
                 ]
             ]
@@ -692,9 +701,10 @@ currentMatch model =
                 ]
                 [ Html.h1
                     [ css
-                        [ Css.fontSize (Css.px 32)
+                        [ Css.fontSize (Css.px 40)
                         , Css.marginBottom (Css.px 18)
                         , Css.fontWeight (Css.int 600)
+                        , Css.textTransform Css.uppercase
                         ]
                     ]
                     [ Html.text "Hockey Rater 🏒" ]
@@ -733,14 +743,13 @@ currentMatch model =
                             , Css.marginBottom (Css.px 12)
                             , Css.color (Css.hex "555")
                             , Css.letterSpacing (Css.px 1)
+                            , Css.textTransform Css.uppercase
                             , modernSansSerif
                             ]
                         ]
                         [ Html.div
                             [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center ] ]
                             [ Html.span [ css [ Css.marginRight (Css.px 8) ] ] [ Html.text "🏒 HOCKEY RATER 🏒" ]
-                            , Html.span [ css [ Css.marginRight (Css.px 4) ] ] [ badge "AM" (Player.playsAM playerA && Player.playsAM playerB) (Css.hex "F59E0B") ]
-                            , Html.span [] [ badge "PM" (Player.playsPM playerA && Player.playsPM playerB) (Css.hex "8B5CF6") ]
                             ]
                         ]
                     , Html.div
@@ -832,15 +841,15 @@ currentMatch model =
                         ]
                     ]
                     [ Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "Winner!" 
+                        [ blueButton "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                         ]
                     , Html.div [ css [ Css.width (Css.pct 20) ] ]
-                        [ blueButton "Tie!" 
+                        [ blueButton "TIE" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                         ]
                     , Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "Winner!" 
+                        [ blueButton "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
                         ]
                     ]
@@ -873,9 +882,9 @@ currentMatch model =
                         , Css.justifyContent Css.spaceAround
                         ]
                     ]
-                    [ blueButton "Undo" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
-                    , blueButton "Redo" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
-                    , button (Css.hex "999") "Skip" (Just KeeperWantsToSkipMatch)
+                    [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
+                    , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
+                    , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
                     ]
                 ]
 
@@ -1011,11 +1020,11 @@ rankings model =
             , Html.tr
                 [ css [ Css.height (Css.px 45) ] ]
                 [ Html.th [ css [ Css.width (Css.px 20) ] ] []
-                , Html.th [ css [ header, center ] ] [ Html.text "Rank" ]
-                , Html.th [ css [ header, center ] ] [ Html.text "Rating" ]
-                , Html.th [ css [ header, center ] ] [ Html.text "Matches" ]
-                , Html.th [ css [ header, left ] ] [ Html.text "Name" ]
-                , Html.th [ css [ header, center ] ] [ Html.text "Actions" ]
+                , Html.th [ css [ header, center ] ] [ Html.text "RANK" ]
+                , Html.th [ css [ header, center ] ] [ Html.text "RATING" ]
+                , Html.th [ css [ header, center ] ] [ Html.text "MATCHES" ]
+                , Html.th [ css [ header, left ] ] [ Html.text "NAME" ]
+                , Html.th [ css [ header, center ] ] [ Html.text "ACTIONS" ]
                 ]
             )
         |> (\tableGuts ->
@@ -1054,7 +1063,7 @@ rankings model =
                                             ]
                                         ]
                                     ]
-                                , Html.td [ css [ numeric, shrinkWidth, center ] ] [ greenButton "Add" (Just KeeperWantsToAddNewPlayer) ]
+                                                                , Html.td [ css [ numeric, shrinkWidth, center ] ] [ greenButton "ADD" (Just KeeperWantsToAddNewPlayer) ]
                                 ]
                           )
                         ]
@@ -1090,6 +1099,7 @@ button baseColor label maybeMsg =
             , Css.fontSize (Css.px 14)
             , Css.fontWeight (Css.int 600)
             , Css.color (Css.hex "FFF")
+            , modernSansSerif
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1244,7 +1254,7 @@ activePlayer player =
     Html.div
         [ css [ Css.width (Css.pct 40), Css.maxWidth (Css.pct 45), Css.textAlign Css.center, modernSansSerif ] ]
         [ Html.h2
-            [ css [ Css.fontSize (Css.px 24), Css.marginBottom (Css.px 6) ] ]
+            [ css [ Css.fontSize (Css.px 26), Css.marginBottom (Css.px 6), Css.textTransform Css.uppercase ] ]
             [ Html.text (Player.name player) ]
         , availabilityBadges player
         ]
