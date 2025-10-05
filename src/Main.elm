@@ -1005,7 +1005,7 @@ rankings model =
                 [ Css.paddingLeft (Css.px 15)
                 , Css.paddingRight (Css.px 15)
                 , Css.width (Css.pct 1)
-                , Css.maxWidth (Css.px 80)
+                , Css.maxWidth (Css.px 100)
                 , Css.whiteSpace Css.noWrap
                 ]
 
@@ -1072,11 +1072,11 @@ rankings model =
                             [ Html.text "" ]
                         )
                     , Html.td [ css [ numericRank, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
-                    , Html.td [ css [ textual, left ] ]
+                    , Html.td [ css [ textual, left, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal ] ] ]
                         [ Html.span [] [ Html.text (Player.name player) ] ]
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
-                    , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap ] ]
+                    , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.textAlign Css.left ] ] ]
                         (let baseActions =
                                 if isPlayerIgnored player (History.current model.history) then
                                     [ zzzUnignoreButtonSmall (Just (KeeperWantsToUnignorePlayer player)) ]
@@ -1154,9 +1154,19 @@ rankings model =
                 , Css.margin2 Css.zero Css.auto
                 , Css.borderCollapse Css.collapse
                 , Css.tableLayout Css.fixed
-                , Css.overflowX Css.hidden
                 , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
                     [ Css.width (Css.pct 100) ]
+                ]
+            ]
+        |> List.singleton
+        |> Html.table
+            [ css
+                [ Css.width (Css.pct 80)
+                , Css.margin2 Css.zero Css.auto
+                , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                    [ Css.width (Css.pct 100)
+                    , Css.overflowX Css.auto
+                    ]
                 ]
             ]
 
