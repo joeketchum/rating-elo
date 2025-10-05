@@ -701,9 +701,10 @@ currentMatch model =
                 ]
                 [ Html.h1
                     [ css
-                        [ Css.fontSize (Css.px 40)
+                        [ Css.fontSize (Css.px 56)
                         , Css.marginBottom (Css.px 18)
-                        , Css.fontWeight (Css.int 600)
+                        , Css.fontWeight (Css.int 700)
+                        , Css.fontStyle Css.italic
                         , Css.textTransform Css.uppercase
                         ]
                     ]
@@ -743,6 +744,7 @@ currentMatch model =
                             , Css.marginBottom (Css.px 12)
                             , Css.color (Css.hex "555")
                             , Css.letterSpacing (Css.px 1)
+                            , Css.fontStyle Css.italic
                             , Css.textTransform Css.uppercase
                             , modernSansSerif
                             ]
@@ -1254,7 +1256,7 @@ activePlayer player =
     Html.div
         [ css [ Css.width (Css.pct 40), Css.maxWidth (Css.pct 45), Css.textAlign Css.center, modernSansSerif ] ]
         [ Html.h2
-            [ css [ Css.fontSize (Css.px 26), Css.marginBottom (Css.px 6), Css.textTransform Css.uppercase ] ]
+            [ css [ Css.fontSize (Css.px 26), Css.marginBottom (Css.px 6), Css.textTransform Css.uppercase, Css.fontWeight (Css.int 700), Css.fontStyle Css.italic ] ]
             [ Html.text (Player.name player) ]
         , availabilityBadges player
         ]
