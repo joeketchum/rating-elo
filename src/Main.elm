@@ -911,17 +911,17 @@ currentMatch model =
                       Html.div
                         [ css [ Css.height (Css.px 4), Css.backgroundColor (Css.hex "D1D5DB"), Css.borderRadius (Css.px 2), Css.margin2 (Css.px 14) Css.zero ] ]
                         []
-                    , -- Row 3: TIE, SKIP, and SAVE in a single row
+                    , -- Row 3: TIE, SKIP, and SAVE in a single row (compact, one line on mobile)
                       Html.div
-                        [ css [ Css.displayFlex, Css.margin2 Css.zero (Css.px -10) ] ]
+                        [ css [ Css.displayFlex, Css.alignItems Css.stretch, Css.justifyContent Css.spaceBetween, Css.margin2 Css.zero (Css.px -4) ] ]
                         [ Html.div [ css [ Css.flex (Css.int 1) ] ]
-                            [ blackButtonLarge "TIE"
+                            [ buttonCompact (Css.hex "1F2937") "TIE"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                             ]
                         , Html.div [ css [ Css.flex (Css.int 1) ] ]
-                            [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
+                            [ buttonCompact (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                         , Html.div [ css [ Css.flex (Css.int 1) ] ]
-                            [ buttonLarge (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
+                            [ buttonCompact (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
                         ]
                     ]
                 , Html.div
@@ -1347,6 +1347,36 @@ redButtonLarge =
 blackButtonLarge : String -> Maybe Msg -> Html Msg
 blackButtonLarge =
     buttonLarge (Css.hex "1F2937")
+
+
+-- Compact large button for tight mobile rows (smaller minWidth/margins)
+buttonCompact : Css.Color -> String -> Maybe Msg -> Html Msg
+buttonCompact baseColor label maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 10)
+            , Css.paddingBottom (Css.px 12)
+            , Css.paddingLeft (Css.px 12)
+            , Css.paddingRight (Css.px 12)
+            , Css.margin2 Css.zero (Css.px 4)
+            , Css.minWidth (Css.px 100)
+            , case maybeMsg of
+                Just _ -> Css.backgroundColor baseColor
+                Nothing -> Css.backgroundColor (Css.hex "DDD")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 8)
+            , Css.boxShadow6 Css.inset Css.zero (Css.px -4) Css.zero Css.zero (Css.rgba 0 0 0 0.1)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 16)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text label ]
 
 
 goldButton : String -> Maybe Msg -> Html Msg

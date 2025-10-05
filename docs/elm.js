@@ -12762,6 +12762,7 @@ var $author$project$Main$activePlayerCompactWithIgnore = F2(
 	});
 var $author$project$Main$blackButton = $author$project$Main$button(
 	$rtfeldman$elm_css$Css$hex('1F2937'));
+var $rtfeldman$elm_css$Css$block = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'block'};
 var $author$project$Main$buttonLarge = F3(
 	function (baseColor, label, maybeMsg) {
 		return A2(
@@ -12827,9 +12828,6 @@ var $author$project$Main$buttonLarge = F3(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
 				]));
 	});
-var $author$project$Main$blackButtonLarge = $author$project$Main$buttonLarge(
-	$rtfeldman$elm_css$Css$hex('1F2937'));
-var $rtfeldman$elm_css$Css$block = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'block'};
 var $author$project$Main$blueButtonLarge = $author$project$Main$buttonLarge(
 	$rtfeldman$elm_css$Css$hex('3B82F6'));
 var $rtfeldman$elm_css$Css$prop3 = F4(
@@ -12842,6 +12840,71 @@ var $rtfeldman$elm_css$Css$prop4 = F5(
 		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
+var $author$project$Main$buttonCompact = F3(
+	function (baseColor, label, maybeMsg) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$paddingTop(
+							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$paddingBottom(
+							$rtfeldman$elm_css$Css$px(12)),
+							$rtfeldman$elm_css$Css$paddingLeft(
+							$rtfeldman$elm_css$Css$px(12)),
+							$rtfeldman$elm_css$Css$paddingRight(
+							$rtfeldman$elm_css$Css$px(12)),
+							A2(
+							$rtfeldman$elm_css$Css$margin2,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(4)),
+							$rtfeldman$elm_css$Css$minWidth(
+							$rtfeldman$elm_css$Css$px(100)),
+							function () {
+							if (maybeMsg.$ === 'Just') {
+								return $rtfeldman$elm_css$Css$backgroundColor(baseColor);
+							} else {
+								return $rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex('DDD'));
+							}
+						}(),
+							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(8)),
+							A6(
+							$rtfeldman$elm_css$Css$boxShadow6,
+							$rtfeldman$elm_css$Css$inset,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(-4),
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$zero,
+							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(16)),
+							$rtfeldman$elm_css$Css$fontWeight(
+							$rtfeldman$elm_css$Css$int(700)),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('FFF')),
+							$author$project$Main$modernSansSerif
+						])),
+					function () {
+					if (maybeMsg.$ === 'Just') {
+						var m = maybeMsg.a;
+						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+					} else {
+						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+					}
+				}()
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
 var $rtfeldman$elm_css$Css$flex = $rtfeldman$elm_css$Css$prop1('flex');
 var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
 var $author$project$Main$greenButton = $author$project$Main$button(
@@ -12918,6 +12981,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (att
 var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
 var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-around');
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
+var $rtfeldman$elm_css$Css$stretch = $rtfeldman$elm_css$Css$prop1('stretch');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
 var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
@@ -13612,10 +13676,12 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$displayFlex,
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$stretch),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
 											A2(
 											$rtfeldman$elm_css$Css$margin2,
 											$rtfeldman$elm_css$Css$zero,
-											$rtfeldman$elm_css$Css$px(-10))
+											$rtfeldman$elm_css$Css$px(-4))
 										]))
 								]),
 							_List_fromArray(
@@ -13633,8 +13699,9 @@ var $author$project$Main$currentMatch = function (model) {
 										]),
 									_List_fromArray(
 										[
-											A2(
-											$author$project$Main$blackButtonLarge,
+											A3(
+											$author$project$Main$buttonCompact,
+											$rtfeldman$elm_css$Css$hex('1F2937'),
 											'TIE',
 											model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
@@ -13655,7 +13722,7 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											A3(
-											$author$project$Main$buttonLarge,
+											$author$project$Main$buttonCompact,
 											$rtfeldman$elm_css$Css$hex('999'),
 											'SKIP',
 											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))
@@ -13674,7 +13741,7 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											A3(
-											$author$project$Main$buttonLarge,
+											$author$project$Main$buttonCompact,
 											$rtfeldman$elm_css$Css$hex('6DD400'),
 											'SAVE',
 											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveToDrive))
