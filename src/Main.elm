@@ -828,6 +828,10 @@ currentMatch model =
                         [ Css.displayFlex
                         , Css.alignItems Css.center
                         , Css.paddingTop (Css.px 32)
+                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                            [ Css.flexDirection Css.column
+                            , Css.alignItems Css.stretch
+                            ]
                         ]
                     ]
                     [ activePlayer playerA
@@ -841,21 +845,37 @@ currentMatch model =
                         [ Css.displayFlex
                         , Css.paddingTop (Css.px 32)
                         , Css.textAlign Css.center
+                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                            [ Css.flexDirection Css.column
+                            , Css.alignItems Css.stretch
+                            ]
                         ]
                     ]
-                    [ Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "WINNER" 
+                    [ Html.div [ css [ Css.width (Css.pct 40), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100), Css.marginBottom (Css.px 10) ] ] ]
+                        [ blueButtonLarge "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                         ]
-                    , Html.div [ css [ Css.width (Css.pct 20) ] ]
-                        [ blueButton "TIE" 
+                    , Html.div [ css [ Css.width (Css.pct 20), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100), Css.marginBottom (Css.px 10) ] ] ]
+                        [ blueButtonLarge "TIE" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                         ]
-                    , Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "WINNER" 
+                    , Html.div [ css [ Css.width (Css.pct 40), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100) ] ] ]
+                        [ blueButtonLarge "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
                         ]
                     ]
+                , Html.div
+                    [ css
+                        [ Css.textAlign Css.center
+                        , Css.marginTop (Css.px 8)
+                        , modernSansSerif
+                        , Css.color (Css.hex "6B7280")
+                        , Css.fontSize (Css.px 12)
+                        , Css.letterSpacing (Css.px 0.5)
+                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
+                        ]
+                    ]
+                    [ Html.text "Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc)" ]
                 , Html.div
                     [ css
                         [ Css.displayFlex
@@ -863,7 +883,7 @@ currentMatch model =
                         , Css.paddingTop (Css.px 12)
                         ]
                     ]
-                    [ Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
+                    [ Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
                         (if isPlayerIgnored playerA (History.current model.history) then
                             [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerA)) ]
                         else
@@ -871,7 +891,7 @@ currentMatch model =
                         )
                     , Html.div [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
                         [ Html.text "" ]
-                    , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center ] ]
+                    , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
                         (if isPlayerIgnored playerB (History.current model.history) then
                             [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerB)) ]
                         else
@@ -883,11 +903,18 @@ currentMatch model =
                         [ Css.displayFlex
                         , Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
                         , Css.justifyContent Css.spaceAround
+                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                            [ Css.padding4 (Css.px 16) (Css.px 12) Css.zero (Css.px 12)
+                            , Css.justifyContent Css.center
+                            ]
                         ]
                     ]
-                    [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
-                    , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
-                    , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
+                    [ Html.div [ css [ Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
+                        [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history)) ]
+                    , Html.div [ css [ Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
+                        [ blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history)) ]
+                    , Html.div [ css [ Css.width (Css.pct 40), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 100) ] ] ]
+                        [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                     ]
                 ]
 
@@ -1137,6 +1164,41 @@ greenButton =
 redButton : String -> Maybe Msg -> Html Msg
 redButton =
     button (Css.hex "E02020")
+
+
+-- Large button variants (especially for mobile)
+
+buttonLarge : Css.Color -> String -> Maybe Msg -> Html Msg
+buttonLarge baseColor label maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 12)
+            , Css.paddingBottom (Css.px 16)
+            , Css.paddingLeft (Css.px 18)
+            , Css.paddingRight (Css.px 18)
+            , Css.margin2 Css.zero (Css.px 10)
+            , Css.minWidth (Css.px 140)
+            , case maybeMsg of
+                Just _ -> Css.backgroundColor baseColor
+                Nothing -> Css.backgroundColor (Css.hex "DDD")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 8)
+            , Css.boxShadow6 Css.inset Css.zero (Css.px -4) Css.zero Css.zero (Css.rgba 0 0 0 0.1)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 18)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text label ]
+
+blueButtonLarge : String -> Maybe Msg -> Html Msg
+blueButtonLarge =
+    buttonLarge (Css.hex "0091FF")
 
 
 goldButton : String -> Maybe Msg -> Html Msg

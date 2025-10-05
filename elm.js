@@ -12447,6 +12447,73 @@ var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 		'align-items',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
+var $author$project$Main$buttonLarge = F3(
+	function (baseColor, label, maybeMsg) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$paddingTop(
+							$rtfeldman$elm_css$Css$px(12)),
+							$rtfeldman$elm_css$Css$paddingBottom(
+							$rtfeldman$elm_css$Css$px(16)),
+							$rtfeldman$elm_css$Css$paddingLeft(
+							$rtfeldman$elm_css$Css$px(18)),
+							$rtfeldman$elm_css$Css$paddingRight(
+							$rtfeldman$elm_css$Css$px(18)),
+							A2(
+							$rtfeldman$elm_css$Css$margin2,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$minWidth(
+							$rtfeldman$elm_css$Css$px(140)),
+							function () {
+							if (!maybeMsg.$) {
+								return $rtfeldman$elm_css$Css$backgroundColor(baseColor);
+							} else {
+								return $rtfeldman$elm_css$Css$backgroundColor(
+									$rtfeldman$elm_css$Css$hex('DDD'));
+							}
+						}(),
+							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(8)),
+							A6(
+							$rtfeldman$elm_css$Css$boxShadow6,
+							$rtfeldman$elm_css$Css$inset,
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$px(-4),
+							$rtfeldman$elm_css$Css$zero,
+							$rtfeldman$elm_css$Css$zero,
+							A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(18)),
+							$rtfeldman$elm_css$Css$fontWeight(
+							$rtfeldman$elm_css$Css$int(700)),
+							$rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('FFF')),
+							$author$project$Main$modernSansSerif
+						])),
+					function () {
+					if (!maybeMsg.$) {
+						var m = maybeMsg.a;
+						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+					} else {
+						return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+					}
+				}()
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
+var $author$project$Main$blueButtonLarge = $author$project$Main$buttonLarge(
+	$rtfeldman$elm_css$Css$hex('0091FF'));
 var $rtfeldman$elm_css$Css$prop3 = F4(
 	function (key, argA, argB, argC) {
 		return A2($rtfeldman$elm_css$Css$property, key, argA.Y + (' ' + (argB.Y + (' ' + argC.Y))));
@@ -12457,6 +12524,11 @@ var $rtfeldman$elm_css$Css$prop4 = F5(
 		return A2($rtfeldman$elm_css$Css$property, key, argA.Y + (' ' + (argB.Y + (' ' + (argC.Y + (' ' + argD.Y))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
+var $rtfeldman$elm_css$Css$row = {bN: 0, a5: 0, Y: 'row'};
+var $rtfeldman$elm_css$Css$column = _Utils_update(
+	$rtfeldman$elm_css$Css$row,
+	{Y: 'column'});
+var $rtfeldman$elm_css$Css$flexDirection = $rtfeldman$elm_css$Css$prop1('flex-direction');
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$h1(
@@ -12474,6 +12546,24 @@ var $author$project$League$isPlayerIgnored = F2(
 	});
 var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
+var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
+var $rtfeldman$elm_css$Css$Media$feature = F2(
+	function (key, _v0) {
+		var value = _v0.Y;
+		return {
+			cl: key,
+			Y: $elm$core$Maybe$Just(value)
+		};
+	});
+var $rtfeldman$elm_css$Css$Media$maxWidth = function (value) {
+	return A2($rtfeldman$elm_css$Css$Media$feature, 'max-width', value);
+};
+var $rtfeldman$elm_css$Css$none = {aC: 0, b8: 0, H: 0, c: 0, l: 0, dG: 0, cv: 0, bQ: 0, aO: 0, ar: 0, W: 0, e: 0, d: 0, bT: 0, bz: 0, d2: 0, R: 0, bA: 0, d9: 0, aT: 0, ay: 0, K: 0, i: 0, el: 0, Y: 'none'};
+var $rtfeldman$elm_css$Css$Structure$OnlyQuery = F2(
+	function (a, b) {
+		return {$: 1, a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Media$only = $rtfeldman$elm_css$Css$Structure$OnlyQuery;
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$p = function (attributes) {
@@ -12492,6 +12582,8 @@ var $author$project$History$peekForward = function (_v0) {
 var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
 var $rtfeldman$elm_css$Css$relative = {bd: 0, Y: 'relative'};
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
+var $rtfeldman$elm_css$Css$Structure$Screen = 1;
+var $rtfeldman$elm_css$Css$Media$screen = 1;
 var $rtfeldman$elm_css$Html$Styled$section = $rtfeldman$elm_css$Html$Styled$node('section');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$section(
@@ -12500,8 +12592,14 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (att
 var $rtfeldman$elm_css$Css$solid = {H: 0, ax: 0, Y: 'solid'};
 var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-around');
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
+var $rtfeldman$elm_css$Css$stretch = $rtfeldman$elm_css$Css$prop1('stretch');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
+var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
+	function (a, b) {
+		return {$: 4, a: a, b: b};
+	});
+var $rtfeldman$elm_css$Css$Media$withMedia = $rtfeldman$elm_css$Css$Preprocess$WithMedia;
 var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
 	function (a, b) {
 		return {$: 1, a: a, b: b};
@@ -13002,7 +13100,25 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Css$displayFlex,
 									$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
 									$rtfeldman$elm_css$Css$paddingTop(
-									$rtfeldman$elm_css$Css$px(32))
+									$rtfeldman$elm_css$Css$px(32)),
+									A2(
+									$rtfeldman$elm_css$Css$Media$withMedia,
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Css$Media$only,
+											$rtfeldman$elm_css$Css$Media$screen,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$Media$maxWidth(
+													$rtfeldman$elm_css$Css$px(640))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$stretch)
+										]))
 								]))
 						]),
 					_List_fromArray(
@@ -13037,7 +13153,25 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Css$displayFlex,
 									$rtfeldman$elm_css$Css$paddingTop(
 									$rtfeldman$elm_css$Css$px(32)),
-									$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+									$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+									A2(
+									$rtfeldman$elm_css$Css$Media$withMedia,
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Css$Media$only,
+											$rtfeldman$elm_css$Css$Media$screen,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$Media$maxWidth(
+													$rtfeldman$elm_css$Css$px(640))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$flexDirection($rtfeldman$elm_css$Css$column),
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$stretch)
+										]))
 								]))
 						]),
 					_List_fromArray(
@@ -13050,13 +13184,33 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$width(
-											$rtfeldman$elm_css$Css$pct(40))
+											$rtfeldman$elm_css$Css$pct(40)),
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100)),
+													$rtfeldman$elm_css$Css$marginBottom(
+													$rtfeldman$elm_css$Css$px(10))
+												]))
 										]))
 								]),
 							_List_fromArray(
 								[
 									A2(
-									$author$project$Main$blueButton,
+									$author$project$Main$blueButtonLarge,
 									'WINNER',
 									model.t ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
@@ -13071,13 +13225,33 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$width(
-											$rtfeldman$elm_css$Css$pct(20))
+											$rtfeldman$elm_css$Css$pct(20)),
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100)),
+													$rtfeldman$elm_css$Css$marginBottom(
+													$rtfeldman$elm_css$Css$px(10))
+												]))
 										]))
 								]),
 							_List_fromArray(
 								[
 									A2(
-									$author$project$Main$blueButton,
+									$author$project$Main$blueButtonLarge,
 									'TIE',
 									model.t ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
@@ -13092,19 +13266,77 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$width(
-											$rtfeldman$elm_css$Css$pct(40))
+											$rtfeldman$elm_css$Css$pct(40)),
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100))
+												]))
 										]))
 								]),
 							_List_fromArray(
 								[
 									A2(
-									$author$project$Main$blueButton,
+									$author$project$Main$blueButtonLarge,
 									'WINNER',
 									model.t ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{cA: playerA, dd: playerB}))))
 								]))
+						])),
+					A2(
+					$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+									$rtfeldman$elm_css$Css$marginTop(
+									$rtfeldman$elm_css$Css$px(8)),
+									$author$project$Main$modernSansSerif,
+									$rtfeldman$elm_css$Css$color(
+									$rtfeldman$elm_css$Css$hex('6B7280')),
+									$rtfeldman$elm_css$Css$fontSize(
+									$rtfeldman$elm_css$Css$px(12)),
+									$rtfeldman$elm_css$Css$letterSpacing(
+									$rtfeldman$elm_css$Css$px(0.5)),
+									A2(
+									$rtfeldman$elm_css$Css$Media$withMedia,
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Css$Media$only,
+											$rtfeldman$elm_css$Css$Media$screen,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$Media$maxWidth(
+													$rtfeldman$elm_css$Css$px(640))
+												]))
+										]),
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+										]))
+								]))
+						]),
+					_List_fromArray(
+						[
+							$tesk9$accessible_html_with_css$Accessibility$Styled$text('Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc)')
 						])),
 					A2(
 					$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -13130,7 +13362,24 @@ var $author$project$Main$currentMatch = function (model) {
 										[
 											$rtfeldman$elm_css$Css$width(
 											$rtfeldman$elm_css$Css$pct(40)),
-											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+												]))
 										]))
 								]),
 							A2(
@@ -13172,7 +13421,24 @@ var $author$project$Main$currentMatch = function (model) {
 										[
 											$rtfeldman$elm_css$Css$width(
 											$rtfeldman$elm_css$Css$pct(40)),
-											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+												]))
 										]))
 								]),
 							A2(
@@ -13204,34 +13470,147 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Css$pct(20),
 									$rtfeldman$elm_css$Css$zero,
 									$rtfeldman$elm_css$Css$pct(20)),
-									$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround)
+									$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround),
+									A2(
+									$rtfeldman$elm_css$Css$Media$withMedia,
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Css$Media$only,
+											$rtfeldman$elm_css$Css$Media$screen,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$Media$maxWidth(
+													$rtfeldman$elm_css$Css$px(640))
+												]))
+										]),
+									_List_fromArray(
+										[
+											A4(
+											$rtfeldman$elm_css$Css$padding4,
+											$rtfeldman$elm_css$Css$px(16),
+											$rtfeldman$elm_css$Css$px(12),
+											$rtfeldman$elm_css$Css$zero,
+											$rtfeldman$elm_css$Css$px(12)),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+										]))
 								]))
 						]),
 					_List_fromArray(
 						[
 							A2(
-							$author$project$Main$blueButton,
-							'UNDO',
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+												]))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$author$project$Main$blueButton,
+									'UNDO',
+									A2(
+										$elm$core$Maybe$map,
+										function (_v2) {
+											return $author$project$Main$KeeperWantsToUndo;
+										},
+										$author$project$History$peekBack(model.b)))
+								])),
 							A2(
-								$elm$core$Maybe$map,
-								function (_v2) {
-									return $author$project$Main$KeeperWantsToUndo;
-								},
-								$author$project$History$peekBack(model.b))),
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$none)
+												]))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$author$project$Main$blueButton,
+									'REDO',
+									A2(
+										$elm$core$Maybe$map,
+										function (_v3) {
+											return $author$project$Main$KeeperWantsToRedo;
+										},
+										$author$project$History$peekForward(model.b)))
+								])),
 							A2(
-							$author$project$Main$blueButton,
-							'REDO',
-							A2(
-								$elm$core$Maybe$map,
-								function (_v3) {
-									return $author$project$Main$KeeperWantsToRedo;
-								},
-								$author$project$History$peekForward(model.b))),
-							A3(
-							$author$project$Main$button,
-							$rtfeldman$elm_css$Css$hex('999'),
-							'SKIP',
-							$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$width(
+											$rtfeldman$elm_css$Css$pct(40)),
+											A2(
+											$rtfeldman$elm_css$Css$Media$withMedia,
+											_List_fromArray(
+												[
+													A2(
+													$rtfeldman$elm_css$Css$Media$only,
+													$rtfeldman$elm_css$Css$Media$screen,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$Media$maxWidth(
+															$rtfeldman$elm_css$Css$px(640))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100))
+												]))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A3(
+									$author$project$Main$buttonLarge,
+									$rtfeldman$elm_css$Css$hex('999'),
+									'SKIP',
+									$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))
+								]))
 						]))
 				]));
 	}
@@ -13239,7 +13618,6 @@ var $author$project$Main$currentMatch = function (model) {
 var $author$project$Main$SetTimeFilter = function (a) {
 	return {$: 30, a: a};
 };
-var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $author$project$Main$toggleBtn = F3(
 	function (isOn, label, maybeMsg) {
 		return A2(
@@ -13484,7 +13862,6 @@ var $rtfeldman$elm_css$Css$listStyle = $rtfeldman$elm_css$Css$prop1('list-style'
 var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$Global$menu = $rtfeldman$elm_css$Css$Global$typeSelector('menu');
 var $rtfeldman$elm_css$Css$Global$nav = $rtfeldman$elm_css$Css$Global$typeSelector('nav');
-var $rtfeldman$elm_css$Css$none = {aC: 0, b8: 0, H: 0, c: 0, l: 0, dG: 0, cv: 0, bQ: 0, aO: 0, ar: 0, W: 0, e: 0, d: 0, bT: 0, bz: 0, d2: 0, R: 0, bA: 0, d9: 0, aT: 0, ay: 0, K: 0, i: 0, el: 0, Y: 'none'};
 var $rtfeldman$elm_css$Css$Global$ol = $rtfeldman$elm_css$Css$Global$typeSelector('ol');
 var $rtfeldman$elm_css$Css$Global$p = $rtfeldman$elm_css$Css$Global$typeSelector('p');
 var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
@@ -13816,17 +14193,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$inputText = F2(
 			_List_Nil);
 	});
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
-var $rtfeldman$elm_css$Css$Media$feature = F2(
-	function (key, _v0) {
-		var value = _v0.Y;
-		return {
-			cl: key,
-			Y: $elm$core$Maybe$Just(value)
-		};
-	});
-var $rtfeldman$elm_css$Css$Media$maxWidth = function (value) {
-	return A2($rtfeldman$elm_css$Css$Media$feature, 'max-width', value);
-};
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
 var $rtfeldman$elm_css$Css$Subtraction = 1;
 var $rtfeldman$elm_css$Css$minus = 1;
@@ -13868,18 +14234,11 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			$rtfeldman$elm_css$Html$Styled$Events$alwaysStop,
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
-var $rtfeldman$elm_css$Css$Structure$OnlyQuery = F2(
-	function (a, b) {
-		return {$: 1, a: a, b: b};
-	});
-var $rtfeldman$elm_css$Css$Media$only = $rtfeldman$elm_css$Css$Structure$OnlyQuery;
 var $rtfeldman$elm_css$Css$overflowX = $rtfeldman$elm_css$Css$prop1('overflow-x');
 var $author$project$League$players = function (_v0) {
 	var league = _v0;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.r);
 };
-var $rtfeldman$elm_css$Css$Structure$Screen = 1;
-var $rtfeldman$elm_css$Css$Media$screen = 1;
 var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -14025,11 +14384,6 @@ var $author$project$Main$upArrow = function (color) {
 		_List_Nil);
 };
 var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
-var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
-	function (a, b) {
-		return {$: 4, a: a, b: b};
-	});
-var $rtfeldman$elm_css$Css$Media$withMedia = $rtfeldman$elm_css$Css$Preprocess$WithMedia;
 var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
