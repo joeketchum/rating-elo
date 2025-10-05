@@ -14676,7 +14676,35 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$int(700)),
 						$rtfeldman$elm_css$Css$color(
 						$rtfeldman$elm_css$Css$hex('FFF')),
-						$author$project$Main$modernSansSerif
+						$author$project$Main$modernSansSerif,
+						A2(
+						$rtfeldman$elm_css$Css$Media$withMedia,
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$Media$only,
+								$rtfeldman$elm_css$Css$Media$screen,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$Media$maxWidth(
+										$rtfeldman$elm_css$Css$px(640))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$paddingLeft(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$marginRight(
+								$rtfeldman$elm_css$Css$px(2)),
+								$rtfeldman$elm_css$Css$marginLeft(
+								$rtfeldman$elm_css$Css$px(2)),
+								$rtfeldman$elm_css$Css$minWidth(
+								$rtfeldman$elm_css$Css$px(24)),
+								$rtfeldman$elm_css$Css$fontSize(
+								$rtfeldman$elm_css$Css$px(11))
+							]))
 					])),
 				function () {
 				if (maybeMsg.$ === 'Just') {
@@ -14729,7 +14757,29 @@ var $author$project$Main$toggleChipSmall = F4(
 							$rtfeldman$elm_css$Css$fontWeight(
 							$rtfeldman$elm_css$Css$int(700)),
 							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer)
+							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							A2(
+							$rtfeldman$elm_css$Css$Media$withMedia,
+							_List_fromArray(
+								[
+									A2(
+									$rtfeldman$elm_css$Css$Media$only,
+									$rtfeldman$elm_css$Css$Media$screen,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$Media$maxWidth(
+											$rtfeldman$elm_css$Css$px(640))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$rtfeldman$elm_css$Css$padding2,
+									$rtfeldman$elm_css$Css$px(2),
+									$rtfeldman$elm_css$Css$px(5)),
+									$rtfeldman$elm_css$Css$fontSize(
+									$rtfeldman$elm_css$Css$px(9))
+								]))
 						])),
 					$rtfeldman$elm_css$Html$Styled$Events$onClick(msg)
 				]),
@@ -14838,6 +14888,28 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$px(6)),
 								$rtfeldman$elm_css$Css$fontSize(
 								$rtfeldman$elm_css$Css$px(10))
+							])),
+						A2(
+						$rtfeldman$elm_css$Css$Media$withMedia,
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$Media$only,
+								$rtfeldman$elm_css$Css$Media$screen,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$Media$maxWidth(
+										$rtfeldman$elm_css$Css$px(400))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$paddingLeft(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$minWidth(
+								$rtfeldman$elm_css$Css$px(30))
 							]))
 					])),
 				function () {
@@ -14911,6 +14983,28 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$px(6)),
 								$rtfeldman$elm_css$Css$fontSize(
 								$rtfeldman$elm_css$Css$px(10))
+							])),
+						A2(
+						$rtfeldman$elm_css$Css$Media$withMedia,
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$Media$only,
+								$rtfeldman$elm_css$Css$Media$screen,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$Media$maxWidth(
+										$rtfeldman$elm_css$Css$px(400))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$paddingLeft(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$minWidth(
+								$rtfeldman$elm_css$Css$px(30))
 							]))
 					])),
 				function () {
@@ -15672,7 +15766,25 @@ var $author$project$Main$rankings = function (model) {
 																				_List_fromArray(
 																					[
 																						$rtfeldman$elm_css$Css$paddingLeft(
-																						$rtfeldman$elm_css$Css$px(6))
+																						$rtfeldman$elm_css$Css$px(6)),
+																						A2(
+																						$rtfeldman$elm_css$Css$Media$withMedia,
+																						_List_fromArray(
+																							[
+																								A2(
+																								$rtfeldman$elm_css$Css$Media$only,
+																								$rtfeldman$elm_css$Css$Media$screen,
+																								_List_fromArray(
+																									[
+																										$rtfeldman$elm_css$Css$Media$maxWidth(
+																										$rtfeldman$elm_css$Css$px(640))
+																									]))
+																							]),
+																						_List_fromArray(
+																							[
+																								$rtfeldman$elm_css$Css$paddingLeft(
+																								$rtfeldman$elm_css$Css$px(2))
+																							]))
 																					]))
 																			]),
 																		_List_fromArray(
@@ -15694,7 +15806,25 @@ var $author$project$Main$rankings = function (model) {
 																					_List_fromArray(
 																						[
 																							$rtfeldman$elm_css$Css$paddingLeft(
-																							$rtfeldman$elm_css$Css$px(6))
+																							$rtfeldman$elm_css$Css$px(6)),
+																							A2(
+																							$rtfeldman$elm_css$Css$Media$withMedia,
+																							_List_fromArray(
+																								[
+																									A2(
+																									$rtfeldman$elm_css$Css$Media$only,
+																									$rtfeldman$elm_css$Css$Media$screen,
+																									_List_fromArray(
+																										[
+																											$rtfeldman$elm_css$Css$Media$maxWidth(
+																											$rtfeldman$elm_css$Css$px(640))
+																										]))
+																								]),
+																							_List_fromArray(
+																								[
+																									$rtfeldman$elm_css$Css$paddingLeft(
+																									$rtfeldman$elm_css$Css$px(2))
+																								]))
 																						]))
 																				]),
 																			_List_fromArray(
@@ -15714,7 +15844,25 @@ var $author$project$Main$rankings = function (model) {
 																					_List_fromArray(
 																						[
 																							$rtfeldman$elm_css$Css$paddingLeft(
-																							$rtfeldman$elm_css$Css$px(4))
+																							$rtfeldman$elm_css$Css$px(4)),
+																							A2(
+																							$rtfeldman$elm_css$Css$Media$withMedia,
+																							_List_fromArray(
+																								[
+																									A2(
+																									$rtfeldman$elm_css$Css$Media$only,
+																									$rtfeldman$elm_css$Css$Media$screen,
+																									_List_fromArray(
+																										[
+																											$rtfeldman$elm_css$Css$Media$maxWidth(
+																											$rtfeldman$elm_css$Css$px(640))
+																										]))
+																								]),
+																							_List_fromArray(
+																								[
+																									$rtfeldman$elm_css$Css$paddingLeft(
+																									$rtfeldman$elm_css$Css$px(2))
+																								]))
 																						]))
 																				]),
 																			_List_fromArray(

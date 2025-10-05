@@ -1128,18 +1128,19 @@ rankings model =
                                 , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.justifyContent Css.flexStart ]
                                 ]
                             ]
-                            (let baseActions =
+                            (let
+                                baseActions =
                                     if isPlayerLocallyIgnored player model then
                                         [ zzzUnignoreButtonSmall (Just (KeeperWantsToUnignorePlayer player)) ]
                                     else
                                         [ smallRedXButtonSmall (Just (KeeperWantsToRetirePlayer player))
-                                        , Html.span [ css [ Css.paddingLeft (Css.px 6) ] ] [ zzzIgnoreButtonSmall (Just (KeeperWantsToIgnorePlayer player)) ]
+                                        , Html.span [ css [ Css.paddingLeft (Css.px 6), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 2) ] ] ] [ zzzIgnoreButtonSmall (Just (KeeperWantsToIgnorePlayer player)) ]
                                         ]
-                             in
-                             baseActions
-                                ++ [ Html.span [ css [ Css.paddingLeft (Css.px 6) ] ]
+                            in
+                            baseActions
+                                ++ [ Html.span [ css [ Css.paddingLeft (Css.px 6), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 2) ] ] ]
                                         [ toggleChipSmall "AM" (Player.playsAM player) (Css.hex "F59E0B") (TogglePlayerAM player) ]
-                                   , Html.span [ css [ Css.paddingLeft (Css.px 4) ] ]
+                                   , Html.span [ css [ Css.paddingLeft (Css.px 4), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 2) ] ] ]
                                         [ toggleChipSmall "PM" (Player.playsPM player) (Css.hex "8B5CF6") (TogglePlayerPM player) ]
                                    ]
                             )
@@ -1424,6 +1425,14 @@ smallRedXButtonSmall maybeMsg =
             , Css.fontWeight (Css.int 700)
             , Css.color (Css.hex "FFF")
             , modernSansSerif
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                [ Css.paddingLeft (Css.px 4)
+                , Css.paddingRight (Css.px 4)
+                , Css.marginRight (Css.px 2)
+                , Css.marginLeft (Css.px 2)
+                , Css.minWidth (Css.px 24)
+                , Css.fontSize (Css.px 11)
+                ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1485,6 +1494,7 @@ zzzIgnoreButtonSmall maybeMsg =
             , Css.color (Css.hex "FFF")
             , modernSansSerif
             , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 400) ] ] [ Css.paddingLeft (Css.px 4), Css.paddingRight (Css.px 4), Css.minWidth (Css.px 30) ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1546,6 +1556,7 @@ zzzUnignoreButtonSmall maybeMsg =
             , Css.textDecoration Css.lineThrough
             , modernSansSerif
             , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 400) ] ] [ Css.paddingLeft (Css.px 4), Css.paddingRight (Css.px 4), Css.minWidth (Css.px 30) ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1708,6 +1719,7 @@ toggleChipSmall label isOn colorOn msg =
             , Css.fontWeight (Css.int 700)
             , Css.border Css.zero
             , Css.cursor Css.pointer
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.padding2 (Css.px 2) (Css.px 5), Css.fontSize (Css.px 9) ]
             ]
         , Events.onClick msg
         ]
