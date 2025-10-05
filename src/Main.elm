@@ -137,7 +137,7 @@ init _ =
       , autoSave = True
       , status = Nothing
       , lastSynced = Nothing
-      , votesUntilDriveSync = 20
+    , votesUntilDriveSync = 25
       , shouldStartNextMatchAfterLoad = False
     , autoSaveInProgress = False
     , timeFilter = All
@@ -266,12 +266,12 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
     in
     if newCount <= 0 then
         -- Save to Drive and don't start next match until reload completes
-        ( { model | votesUntilDriveSync = 20, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
+    ( { model | votesUntilDriveSync = 25, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
         , Cmd.batch
             [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
             , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
             , Process.sleep 10000 |> Task.perform (\_ -> AutoSaveTimeout) -- 10 second timeout
-            , sendVoteCount 20  -- Reset to 20
+            , sendVoteCount 25  -- Reset to 25
             ]
         )
     else
@@ -602,6 +602,9 @@ view model =
                 ]
                 [ currentMatch model
                 , filterBar model
+                , Html.section
+                    [ css [ Css.width (Css.pct 80), Css.margin2 (Css.px 8) Css.auto, Css.textAlign Css.right ] ]
+                    [ saveIconButton (Just KeeperWantsToSaveToDrive) ]
                 , rankings model
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
@@ -1203,6 +1206,35 @@ greenButton =
 redButton : String -> Maybe Msg -> Html Msg
 redButton =
     button (Css.hex "E02020")
+
+
+-- Save icon (small) for top-right quick save
+saveIconButton : Maybe Msg -> Html Msg
+saveIconButton maybeMsg =
+    Html.button
+        [ css
+            [ Css.padding2 (Css.px 6) (Css.px 10)
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 6)
+            , case maybeMsg of
+                Just _ -> Css.backgroundColor (Css.hex "3B82F6")
+                Nothing -> Css.backgroundColor (Css.hex "B0C4FF")
+            , Css.color (Css.hex "FFF")
+            , Css.cursor Css.pointer
+            , Css.fontWeight (Css.int 700)
+            , Css.display Css.inlineFlex
+            , Css.alignItems Css.center
+            , Css.gap (Css.px 6)
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ -- Simple floppy disk emoji as icon; could swap for SVG later
+          Html.span [] [ Html.text "💾" ]
+        , Html.span [] [ Html.text "Save" ]
+        ]
 
 
 -- Large button variants (especially for mobile)
