@@ -56,6 +56,7 @@ try {
   var LS_KEY = "EloTrackerData";
   var LS_PUBLIC = "EloTrackerPublic";
   var LS_FILTER = "EloTrackerTimeFilter"; // 'all' | 'am' | 'pm'
+  var LS_IGNORED = "EloTrackerIgnoredPlayers"; // comma-separated player IDs
 
   if (app.ports.autoSave && app.ports.autoSave.subscribe) {
     app.ports.autoSave.subscribe(function(json) {
@@ -87,6 +88,25 @@ try {
     }
     // Also ask for current (noop payload)
     app.ports.askForTimeFilter.send('');
+  }
+
+  // Handle ignored players persistence
+  if (app.ports.askForIgnoredPlayers && app.ports.askForIgnoredPlayers.send) {
+    var storedIgnored = '';
+    try { storedIgnored = localStorage.getItem(LS_IGNORED) || ''; } catch(_) {}
+    
+    // Set up listeners so Elm can save ignored players changes
+    app.ports.saveIgnoredPlayers && app.ports.saveIgnoredPlayers.subscribe && app.ports.saveIgnoredPlayers.subscribe(function(val){
+      try { localStorage.setItem(LS_IGNORED, val); } catch(_) {}
+    });
+    
+    // Send initial value to Elm
+    if (app.ports.receiveIgnoredPlayers && app.ports.receiveIgnoredPlayers.send) {
+      app.ports.receiveIgnoredPlayers.send(storedIgnored);
+    }
+    
+    // Also ask for current (noop payload)
+    app.ports.askForIgnoredPlayers.send('');
   }
 
   if (app.ports.loadStandings && app.ports.loadStandings.subscribe) {

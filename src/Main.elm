@@ -24,6 +24,7 @@ import League exposing (League, isPlayerIgnored)
 import List exposing (head)
 import Player exposing (Player)
 import Random
+import Set exposing (Set)
 import String
 import Task
 import Http
@@ -54,6 +55,11 @@ port saveTimeFilter : String -> Cmd msg
 port askForTimeFilter : String -> Cmd msg
 port receiveTimeFilter : (String -> msg) -> Sub msg
 
+-- PORTS (Persist local ignore list)
+port saveIgnoredPlayers : String -> Cmd msg
+port askForIgnoredPlayers : String -> Cmd msg
+port receiveIgnoredPlayers : (String -> msg) -> Sub msg
+
 
 -- FLAGS / MODEL
 
@@ -71,6 +77,7 @@ type alias Model =
     , shouldStartNextMatchAfterLoad : Bool
     , autoSaveInProgress : Bool
     , timeFilter : TimeFilter
+    , ignoredPlayers : Set String  -- Player IDs that are locally ignored
     }
 
 
@@ -110,6 +117,7 @@ type Msg
     | TogglePlayerPM Player
     | SetTimeFilter TimeFilter
     | ReceivedTimeFilter String
+    | ReceivedIgnoredPlayers String
 type TimeFilter
     = All
     | AMOnly
@@ -141,8 +149,9 @@ init _ =
       , shouldStartNextMatchAfterLoad = False
     , autoSaveInProgress = False
     , timeFilter = All
+    , ignoredPlayers = Set.empty
       }
-    , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", httpRequest ]
+    , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", httpRequest ]
     )
         |> startNextMatchIfPossible
 
@@ -232,7 +241,28 @@ subscriptions model =
                 , receiveMatchSaveComplete (\_ -> AutoSaveCompleted)
                 , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
                 , receiveTimeFilter ReceivedTimeFilter
+                , receiveIgnoredPlayers ReceivedIgnoredPlayers
                 ]
+
+
+-- Helper function to check if player is locally ignored
+isPlayerLocallyIgnored : Player -> Model -> Bool
+isPlayerLocallyIgnored player model =
+    let
+        (Player.PlayerId idInt) = Player.id player
+    in
+    Set.member (String.fromInt idInt) model.ignoredPlayers
+
+
+-- Create a predicate that combines time filter and local ignore filter
+combinedPlayerFilter : Model -> (Player -> Bool)
+combinedPlayerFilter model =
+    \player ->
+        not (isPlayerLocallyIgnored player model) &&
+        case model.timeFilter of
+            All -> True
+            AMOnly -> Player.playsAM player
+            PMOnly -> Player.playsPM player
 
 
 startNextMatchIfPossible : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -245,15 +275,7 @@ startNextMatchIfPossible ( model, cmd ) =
         , Cmd.batch
             [ cmd
             , Random.generate GotNextMatch (
-                case model.timeFilter of
-                    All ->
-                        League.nextMatch (History.current model.history)
-
-                    AMOnly ->
-                        League.nextMatchFiltered Player.playsAM (History.current model.history)
-
-                    PMOnly ->
-                        League.nextMatchFiltered Player.playsPM (History.current model.history)
+                League.nextMatchFiltered (combinedPlayerFilter model) (History.current model.history)
               )
             ]
         )
@@ -341,18 +363,26 @@ update msg model =
                 |> maybeAutoSave
 
         KeeperWantsToIgnorePlayer player ->
-            ( { model | history = History.mapPush (League.ignorePlayer player) model.history }
-            , Cmd.none
+            let
+                (Player.PlayerId idInt) = Player.id player
+                newIgnoredPlayers = Set.insert (String.fromInt idInt) model.ignoredPlayers
+                serializedIgnored = String.join "," (Set.toList newIgnoredPlayers)
+            in
+            ( { model | ignoredPlayers = newIgnoredPlayers }
+            , saveIgnoredPlayers serializedIgnored
             )
                 |> startNextMatchIfPossible
-                |> maybeAutoSave
 
         KeeperWantsToUnignorePlayer player ->
-            ( { model | history = History.mapPush (League.unignorePlayer player) model.history }
-            , Cmd.none
+            let
+                (Player.PlayerId idInt) = Player.id player
+                newIgnoredPlayers = Set.remove (String.fromInt idInt) model.ignoredPlayers
+                serializedIgnored = String.join "," (Set.toList newIgnoredPlayers)
+            in
+            ( { model | ignoredPlayers = newIgnoredPlayers }
+            , saveIgnoredPlayers serializedIgnored
             )
                 |> startNextMatchIfPossible
-                |> maybeAutoSave
 
         KeeperWantsToSkipMatch ->
             ( { model | history = History.mapPush League.clearMatch model.history }
@@ -574,6 +604,18 @@ update msg model =
                 tf = parseFilter raw |> Maybe.withDefault All
             in
             ( { model | timeFilter = tf }
+            , Cmd.none
+            )
+
+        ReceivedIgnoredPlayers raw ->
+            let
+                ignoredIds = 
+                    if String.isEmpty raw then
+                        Set.empty
+                    else
+                        String.split "," raw |> Set.fromList
+            in
+            ( { model | ignoredPlayers = ignoredIds }
             , Cmd.none
             )
 
@@ -925,7 +967,7 @@ currentMatch model =
                         ]
                     ]
                     [ Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
-                        (if isPlayerIgnored playerA (History.current model.history) then
+                        (if isPlayerLocallyIgnored playerA model then
                             [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerA)) ]
                         else
                             [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerA)) ]
@@ -933,7 +975,7 @@ currentMatch model =
                     , Html.div [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
                         [ Html.text "" ]
                     , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
-                        (if isPlayerIgnored playerB (History.current model.history) then
+                        (if isPlayerLocallyIgnored playerB model then
                             [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerB)) ]
                         else
                             [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerB)) ]
@@ -1078,7 +1120,7 @@ rankings model =
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
                     , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.textAlign Css.left ] ] ]
                         (let baseActions =
-                                if isPlayerIgnored player (History.current model.history) then
+                                if isPlayerLocallyIgnored player model then
                                     [ zzzUnignoreButtonSmall (Just (KeeperWantsToUnignorePlayer player)) ]
                                 else
                                     [ smallRedXButtonSmall (Just (KeeperWantsToRetirePlayer player))
