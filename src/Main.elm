@@ -923,7 +923,12 @@ rankings model =
                     , Html.td [ css [ numeric, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
                     , Html.td [ css [ numeric, shrinkWidth, center ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numeric, shrinkWidth, center ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
-                    , Html.td [ css [ textual, left ] ] [ Html.text (Player.name player) ]
+                    , Html.td [ css [ textual, left ] ]
+                        [ Html.div []
+                            [ Html.span [] [ Html.text (Player.name player) ]
+                            , Html.span [ css [ Css.marginLeft (Css.px 10) ] ] [ availabilityBadges player ]
+                            ]
+                        ]
                     , Html.td [ css [ textual, shrinkWidth, center ] ]
                         (if isPlayerIgnored player (History.current model.history) then
                             [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer player)) ]
@@ -1172,16 +1177,39 @@ zzzUnignoreButton maybeMsg =
 
 activePlayer : Player -> Html msg
 activePlayer player =
-    Html.h2
+    Html.div
+        [ css [ Css.width (Css.pct 40), Css.maxWidth (Css.pct 45), Css.textAlign Css.center, modernSansSerif ] ]
+        [ Html.h2
+            [ css [ Css.fontSize (Css.px 24), Css.marginBottom (Css.px 6) ] ]
+            [ Html.text (Player.name player) ]
+        , availabilityBadges player
+        ]
+
+
+availabilityBadges : Player -> Html msg
+availabilityBadges player =
+    Html.div
+        [ css [ Css.displayFlex, Css.justifyContent Css.center ] ]
+        [ Html.span [ css [ Css.marginRight (Css.px 6) ] ] [ badge "AM" (Player.playsAM player) (Css.hex "F59E0B") ]
+        , badge "PM" (Player.playsPM player) (Css.hex "8B5CF6")
+        ]
+
+
+badge : String -> Bool -> Css.Color -> Html msg
+badge label isOn colorOn =
+    Html.span
         [ css
-            [ Css.width (Css.pct 40)
-            , Css.maxWidth (Css.pct 45)
-            , Css.textAlign Css.center
-            , Css.fontSize (Css.px 24)
-            , modernSansSerif
+            [ Css.display Css.inlineBlock
+            , Css.padding2 (Css.px 2) (Css.px 8)
+            , Css.borderRadius (Css.px 9999)
+            , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
+            , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
+            , Css.fontSize (Css.px 12)
+            , Css.fontWeight (Css.int 700)
+            , Css.letterSpacing (Css.px 0.5)
             ]
         ]
-        [ Html.text (Player.name player) ]
+        [ Html.text label ]
 
 
 upArrow : Css.Color -> Html msg

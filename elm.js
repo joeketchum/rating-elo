@@ -12106,7 +12106,10 @@ var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
 	return {$: 'KeeperWantsToUnignorePlayer', a: a};
 };
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
-var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
+var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
+var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
+var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
+var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
 var $elm$virtual_dom$VirtualDom$mapAttribute = _VirtualDom_mapAttribute;
 var $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
 	function (transform, _v0) {
@@ -12122,29 +12125,51 @@ var $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute = F2(
 var $rtfeldman$elm_css$Html$Styled$Attributes$map = $rtfeldman$elm_css$VirtualDom$Styled$mapAttribute;
 var $tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive = $elm$core$List$map(
 	$rtfeldman$elm_css$Html$Styled$Attributes$map($elm$core$Basics$never));
-var $tesk9$accessible_html_with_css$Accessibility$Styled$h2 = function (attributes) {
-	return $rtfeldman$elm_css$Html$Styled$h2(
+var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
+var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
+	return $rtfeldman$elm_css$Html$Styled$span(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
-var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
-	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
-		value: A2($elm$core$String$join, ', ', list)
-	};
+var $author$project$Main$badge = F3(
+	function (label, isOn, colorOn) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(2),
+							$rtfeldman$elm_css$Css$px(8)),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(9999)),
+							isOn ? $rtfeldman$elm_css$Css$backgroundColor(colorOn) : $rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex('E5E7EB')),
+							isOn ? $rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('FFFFFF')) : $rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('6B7280')),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(12)),
+							$rtfeldman$elm_css$Css$fontWeight(
+							$rtfeldman$elm_css$Css$int(700)),
+							$rtfeldman$elm_css$Css$letterSpacing(
+							$rtfeldman$elm_css$Css$px(0.5))
+						]))
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
+var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
+var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
+var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attributes) {
+	return $rtfeldman$elm_css$Html$Styled$div(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$fontFamilies = A2(
-	$elm$core$Basics$composeL,
-	$rtfeldman$elm_css$Css$prop1('font-family'),
-	$rtfeldman$elm_css$Css$stringsToValue);
-var $author$project$Main$modernSansSerif = $rtfeldman$elm_css$Css$fontFamilies(
-	_List_fromArray(
-		['system-ui', '-apple-system', 'BlinkMacSystemFont', '\'Segoe UI\'', '\'Roboto\'', '\'Inter\'', '\'Helvetica Neue\'', 'Arial', 'sans-serif']));
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
-var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
-var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
 };
@@ -12210,6 +12235,79 @@ var $rtfeldman$elm_css$Css$Internal$getOverloadedProperty = F3(
 		}
 	});
 var $rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty = A3($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$Internal$IncompatibleUnits, '', 0);
+var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
+	return A3(
+		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
+		'justifyContent',
+		'justify-content',
+		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
+};
+var $rtfeldman$elm_css$Css$marginRight = $rtfeldman$elm_css$Css$prop1('margin-right');
+var $author$project$Main$availabilityBadges = function (player) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$displayFlex,
+						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginRight(
+								$rtfeldman$elm_css$Css$px(6))
+							]))
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$author$project$Main$badge,
+						'AM',
+						$author$project$Player$playsAM(player),
+						$rtfeldman$elm_css$Css$hex('F59E0B'))
+					])),
+				A3(
+				$author$project$Main$badge,
+				'PM',
+				$author$project$Player$playsPM(player),
+				$rtfeldman$elm_css$Css$hex('8B5CF6'))
+			]));
+};
+var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
+var $tesk9$accessible_html_with_css$Accessibility$Styled$h2 = function (attributes) {
+	return $rtfeldman$elm_css$Html$Styled$h2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
+};
+var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
+var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
+var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
+	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
+		value: A2($elm$core$String$join, ', ', list)
+	};
+};
+var $rtfeldman$elm_css$Css$fontFamilies = A2(
+	$elm$core$Basics$composeL,
+	$rtfeldman$elm_css$Css$prop1('font-family'),
+	$rtfeldman$elm_css$Css$stringsToValue);
+var $author$project$Main$modernSansSerif = $rtfeldman$elm_css$Css$fontFamilies(
+	_List_fromArray(
+		['system-ui', '-apple-system', 'BlinkMacSystemFont', '\'Segoe UI\'', '\'Roboto\'', '\'Inter\'', '\'Helvetica Neue\'', 'Arial', 'sans-serif']));
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
+var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
+var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$textAlign = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -12220,7 +12318,7 @@ var $rtfeldman$elm_css$Css$textAlign = function (fn) {
 var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$Main$activePlayer = function (player) {
 	return A2(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$h2,
+		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
 		_List_fromArray(
 			[
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
@@ -12231,15 +12329,30 @@ var $author$project$Main$activePlayer = function (player) {
 						$rtfeldman$elm_css$Css$maxWidth(
 						$rtfeldman$elm_css$Css$pct(45)),
 						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(24)),
 						$author$project$Main$modernSansSerif
 					]))
 			]),
 		_List_fromArray(
 			[
-				$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-				$author$project$Player$name(player))
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$h2,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$fontSize(
+								$rtfeldman$elm_css$Css$px(24)),
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$px(6))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+						$author$project$Player$name(player))
+					])),
+				$author$project$Main$availabilityBadges(player)
 			]));
 };
 var $rtfeldman$elm_css$Css$alignItems = function (fn) {
@@ -12259,12 +12372,6 @@ var $rtfeldman$elm_css$Css$prop4 = F5(
 		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
-var $rtfeldman$elm_css$Css$displayFlex = A2($rtfeldman$elm_css$Css$property, 'display', 'flex');
-var $rtfeldman$elm_css$Html$Styled$div = $rtfeldman$elm_css$Html$Styled$node('div');
-var $tesk9$accessible_html_with_css$Accessibility$Styled$div = function (attributes) {
-	return $rtfeldman$elm_css$Html$Styled$div(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
-};
 var $rtfeldman$elm_css$Css$fontStyle = $rtfeldman$elm_css$Css$prop1('font-style');
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attributes) {
@@ -12282,17 +12389,8 @@ var $author$project$League$isPlayerIgnored = F2(
 			league.ignored);
 	});
 var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
-var $rtfeldman$elm_css$Css$justifyContent = function (fn) {
-	return A3(
-		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
-		'justifyContent',
-		'justify-content',
-		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
-};
 var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
-var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
-var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$p = function (attributes) {
@@ -13022,20 +13120,12 @@ var $author$project$Main$currentMatch = function (model) {
 				]));
 	}
 };
-var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $author$project$Main$AMOnly = {$: 'AMOnly'};
 var $author$project$Main$PMOnly = {$: 'PMOnly'};
 var $author$project$Main$SetTimeFilter = function (a) {
 	return {$: 'SetTimeFilter', a: a};
 };
-var $rtfeldman$elm_css$Css$marginRight = $rtfeldman$elm_css$Css$prop1('margin-right');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
-var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
-var $tesk9$accessible_html_with_css$Accessibility$Styled$span = function (attributes) {
-	return $rtfeldman$elm_css$Html$Styled$span(
-		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
-};
-var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
 var $author$project$Main$toggleBtn = F3(
 	function (isOn, label, maybeMsg) {
 		return A2(
@@ -13137,7 +13227,6 @@ var $author$project$Main$filterBar = function (model) {
 			]));
 };
 var $rtfeldman$elm_css$Css$fixed = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, position: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fixed'};
-var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$main_(
@@ -14261,8 +14350,35 @@ var $author$project$Main$rankings = function (model) {
 												]),
 											_List_fromArray(
 												[
-													$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-													$author$project$Player$name(player))
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+													_List_Nil,
+													_List_fromArray(
+														[
+															A2(
+															$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+															_List_Nil,
+															_List_fromArray(
+																[
+																	$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+																	$author$project$Player$name(player))
+																])),
+															A2(
+															$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$marginLeft(
+																			$rtfeldman$elm_css$Css$px(10))
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	$author$project$Main$availabilityBadges(player)
+																]))
+														]))
 												])),
 											A2(
 											$tesk9$accessible_html_with_css$Accessibility$Styled$td,
