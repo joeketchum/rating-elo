@@ -897,7 +897,7 @@ currentMatch model =
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween, Css.marginBottom (Css.px 10) ] ]
                         [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompactWithIgnore playerA model ]
                         , Html.div []
-                            [ blueButtonLarge "WINNER"
+                            [ redButtonLarge "WINNER"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                             ]
                         ]
@@ -918,7 +918,7 @@ currentMatch model =
                       Html.div
                         [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween ] ]
                         [ Html.div [ css [ Css.width (Css.pct 49) ] ]
-                            [ blueButtonLarge "TIE"
+                            [ blackButtonLarge "TIE"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                             ]
                         , Html.div [ css [ Css.width (Css.pct 49) ] ]
@@ -935,11 +935,11 @@ currentMatch model =
                         ]
                     ]
                     [ Html.div [ css [ Css.width (Css.pct 40) ] ]
-                        [ blueButton "WINNER" 
+                        [ redButton "WINNER" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                         ]
                     , Html.div [ css [ Css.width (Css.pct 20) ] ]
-                        [ blueButton "TIE" 
+                        [ blackButton "TIE" 
                             (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                         ]
                     , Html.div [ css [ Css.width (Css.pct 40) ] ]
@@ -1246,7 +1246,7 @@ button baseColor label maybeMsg =
 
 blueButton : String -> Maybe Msg -> Html Msg
 blueButton =
-    button (Css.hex "0091FF")
+    button (Css.hex "3B82F6")
 
 
 greenButton : String -> Maybe Msg -> Html Msg
@@ -1256,7 +1256,12 @@ greenButton =
 
 redButton : String -> Maybe Msg -> Html Msg
 redButton =
-    button (Css.hex "E02020")
+    button (Css.hex "EF4444")
+
+
+blackButton : String -> Maybe Msg -> Html Msg
+blackButton =
+    button (Css.hex "1F2937")
 
 
 -- Save icon (small) for top-right quick save
@@ -1317,7 +1322,17 @@ buttonLarge baseColor label maybeMsg =
 
 blueButtonLarge : String -> Maybe Msg -> Html Msg
 blueButtonLarge =
-    buttonLarge (Css.hex "0091FF")
+    buttonLarge (Css.hex "3B82F6")
+
+
+redButtonLarge : String -> Maybe Msg -> Html Msg
+redButtonLarge =
+    buttonLarge (Css.hex "EF4444")
+
+
+blackButtonLarge : String -> Maybe Msg -> Html Msg
+blackButtonLarge =
+    buttonLarge (Css.hex "1F2937")
 
 
 goldButton : String -> Maybe Msg -> Html Msg
