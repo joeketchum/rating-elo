@@ -1222,21 +1222,15 @@ saveIconButton maybeMsg =
             , Css.color (Css.hex "FFF")
             , Css.cursor Css.pointer
             , Css.fontWeight (Css.int 700)
-            , Css.display Css.inlineFlex
-            , Css.alignItems Css.center
-            , Css.children
-                [ Css.selector "* + *"
-                    [ Css.marginLeft (Css.px 6) ]
-                ]
+            , Css.display Css.inlineBlock
             , modernSansSerif
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
             Nothing -> Attributes.disabled True
         ]
-        [ -- Simple floppy disk emoji as icon; could swap for SVG later
-          Html.span [] [ Html.text "💾" ]
-        , Html.span [] [ Html.text "Save" ]
+        [ Html.span [] [ Html.text "💾" ]
+        , Html.span [ css [ Css.marginLeft (Css.px 6) ] ] [ Html.text "Save" ]
         ]
 
 

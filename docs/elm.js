@@ -7685,7 +7685,7 @@ var $author$project$Main$init = function (_v0) {
 				aw: false,
 				G: $elm$core$Maybe$Nothing,
 				aj: 0,
-				bm: 20
+				bm: 25
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -8953,7 +8953,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 			{
 				k: true,
 				G: $elm$core$Maybe$Just('Saving to Google Sheets...'),
-				bm: 20
+				bm: 25
 			}),
 		$elm$core$Platform$Cmd$batch(
 			_List_fromArray(
@@ -8975,7 +8975,7 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 						return $author$project$Main$AutoSaveTimeout;
 					},
 					$elm$core$Process$sleep(10000)),
-					$author$project$Main$sendVoteCount(20)
+					$author$project$Main$sendVoteCount(25)
 				]))) : _Utils_Tuple2(
 		_Utils_update(
 			model,
@@ -15347,6 +15347,73 @@ var $author$project$Main$rankings = function (model) {
 						$author$project$League$players(
 							$author$project$History$current(model.b)))))));
 };
+var $author$project$Main$saveIconButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						A2(
+						$rtfeldman$elm_css$Css$padding2,
+						$rtfeldman$elm_css$Css$px(6),
+						$rtfeldman$elm_css$Css$px(10)),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(6)),
+						function () {
+						if (!maybeMsg.$) {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('3B82F6'));
+						} else {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('B0C4FF'));
+						}
+					}(),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(700)),
+						$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+						$author$project$Main$modernSansSerif
+					])),
+				function () {
+				if (!maybeMsg.$) {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+				_List_Nil,
+				_List_fromArray(
+					[
+						$tesk9$accessible_html_with_css$Accessibility$Styled$text('💾')
+					])),
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginLeft(
+								$rtfeldman$elm_css$Css$px(6))
+							]))
+					]),
+				_List_fromArray(
+					[
+						$tesk9$accessible_html_with_css$Accessibility$Styled$text('Save')
+					]))
+			]));
+};
 var $author$project$Main$smallRedXButton = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -15986,6 +16053,27 @@ var $author$project$Main$view = function (model) {
 									[
 										$author$project$Main$currentMatch(model),
 										$author$project$Main$filterBar(model),
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$section,
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$pct(80)),
+														A2(
+														$rtfeldman$elm_css$Css$margin2,
+														$rtfeldman$elm_css$Css$px(8),
+														$rtfeldman$elm_css$Css$auto),
+														$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$right)
+													]))
+											]),
+										_List_fromArray(
+											[
+												$author$project$Main$saveIconButton(
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSaveToDrive))
+											])),
 										$author$project$Main$rankings(model),
 										A2(
 										$tesk9$accessible_html_with_css$Accessibility$Styled$section,
