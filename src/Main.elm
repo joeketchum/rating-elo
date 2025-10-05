@@ -48,6 +48,11 @@ port receiveMatchSaveComplete : (() -> msg) -> Sub msg
 -- DEBUG PORT
 port sendVoteCount : Int -> Cmd msg
 
+-- PORTS (Persist time filter)
+port saveTimeFilter : String -> Cmd msg
+port askForTimeFilter : String -> Cmd msg
+port receiveTimeFilter : (String -> msg) -> Sub msg
+
 
 -- FLAGS / MODEL
 
@@ -103,6 +108,7 @@ type Msg
     | TogglePlayerAM Player
     | TogglePlayerPM Player
     | SetTimeFilter TimeFilter
+    | ReceivedTimeFilter String
 type TimeFilter
     = All
     | AMOnly
@@ -135,7 +141,7 @@ init _ =
     , autoSaveInProgress = False
     , timeFilter = All
       }
-    , Cmd.batch [ askForAutoSave "init", httpRequest ]
+    , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", httpRequest ]
     )
         |> startNextMatchIfPossible
 
@@ -203,6 +209,7 @@ subscriptions model =
                 , receivePublicDriveStatus ReceivedPublicDriveStatus
                 , receiveMatchSaveComplete (\_ -> AutoSaveCompleted)
                 , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
+                , receiveTimeFilter ReceivedTimeFilter
                 ]
 
 
@@ -552,6 +559,14 @@ update msg model =
             )
                 |> startNextMatchIfPossible
 
+        ReceivedTimeFilter raw ->
+            let
+                tf = parseFilter raw |> Maybe.withDefault All
+            in
+            ( { model | timeFilter = tf }
+            , Cmd.none
+            )
+
 
 
 -- VIEW
@@ -721,7 +736,13 @@ currentMatch model =
                             , modernSansSerif
                             ]
                         ]
-                        [ Html.text "🏒 HOCKEY RATER 🏒" ]
+                        [ Html.div
+                            [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center ] ]
+                            [ Html.span [ css [ Css.marginRight (Css.px 8) ] ] [ Html.text "🏒 HOCKEY RATER 🏒" ]
+                            , Html.span [ css [ Css.marginRight (Css.px 4) ] ] [ badge "AM" (Player.playsAM playerA && Player.playsAM playerB) (Css.hex "F59E0B") ]
+                            , Html.span [] [ badge "PM" (Player.playsPM playerA && Player.playsPM playerB) (Css.hex "8B5CF6") ]
+                            ]
+                        ]
                     , Html.div
                         [ css
                             [ Css.position Css.relative
@@ -1330,3 +1351,22 @@ main =
         , view = view
         , subscriptions = subscriptions
         }
+
+
+-- SERIALIZATION HELPERS
+
+serializeFilter : TimeFilter -> String
+serializeFilter tf =
+    case tf of
+        All -> "all"
+        AMOnly -> "am"
+        PMOnly -> "pm"
+
+
+parseFilter : String -> Maybe TimeFilter
+parseFilter s =
+    case String.toLower s of
+        "all" -> Just All
+        "am" -> Just AMOnly
+        "pm" -> Just PMOnly
+        _ -> Nothing

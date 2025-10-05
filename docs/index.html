@@ -54,11 +54,38 @@ try {
   // Set up all the port subscriptions
   var LS_KEY = "EloTrackerData";
   var LS_PUBLIC = "EloTrackerPublic";
+  var LS_FILTER = "EloTrackerTimeFilter"; // 'all' | 'am' | 'pm'
 
   if (app.ports.autoSave && app.ports.autoSave.subscribe) {
     app.ports.autoSave.subscribe(function(json) {
       try { localStorage.setItem(LS_KEY, json); } catch (_) {}
     });
+  }
+
+  // Persist time filter
+  if (app.ports.saveTimeFilter && app.ports.saveTimeFilter.send) {
+    // nothing to subscribe; it's a command port used from Elm
+  }
+  if (app.ports.receiveTimeFilter && app.ports.receiveTimeFilter.subscribe) {
+    // nothing; Elm subscribes here
+  }
+  if (app.ports.askForTimeFilter && app.ports.askForTimeFilter.send) {
+    // On init, read filter and send to Elm
+    var stored = '';
+    try { stored = localStorage.getItem(LS_FILTER) || ''; } catch(_) {}
+    if (app.ports.receiveTimeFilter && app.ports.receiveTimeFilter.subscribe) {
+      // subscribe not needed; Elm already subscribed. We'll send through a synthetic path:
+    }
+    // Set up listeners so Elm can save filter changes
+    app.ports.saveTimeFilter && app.ports.saveTimeFilter.subscribe && app.ports.saveTimeFilter.subscribe(function(val){
+      try { localStorage.setItem(LS_FILTER, val); } catch(_) {}
+    });
+    // Send initial value to Elm
+    if (app.ports.receiveTimeFilter && app.ports.receiveTimeFilter.send) {
+      app.ports.receiveTimeFilter.send(stored);
+    }
+    // Also ask for current (noop payload)
+    app.ports.askForTimeFilter.send('');
   }
 
   if (app.ports.loadStandings && app.ports.loadStandings.subscribe) {

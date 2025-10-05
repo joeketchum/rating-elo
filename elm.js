@@ -5601,6 +5601,7 @@ var $author$project$Main$GotPlayers = function (a) {
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$askForAutoSave = _Platform_outgoingPort('askForAutoSave', $elm$json$Json$Encode$string);
+var $author$project$Main$askForTimeFilter = _Platform_outgoingPort('askForTimeFilter', $elm$json$Json$Encode$string);
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $author$project$League$League = function (a) {
 	return {$: 'League', a: a};
@@ -7724,6 +7725,7 @@ var $author$project$Main$init = function (_v0) {
 				_List_fromArray(
 					[
 						$author$project$Main$askForAutoSave('init'),
+						$author$project$Main$askForTimeFilter('init'),
 						httpRequest
 					]))));
 };
@@ -7744,6 +7746,9 @@ var $author$project$Main$ReceivedPublicDriveStatus = function (a) {
 };
 var $author$project$Main$ReceivedStandings = function (a) {
 	return {$: 'ReceivedStandings', a: a};
+};
+var $author$project$Main$ReceivedTimeFilter = function (a) {
+	return {$: 'ReceivedTimeFilter', a: a};
 };
 var $author$project$League$Win = function (a) {
 	return {$: 'Win', a: a};
@@ -8232,6 +8237,7 @@ var $author$project$Main$receiveMatchSaveComplete = _Platform_incomingPort(
 	$elm$json$Json$Decode$null(_Utils_Tuple0));
 var $author$project$Main$receivePublicDriveStatus = _Platform_incomingPort('receivePublicDriveStatus', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveStandings = _Platform_incomingPort('receiveStandings', $elm$json$Json$Decode$string);
+var $author$project$Main$receiveTimeFilter = _Platform_incomingPort('receiveTimeFilter', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (model) {
 	var _v0 = $author$project$League$currentMatch(
 		$author$project$History$current(model.history));
@@ -8286,7 +8292,8 @@ var $author$project$Main$subscriptions = function (model) {
 					30 * 1000,
 					function (_v7) {
 						return $author$project$Main$PeriodicSync;
-					})
+					}),
+					$author$project$Main$receiveTimeFilter($author$project$Main$ReceivedTimeFilter)
 				]));
 	}
 };
@@ -8985,6 +8992,22 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 				])));
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
+var $author$project$Main$AMOnly = {$: 'AMOnly'};
+var $author$project$Main$PMOnly = {$: 'PMOnly'};
+var $elm$core$String$toLower = _String_toLower;
+var $author$project$Main$parseFilter = function (s) {
+	var _v0 = $elm$core$String$toLower(s);
+	switch (_v0) {
+		case 'all':
+			return $elm$core$Maybe$Just($author$project$Main$All);
+		case 'am':
+			return $elm$core$Maybe$Just($author$project$Main$AMOnly);
+		case 'pm':
+			return $elm$core$Maybe$Just($author$project$Main$PMOnly);
+		default:
+			return $elm$core$Maybe$Nothing;
+	}
+};
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
@@ -10010,7 +10033,7 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'IgnoredKey':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			default:
+			case 'SetTimeFilter':
 				var tf = msg.a;
 				return $author$project$Main$startNextMatchIfPossible(
 					_Utils_Tuple2(
@@ -10021,6 +10044,17 @@ var $author$project$Main$update = F2(
 								timeFilter: tf
 							}),
 						$elm$core$Platform$Cmd$none));
+			default:
+				var raw = msg.a;
+				var tf = A2(
+					$elm$core$Maybe$withDefault,
+					$author$project$Main$All,
+					$author$project$Main$parseFilter(raw));
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{timeFilter: tf}),
+					$elm$core$Platform$Cmd$none);
 		}
 	});
 var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
@@ -11758,7 +11792,6 @@ var $rtfeldman$elm_hex$Hex$fromString = function (str) {
 		return A2($elm$core$Result$mapError, formatError, result);
 	}
 };
-var $elm$core$String$toLower = _String_toLower;
 var $rtfeldman$elm_css$Css$validHex = F5(
 	function (str, _v0, _v1, _v2, _v3) {
 		var r1 = _v0.a;
@@ -12795,7 +12828,66 @@ var $author$project$Main$currentMatch = function (model) {
 								]),
 							_List_fromArray(
 								[
-									$tesk9$accessible_html_with_css$Accessibility$Styled$text('🏒 HOCKEY RATER 🏒')
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$displayFlex,
+													$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+													$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+												]))
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$marginRight(
+															$rtfeldman$elm_css$Css$px(8))
+														]))
+												]),
+											_List_fromArray(
+												[
+													$tesk9$accessible_html_with_css$Accessibility$Styled$text('🏒 HOCKEY RATER 🏒')
+												])),
+											A2(
+											$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$marginRight(
+															$rtfeldman$elm_css$Css$px(4))
+														]))
+												]),
+											_List_fromArray(
+												[
+													A3(
+													$author$project$Main$badge,
+													'AM',
+													$author$project$Player$playsAM(playerA) && $author$project$Player$playsAM(playerB),
+													$rtfeldman$elm_css$Css$hex('F59E0B'))
+												])),
+											A2(
+											$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+											_List_Nil,
+											_List_fromArray(
+												[
+													A3(
+													$author$project$Main$badge,
+													'PM',
+													$author$project$Player$playsPM(playerA) && $author$project$Player$playsPM(playerB),
+													$rtfeldman$elm_css$Css$hex('8B5CF6'))
+												]))
+										]))
 								])),
 							A2(
 							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -13207,8 +13299,6 @@ var $author$project$Main$currentMatch = function (model) {
 				]));
 	}
 };
-var $author$project$Main$AMOnly = {$: 'AMOnly'};
-var $author$project$Main$PMOnly = {$: 'PMOnly'};
 var $author$project$Main$SetTimeFilter = function (a) {
 	return {$: 'SetTimeFilter', a: a};
 };
