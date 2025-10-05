@@ -905,7 +905,7 @@ rankings model =
         numeric =
             Css.batch
                 [ Css.fontWeight (Css.int 600)
-                , Css.fontSize (Css.px 21)
+                , Css.fontSize (Css.px 16)
                 , Css.verticalAlign Css.middle
                 , modernSansSerif
                 ]
@@ -913,11 +913,13 @@ rankings model =
         textual =
             Css.batch
                 [ Css.fontWeight (Css.int 500)
-                , Css.fontSize (Css.px 18)
-                , Css.lineHeight (Css.px 24)
+                , Css.fontSize (Css.px 16)
+                , Css.lineHeight (Css.px 22)
                 , Css.verticalAlign Css.middle
                 , modernSansSerif
                 , Css.paddingLeft (Css.px 15)
+                , Css.whiteSpace Css.noWrap
+                , Css.overflow Css.hidden
                 ]
 
         shrinkWidth =
@@ -962,7 +964,7 @@ rankings model =
                 in
                 ( Player.htmlKey player
                 , Html.tr
-                    [ css [ Css.height (Css.px 60) ] ]
+                    [ css [ Css.height (Css.px 40), Css.borderBottom3 (Css.px 1) Css.solid (Css.hex "E5E7EB") ] ]
                     [ Html.td
                         [ css
                             [ Css.verticalAlign Css.middle
@@ -995,23 +997,23 @@ rankings model =
                     , Html.td [ css [ textual, left ] ]
                         [ Html.div []
                             [ Html.span [] [ Html.text (Player.name player) ]
-                            , Html.span [ css [ Css.marginLeft (Css.px 10) ] ] [ availabilityBadges player ]
+                            , Html.span [ css [ Css.marginLeft (Css.px 8) ] ] [ availabilityBadgesSmall player ]
                             ]
                         ]
-                    , Html.td [ css [ textual, shrinkWidth, center ] ]
+                    , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap ] ]
                         (let baseActions =
                                 if isPlayerIgnored player (History.current model.history) then
-                                    [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer player)) ]
+                                    [ zzzUnignoreButtonSmall (Just (KeeperWantsToUnignorePlayer player)) ]
                                 else
-                                    [ smallRedXButton (Just (KeeperWantsToRetirePlayer player))
-                                    , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ] [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer player)) ]
+                                    [ smallRedXButtonSmall (Just (KeeperWantsToRetirePlayer player))
+                                    , Html.span [ css [ Css.paddingLeft (Css.px 6) ] ] [ zzzIgnoreButtonSmall (Just (KeeperWantsToIgnorePlayer player)) ]
                                     ]
                          in
                          baseActions
-                            ++ [ Html.span [ css [ Css.paddingLeft (Css.px 8) ] ]
-                                    [ toggleChip "AM" (Player.playsAM player) (Css.hex "F59E0B") (TogglePlayerAM player) ]
-                               , Html.span [ css [ Css.paddingLeft (Css.px 6) ] ]
-                                    [ toggleChip "PM" (Player.playsPM player) (Css.hex "8B5CF6") (TogglePlayerPM player) ]
+                            ++ [ Html.span [ css [ Css.paddingLeft (Css.px 6) ] ]
+                                    [ toggleChipSmall "AM" (Player.playsAM player) (Css.hex "F59E0B") (TogglePlayerAM player) ]
+                               , Html.span [ css [ Css.paddingLeft (Css.px 4) ] ]
+                                    [ toggleChipSmall "PM" (Player.playsPM player) (Css.hex "8B5CF6") (TogglePlayerPM player) ]
                                ]
                         )
                     ]
@@ -1020,7 +1022,7 @@ rankings model =
         |> (::)
             ( "players-header"
             , Html.tr
-                [ css [ Css.height (Css.px 45) ] ]
+                [ css [ Css.height (Css.px 40), Css.borderBottom3 (Css.px 2) Css.solid (Css.hex "D1D5DB") ] ]
                 [ Html.th [ css [ Css.width (Css.px 20) ] ] []
                 , Html.th [ css [ header, center ] ] [ Html.text "RANK" ]
                 , Html.th [ css [ header, center ] ] [ Html.text "RATING" ]
@@ -1075,6 +1077,7 @@ rankings model =
                 [ Css.width (Css.pct 80)
                 , Css.margin2 Css.zero Css.auto
                 , Css.borderCollapse Css.collapse
+                , Css.tableLayout Css.fixed
                 ]
             ]
 
@@ -1182,6 +1185,34 @@ smallRedXButton maybeMsg =
         ]
         [ Html.text "X" ]
 
+-- Extra small X button for table
+smallRedXButtonSmall : Maybe Msg -> Html Msg
+smallRedXButtonSmall maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 2)
+            , Css.paddingBottom (Css.px 2)
+            , Css.paddingLeft (Css.px 6)
+            , Css.paddingRight (Css.px 6)
+            , Css.margin2 Css.zero (Css.px 4)
+            , Css.minWidth (Css.px 28)
+            , case maybeMsg of
+                Just _ -> Css.backgroundColor (Css.hex "E02020")
+                Nothing -> Css.backgroundColor (Css.hex "DDD")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 4)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 12)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "X" ]
+
 
 zzzIgnoreButton : Maybe Msg -> Html Msg
 zzzIgnoreButton maybeMsg =
@@ -1216,6 +1247,32 @@ zzzIgnoreButton maybeMsg =
         ]
         [ Html.text "Zzz" ]
 
+-- Smaller Zzz buttons for table
+zzzIgnoreButtonSmall : Maybe Msg -> Html Msg
+zzzIgnoreButtonSmall maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 2)
+            , Css.paddingBottom (Css.px 4)
+            , Css.paddingLeft (Css.px 8)
+            , Css.paddingRight (Css.px 8)
+            , Css.margin2 Css.zero (Css.px 4)
+            , Css.minWidth (Css.px 36)
+            , Css.backgroundColor (Css.hex "6B7280")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 9999)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 11)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "Zzz" ]
+
 zzzUnignoreButton : Maybe Msg -> Html Msg
 zzzUnignoreButton maybeMsg =
     Html.button
@@ -1243,6 +1300,32 @@ zzzUnignoreButton maybeMsg =
                 [ Css.outline3 (Css.px 2) Css.solid (Css.hex "93C5FD")
                 , Css.outlineOffset (Css.px 2)
                 ]
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "Zzz" ]
+
+zzzUnignoreButtonSmall : Maybe Msg -> Html Msg
+zzzUnignoreButtonSmall maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 2)
+            , Css.paddingBottom (Css.px 4)
+            , Css.paddingLeft (Css.px 8)
+            , Css.paddingRight (Css.px 8)
+            , Css.margin2 Css.zero (Css.px 4)
+            , Css.minWidth (Css.px 36)
+            , Css.backgroundColor (Css.hex "374151")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 9999)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 11)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , Css.textDecoration Css.lineThrough
+            , modernSansSerif
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1287,6 +1370,31 @@ badge label isOn colorOn =
         ]
         [ Html.text label ]
 
+-- Smaller badges for rankings table rows
+availabilityBadgesSmall : Player -> Html msg
+availabilityBadgesSmall player =
+    Html.div
+        [ css [ Css.displayFlex, Css.justifyContent Css.center ] ]
+        [ Html.span [ css [ Css.marginRight (Css.px 4) ] ] [ badgeSmall "AM" (Player.playsAM player) (Css.hex "F59E0B") ]
+        , badgeSmall "PM" (Player.playsPM player) (Css.hex "8B5CF6")
+        ]
+
+badgeSmall : String -> Bool -> Css.Color -> Html msg
+badgeSmall label isOn colorOn =
+    Html.span
+        [ css
+            [ Css.display Css.inlineBlock
+            , Css.padding2 (Css.px 1) (Css.px 6)
+            , Css.borderRadius (Css.px 9999)
+            , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
+            , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
+            , Css.fontSize (Css.px 10)
+            , Css.fontWeight (Css.int 700)
+            , Css.letterSpacing (Css.px 0.4)
+            ]
+        ]
+        [ Html.text label ]
+
 
 toggleChip : String -> Bool -> Css.Color -> Msg -> Html Msg
 toggleChip label isOn colorOn msg =
@@ -1298,6 +1406,25 @@ toggleChip label isOn colorOn msg =
             , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
             , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
             , Css.fontSize (Css.px 12)
+            , Css.fontWeight (Css.int 700)
+            , Css.border Css.zero
+            , Css.cursor Css.pointer
+            ]
+        , Events.onClick msg
+        ]
+        [ Html.text label ]
+
+-- Smaller toggle chip for table row
+toggleChipSmall : String -> Bool -> Css.Color -> Msg -> Html Msg
+toggleChipSmall label isOn colorOn msg =
+    Html.button
+        [ css
+            [ Css.display Css.inlineBlock
+            , Css.padding2 (Css.px 2) (Css.px 6)
+            , Css.borderRadius (Css.px 9999)
+            , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
+            , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
+            , Css.fontSize (Css.px 10)
             , Css.fontWeight (Css.int 700)
             , Css.border Css.zero
             , Css.cursor Css.pointer

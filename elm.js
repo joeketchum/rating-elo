@@ -13699,7 +13699,82 @@ var $author$project$Main$TogglePlayerPM = function (a) {
 	return {$: 29, a: a};
 };
 var $elm$json$Json$Decode$andThen = _Json_andThen;
+var $author$project$Main$badgeSmall = F3(
+	function (label, isOn, colorOn) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(1),
+							$rtfeldman$elm_css$Css$px(6)),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(9999)),
+							isOn ? $rtfeldman$elm_css$Css$backgroundColor(colorOn) : $rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex('E5E7EB')),
+							isOn ? $rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('FFFFFF')) : $rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('6B7280')),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$fontWeight(
+							$rtfeldman$elm_css$Css$int(700)),
+							$rtfeldman$elm_css$Css$letterSpacing(
+							$rtfeldman$elm_css$Css$px(0.4))
+						]))
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
+var $author$project$Main$availabilityBadgesSmall = function (player) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$displayFlex,
+						$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginRight(
+								$rtfeldman$elm_css$Css$px(4))
+							]))
+					]),
+				_List_fromArray(
+					[
+						A3(
+						$author$project$Main$badgeSmall,
+						'AM',
+						$author$project$Player$playsAM(player),
+						$rtfeldman$elm_css$Css$hex('F59E0B'))
+					])),
+				A3(
+				$author$project$Main$badgeSmall,
+				'PM',
+				$author$project$Player$playsPM(player),
+				$rtfeldman$elm_css$Css$hex('8B5CF6'))
+			]));
+};
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
+var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
 var $rtfeldman$elm_css$Css$borderRightWidth = $rtfeldman$elm_css$Css$prop1('border-right-width');
 var $rtfeldman$elm_css$Css$calcExpressionToString = function (expression) {
@@ -13818,6 +13893,7 @@ var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
 var $rtfeldman$elm_css$Css$Subtraction = 1;
 var $rtfeldman$elm_css$Css$minus = 1;
+var $rtfeldman$elm_css$Css$noWrap = {a5: 0, br: 0, Y: 'nowrap', al: 0};
 var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
 	function (a, b, c) {
 		return {$: 2, a: a, b: b, c: c};
@@ -13859,7 +13935,7 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.r);
 };
-var $author$project$Main$smallRedXButton = function (maybeMsg) {
+var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
 		_List_fromArray(
@@ -13868,19 +13944,19 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$px(2)),
 						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$px(2)),
 						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$px(6)),
 						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$px(6)),
 						A2(
 						$rtfeldman$elm_css$Css$margin2,
 						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$px(4)),
 						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$px(28)),
 						function () {
 						if (!maybeMsg.$) {
 							return $rtfeldman$elm_css$Css$backgroundColor(
@@ -13893,19 +13969,11 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
 						$rtfeldman$elm_css$Css$borderRadius(
 						$rtfeldman$elm_css$Css$px(4)),
-						A6(
-						$rtfeldman$elm_css$Css$boxShadow6,
-						$rtfeldman$elm_css$Css$inset,
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$px(-4),
-						$rtfeldman$elm_css$Css$zero,
-						$rtfeldman$elm_css$Css$zero,
-						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
 						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
 						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(14)),
+						$rtfeldman$elm_css$Css$px(12)),
 						$rtfeldman$elm_css$Css$fontWeight(
-						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$int(700)),
 						$rtfeldman$elm_css$Css$color(
 						$rtfeldman$elm_css$Css$hex('FFF')),
 						$author$project$Main$modernSansSerif
@@ -13924,6 +13992,7 @@ var $author$project$Main$smallRedXButton = function (maybeMsg) {
 				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
 			]));
 };
+var $rtfeldman$elm_css$Css$tableLayout = $rtfeldman$elm_css$Css$prop1('table-layout');
 var $rtfeldman$elm_css$Html$Styled$td = $rtfeldman$elm_css$Html$Styled$node('td');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$td = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$td(
@@ -13934,7 +14003,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$th = function (attribut
 	return $rtfeldman$elm_css$Html$Styled$th(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $author$project$Main$toggleChip = F4(
+var $author$project$Main$toggleChipSmall = F4(
 	function (label, isOn, colorOn, msg) {
 		return A2(
 			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -13946,8 +14015,8 @@ var $author$project$Main$toggleChip = F4(
 							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
 							A2(
 							$rtfeldman$elm_css$Css$padding2,
-							$rtfeldman$elm_css$Css$px(4),
-							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$px(2),
+							$rtfeldman$elm_css$Css$px(6)),
 							$rtfeldman$elm_css$Css$borderRadius(
 							$rtfeldman$elm_css$Css$px(9999)),
 							isOn ? $rtfeldman$elm_css$Css$backgroundColor(colorOn) : $rtfeldman$elm_css$Css$backgroundColor(
@@ -13956,7 +14025,7 @@ var $author$project$Main$toggleChip = F4(
 							$rtfeldman$elm_css$Css$hex('FFFFFF')) : $rtfeldman$elm_css$Css$color(
 							$rtfeldman$elm_css$Css$hex('6B7280')),
 							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$px(12)),
+							$rtfeldman$elm_css$Css$px(10)),
 							$rtfeldman$elm_css$Css$fontWeight(
 							$rtfeldman$elm_css$Css$int(700)),
 							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
@@ -13974,7 +14043,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$tr = function (attribut
 	return $rtfeldman$elm_css$Html$Styled$tr(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
 var $author$project$Main$upArrow = function (color) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -14011,6 +14079,108 @@ var $author$project$Main$upArrow = function (color) {
 			]),
 		_List_Nil);
 };
+var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
+var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(2)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(8)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('6B7280')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(11)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(700)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$author$project$Main$modernSansSerif
+					])),
+				function () {
+				if (!maybeMsg.$) {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
+var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(2)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(8)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('374151')),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(9999)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(11)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(700)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
+						$author$project$Main$modernSansSerif
+					])),
+				function () {
+				if (!maybeMsg.$) {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('Zzz')
+			]));
+};
 var $author$project$Main$rankings = function (model) {
 	var textual = $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
@@ -14018,13 +14188,15 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$fontWeight(
 				$rtfeldman$elm_css$Css$int(500)),
 				$rtfeldman$elm_css$Css$fontSize(
-				$rtfeldman$elm_css$Css$px(18)),
+				$rtfeldman$elm_css$Css$px(16)),
 				$rtfeldman$elm_css$Css$lineHeight(
-				$rtfeldman$elm_css$Css$px(24)),
+				$rtfeldman$elm_css$Css$px(22)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
 				$author$project$Main$modernSansSerif,
 				$rtfeldman$elm_css$Css$paddingLeft(
-				$rtfeldman$elm_css$Css$px(15))
+				$rtfeldman$elm_css$Css$px(15)),
+				$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap),
+				$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$hidden)
 			]));
 	var shrinkWidth = $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
@@ -14061,7 +14233,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$fontWeight(
 				$rtfeldman$elm_css$Css$int(600)),
 				$rtfeldman$elm_css$Css$fontSize(
-				$rtfeldman$elm_css$Css$px(21)),
+				$rtfeldman$elm_css$Css$px(16)),
 				$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
 				$author$project$Main$modernSansSerif
 			]));
@@ -14100,7 +14272,8 @@ var $author$project$Main$rankings = function (model) {
 						$rtfeldman$elm_css$Css$width(
 						$rtfeldman$elm_css$Css$pct(80)),
 						A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto),
-						$rtfeldman$elm_css$Css$borderCollapse($rtfeldman$elm_css$Css$collapse)
+						$rtfeldman$elm_css$Css$borderCollapse($rtfeldman$elm_css$Css$collapse),
+						$rtfeldman$elm_css$Css$tableLayout($rtfeldman$elm_css$Css$fixed)
 					]))
 			]),
 		function (tableGuts) {
@@ -14267,7 +14440,12 @@ var $author$project$Main$rankings = function (model) {
 								_List_fromArray(
 									[
 										$rtfeldman$elm_css$Css$height(
-										$rtfeldman$elm_css$Css$px(45))
+										$rtfeldman$elm_css$Css$px(40)),
+										A3(
+										$rtfeldman$elm_css$Css$borderBottom3,
+										$rtfeldman$elm_css$Css$px(2),
+										$rtfeldman$elm_css$Css$solid,
+										$rtfeldman$elm_css$Css$hex('D1D5DB'))
 									]))
 							]),
 						_List_fromArray(
@@ -14382,7 +14560,12 @@ var $author$project$Main$rankings = function (model) {
 											_List_fromArray(
 												[
 													$rtfeldman$elm_css$Css$height(
-													$rtfeldman$elm_css$Css$px(60))
+													$rtfeldman$elm_css$Css$px(40)),
+													A3(
+													$rtfeldman$elm_css$Css$borderBottom3,
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$solid,
+													$rtfeldman$elm_css$Css$hex('E5E7EB'))
 												]))
 										]),
 									_List_fromArray(
@@ -14525,12 +14708,12 @@ var $author$project$Main$rankings = function (model) {
 																	_List_fromArray(
 																		[
 																			$rtfeldman$elm_css$Css$marginLeft(
-																			$rtfeldman$elm_css$Css$px(10))
+																			$rtfeldman$elm_css$Css$px(8))
 																		]))
 																]),
 															_List_fromArray(
 																[
-																	$author$project$Main$availabilityBadges(player)
+																	$author$project$Main$availabilityBadgesSmall(player)
 																]))
 														]))
 												])),
@@ -14540,7 +14723,12 @@ var $author$project$Main$rankings = function (model) {
 												[
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
-														[textual, shrinkWidth, center]))
+														[
+															textual,
+															shrinkWidth,
+															center,
+															$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
+														]))
 												]),
 											function () {
 												var baseActions = A2(
@@ -14548,12 +14736,12 @@ var $author$project$Main$rankings = function (model) {
 													player,
 													$author$project$History$current(model.b)) ? _List_fromArray(
 													[
-														$author$project$Main$zzzUnignoreButton(
+														$author$project$Main$zzzUnignoreButtonSmall(
 														$elm$core$Maybe$Just(
 															$author$project$Main$KeeperWantsToUnignorePlayer(player)))
 													]) : _List_fromArray(
 													[
-														$author$project$Main$smallRedXButton(
+														$author$project$Main$smallRedXButtonSmall(
 														$elm$core$Maybe$Just(
 															$author$project$Main$KeeperWantsToRetirePlayer(player))),
 														A2(
@@ -14564,12 +14752,12 @@ var $author$project$Main$rankings = function (model) {
 																_List_fromArray(
 																	[
 																		$rtfeldman$elm_css$Css$paddingLeft(
-																		$rtfeldman$elm_css$Css$px(8))
+																		$rtfeldman$elm_css$Css$px(6))
 																	]))
 															]),
 														_List_fromArray(
 															[
-																$author$project$Main$zzzIgnoreButton(
+																$author$project$Main$zzzIgnoreButtonSmall(
 																$elm$core$Maybe$Just(
 																	$author$project$Main$KeeperWantsToIgnorePlayer(player)))
 															]))
@@ -14586,13 +14774,13 @@ var $author$project$Main$rankings = function (model) {
 																	_List_fromArray(
 																		[
 																			$rtfeldman$elm_css$Css$paddingLeft(
-																			$rtfeldman$elm_css$Css$px(8))
+																			$rtfeldman$elm_css$Css$px(6))
 																		]))
 																]),
 															_List_fromArray(
 																[
 																	A4(
-																	$author$project$Main$toggleChip,
+																	$author$project$Main$toggleChipSmall,
 																	'AM',
 																	$author$project$Player$playsAM(player),
 																	$rtfeldman$elm_css$Css$hex('F59E0B'),
@@ -14606,13 +14794,13 @@ var $author$project$Main$rankings = function (model) {
 																	_List_fromArray(
 																		[
 																			$rtfeldman$elm_css$Css$paddingLeft(
-																			$rtfeldman$elm_css$Css$px(6))
+																			$rtfeldman$elm_css$Css$px(4))
 																		]))
 																]),
 															_List_fromArray(
 																[
 																	A4(
-																	$author$project$Main$toggleChip,
+																	$author$project$Main$toggleChipSmall,
 																	'PM',
 																	$author$project$Player$playsPM(player),
 																	$rtfeldman$elm_css$Css$hex('8B5CF6'),
@@ -14629,6 +14817,71 @@ var $author$project$Main$rankings = function (model) {
 						},
 						$author$project$League$players(
 							$author$project$History$current(model.b)))))));
+};
+var $author$project$Main$smallRedXButton = function (maybeMsg) {
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$paddingTop(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingBottom(
+						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$paddingLeft(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$paddingRight(
+						$rtfeldman$elm_css$Css$px(8)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(6)),
+						$rtfeldman$elm_css$Css$minWidth(
+						$rtfeldman$elm_css$Css$px(36)),
+						function () {
+						if (!maybeMsg.$) {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('E02020'));
+						} else {
+							return $rtfeldman$elm_css$Css$backgroundColor(
+								$rtfeldman$elm_css$Css$hex('DDD'));
+						}
+					}(),
+						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(4)),
+						A6(
+						$rtfeldman$elm_css$Css$boxShadow6,
+						$rtfeldman$elm_css$Css$inset,
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$px(-4),
+						$rtfeldman$elm_css$Css$zero,
+						$rtfeldman$elm_css$Css$zero,
+						A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.1)),
+						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+						$rtfeldman$elm_css$Css$fontSize(
+						$rtfeldman$elm_css$Css$px(14)),
+						$rtfeldman$elm_css$Css$fontWeight(
+						$rtfeldman$elm_css$Css$int(600)),
+						$rtfeldman$elm_css$Css$color(
+						$rtfeldman$elm_css$Css$hex('FFF')),
+						$author$project$Main$modernSansSerif
+					])),
+				function () {
+				if (!maybeMsg.$) {
+					var m = maybeMsg.a;
+					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
+				} else {
+					return $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true);
+				}
+			}()
+			]),
+		_List_fromArray(
+			[
+				$tesk9$accessible_html_with_css$Accessibility$Styled$text('X')
+			]));
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {
