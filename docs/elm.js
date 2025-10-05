@@ -12842,6 +12842,7 @@ var $rtfeldman$elm_css$Css$prop4 = F5(
 		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
+var $rtfeldman$elm_css$Css$flex = $rtfeldman$elm_css$Css$prop1('flex');
 var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
 var $author$project$Main$greenButton = $author$project$Main$button(
 	$rtfeldman$elm_css$Css$hex('6DD400'));
@@ -13611,7 +13612,10 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
+											A2(
+											$rtfeldman$elm_css$Css$margin2,
+											$rtfeldman$elm_css$Css$zero,
+											$rtfeldman$elm_css$Css$px(-10))
 										]))
 								]),
 							_List_fromArray(
@@ -13623,8 +13627,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(32))
+													$rtfeldman$elm_css$Css$flex(
+													$rtfeldman$elm_css$Css$int(1))
 												]))
 										]),
 									_List_fromArray(
@@ -13644,8 +13648,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(32))
+													$rtfeldman$elm_css$Css$flex(
+													$rtfeldman$elm_css$Css$int(1))
 												]))
 										]),
 									_List_fromArray(
@@ -13663,8 +13667,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(32))
+													$rtfeldman$elm_css$Css$flex(
+													$rtfeldman$elm_css$Css$int(1))
 												]))
 										]),
 									_List_fromArray(

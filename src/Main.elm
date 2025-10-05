@@ -913,14 +913,14 @@ currentMatch model =
                         []
                     , -- Row 3: TIE, SKIP, and SAVE in a single row
                       Html.div
-                        [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween ] ]
-                        [ Html.div [ css [ Css.width (Css.pct 32) ] ]
+                        [ css [ Css.displayFlex, Css.margin2 Css.zero (Css.px -10) ] ]
+                        [ Html.div [ css [ Css.flex (Css.int 1) ] ]
                             [ blackButtonLarge "TIE"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                             ]
-                        , Html.div [ css [ Css.width (Css.pct 32) ] ]
+                        , Html.div [ css [ Css.flex (Css.int 1) ] ]
                             [ buttonLarge (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
-                        , Html.div [ css [ Css.width (Css.pct 32) ] ]
+                        , Html.div [ css [ Css.flex (Css.int 1) ] ]
                             [ buttonLarge (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
                         ]
                     ]
