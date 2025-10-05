@@ -935,8 +935,8 @@ currentMatch model =
                         ]
                     ]
                     [ -- Desktop controls: Undo/Redo/Skip same size
-                      Html.div
-                        [ css [ Css.display Css.flex, Css.justifyContent Css.spaceAround
+                                            Html.div
+                                                [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround
                               , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
                               ]
                         ]
