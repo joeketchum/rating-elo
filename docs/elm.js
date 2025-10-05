@@ -15048,7 +15048,7 @@ var $author$project$Main$rankings = function (model) {
 				$rtfeldman$elm_css$Css$width(
 				$rtfeldman$elm_css$Css$pct(1)),
 				$rtfeldman$elm_css$Css$maxWidth(
-				$rtfeldman$elm_css$Css$px(100)),
+				$rtfeldman$elm_css$Css$px(80)),
 				$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap)
 			]));
 	var previousStandings = $elm$core$Dict$fromList(
@@ -15386,7 +15386,30 @@ var $author$project$Main$rankings = function (model) {
 											[
 												$rtfeldman$elm_css$Html$Styled$Attributes$css(
 												_List_fromArray(
-													[header, left]))
+													[
+														header,
+														left,
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$pct(55)),
+														A2(
+														$rtfeldman$elm_css$Css$Media$withMedia,
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Css$Media$only,
+																$rtfeldman$elm_css$Css$Media$screen,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$Media$maxWidth(
+																		$rtfeldman$elm_css$Css$px(640))
+																	]))
+															]),
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$width(
+																$rtfeldman$elm_css$Css$pct(70))
+															]))
+													]))
 											]),
 										_List_fromArray(
 											[
@@ -15604,6 +15627,8 @@ var $author$project$Main$rankings = function (model) {
 																[
 																	textual,
 																	left,
+																	$rtfeldman$elm_css$Css$width(
+																	$rtfeldman$elm_css$Css$pct(55)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
@@ -15620,7 +15645,9 @@ var $author$project$Main$rankings = function (model) {
 																	_List_fromArray(
 																		[
 																			$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$normal),
-																			$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$visible)
+																			$rtfeldman$elm_css$Css$overflow($rtfeldman$elm_css$Css$visible),
+																			$rtfeldman$elm_css$Css$width(
+																			$rtfeldman$elm_css$Css$pct(70))
 																		]))
 																]))
 														]),

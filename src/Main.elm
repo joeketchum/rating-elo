@@ -1047,7 +1047,7 @@ rankings model =
                 [ Css.paddingLeft (Css.px 15)
                 , Css.paddingRight (Css.px 15)
                 , Css.width (Css.pct 1)
-                , Css.maxWidth (Css.px 100)
+                , Css.maxWidth (Css.px 80)
                 , Css.whiteSpace Css.noWrap
                 ]
 
@@ -1114,7 +1114,7 @@ rankings model =
                             [ Html.text "" ]
                         )
                     , Html.td [ css [ numericRank, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
-                    , Html.td [ css [ textual, left, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.overflow Css.visible ] ] ]
+                    , Html.td [ css [ textual, left, Css.width (Css.pct 55), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.overflow Css.visible, Css.width (Css.pct 70) ] ] ]
                         [ Html.span [] [ Html.text (Player.name player) ] ]
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
@@ -1154,7 +1154,7 @@ rankings model =
                 [ css [ Css.height (Css.px 40), Css.borderBottom3 (Css.px 2) Css.solid (Css.hex "D1D5DB") ] ]
                 [ Html.th [ css [ Css.width (Css.px 20) ] ] []
                 , Html.th [ css [ header, center ] ] [ Html.text "RANK" ]
-                , Html.th [ css [ header, left ] ] [ Html.text "NAME" ]
+                , Html.th [ css [ header, left, Css.width (Css.pct 55), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 70) ] ] ] [ Html.text "NAME" ]
                 , Html.th [ css [ header, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
                 , Html.th [ css [ header, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
                 , Html.th [ css [ header, center ] ] [ Html.text "ACTIONS" ]
