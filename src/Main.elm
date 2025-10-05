@@ -141,7 +141,7 @@ init _ =
     , timeFilter = All
     , ignoredPlayers = Set.empty
       }
-    , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", askForStandings "init" ]
+    , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init" ]
     )
         |> startNextMatchIfPossible
 

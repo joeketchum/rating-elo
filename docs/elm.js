@@ -5424,7 +5424,6 @@ var $author$project$Main$All = {$: 'All'};
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$askForAutoSave = _Platform_outgoingPort('askForAutoSave', $elm$json$Json$Encode$string);
 var $author$project$Main$askForIgnoredPlayers = _Platform_outgoingPort('askForIgnoredPlayers', $elm$json$Json$Encode$string);
-var $author$project$Main$askForStandings = _Platform_outgoingPort('askForStandings', $elm$json$Json$Encode$string);
 var $author$project$Main$askForTimeFilter = _Platform_outgoingPort('askForTimeFilter', $elm$json$Json$Encode$string);
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
 var $elm$core$Set$Set_elm_builtin = function (a) {
@@ -5484,6 +5483,7 @@ var $author$project$League$init = $author$project$League$League(
 		ignored: _List_Nil,
 		players: $rtfeldman$elm_sorter_experiment$Sort$Dict$empty($author$project$Player$idSorter)
 	});
+var $author$project$Main$loadFromPublicDrive = _Platform_outgoingPort('loadFromPublicDrive', $elm$json$Json$Encode$string);
 var $author$project$Main$GotNextMatch = function (a) {
 	return {$: 'GotNextMatch', a: a};
 };
@@ -6087,7 +6087,7 @@ var $author$project$Main$init = function (_v0) {
 						$author$project$Main$askForAutoSave('init'),
 						$author$project$Main$askForTimeFilter('init'),
 						$author$project$Main$askForIgnoredPlayers('init'),
-						$author$project$Main$askForStandings('init')
+						$author$project$Main$loadFromPublicDrive('init')
 					]))));
 };
 var $author$project$Main$AutoSaveCompleted = {$: 'AutoSaveCompleted'};
@@ -8154,7 +8154,6 @@ var $author$project$Player$init = function (name_) {
 			rating: $author$project$Elo$initialRating
 		});
 };
-var $author$project$Main$loadFromPublicDrive = _Platform_outgoingPort('loadFromPublicDrive', $elm$json$Json$Encode$string);
 var $author$project$History$mapInPlace = F2(
 	function (fn, _v0) {
 		var guts = _v0.a;
