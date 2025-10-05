@@ -526,13 +526,9 @@ update msg model =
                         updatedModel = { model | history = History.init 50 league, shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False }
                         baseResult = ( updatedModel, Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity )
                     in
-                    if model.shouldStartNextMatchAfterLoad then
-                        baseResult
-                            |> startNextMatchIfPossible
-                            |> maybeAutoSave
-                    else
-                        baseResult
-                            |> maybeAutoSave
+                    baseResult
+                        |> startNextMatchIfPossible
+                        |> maybeAutoSave
 
                 Err _ ->
                     ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False }

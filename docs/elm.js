@@ -9563,8 +9563,8 @@ var $author$project$Main$update = F2(
 							$elm$core$Basics$identity,
 							$elm$core$Task$succeed(
 								$author$project$Main$ShowStatus('Standings loaded'))));
-					return model.shouldStartNextMatchAfterLoad ? $author$project$Main$maybeAutoSave(
-						$author$project$Main$startNextMatchIfPossible(baseResult)) : $author$project$Main$maybeAutoSave(baseResult);
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(baseResult));
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
