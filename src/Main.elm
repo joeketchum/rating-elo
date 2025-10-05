@@ -1114,26 +1114,36 @@ rankings model =
                             [ Html.text "" ]
                         )
                     , Html.td [ css [ numericRank, shrinkWidth, center ] ] [ Html.text (String.fromInt (rank + 1)) ]
-                    , Html.td [ css [ textual, left, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal ] ] ]
+                    , Html.td [ css [ textual, left, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.overflow Css.visible ] ] ]
                         [ Html.span [] [ Html.text (Player.name player) ] ]
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numericDim, shrinkWidth, center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
-                    , Html.td [ css [ textual, shrinkWidth, center, Css.whiteSpace Css.noWrap, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.whiteSpace Css.normal, Css.textAlign Css.left ] ] ]
-                        (let baseActions =
-                                if isPlayerLocallyIgnored player model then
-                                    [ zzzUnignoreButtonSmall (Just (KeeperWantsToUnignorePlayer player)) ]
-                                else
-                                    [ smallRedXButtonSmall (Just (KeeperWantsToRetirePlayer player))
-                                    , Html.span [ css [ Css.paddingLeft (Css.px 6) ] ] [ zzzIgnoreButtonSmall (Just (KeeperWantsToIgnorePlayer player)) ]
-                                    ]
-                         in
-                         baseActions
-                            ++ [ Html.span [ css [ Css.paddingLeft (Css.px 6) ] ]
-                                    [ toggleChipSmall "AM" (Player.playsAM player) (Css.hex "F59E0B") (TogglePlayerAM player) ]
-                               , Html.span [ css [ Css.paddingLeft (Css.px 4) ] ]
-                                    [ toggleChipSmall "PM" (Player.playsPM player) (Css.hex "8B5CF6") (TogglePlayerPM player) ]
-                               ]
-                        )
+                    , Html.td [ css [ Css.verticalAlign Css.middle ] ]
+                        [ Html.div
+                            [ css
+                                [ Css.displayFlex
+                                , Css.flexWrap Css.wrap
+                                , Css.alignItems Css.center
+                                , Css.justifyContent Css.center
+                                , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.justifyContent Css.flexStart ]
+                                ]
+                            ]
+                            (let baseActions =
+                                    if isPlayerLocallyIgnored player model then
+                                        [ zzzUnignoreButtonSmall (Just (KeeperWantsToUnignorePlayer player)) ]
+                                    else
+                                        [ smallRedXButtonSmall (Just (KeeperWantsToRetirePlayer player))
+                                        , Html.span [ css [ Css.paddingLeft (Css.px 6) ] ] [ zzzIgnoreButtonSmall (Just (KeeperWantsToIgnorePlayer player)) ]
+                                        ]
+                             in
+                             baseActions
+                                ++ [ Html.span [ css [ Css.paddingLeft (Css.px 6) ] ]
+                                        [ toggleChipSmall "AM" (Player.playsAM player) (Css.hex "F59E0B") (TogglePlayerAM player) ]
+                                   , Html.span [ css [ Css.paddingLeft (Css.px 4) ] ]
+                                        [ toggleChipSmall "PM" (Player.playsPM player) (Css.hex "8B5CF6") (TogglePlayerPM player) ]
+                                   ]
+                            )
+                        ]
                     ]
                 )
             )
@@ -1205,6 +1215,7 @@ rankings model =
             [ css
                 [ Css.width (Css.pct 80)
                 , Css.margin2 Css.zero Css.auto
+                , Css.overflowX Css.auto
                 , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
                     [ Css.width (Css.pct 100)
                     , Css.overflowX Css.auto
