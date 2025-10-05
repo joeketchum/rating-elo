@@ -895,7 +895,7 @@ currentMatch model =
                     [ -- Row 1: Player A with WINNER on the right
                       Html.div
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween, Css.marginBottom (Css.px 10) ] ]
-                        [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompact playerA ]
+                        [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompactWithIgnore playerA model ]
                         , Html.div []
                             [ blueButtonLarge "WINNER"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
@@ -904,7 +904,7 @@ currentMatch model =
                     , -- Row 2: Player B with WINNER on the right
                       Html.div
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween ] ]
-                        [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompact playerB ]
+                        [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompactWithIgnore playerB model ]
                         , Html.div []
                             [ blueButtonLarge "WINNER"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
@@ -1550,6 +1550,25 @@ activePlayerCompact player =
         , availabilityBadges player
         ]
 
+-- Compact player with ignore button for mobile comparison
+activePlayerCompactWithIgnore : Player -> Model -> Html Msg
+activePlayerCompactWithIgnore player model =
+    Html.div
+        [ css [ modernSansSerif ] ]
+        [ Html.h3
+            [ css [ Css.fontSize (Css.px 20), Css.marginBottom (Css.px 4), Css.textTransform Css.uppercase, Css.fontWeight (Css.int 700), Css.fontStyle Css.italic ] ]
+            [ Html.text (Player.name player) ]
+        , Html.div
+            [ css [ Css.displayFlex, Css.justifyContent Css.center, Css.alignItems Css.center ] ]
+            [ Html.span [ css [ Css.marginRight (Css.px 6) ] ] [ badge "AM" (Player.playsAM player) (Css.hex "F59E0B") ]
+            , Html.span [ css [ Css.marginRight (Css.px 6) ] ] [ badge "PM" (Player.playsPM player) (Css.hex "8B5CF6") ]
+            , if isPlayerLocallyIgnored player model then
+                zzzUnignoreButtonTiny (Just (KeeperWantsToUnignorePlayer player))
+              else
+                zzzIgnoreButtonTiny (Just (KeeperWantsToIgnorePlayer player))
+            ]
+        ]
+
 
 availabilityBadges : Player -> Html msg
 availabilityBadges player =
@@ -1596,6 +1615,58 @@ toggleChip label isOn colorOn msg =
         , Events.onClick msg
         ]
         [ Html.text label ]
+
+-- Extra tiny Zzz button for mobile player cards
+zzzIgnoreButtonTiny : Maybe Msg -> Html Msg
+zzzIgnoreButtonTiny maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 1)
+            , Css.paddingBottom (Css.px 2)
+            , Css.paddingLeft (Css.px 6)
+            , Css.paddingRight (Css.px 6)
+            , Css.margin2 Css.zero (Css.px 4)
+            , Css.minWidth (Css.px 24)
+            , Css.backgroundColor (Css.hex "6B7280")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 9999)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 9)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "Zzz" ]
+
+zzzUnignoreButtonTiny : Maybe Msg -> Html Msg
+zzzUnignoreButtonTiny maybeMsg =
+    Html.button
+        [ css
+            [ Css.paddingTop (Css.px 1)
+            , Css.paddingBottom (Css.px 2)
+            , Css.paddingLeft (Css.px 6)
+            , Css.paddingRight (Css.px 6)
+            , Css.margin2 Css.zero (Css.px 4)
+            , Css.minWidth (Css.px 24)
+            , Css.backgroundColor (Css.hex "374151")
+            , Css.border Css.zero
+            , Css.borderRadius (Css.px 9999)
+            , Css.cursor Css.pointer
+            , Css.fontSize (Css.px 9)
+            , Css.fontWeight (Css.int 700)
+            , Css.color (Css.hex "FFF")
+            , Css.textDecoration Css.lineThrough
+            , modernSansSerif
+            ]
+        , case maybeMsg of
+            Just m -> Events.onClick m
+            Nothing -> Attributes.disabled True
+        ]
+        [ Html.text "Zzz" ]
 
 -- Smaller toggle chip for table row
 toggleChipSmall : String -> Bool -> Css.Color -> Msg -> Html Msg
