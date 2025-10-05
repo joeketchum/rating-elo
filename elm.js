@@ -8770,6 +8770,43 @@ var $author$project$League$finishMatch = F2(
 					A2($author$project$League$updatePlayer, newPlayers.playerA, league)));
 		}
 	});
+var $rtfeldman$elm_sorter_experiment$Sort$Dict$get = F2(
+	function (targetKey, dict) {
+		get:
+		while (true) {
+			if (dict.$ === 'Leaf') {
+				return $elm$core$Maybe$Nothing;
+			} else {
+				var sorter = dict.a;
+				var key = dict.c;
+				var value = dict.d;
+				var left = dict.e;
+				var right = dict.f;
+				var _v1 = A3($rtfeldman$elm_sorter_experiment$Sort$toOrder, sorter, targetKey, key);
+				switch (_v1.$) {
+					case 'LT':
+						var $temp$targetKey = targetKey,
+							$temp$dict = left;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					case 'GT':
+						var $temp$targetKey = targetKey,
+							$temp$dict = right;
+						targetKey = $temp$targetKey;
+						dict = $temp$dict;
+						continue get;
+					default:
+						return $elm$core$Maybe$Just(value);
+				}
+			}
+		}
+	});
+var $author$project$League$getPlayer = F2(
+	function (id, _v0) {
+		var league = _v0.a;
+		return A2($rtfeldman$elm_sorter_experiment$Sort$Dict$get, id, league.players);
+	});
 var $author$project$History$goBack = function (_v0) {
 	var guts = _v0.a;
 	var _v1 = guts.past;
@@ -9381,6 +9418,22 @@ var $author$project$League$retirePlayer = F2(
 				}));
 	});
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
+var $author$project$Player$setAM = F2(
+	function (val, _v0) {
+		var player = _v0.a;
+		return $author$project$Player$Player(
+			_Utils_update(
+				player,
+				{am: val}));
+	});
+var $author$project$Player$setPM = F2(
+	function (val, _v0) {
+		var player = _v0.a;
+		return $author$project$Player$Player(
+			_Utils_update(
+				player,
+				{pm: val}));
+	});
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -9388,38 +9441,6 @@ var $elm$core$Maybe$andThen = F2(
 			return callback(value);
 		} else {
 			return $elm$core$Maybe$Nothing;
-		}
-	});
-var $rtfeldman$elm_sorter_experiment$Sort$Dict$get = F2(
-	function (targetKey, dict) {
-		get:
-		while (true) {
-			if (dict.$ === 'Leaf') {
-				return $elm$core$Maybe$Nothing;
-			} else {
-				var sorter = dict.a;
-				var key = dict.c;
-				var value = dict.d;
-				var left = dict.e;
-				var right = dict.f;
-				var _v1 = A3($rtfeldman$elm_sorter_experiment$Sort$toOrder, sorter, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
-						var $temp$targetKey = targetKey,
-							$temp$dict = left;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-					case 'GT':
-						var $temp$targetKey = targetKey,
-							$temp$dict = right;
-						targetKey = $temp$targetKey;
-						dict = $temp$dict;
-						continue get;
-					default:
-						return $elm$core$Maybe$Just(value);
-				}
-			}
 		}
 	});
 var $elm$core$Maybe$map2 = F3(
@@ -9492,6 +9513,72 @@ var $author$project$League$unignorePlayer = F2(
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
+			case 'TogglePlayerAM':
+				var player = msg.a;
+				var updatedLeague = function (league) {
+					var _v2 = A2(
+						$author$project$League$getPlayer,
+						$author$project$Player$id(player),
+						league);
+					if (_v2.$ === 'Just') {
+						var p = _v2.a;
+						var newP = A2(
+							$author$project$Player$setAM,
+							!$author$project$Player$playsAM(p),
+							p);
+						return A2($author$project$League$updatePlayer, newP, league);
+					} else {
+						return league;
+					}
+				}(
+					$author$project$History$current(model.history));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										function (_v1) {
+											return updatedLeague;
+										},
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none)));
+			case 'TogglePlayerPM':
+				var player = msg.a;
+				var updatedLeague = function (league) {
+					var _v4 = A2(
+						$author$project$League$getPlayer,
+						$author$project$Player$id(player),
+						league);
+					if (_v4.$ === 'Just') {
+						var p = _v4.a;
+						var newP = A2(
+							$author$project$Player$setPM,
+							!$author$project$Player$playsPM(p),
+							p);
+						return A2($author$project$League$updatePlayer, newP, league);
+					} else {
+						return league;
+					}
+				}(
+					$author$project$History$current(model.history));
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapPush,
+										function (_v3) {
+											return updatedLeague;
+										},
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none)));
 			case 'KeeperUpdatedNewPlayerName':
 				var newPlayerName = msg.a;
 				return _Utils_Tuple2(
@@ -9579,7 +9666,7 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var _v1 = msg.a;
+					var _v5 = msg.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'MatchFinished':
@@ -9657,12 +9744,12 @@ var $author$project$Main$update = F2(
 					model,
 					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'AutoSaveCompleted':
-				var _v2 = A2(
+				var _v6 = A2(
 					$elm$core$Debug$log,
 					'🔄 AutoSaveCompleted received',
 					{autoSaveInProgress: model.autoSaveInProgress});
 				if (model.autoSaveInProgress) {
-					var _v3 = A2($elm$core$Debug$log, '📤 Scheduling auto-save reload', '1.5s delay');
+					var _v7 = A2($elm$core$Debug$log, '📤 Scheduling auto-save reload', '1.5s delay');
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -9673,12 +9760,12 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v4) {
+							function (_v8) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(1500)));
 				} else {
-					var _v5 = A2($elm$core$Debug$log, '📤 Scheduling manual save reload', '1.0s delay');
+					var _v9 = A2($elm$core$Debug$log, '📤 Scheduling manual save reload', '1.0s delay');
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
@@ -9688,7 +9775,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v6) {
+							function (_v10) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(1000)));
@@ -9703,7 +9790,7 @@ var $author$project$Main$update = F2(
 						}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'TriggerReload':
-				var _v7 = A2($elm$core$Debug$log, '🔄 TriggerReload executing', 'calling loadFromPublicDrive');
+				var _v11 = A2($elm$core$Debug$log, '🔄 TriggerReload executing', 'calling loadFromPublicDrive');
 				return _Utils_Tuple2(
 					model,
 					$author$project$Main$loadFromPublicDrive(''));
@@ -9725,12 +9812,12 @@ var $author$project$Main$update = F2(
 						A2(
 							$elm$core$Task$andThen,
 							function (jsonString) {
-								var _v8 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-								if (_v8.$ === 'Ok') {
-									var decoded = _v8.a;
+								var _v12 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+								if (_v12.$ === 'Ok') {
+									var decoded = _v12.a;
 									return $elm$core$Task$succeed(decoded);
 								} else {
-									var err = _v8.a;
+									var err = _v12.a;
 									return $elm$core$Task$fail(
 										$elm$json$Json$Decode$errorToString(err));
 								}
@@ -9822,9 +9909,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'ReceivedStandings':
 				var jsonString = msg.a;
-				var _v10 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-				if (_v10.$ === 'Ok') {
-					var league = _v10.a;
+				var _v14 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+				if (_v14.$ === 'Ok') {
+					var league = _v14.a;
 					var updatedModel = _Utils_update(
 						model,
 						{
@@ -9863,10 +9950,10 @@ var $author$project$Main$update = F2(
 				var msgStr = msg.a;
 				var parts = A2($elm$core$String$split, '|', msgStr);
 				var maybeTs = function () {
-					var _v11 = $elm$core$List$head(
+					var _v15 = $elm$core$List$head(
 						A2($elm$core$List$drop, 1, parts));
-					if (_v11.$ === 'Just') {
-						var t = _v11.a;
+					if (_v15.$ === 'Just') {
+						var t = _v15.a;
 						return $elm$core$Maybe$Just(t);
 					} else {
 						return $elm$core$Maybe$Nothing;
@@ -9911,7 +9998,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v12) {
+						function (_v16) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(3500)));
@@ -13579,6 +13666,12 @@ var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPla
 var $author$project$Main$KeeperWantsToRetirePlayer = function (a) {
 	return {$: 'KeeperWantsToRetirePlayer', a: a};
 };
+var $author$project$Main$TogglePlayerAM = function (a) {
+	return {$: 'TogglePlayerAM', a: a};
+};
+var $author$project$Main$TogglePlayerPM = function (a) {
+	return {$: 'TogglePlayerPM', a: a};
+};
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
@@ -13815,6 +13908,41 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$th = function (attribut
 	return $rtfeldman$elm_css$Html$Styled$th(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
+var $author$project$Main$toggleChip = F4(
+	function (label, isOn, colorOn, msg) {
+		return A2(
+			$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+			_List_fromArray(
+				[
+					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+					_List_fromArray(
+						[
+							$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$inlineBlock),
+							A2(
+							$rtfeldman$elm_css$Css$padding2,
+							$rtfeldman$elm_css$Css$px(4),
+							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$borderRadius(
+							$rtfeldman$elm_css$Css$px(9999)),
+							isOn ? $rtfeldman$elm_css$Css$backgroundColor(colorOn) : $rtfeldman$elm_css$Css$backgroundColor(
+							$rtfeldman$elm_css$Css$hex('E5E7EB')),
+							isOn ? $rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('FFFFFF')) : $rtfeldman$elm_css$Css$color(
+							$rtfeldman$elm_css$Css$hex('6B7280')),
+							$rtfeldman$elm_css$Css$fontSize(
+							$rtfeldman$elm_css$Css$px(12)),
+							$rtfeldman$elm_css$Css$fontWeight(
+							$rtfeldman$elm_css$Css$int(700)),
+							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer)
+						])),
+					$rtfeldman$elm_css$Html$Styled$Events$onClick(msg)
+				]),
+			_List_fromArray(
+				[
+					$tesk9$accessible_html_with_css$Accessibility$Styled$text(label)
+				]));
+	});
 var $rtfeldman$elm_css$Html$Styled$tr = $rtfeldman$elm_css$Html$Styled$node('tr');
 var $tesk9$accessible_html_with_css$Accessibility$Styled$tr = function (attributes) {
 	return $rtfeldman$elm_css$Html$Styled$tr(
@@ -14388,37 +14516,84 @@ var $author$project$Main$rankings = function (model) {
 													_List_fromArray(
 														[textual, shrinkWidth, center]))
 												]),
-											A2(
-												$author$project$League$isPlayerIgnored,
-												player,
-												$author$project$History$current(model.history)) ? _List_fromArray(
-												[
-													$author$project$Main$zzzUnignoreButton(
-													$elm$core$Maybe$Just(
-														$author$project$Main$KeeperWantsToUnignorePlayer(player)))
-												]) : _List_fromArray(
-												[
-													$author$project$Main$smallRedXButton(
-													$elm$core$Maybe$Just(
-														$author$project$Main$KeeperWantsToRetirePlayer(player))),
-													A2(
-													$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+											function () {
+												var baseActions = A2(
+													$author$project$League$isPlayerIgnored,
+													player,
+													$author$project$History$current(model.history)) ? _List_fromArray(
+													[
+														$author$project$Main$zzzUnignoreButton(
+														$elm$core$Maybe$Just(
+															$author$project$Main$KeeperWantsToUnignorePlayer(player)))
+													]) : _List_fromArray(
+													[
+														$author$project$Main$smallRedXButton(
+														$elm$core$Maybe$Just(
+															$author$project$Main$KeeperWantsToRetirePlayer(player))),
+														A2(
+														$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$paddingLeft(
+																		$rtfeldman$elm_css$Css$px(8))
+																	]))
+															]),
+														_List_fromArray(
+															[
+																$author$project$Main$zzzIgnoreButton(
+																$elm$core$Maybe$Just(
+																	$author$project$Main$KeeperWantsToIgnorePlayer(player)))
+															]))
+													]);
+												return _Utils_ap(
+													baseActions,
 													_List_fromArray(
 														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
+															A2(
+															$tesk9$accessible_html_with_css$Accessibility$Styled$span,
 															_List_fromArray(
 																[
-																	$rtfeldman$elm_css$Css$paddingLeft(
-																	$rtfeldman$elm_css$Css$px(8))
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$paddingLeft(
+																			$rtfeldman$elm_css$Css$px(8))
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	A4(
+																	$author$project$Main$toggleChip,
+																	'AM',
+																	$author$project$Player$playsAM(player),
+																	$rtfeldman$elm_css$Css$hex('F59E0B'),
+																	$author$project$Main$TogglePlayerAM(player))
+																])),
+															A2(
+															$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$paddingLeft(
+																			$rtfeldman$elm_css$Css$px(6))
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	A4(
+																	$author$project$Main$toggleChip,
+																	'PM',
+																	$author$project$Player$playsPM(player),
+																	$rtfeldman$elm_css$Css$hex('8B5CF6'),
+																	$author$project$Main$TogglePlayerPM(player))
 																]))
-														]),
-													_List_fromArray(
-														[
-															$author$project$Main$zzzIgnoreButton(
-															$elm$core$Maybe$Just(
-																$author$project$Main$KeeperWantsToIgnorePlayer(player)))
-														]))
-												]))
+														]));
+											}())
 										])));
 						}),
 					A2(

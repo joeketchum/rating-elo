@@ -100,6 +100,8 @@ type Msg
     | ClearStatus
     | ReceivedPublicDriveStatus String
     | IgnoredKey
+    | TogglePlayerAM Player
+    | TogglePlayerPM Player
     | SetTimeFilter TimeFilter
 type TimeFilter
     = All
@@ -253,6 +255,41 @@ maybeSaveToDriveAfterVote ( model, cmd ) =
 update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
+        TogglePlayerAM player ->
+            let
+                updatedLeague =
+                    History.current model.history
+                        |> \league ->
+                            case League.getPlayer (Player.id player) league of
+                                Just p ->
+                                    let newP = Player.setAM (not (Player.playsAM p)) p in
+                                    League.updatePlayer newP league
+                                Nothing ->
+                                    league
+            in
+            ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
+            , Cmd.none
+            )
+                |> startNextMatchIfPossible
+                |> maybeAutoSave
+
+        TogglePlayerPM player ->
+            let
+                updatedLeague =
+                    History.current model.history
+                        |> \league ->
+                            case League.getPlayer (Player.id player) league of
+                                Just p ->
+                                    let newP = Player.setPM (not (Player.playsPM p)) p in
+                                    League.updatePlayer newP league
+                                Nothing ->
+                                    league
+            in
+            ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
+            , Cmd.none
+            )
+                |> startNextMatchIfPossible
+                |> maybeAutoSave
         KeeperUpdatedNewPlayerName newPlayerName ->
             ( { model | newPlayerName = newPlayerName }, Cmd.none )
 
@@ -930,14 +967,20 @@ rankings model =
                             ]
                         ]
                     , Html.td [ css [ textual, shrinkWidth, center ] ]
-                        (if isPlayerIgnored player (History.current model.history) then
-                            [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer player)) ]
-
-                         else
-                            [ smallRedXButton (Just (KeeperWantsToRetirePlayer player))
-                            , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ]
-                                [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer player)) ]
-                            ]
+                        (let baseActions =
+                                if isPlayerIgnored player (History.current model.history) then
+                                    [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer player)) ]
+                                else
+                                    [ smallRedXButton (Just (KeeperWantsToRetirePlayer player))
+                                    , Html.span [ css [ Css.paddingLeft (Css.px 8) ] ] [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer player)) ]
+                                    ]
+                         in
+                         baseActions
+                            ++ [ Html.span [ css [ Css.paddingLeft (Css.px 8) ] ]
+                                    [ toggleChip "AM" (Player.playsAM player) (Css.hex "F59E0B") (TogglePlayerAM player) ]
+                               , Html.span [ css [ Css.paddingLeft (Css.px 6) ] ]
+                                    [ toggleChip "PM" (Player.playsPM player) (Css.hex "8B5CF6") (TogglePlayerPM player) ]
+                               ]
                         )
                     ]
                 )
@@ -1208,6 +1251,25 @@ badge label isOn colorOn =
             , Css.fontWeight (Css.int 700)
             , Css.letterSpacing (Css.px 0.5)
             ]
+        ]
+        [ Html.text label ]
+
+
+toggleChip : String -> Bool -> Css.Color -> Msg -> Html Msg
+toggleChip label isOn colorOn msg =
+    Html.button
+        [ css
+            [ Css.display Css.inlineBlock
+            , Css.padding2 (Css.px 4) (Css.px 10)
+            , Css.borderRadius (Css.px 9999)
+            , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
+            , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
+            , Css.fontSize (Css.px 12)
+            , Css.fontWeight (Css.int 700)
+            , Css.border Css.zero
+            , Css.cursor Css.pointer
+            ]
+        , Events.onClick msg
         ]
         [ Html.text label ]
 
