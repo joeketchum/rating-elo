@@ -794,8 +794,6 @@ view model =
                                 ]
                                 [ Html.text "×" ]
                             ]
-                        , Html.span [ css [ Css.marginLeft (Css.px 8) ] ]
-                            [ smallRedXButton (Just ClearStatus) ]
                         ]
                     ]
 
