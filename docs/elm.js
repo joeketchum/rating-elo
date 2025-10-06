@@ -15303,7 +15303,7 @@ var $author$project$Main$rankings = function (model) {
 																	textual,
 																	left,
 																	$rtfeldman$elm_css$Css$width(
-																	$rtfeldman$elm_css$Css$pct(40)),
+																	$rtfeldman$elm_css$Css$pct(30)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
