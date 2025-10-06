@@ -253,6 +253,20 @@ try {
   // Load from Google Drive, fallback to localStorage
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
+      // Fast path: immediately show cached standings (stale-while-revalidate)
+      try {
+        var cached = localStorage.getItem(LS_PUBLIC) || '';
+        if (!cached) {
+          // Fall back to private local auto-save if public copy missing
+          cached = localStorage.getItem(LS_KEY) || '';
+        }
+        if (cached && app.ports.receiveStandings && app.ports.receiveStandings.send) {
+          console.log('⚡ Using cached standings from localStorage for instant load');
+          app.ports.receiveStandings.send(cached);
+        }
+      } catch(_) {}
+
+      // Fetch fresh from Drive in background
       reloadFromPublicDrive();
     });
   }
