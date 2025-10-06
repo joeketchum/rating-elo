@@ -528,8 +528,12 @@ update msg model =
                         , Cmd.none
                         )
                     else
+                        let
+                            -- Clear any existing match first, then start the custom match
+                            updatedHistory = History.mapPush (League.clearMatch >> League.startMatch (League.Match playerA playerB)) model.history
+                        in
                         ( { model 
-                            | history = History.mapPush (League.startMatch (League.Match playerA playerB)) model.history
+                            | history = updatedHistory
                             , showCustomMatchup = False
                             , customMatchupPlayerA = Nothing
                             , customMatchupPlayerB = Nothing
@@ -690,11 +694,8 @@ view model =
                     [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
                     , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
                     , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
-                    , if League.currentMatch (History.current model.history) == Nothing then
-                        Html.span [ css [ Css.marginLeft (Css.px 12) ] ]
-                            [ greenButton "CUSTOM MATCH" (Just KeeperWantsToShowCustomMatchup) ]
-                      else
-                        Html.text ""
+                    , Html.span [ css [ Css.marginLeft (Css.px 12) ] ]
+                        [ greenButton "CUSTOM MATCH" (Just KeeperWantsToShowCustomMatchup) ]
                     ]
                 , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                 ]

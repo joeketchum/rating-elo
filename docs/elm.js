@@ -7074,6 +7074,11 @@ var $author$project$League$clearMatch = function (_v0) {
 			league,
 			{currentMatch: $elm$core$Maybe$Nothing}));
 };
+var $elm$core$Basics$composeR = F3(
+	function (f, g, x) {
+		return g(
+			f(x));
+	});
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $author$project$Player$PlayerId = function (a) {
 	return {$: 'PlayerId', a: a};
@@ -9539,30 +9544,38 @@ var $author$project$Main$update = F2(
 				if ((_v11.a.$ === 'Just') && (_v11.b.$ === 'Just')) {
 					var playerA = _v11.a.a;
 					var playerB = _v11.b.a;
-					return _Utils_eq(
+					if (_Utils_eq(
 						$author$project$Player$id(playerA),
-						$author$project$Player$id(playerB)) ? _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Cannot match a player against themselves')
-							}),
-						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								customMatchupPlayerA: $elm$core$Maybe$Nothing,
-								customMatchupPlayerB: $elm$core$Maybe$Nothing,
-								history: A2(
-									$author$project$History$mapPush,
-									$author$project$League$startMatch(
-										A2($author$project$League$Match, playerA, playerB)),
-									model.history),
-								showCustomMatchup: false,
-								status: $elm$core$Maybe$Just(
-									'Custom match: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
-							}),
-						$elm$core$Platform$Cmd$none);
+						$author$project$Player$id(playerB))) {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Cannot match a player against themselves')
+								}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var updatedHistory = A2(
+							$author$project$History$mapPush,
+							A2(
+								$elm$core$Basics$composeR,
+								$author$project$League$clearMatch,
+								$author$project$League$startMatch(
+									A2($author$project$League$Match, playerA, playerB))),
+							model.history);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									customMatchupPlayerA: $elm$core$Maybe$Nothing,
+									customMatchupPlayerB: $elm$core$Maybe$Nothing,
+									history: updatedHistory,
+									showCustomMatchup: false,
+									status: $elm$core$Maybe$Just(
+										'Custom match: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -11309,11 +11322,6 @@ var $elm$core$String$foldr = _String_foldr;
 var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
 };
-var $elm$core$Basics$composeR = F3(
-	function (f, g, x) {
-		return g(
-			f(x));
-	});
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
 };
@@ -16737,10 +16745,7 @@ var $author$project$Main$view = function (model) {
 												$author$project$Main$blueButton,
 												'REFRESH FROM DRIVE',
 												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive)),
-												_Utils_eq(
-												$author$project$League$currentMatch(
-													$author$project$History$current(model.history)),
-												$elm$core$Maybe$Nothing) ? A2(
+												A2(
 												$tesk9$accessible_html_with_css$Accessibility$Styled$span,
 												_List_fromArray(
 													[
@@ -16757,7 +16762,7 @@ var $author$project$Main$view = function (model) {
 														$author$project$Main$greenButton,
 														'CUSTOM MATCH',
 														$elm$core$Maybe$Just($author$project$Main$KeeperWantsToShowCustomMatchup))
-													])) : $tesk9$accessible_html_with_css$Accessibility$Styled$text('')
+													]))
 											])),
 										model.showCustomMatchup ? $author$project$Main$customMatchupUI(model) : $tesk9$accessible_html_with_css$Accessibility$Styled$text('')
 									]))
