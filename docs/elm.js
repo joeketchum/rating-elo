@@ -6087,11 +6087,14 @@ var $author$project$Main$init = function (_v0) {
 			{
 				autoSave: true,
 				autoSaveInProgress: false,
+				customMatchupPlayerA: $elm$core$Maybe$Nothing,
+				customMatchupPlayerB: $elm$core$Maybe$Nothing,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				ignoredPlayers: $elm$core$Set$empty,
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
 				shouldStartNextMatchAfterLoad: false,
+				showCustomMatchup: false,
 				status: $elm$core$Maybe$Nothing,
 				timeFilter: $author$project$Main$All,
 				votesUntilDriveSync: 25
@@ -8268,6 +8271,10 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 					$author$project$Main$sendVoteCount(newCount)
 				])));
 };
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$AMOnly = {$: 'AMOnly'};
 var $author$project$Main$PMOnly = {$: 'PMOnly'};
@@ -9497,6 +9504,74 @@ var $author$project$Main$update = F2(
 								$author$project$History$goForward(model.history))
 						}),
 					$elm$core$Platform$Cmd$none);
+			case 'KeeperWantsToShowCustomMatchup':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, showCustomMatchup: true}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeeperWantsToHideCustomMatchup':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, showCustomMatchup: false}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeeperSelectedPlayerA':
+				var player = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							customMatchupPlayerA: $elm$core$Maybe$Just(player)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeeperSelectedPlayerB':
+				var player = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							customMatchupPlayerB: $elm$core$Maybe$Just(player)
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'KeeperWantsToStartCustomMatch':
+				var _v11 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v11.a.$ === 'Just') && (_v11.b.$ === 'Just')) {
+					var playerA = _v11.a.a;
+					var playerB = _v11.b.a;
+					return _Utils_eq(
+						$author$project$Player$id(playerA),
+						$author$project$Player$id(playerB)) ? _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Cannot match a player against themselves')
+							}),
+						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								customMatchupPlayerA: $elm$core$Maybe$Nothing,
+								customMatchupPlayerB: $elm$core$Maybe$Nothing,
+								history: A2(
+									$author$project$History$mapPush,
+									$author$project$League$startMatch(
+										A2($author$project$League$Match, playerA, playerB)),
+									model.history),
+								showCustomMatchup: false,
+								status: $elm$core$Maybe$Just(
+									'Custom match: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Please select both players for the custom match')
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'LoadedLeague':
 				if (msg.a.$ === 'Ok') {
 					var league = msg.a.a;
@@ -9561,9 +9636,9 @@ var $author$project$Main$update = F2(
 				}
 			case 'ReceivedStandings':
 				var jsonString = msg.a;
-				var _v12 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
-				if (_v12.$ === 'Ok') {
-					var league = _v12.a;
+				var _v13 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+				if (_v13.$ === 'Ok') {
+					var league = _v13.a;
 					var updatedModel = _Utils_update(
 						model,
 						{
@@ -9602,10 +9677,10 @@ var $author$project$Main$update = F2(
 				var msgStr = msg.a;
 				var parts = A2($elm$core$String$split, '|', msgStr);
 				var maybeTs = function () {
-					var _v13 = $elm$core$List$head(
+					var _v14 = $elm$core$List$head(
 						A2($elm$core$List$drop, 1, parts));
-					if (_v13.$ === 'Just') {
-						var t = _v13.a;
+					if (_v14.$ === 'Just') {
+						var t = _v14.a;
 						return $elm$core$Maybe$Just(t);
 					} else {
 						return $elm$core$Maybe$Nothing;
@@ -9650,7 +9725,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v14) {
+						function (_v15) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(3500)));
@@ -9698,6 +9773,7 @@ var $author$project$Main$update = F2(
 var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$KeeperWantsToSaveToDrive = {$: 'KeeperWantsToSaveToDrive'};
+var $author$project$Main$KeeperWantsToShowCustomMatchup = {$: 'KeeperWantsToShowCustomMatchup'};
 var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
 var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
@@ -12078,10 +12154,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h2 = function (attribut
 var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
 var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
 var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
 var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
 var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
 var $rtfeldman$elm_css$Css$textAlign = function (fn) {
@@ -13663,6 +13735,399 @@ var $author$project$Main$currentMatch = function (model) {
 				]));
 	}
 };
+var $author$project$Main$KeeperSelectedPlayerA = function (a) {
+	return {$: 'KeeperSelectedPlayerA', a: a};
+};
+var $author$project$Main$KeeperSelectedPlayerB = function (a) {
+	return {$: 'KeeperSelectedPlayerB', a: a};
+};
+var $author$project$Main$KeeperWantsToHideCustomMatchup = {$: 'KeeperWantsToHideCustomMatchup'};
+var $author$project$Main$KeeperWantsToStartCustomMatch = {$: 'KeeperWantsToStartCustomMatch'};
+var $rtfeldman$elm_css$Css$flexWrap = $rtfeldman$elm_css$Css$prop1('flex-wrap');
+var $rtfeldman$elm_css$Html$Styled$h4 = $rtfeldman$elm_css$Html$Styled$node('h4');
+var $tesk9$accessible_html_with_css$Accessibility$Styled$h4 = function (attributes) {
+	return $rtfeldman$elm_css$Html$Styled$h4(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
+};
+var $author$project$League$isPlayerIgnored = F2(
+	function (player, _v0) {
+		var league = _v0.a;
+		return A2(
+			$elm$core$List$member,
+			$author$project$Player$id(player),
+			league.ignored);
+	});
+var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
+var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
+var $author$project$League$players = function (_v0) {
+	var league = _v0.a;
+	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
+};
+var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
+var $rtfeldman$elm_css$Css$wrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'wrap'};
+var $author$project$Main$customMatchupUI = function (model) {
+	var playerButton = F3(
+		function (player, selectedPlayer, msg) {
+			return A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								A2(
+								$rtfeldman$elm_css$Css$padding2,
+								$rtfeldman$elm_css$Css$px(6),
+								$rtfeldman$elm_css$Css$px(12)),
+								A2(
+								$rtfeldman$elm_css$Css$margin2,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$px(4)),
+								$rtfeldman$elm_css$Css$borderRadius(
+								$rtfeldman$elm_css$Css$px(6)),
+								$rtfeldman$elm_css$Css$backgroundColor(
+								function () {
+									if (selectedPlayer.$ === 'Just') {
+										var selected = selectedPlayer.a;
+										return _Utils_eq(
+											$author$project$Player$id(selected),
+											$author$project$Player$id(player)) ? $rtfeldman$elm_css$Css$hex('3B82F6') : $rtfeldman$elm_css$Css$hex('E5E7EB');
+									} else {
+										return $rtfeldman$elm_css$Css$hex('E5E7EB');
+									}
+								}()),
+								$rtfeldman$elm_css$Css$color(
+								function () {
+									if (selectedPlayer.$ === 'Just') {
+										var selected = selectedPlayer.a;
+										return _Utils_eq(
+											$author$project$Player$id(selected),
+											$author$project$Player$id(player)) ? $rtfeldman$elm_css$Css$hex('FFF') : $rtfeldman$elm_css$Css$hex('374151');
+									} else {
+										return $rtfeldman$elm_css$Css$hex('374151');
+									}
+								}()),
+								$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+								$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+								$author$project$Main$modernSansSerif,
+								$rtfeldman$elm_css$Css$fontSize(
+								$rtfeldman$elm_css$Css$px(14))
+							])),
+						$rtfeldman$elm_css$Html$Styled$Events$onClick(
+						msg(player))
+					]),
+				_List_fromArray(
+					[
+						$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+						$author$project$Player$name(player) + (' (' + ($elm$core$String$fromInt(
+							$author$project$Player$rating(player)) + ')')))
+					]));
+		});
+	var currentLeague = $author$project$History$current(model.history);
+	var allPlayers = A2(
+		$elm$core$List$sortBy,
+		$author$project$Player$name,
+		A2(
+			$elm$core$List$filter,
+			function (p) {
+				return !A2($author$project$League$isPlayerIgnored, p, currentLeague);
+			},
+			$author$project$League$players(currentLeague)));
+	return A2(
+		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+		_List_fromArray(
+			[
+				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$backgroundColor(
+						$rtfeldman$elm_css$Css$hex('F9FAFB')),
+						A3(
+						$rtfeldman$elm_css$Css$border3,
+						$rtfeldman$elm_css$Css$px(1),
+						$rtfeldman$elm_css$Css$solid,
+						$rtfeldman$elm_css$Css$hex('E5E7EB')),
+						$rtfeldman$elm_css$Css$borderRadius(
+						$rtfeldman$elm_css$Css$px(8)),
+						$rtfeldman$elm_css$Css$padding(
+						$rtfeldman$elm_css$Css$px(24)),
+						A2(
+						$rtfeldman$elm_css$Css$margin2,
+						$rtfeldman$elm_css$Css$px(24),
+						$rtfeldman$elm_css$Css$auto),
+						$rtfeldman$elm_css$Css$maxWidth(
+						$rtfeldman$elm_css$Css$px(800)),
+						$author$project$Main$modernSansSerif
+					]))
+			]),
+		_List_fromArray(
+			[
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$displayFlex,
+								$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
+								$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$px(16))
+							]))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$h3,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+										$rtfeldman$elm_css$Css$fontSize(
+										$rtfeldman$elm_css$Css$px(18)),
+										$rtfeldman$elm_css$Css$fontWeight(
+										$rtfeldman$elm_css$Css$int(600))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$tesk9$accessible_html_with_css$Accessibility$Styled$text('Custom Match Setup')
+							])),
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
+										$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+										$rtfeldman$elm_css$Css$fontSize(
+										$rtfeldman$elm_css$Css$px(20)),
+										$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+										$rtfeldman$elm_css$Css$color(
+										$rtfeldman$elm_css$Css$hex('6B7280'))
+									])),
+								$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperWantsToHideCustomMatchup)
+							]),
+						_List_fromArray(
+							[
+								$tesk9$accessible_html_with_css$Accessibility$Styled$text('✕')
+							]))
+					])),
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$px(16))
+							]))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$h4,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$fontSize(
+										$rtfeldman$elm_css$Css$px(14)),
+										$rtfeldman$elm_css$Css$fontWeight(
+										$rtfeldman$elm_css$Css$int(600)),
+										$rtfeldman$elm_css$Css$marginBottom(
+										$rtfeldman$elm_css$Css$px(8)),
+										$rtfeldman$elm_css$Css$color(
+										$rtfeldman$elm_css$Css$hex('374151'))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+								'Player A' + function () {
+									var _v0 = model.customMatchupPlayerA;
+									if (_v0.$ === 'Just') {
+										var p = _v0.a;
+										return ': ' + $author$project$Player$name(p);
+									} else {
+										return ' (select one)';
+									}
+								}())
+							])),
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$displayFlex,
+										$rtfeldman$elm_css$Css$flexWrap($rtfeldman$elm_css$Css$wrap)
+									]))
+							]),
+						A2(
+							$elm$core$List$map,
+							function (player) {
+								return A3(playerButton, player, model.customMatchupPlayerA, $author$project$Main$KeeperSelectedPlayerA);
+							},
+							allPlayers))
+					])),
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$marginBottom(
+								$rtfeldman$elm_css$Css$px(20))
+							]))
+					]),
+				_List_fromArray(
+					[
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$h4,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$fontSize(
+										$rtfeldman$elm_css$Css$px(14)),
+										$rtfeldman$elm_css$Css$fontWeight(
+										$rtfeldman$elm_css$Css$int(600)),
+										$rtfeldman$elm_css$Css$marginBottom(
+										$rtfeldman$elm_css$Css$px(8)),
+										$rtfeldman$elm_css$Css$color(
+										$rtfeldman$elm_css$Css$hex('374151'))
+									]))
+							]),
+						_List_fromArray(
+							[
+								$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+								'Player B' + function () {
+									var _v1 = model.customMatchupPlayerB;
+									if (_v1.$ === 'Just') {
+										var p = _v1.a;
+										return ': ' + $author$project$Player$name(p);
+									} else {
+										return ' (select one)';
+									}
+								}())
+							])),
+						A2(
+						$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$Attributes$css(
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Css$displayFlex,
+										$rtfeldman$elm_css$Css$flexWrap($rtfeldman$elm_css$Css$wrap)
+									]))
+							]),
+						A2(
+							$elm$core$List$map,
+							function (player) {
+								return A3(playerButton, player, model.customMatchupPlayerB, $author$project$Main$KeeperSelectedPlayerB);
+							},
+							allPlayers))
+					])),
+				A2(
+				$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+				_List_fromArray(
+					[
+						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+							]))
+					]),
+				_List_fromArray(
+					[
+						function () {
+						var _v2 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+						if ((_v2.a.$ === 'Just') && (_v2.b.$ === 'Just')) {
+							var playerA = _v2.a.a;
+							var playerB = _v2.b.a;
+							return _Utils_eq(
+								$author$project$Player$id(playerA),
+								$author$project$Player$id(playerB)) ? A2(
+								$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Css$color(
+												$rtfeldman$elm_css$Css$hex('EF4444')),
+												$rtfeldman$elm_css$Css$fontSize(
+												$rtfeldman$elm_css$Css$px(14))
+											]))
+									]),
+								_List_fromArray(
+									[
+										$tesk9$accessible_html_with_css$Accessibility$Styled$text('Please select two different players')
+									])) : A2(
+								$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+								_List_Nil,
+								_List_fromArray(
+									[
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$marginBottom(
+														$rtfeldman$elm_css$Css$px(12)),
+														$rtfeldman$elm_css$Css$fontSize(
+														$rtfeldman$elm_css$Css$px(14)),
+														$rtfeldman$elm_css$Css$color(
+														$rtfeldman$elm_css$Css$hex('6B7280'))
+													]))
+											]),
+										_List_fromArray(
+											[
+												$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+												'Match Preview: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
+											])),
+										A2(
+										$author$project$Main$greenButton,
+										'START CUSTOM MATCH',
+										$elm$core$Maybe$Just($author$project$Main$KeeperWantsToStartCustomMatch))
+									]));
+						} else {
+							return A2(
+								$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+								_List_fromArray(
+									[
+										$rtfeldman$elm_css$Html$Styled$Attributes$css(
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Css$color(
+												$rtfeldman$elm_css$Css$hex('6B7280')),
+												$rtfeldman$elm_css$Css$fontSize(
+												$rtfeldman$elm_css$Css$px(14))
+											]))
+									]),
+								_List_fromArray(
+									[
+										$tesk9$accessible_html_with_css$Accessibility$Styled$text('Select both players to start the match')
+									]));
+						}
+					}()
+					]))
+			]));
+};
 var $author$project$Main$SetTimeFilter = function (a) {
 	return {$: 'SetTimeFilter', a: a};
 };
@@ -13907,12 +14372,10 @@ var $rtfeldman$elm_css$Css$Global$label = $rtfeldman$elm_css$Css$Global$typeSele
 var $rtfeldman$elm_css$Css$Global$legend = $rtfeldman$elm_css$Css$Global$typeSelector('legend');
 var $rtfeldman$elm_css$Css$Global$li = $rtfeldman$elm_css$Css$Global$typeSelector('li');
 var $rtfeldman$elm_css$Css$listStyle = $rtfeldman$elm_css$Css$prop1('list-style');
-var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$Global$menu = $rtfeldman$elm_css$Css$Global$typeSelector('menu');
 var $rtfeldman$elm_css$Css$Global$nav = $rtfeldman$elm_css$Css$Global$typeSelector('nav');
 var $rtfeldman$elm_css$Css$Global$ol = $rtfeldman$elm_css$Css$Global$typeSelector('ol');
 var $rtfeldman$elm_css$Css$Global$p = $rtfeldman$elm_css$Css$Global$typeSelector('p');
-var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
 var $rtfeldman$elm_css$Css$Global$q = $rtfeldman$elm_css$Css$Global$typeSelector('q');
 var $rtfeldman$elm_css$Css$Global$section = $rtfeldman$elm_css$Css$Global$typeSelector('section');
 var $rtfeldman$elm_css$Css$Global$selector = F2(
@@ -14171,7 +14634,6 @@ var $author$project$Main$circle = function (color) {
 var $rtfeldman$elm_css$Css$borderLeft3 = $rtfeldman$elm_css$Css$prop3('border-left');
 var $rtfeldman$elm_css$Css$borderTop3 = $rtfeldman$elm_css$Css$prop3('border-top');
 var $rtfeldman$elm_css$Css$margin4 = $rtfeldman$elm_css$Css$prop4('margin');
-var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
 var $author$project$Main$downArrow = function (color) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$div,
@@ -14210,7 +14672,6 @@ var $author$project$Main$downArrow = function (color) {
 };
 var $elm$json$Json$Decode$fail = _Json_fail;
 var $rtfeldman$elm_css$Css$flexStart = $rtfeldman$elm_css$Css$prop1('flex-start');
-var $rtfeldman$elm_css$Css$flexWrap = $rtfeldman$elm_css$Css$prop1('flex-wrap');
 var $author$project$Player$htmlKey = function (_v0) {
 	var player = _v0.a;
 	var _v1 = player.id;
@@ -14284,10 +14745,6 @@ var $rtfeldman$elm_css$Html$Styled$Events$onInput = function (tagger) {
 			A2($elm$json$Json$Decode$map, tagger, $rtfeldman$elm_css$Html$Styled$Events$targetValue)));
 };
 var $rtfeldman$elm_css$Css$overflowX = $rtfeldman$elm_css$Css$prop1('overflow-x');
-var $author$project$League$players = function (_v0) {
-	var league = _v0.a;
-	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
-};
 var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
 var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 	return A2(
@@ -14493,7 +14950,6 @@ var $author$project$Main$upArrow = function (color) {
 		_List_Nil);
 };
 var $rtfeldman$elm_css$Css$visible = {overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'visible', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $rtfeldman$elm_css$Css$wrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'wrap'};
 var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -16280,8 +16736,30 @@ var $author$project$Main$view = function (model) {
 												A2(
 												$author$project$Main$blueButton,
 												'REFRESH FROM DRIVE',
-												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive))
-											]))
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive)),
+												_Utils_eq(
+												$author$project$League$currentMatch(
+													$author$project$History$current(model.history)),
+												$elm$core$Maybe$Nothing) ? A2(
+												$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$marginLeft(
+																$rtfeldman$elm_css$Css$px(12))
+															]))
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$author$project$Main$greenButton,
+														'CUSTOM MATCH',
+														$elm$core$Maybe$Just($author$project$Main$KeeperWantsToShowCustomMatchup))
+													])) : $tesk9$accessible_html_with_css$Accessibility$Styled$text('')
+											])),
+										model.showCustomMatchup ? $author$project$Main$customMatchupUI(model) : $tesk9$accessible_html_with_css$Accessibility$Styled$text('')
 									]))
 							]))
 					]),

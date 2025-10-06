@@ -78,6 +78,9 @@ type alias Model =
     , autoSaveInProgress : Bool
     , timeFilter : TimeFilter
     , ignoredPlayers : Set String  -- Player IDs that are locally ignored
+    , customMatchupPlayerA : Maybe Player
+    , customMatchupPlayerB : Maybe Player
+    , showCustomMatchup : Bool
     }
 
 
@@ -104,6 +107,11 @@ type Msg
     | TriggerReload
     | KeeperWantsToUndo
     | KeeperWantsToRedo
+    | KeeperWantsToShowCustomMatchup
+    | KeeperWantsToHideCustomMatchup
+    | KeeperSelectedPlayerA Player
+    | KeeperSelectedPlayerB Player
+    | KeeperWantsToStartCustomMatch
     | LoadedLeague (Result String League)
     | GotPlayers (Result Http.Error League)
     | ReceivedStandings String
@@ -140,6 +148,9 @@ init _ =
     , autoSaveInProgress = False
     , timeFilter = All
     , ignoredPlayers = Set.empty
+    , customMatchupPlayerA = Nothing
+    , customMatchupPlayerB = Nothing
+    , showCustomMatchup = False
       }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init" ]
     )
@@ -489,6 +500,49 @@ update msg model =
             , Cmd.none
             )
 
+        KeeperWantsToShowCustomMatchup ->
+            ( { model | showCustomMatchup = True, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing }
+            , Cmd.none
+            )
+
+        KeeperWantsToHideCustomMatchup ->
+            ( { model | showCustomMatchup = False, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing }
+            , Cmd.none
+            )
+
+        KeeperSelectedPlayerA player ->
+            ( { model | customMatchupPlayerA = Just player }
+            , Cmd.none
+            )
+
+        KeeperSelectedPlayerB player ->
+            ( { model | customMatchupPlayerB = Just player }
+            , Cmd.none
+            )
+
+        KeeperWantsToStartCustomMatch ->
+            case (model.customMatchupPlayerA, model.customMatchupPlayerB) of
+                (Just playerA, Just playerB) ->
+                    if Player.id playerA == Player.id playerB then
+                        ( { model | status = Just "Cannot match a player against themselves" }
+                        , Cmd.none
+                        )
+                    else
+                        ( { model 
+                            | history = History.mapPush (League.startMatch (League.Match playerA playerB)) model.history
+                            , showCustomMatchup = False
+                            , customMatchupPlayerA = Nothing
+                            , customMatchupPlayerB = Nothing
+                            , status = Just ("Custom match: " ++ Player.name playerA ++ " vs " ++ Player.name playerB)
+                          }
+                        , Cmd.none
+                        )
+                        
+                _ ->
+                    ( { model | status = Just "Please select both players for the custom match" }
+                    , Cmd.none
+                    )
+
         LoadedLeague (Ok league) ->
             ( { model | history = History.init 50 league }
             , Task.succeed (ShowStatus "Imported rankings") |> Task.perform identity
@@ -636,7 +690,13 @@ view model =
                     [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
                     , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
                     , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
+                    , if League.currentMatch (History.current model.history) == Nothing then
+                        Html.span [ css [ Css.marginLeft (Css.px 12) ] ]
+                            [ greenButton "CUSTOM MATCH" (Just KeeperWantsToShowCustomMatchup) ]
+                      else
+                        Html.text ""
                     ]
+                , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                 ]
             ]
         ]
@@ -714,6 +774,104 @@ toggleBtn isOn label maybeMsg =
             Nothing -> Attributes.disabled True
         ]
         [ Html.text label ]
+
+
+customMatchupUI : Model -> Html Msg
+customMatchupUI model =
+    let
+        currentLeague = History.current model.history
+        allPlayers = 
+            currentLeague
+                |> League.players
+                |> List.filter (\p -> not (League.isPlayerIgnored p currentLeague))
+                |> List.sortBy Player.name
+        
+        playerButton player selectedPlayer msg =
+            Html.button
+                [ css
+                    [ Css.padding2 (Css.px 6) (Css.px 12)
+                    , Css.margin2 (Css.px 2) (Css.px 4)
+                    , Css.borderRadius (Css.px 6)
+                    , Css.backgroundColor (case selectedPlayer of
+                        Just selected -> if Player.id selected == Player.id player then Css.hex "3B82F6" else Css.hex "E5E7EB"
+                        Nothing -> Css.hex "E5E7EB"
+                      )
+                    , Css.color (case selectedPlayer of
+                        Just selected -> if Player.id selected == Player.id player then Css.hex "FFF" else Css.hex "374151"
+                        Nothing -> Css.hex "374151"
+                      )
+                    , Css.border Css.zero
+                    , Css.cursor Css.pointer
+                    , modernSansSerif
+                    , Css.fontSize (Css.px 14)
+                    ]
+                , Events.onClick (msg player)
+                ]
+                [ Html.text (Player.name player ++ " (" ++ String.fromInt (Player.rating player) ++ ")") ]
+    in
+    Html.div
+        [ css 
+            [ Css.backgroundColor (Css.hex "F9FAFB")
+            , Css.border3 (Css.px 1) Css.solid (Css.hex "E5E7EB")
+            , Css.borderRadius (Css.px 8)
+            , Css.padding (Css.px 24)
+            , Css.margin2 (Css.px 24) Css.auto
+            , Css.maxWidth (Css.px 800)
+            , modernSansSerif
+            ]
+        ]
+        [ Html.div [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween, Css.alignItems Css.center, Css.marginBottom (Css.px 16) ] ]
+            [ Html.h3 [ css [ Css.margin Css.zero, Css.fontSize (Css.px 18), Css.fontWeight (Css.int 600) ] ] 
+                [ Html.text "Custom Match Setup" ]
+            , Html.button
+                [ css
+                    [ Css.backgroundColor Css.transparent
+                    , Css.border Css.zero
+                    , Css.fontSize (Css.px 20)
+                    , Css.cursor Css.pointer
+                    , Css.color (Css.hex "6B7280")
+                    ]
+                , Events.onClick KeeperWantsToHideCustomMatchup
+                ]
+                [ Html.text "✕" ]
+            ]
+        , Html.div [ css [ Css.marginBottom (Css.px 16) ] ]
+            [ Html.h4 [ css [ Css.fontSize (Css.px 14), Css.fontWeight (Css.int 600), Css.marginBottom (Css.px 8), Css.color (Css.hex "374151") ] ]
+                [ Html.text ("Player A" ++ (case model.customMatchupPlayerA of
+                    Just p -> ": " ++ Player.name p
+                    Nothing -> " (select one)"
+                  ))
+                ]
+            , Html.div [ css [ Css.displayFlex, Css.flexWrap Css.wrap ] ]
+                (List.map (\player -> playerButton player model.customMatchupPlayerA KeeperSelectedPlayerA) allPlayers)
+            ]
+        , Html.div [ css [ Css.marginBottom (Css.px 20) ] ]
+            [ Html.h4 [ css [ Css.fontSize (Css.px 14), Css.fontWeight (Css.int 600), Css.marginBottom (Css.px 8), Css.color (Css.hex "374151") ] ]
+                [ Html.text ("Player B" ++ (case model.customMatchupPlayerB of
+                    Just p -> ": " ++ Player.name p
+                    Nothing -> " (select one)"
+                  ))
+                ]
+            , Html.div [ css [ Css.displayFlex, Css.flexWrap Css.wrap ] ]
+                (List.map (\player -> playerButton player model.customMatchupPlayerB KeeperSelectedPlayerB) allPlayers)
+            ]
+        , Html.div [ css [ Css.textAlign Css.center ] ]
+            [ case (model.customMatchupPlayerA, model.customMatchupPlayerB) of
+                (Just playerA, Just playerB) ->
+                    if Player.id playerA == Player.id playerB then
+                        Html.span [ css [ Css.color (Css.hex "EF4444"), Css.fontSize (Css.px 14) ] ]
+                            [ Html.text "Please select two different players" ]
+                    else
+                        Html.div []
+                            [ Html.div [ css [ Css.marginBottom (Css.px 12), Css.fontSize (Css.px 14), Css.color (Css.hex "6B7280") ] ]
+                                [ Html.text ("Match Preview: " ++ Player.name playerA ++ " vs " ++ Player.name playerB) ]
+                            , greenButton "START CUSTOM MATCH" (Just KeeperWantsToStartCustomMatch)
+                            ]
+                _ ->
+                    Html.span [ css [ Css.color (Css.hex "6B7280"), Css.fontSize (Css.px 14) ] ]
+                        [ Html.text "Select both players to start the match" ]
+            ]
+        ]
 
 
 currentMatch : Model -> Html Msg
