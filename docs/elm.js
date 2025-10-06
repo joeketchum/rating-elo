@@ -15048,7 +15048,7 @@ var $author$project$Main$rankings = function (model) {
 														header,
 														left,
 														$rtfeldman$elm_css$Css$width(
-														$rtfeldman$elm_css$Css$pct(20)),
+														$rtfeldman$elm_css$Css$pct(25)),
 														A2(
 														$rtfeldman$elm_css$Css$Media$withMedia,
 														_List_fromArray(
@@ -15155,7 +15155,7 @@ var $author$project$Main$rankings = function (model) {
 														header,
 														center,
 														$rtfeldman$elm_css$Css$width(
-														$rtfeldman$elm_css$Css$pct(40))
+														$rtfeldman$elm_css$Css$pct(35))
 													]))
 											]),
 										_List_fromArray(
@@ -15308,7 +15308,7 @@ var $author$project$Main$rankings = function (model) {
 																	textual,
 																	left,
 																	$rtfeldman$elm_css$Css$width(
-																	$rtfeldman$elm_css$Css$pct(20)),
+																	$rtfeldman$elm_css$Css$pct(25)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
@@ -15425,7 +15425,7 @@ var $author$project$Main$rankings = function (model) {
 																[
 																	$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
 																	$rtfeldman$elm_css$Css$width(
-																	$rtfeldman$elm_css$Css$pct(40))
+																	$rtfeldman$elm_css$Css$pct(35))
 																]))
 														]),
 													_List_fromArray(
