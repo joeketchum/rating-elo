@@ -6097,6 +6097,7 @@ var $author$project$Main$init = function (_v0) {
 				playerASearchResults: _List_Nil,
 				playerBSearch: '',
 				playerBSearchResults: _List_Nil,
+				playerDeletionConfirmation: $elm$core$Maybe$Nothing,
 				shouldStartNextMatchAfterLoad: false,
 				showCustomMatchup: false,
 				status: $elm$core$Maybe$Nothing,
@@ -9286,7 +9287,18 @@ var $author$project$Main$update = F2(
 							$elm$core$Platform$Cmd$none)));
 			case 'KeeperWantsToRetirePlayer':
 				var player = msg.a;
-				return $author$project$Main$maybeAutoSave(
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							playerDeletionConfirmation: $elm$core$Maybe$Just(
+								_Utils_Tuple2(player, 1))
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'ConfirmPlayerDeletion':
+				var player = msg.a;
+				var step = msg.b;
+				return (step === 2) ? $author$project$Main$maybeAutoSave(
 					$author$project$Main$startNextMatchIfPossible(
 						_Utils_Tuple2(
 							_Utils_update(
@@ -9295,9 +9307,23 @@ var $author$project$Main$update = F2(
 									history: A2(
 										$author$project$History$mapPush,
 										$author$project$League$retirePlayer(player),
-										model.history)
+										model.history),
+									playerDeletionConfirmation: $elm$core$Maybe$Nothing
 								}),
-							$elm$core$Platform$Cmd$none)));
+							$elm$core$Platform$Cmd$none))) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							playerDeletionConfirmation: $elm$core$Maybe$Just(
+								_Utils_Tuple2(player, 2))
+						}),
+					$elm$core$Platform$Cmd$none);
+			case 'CancelPlayerDeletion':
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{playerDeletionConfirmation: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToIgnorePlayer':
 				var player = msg.a;
 				var _v5 = $author$project$Player$id(player);
@@ -9866,6 +9892,11 @@ var $author$project$Main$update = F2(
 						{ignoredPlayers: ignoredIds}),
 					$elm$core$Platform$Cmd$none);
 		}
+	});
+var $author$project$Main$CancelPlayerDeletion = {$: 'CancelPlayerDeletion'};
+var $author$project$Main$ConfirmPlayerDeletion = F2(
+	function (a, b) {
+		return {$: 'ConfirmPlayerDeletion', a: a, b: b};
 	});
 var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
@@ -16943,126 +16974,334 @@ var $author$project$Main$view = function (model) {
 									]))
 							]))
 					]),
-				function () {
-					var _v0 = model.status;
-					if (_v0.$ === 'Just') {
-						var message = _v0.a;
-						return _List_fromArray(
-							[
-								A2(
-								$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-								_List_fromArray(
-									[
-										$rtfeldman$elm_css$Html$Styled$Attributes$css(
-										_List_fromArray(
-											[
-												$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
-												$rtfeldman$elm_css$Css$top(
-												$rtfeldman$elm_css$Css$px(20)),
-												$rtfeldman$elm_css$Css$right(
-												$rtfeldman$elm_css$Css$px(20)),
-												$rtfeldman$elm_css$Css$backgroundColor(
-												model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
-												$rtfeldman$elm_css$Css$color(
-												$rtfeldman$elm_css$Css$hex('FFFFFF')),
-												A4(
-												$rtfeldman$elm_css$Css$padding4,
-												$rtfeldman$elm_css$Css$px(12),
-												$rtfeldman$elm_css$Css$px(16),
-												$rtfeldman$elm_css$Css$px(12),
-												$rtfeldman$elm_css$Css$px(16)),
-												$rtfeldman$elm_css$Css$borderRadius(
-												$rtfeldman$elm_css$Css$px(8)),
-												A4(
-												$rtfeldman$elm_css$Css$boxShadow4,
-												$rtfeldman$elm_css$Css$px(0),
-												$rtfeldman$elm_css$Css$px(4),
-												$rtfeldman$elm_css$Css$px(12),
-												A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
-												A3(
-												$rtfeldman$elm_css$Css$border3,
-												$rtfeldman$elm_css$Css$px(1),
-												$rtfeldman$elm_css$Css$solid,
-												A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.2)),
-												A2($rtfeldman$elm_css$Css$property, 'animation', 'slideInFromRight 0.3s ease-out'),
-												$rtfeldman$elm_css$Css$fontSize(
-												$rtfeldman$elm_css$Css$px(14)),
-												$rtfeldman$elm_css$Css$fontWeight(
-												$rtfeldman$elm_css$Css$int(500)),
-												$rtfeldman$elm_css$Css$maxWidth(
-												$rtfeldman$elm_css$Css$px(300)),
-												$rtfeldman$elm_css$Css$zIndex(
-												$rtfeldman$elm_css$Css$int(1000)),
-												$author$project$Main$modernSansSerif
-											]))
-									]),
-								_List_fromArray(
-									[
-										A2(
-										$tesk9$accessible_html_with_css$Accessibility$Styled$div,
-										_List_fromArray(
-											[
-												$rtfeldman$elm_css$Html$Styled$Attributes$css(
-												_List_fromArray(
-													[
-														$rtfeldman$elm_css$Css$displayFlex,
-														$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-														$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
-													]))
-											]),
-										_List_fromArray(
-											[
-												A2(
-												$tesk9$accessible_html_with_css$Accessibility$Styled$span,
-												_List_Nil,
-												_List_fromArray(
-													[
-														$tesk9$accessible_html_with_css$Accessibility$Styled$text(
-														_Utils_ap(
-															message,
-															model.autoSaveInProgress ? ' (Voting disabled)' : ''))
-													])),
-												A2(
-												$tesk9$accessible_html_with_css$Accessibility$Styled$button,
-												_List_fromArray(
-													[
-														$rtfeldman$elm_css$Html$Styled$Attributes$css(
-														_List_fromArray(
-															[
-																$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
-																$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-																$rtfeldman$elm_css$Css$color(
-																$rtfeldman$elm_css$Css$hex('FFFFFF')),
-																$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																$rtfeldman$elm_css$Css$fontSize(
-																$rtfeldman$elm_css$Css$px(18)),
-																$rtfeldman$elm_css$Css$fontWeight(
-																$rtfeldman$elm_css$Css$int(400)),
-																$rtfeldman$elm_css$Css$marginLeft(
-																$rtfeldman$elm_css$Css$px(12)),
-																$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-																$rtfeldman$elm_css$Css$opacity(
-																$rtfeldman$elm_css$Css$num(0.8)),
-																$rtfeldman$elm_css$Css$hover(
-																_List_fromArray(
-																	[
-																		$rtfeldman$elm_css$Css$opacity(
-																		$rtfeldman$elm_css$Css$num(1.0))
-																	]))
-															])),
-														$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$ClearStatus)
-													]),
-												_List_fromArray(
-													[
-														$tesk9$accessible_html_with_css$Accessibility$Styled$text('×')
-													]))
-											]))
-									]))
-							]);
-					} else {
-						return _List_Nil;
-					}
-				}())),
+				_Utils_ap(
+					function () {
+						var _v0 = model.playerDeletionConfirmation;
+						if (_v0.$ === 'Just') {
+							var _v1 = _v0.a;
+							var player = _v1.a;
+							var step = _v1.b;
+							return _List_fromArray(
+								[
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
+													$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
+													$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
+													$rtfeldman$elm_css$Css$width(
+													$rtfeldman$elm_css$Css$pct(100)),
+													$rtfeldman$elm_css$Css$height(
+													$rtfeldman$elm_css$Css$pct(100)),
+													$rtfeldman$elm_css$Css$backgroundColor(
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5)),
+													$rtfeldman$elm_css$Css$displayFlex,
+													$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+													$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+													$rtfeldman$elm_css$Css$zIndex(
+													$rtfeldman$elm_css$Css$int(1500))
+												]))
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$backgroundColor(
+															$rtfeldman$elm_css$Css$hex('FFFFFF')),
+															$rtfeldman$elm_css$Css$borderRadius(
+															$rtfeldman$elm_css$Css$px(12)),
+															$rtfeldman$elm_css$Css$padding(
+															$rtfeldman$elm_css$Css$px(24)),
+															A4(
+															$rtfeldman$elm_css$Css$boxShadow4,
+															$rtfeldman$elm_css$Css$px(0),
+															$rtfeldman$elm_css$Css$px(8),
+															$rtfeldman$elm_css$Css$px(32),
+															A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.3)),
+															$rtfeldman$elm_css$Css$maxWidth(
+															$rtfeldman$elm_css$Css$px(400)),
+															$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+															$author$project$Main$modernSansSerif
+														]))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$h3,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Html$Styled$Attributes$css(
+															_List_fromArray(
+																[
+																	A2(
+																	$rtfeldman$elm_css$Css$margin2,
+																	$rtfeldman$elm_css$Css$px(0),
+																	$rtfeldman$elm_css$Css$px(0)),
+																	$rtfeldman$elm_css$Css$marginBottom(
+																	$rtfeldman$elm_css$Css$px(16)),
+																	$rtfeldman$elm_css$Css$fontSize(
+																	$rtfeldman$elm_css$Css$px(18)),
+																	$rtfeldman$elm_css$Css$fontWeight(
+																	$rtfeldman$elm_css$Css$int(600)),
+																	$rtfeldman$elm_css$Css$color(
+																	$rtfeldman$elm_css$Css$hex('DC2626'))
+																]))
+														]),
+													_List_fromArray(
+														[
+															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+															(step === 1) ? 'Delete Player?' : 'Final Warning!')
+														])),
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$p,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Html$Styled$Attributes$css(
+															_List_fromArray(
+																[
+																	A2(
+																	$rtfeldman$elm_css$Css$margin2,
+																	$rtfeldman$elm_css$Css$px(0),
+																	$rtfeldman$elm_css$Css$px(0)),
+																	$rtfeldman$elm_css$Css$marginBottom(
+																	$rtfeldman$elm_css$Css$px(24)),
+																	$rtfeldman$elm_css$Css$fontSize(
+																	$rtfeldman$elm_css$Css$px(16)),
+																	$rtfeldman$elm_css$Css$color(
+																	$rtfeldman$elm_css$Css$hex('374151'))
+																]))
+														]),
+													_List_fromArray(
+														[
+															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+															(step === 1) ? ('Are you sure you want to delete ' + ($author$project$Player$name(player) + '?')) : 'Is that your final answer? This cannot be undone!')
+														])),
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Html$Styled$Attributes$css(
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Css$displayFlex,
+																	$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+																]))
+														]),
+													_List_fromArray(
+														[
+															A2(
+															$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$backgroundColor(
+																			$rtfeldman$elm_css$Css$hex('6B7280')),
+																			$rtfeldman$elm_css$Css$color(
+																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																			$rtfeldman$elm_css$Css$borderRadius(
+																			$rtfeldman$elm_css$Css$px(6)),
+																			A2(
+																			$rtfeldman$elm_css$Css$padding2,
+																			$rtfeldman$elm_css$Css$px(8),
+																			$rtfeldman$elm_css$Css$px(16)),
+																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																			$rtfeldman$elm_css$Css$fontSize(
+																			$rtfeldman$elm_css$Css$px(14)),
+																			$rtfeldman$elm_css$Css$fontWeight(
+																			$rtfeldman$elm_css$Css$int(500)),
+																			$rtfeldman$elm_css$Css$marginRight(
+																			$rtfeldman$elm_css$Css$px(12)),
+																			$rtfeldman$elm_css$Css$hover(
+																			_List_fromArray(
+																				[
+																					$rtfeldman$elm_css$Css$backgroundColor(
+																					$rtfeldman$elm_css$Css$hex('4B5563'))
+																				]))
+																		])),
+																	$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$CancelPlayerDeletion)
+																]),
+															_List_fromArray(
+																[
+																	$tesk9$accessible_html_with_css$Accessibility$Styled$text('Cancel')
+																])),
+															A2(
+															$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$backgroundColor(
+																			$rtfeldman$elm_css$Css$hex('DC2626')),
+																			$rtfeldman$elm_css$Css$color(
+																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																			$rtfeldman$elm_css$Css$borderRadius(
+																			$rtfeldman$elm_css$Css$px(6)),
+																			A2(
+																			$rtfeldman$elm_css$Css$padding2,
+																			$rtfeldman$elm_css$Css$px(8),
+																			$rtfeldman$elm_css$Css$px(16)),
+																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																			$rtfeldman$elm_css$Css$fontSize(
+																			$rtfeldman$elm_css$Css$px(14)),
+																			$rtfeldman$elm_css$Css$fontWeight(
+																			$rtfeldman$elm_css$Css$int(500)),
+																			$rtfeldman$elm_css$Css$hover(
+																			_List_fromArray(
+																				[
+																					$rtfeldman$elm_css$Css$backgroundColor(
+																					$rtfeldman$elm_css$Css$hex('B91C1C'))
+																				]))
+																		])),
+																	$rtfeldman$elm_css$Html$Styled$Events$onClick(
+																	A2($author$project$Main$ConfirmPlayerDeletion, player, step + 1))
+																]),
+															_List_fromArray(
+																[
+																	$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+																	(step === 1) ? 'Yes, Delete' : 'Final Answer: DELETE')
+																]))
+														]))
+												]))
+										]))
+								]);
+						} else {
+							return _List_Nil;
+						}
+					}(),
+					function () {
+						var _v2 = model.status;
+						if (_v2.$ === 'Just') {
+							var message = _v2.a;
+							return _List_fromArray(
+								[
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
+													$rtfeldman$elm_css$Css$top(
+													$rtfeldman$elm_css$Css$px(20)),
+													$rtfeldman$elm_css$Css$right(
+													$rtfeldman$elm_css$Css$px(20)),
+													$rtfeldman$elm_css$Css$backgroundColor(
+													model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
+													$rtfeldman$elm_css$Css$color(
+													$rtfeldman$elm_css$Css$hex('FFFFFF')),
+													A4(
+													$rtfeldman$elm_css$Css$padding4,
+													$rtfeldman$elm_css$Css$px(12),
+													$rtfeldman$elm_css$Css$px(16),
+													$rtfeldman$elm_css$Css$px(12),
+													$rtfeldman$elm_css$Css$px(16)),
+													$rtfeldman$elm_css$Css$borderRadius(
+													$rtfeldman$elm_css$Css$px(8)),
+													A4(
+													$rtfeldman$elm_css$Css$boxShadow4,
+													$rtfeldman$elm_css$Css$px(0),
+													$rtfeldman$elm_css$Css$px(4),
+													$rtfeldman$elm_css$Css$px(12),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
+													A3(
+													$rtfeldman$elm_css$Css$border3,
+													$rtfeldman$elm_css$Css$px(1),
+													$rtfeldman$elm_css$Css$solid,
+													A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.2)),
+													A2($rtfeldman$elm_css$Css$property, 'animation', 'slideInFromRight 0.3s ease-out'),
+													$rtfeldman$elm_css$Css$fontSize(
+													$rtfeldman$elm_css$Css$px(14)),
+													$rtfeldman$elm_css$Css$fontWeight(
+													$rtfeldman$elm_css$Css$int(500)),
+													$rtfeldman$elm_css$Css$maxWidth(
+													$rtfeldman$elm_css$Css$px(300)),
+													$rtfeldman$elm_css$Css$zIndex(
+													$rtfeldman$elm_css$Css$int(1000)),
+													$author$project$Main$modernSansSerif
+												]))
+										]),
+									_List_fromArray(
+										[
+											A2(
+											$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$displayFlex,
+															$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+															$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
+														]))
+												]),
+											_List_fromArray(
+												[
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$span,
+													_List_Nil,
+													_List_fromArray(
+														[
+															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+															_Utils_ap(
+																message,
+																model.autoSaveInProgress ? ' (Voting disabled)' : ''))
+														])),
+													A2(
+													$tesk9$accessible_html_with_css$Accessibility$Styled$button,
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Html$Styled$Attributes$css(
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
+																	$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																	$rtfeldman$elm_css$Css$color(
+																	$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																	$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																	$rtfeldman$elm_css$Css$fontSize(
+																	$rtfeldman$elm_css$Css$px(18)),
+																	$rtfeldman$elm_css$Css$fontWeight(
+																	$rtfeldman$elm_css$Css$int(400)),
+																	$rtfeldman$elm_css$Css$marginLeft(
+																	$rtfeldman$elm_css$Css$px(12)),
+																	$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+																	$rtfeldman$elm_css$Css$opacity(
+																	$rtfeldman$elm_css$Css$num(0.8)),
+																	$rtfeldman$elm_css$Css$hover(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$opacity(
+																			$rtfeldman$elm_css$Css$num(1.0))
+																		]))
+																])),
+															$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$ClearStatus)
+														]),
+													_List_fromArray(
+														[
+															$tesk9$accessible_html_with_css$Accessibility$Styled$text('×')
+														]))
+												]))
+										]))
+								]);
+						} else {
+							return _List_Nil;
+						}
+					}()))),
 		title: 'Hockey Rater 🏒'
 	};
 };

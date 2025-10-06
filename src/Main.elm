@@ -85,6 +85,7 @@ type alias Model =
     , playerBSearch : String
     , playerASearchResults : List Player
     , playerBSearchResults : List Player
+    , playerDeletionConfirmation : Maybe (Player, Int)  -- Player to delete and confirmation step (1 or 2)
     }
 
 
@@ -95,6 +96,8 @@ type Msg
     = KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
     | KeeperWantsToRetirePlayer Player
+    | ConfirmPlayerDeletion Player Int
+    | CancelPlayerDeletion
     | KeeperWantsToIgnorePlayer Player
     | KeeperWantsToUnignorePlayer Player
     | KeeperWantsToSkipMatch
@@ -161,6 +164,7 @@ init _ =
     , playerBSearch = ""
     , playerASearchResults = []
     , playerBSearchResults = []
+    , playerDeletionConfirmation = Nothing
       }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init" ]
     )
@@ -367,11 +371,28 @@ update msg model =
                 |> maybeAutoSave
 
         KeeperWantsToRetirePlayer player ->
-            ( { model | history = History.mapPush (League.retirePlayer player) model.history }
+            ( { model | playerDeletionConfirmation = Just (player, 1) }
             , Cmd.none
             )
-                |> startNextMatchIfPossible
-                |> maybeAutoSave
+
+        ConfirmPlayerDeletion player step ->
+            if step == 2 then
+                -- Final confirmation - actually delete the player
+                ( { model | playerDeletionConfirmation = Nothing, history = History.mapPush (League.retirePlayer player) model.history }
+                , Cmd.none
+                )
+                    |> startNextMatchIfPossible
+                    |> maybeAutoSave
+            else
+                -- Move to step 2 confirmation
+                ( { model | playerDeletionConfirmation = Just (player, 2) }
+                , Cmd.none
+                )
+
+        CancelPlayerDeletion ->
+            ( { model | playerDeletionConfirmation = Nothing }
+            , Cmd.none
+            )
 
         KeeperWantsToIgnorePlayer player ->
             let
@@ -752,6 +773,96 @@ view model =
                 ]
             ]
         ]
+        ++ (case model.playerDeletionConfirmation of
+                Just (player, step) ->
+                    [ Html.div
+                        [ css
+                            [ Css.position Css.fixed
+                            , Css.top Css.zero
+                            , Css.left Css.zero
+                            , Css.width (Css.pct 100)
+                            , Css.height (Css.pct 100)
+                            , Css.backgroundColor (Css.rgba 0 0 0 0.5)
+                            , Css.displayFlex
+                            , Css.alignItems Css.center
+                            , Css.justifyContent Css.center
+                            , Css.zIndex (Css.int 1500)
+                            ]
+                        ]
+                        [ Html.div
+                            [ css
+                                [ Css.backgroundColor (Css.hex "FFFFFF")
+                                , Css.borderRadius (Css.px 12)
+                                , Css.padding (Css.px 24)
+                                , Css.boxShadow4 (Css.px 0) (Css.px 8) (Css.px 32) (Css.rgba 0 0 0 0.3)
+                                , Css.maxWidth (Css.px 400)
+                                , Css.textAlign Css.center
+                                , modernSansSerif
+                                ]
+                            ]
+                            [ Html.h3
+                                [ css 
+                                    [ Css.margin2 (Css.px 0) (Css.px 0)
+                                    , Css.marginBottom (Css.px 16)
+                                    , Css.fontSize (Css.px 18)
+                                    , Css.fontWeight (Css.int 600)
+                                    , Css.color (Css.hex "DC2626")
+                                    ]
+                                ]
+                                [ Html.text (if step == 1 then "Delete Player?" else "Final Warning!") ]
+                            , Html.p
+                                [ css 
+                                    [ Css.margin2 (Css.px 0) (Css.px 0)
+                                    , Css.marginBottom (Css.px 24)
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.color (Css.hex "374151")
+                                    ]
+                                ]
+                                [ Html.text (if step == 1 
+                                    then "Are you sure you want to delete " ++ Player.name player ++ "?"
+                                    else "Is that your final answer? This cannot be undone!")
+                                ]
+                            , Html.div
+                                [ css [ Css.displayFlex, Css.justifyContent Css.center ] ]
+                                [ Html.button
+                                    [ css
+                                        [ Css.backgroundColor (Css.hex "6B7280")
+                                        , Css.color (Css.hex "FFFFFF")
+                                        , Css.border Css.zero
+                                        , Css.borderRadius (Css.px 6)
+                                        , Css.padding2 (Css.px 8) (Css.px 16)
+                                        , Css.cursor Css.pointer
+                                        , Css.fontSize (Css.px 14)
+                                        , Css.fontWeight (Css.int 500)
+                                        , Css.marginRight (Css.px 12)
+                                        , Css.hover [ Css.backgroundColor (Css.hex "4B5563") ]
+                                        ]
+                                    , Events.onClick CancelPlayerDeletion
+                                    ]
+                                    [ Html.text "Cancel" ]
+                                , Html.button
+                                    [ css
+                                        [ Css.backgroundColor (Css.hex "DC2626")
+                                        , Css.color (Css.hex "FFFFFF")
+                                        , Css.border Css.zero
+                                        , Css.borderRadius (Css.px 6)
+                                        , Css.padding2 (Css.px 8) (Css.px 16)
+                                        , Css.cursor Css.pointer
+                                        , Css.fontSize (Css.px 14)
+                                        , Css.fontWeight (Css.int 500)
+                                        , Css.hover [ Css.backgroundColor (Css.hex "B91C1C") ]
+                                        ]
+                                    , Events.onClick (ConfirmPlayerDeletion player (step + 1))
+                                    ]
+                                    [ Html.text (if step == 1 then "Yes, Delete" else "Final Answer: DELETE") ]
+                                ]
+                            ]
+                        ]
+                    ]
+
+                Nothing ->
+                    []
+           )
         ++ (case model.status of
                 Just message ->
                     [ Html.div
