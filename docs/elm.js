@@ -5769,6 +5769,20 @@ var $elm$core$List$member = F2(
 			},
 			xs);
 	});
+var $elm$core$Basics$min = F2(
+	function (x, y) {
+		return (_Utils_cmp(x, y) < 0) ? x : y;
+	});
+var $elm$core$List$minimum = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(
+			A3($elm$core$List$foldl, $elm$core$Basics$min, x, xs));
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
@@ -5973,6 +5987,7 @@ var $author$project$League$nextMatchFiltered = F2(
 					A2(
 						$elm$random$Random$andThen,
 						function (firstPlayer) {
+							var baseWeight = 10.0;
 							var _v5 = _Utils_eq(firstPlayer, a) ? _Utils_Tuple2(b, rest) : (_Utils_eq(firstPlayer, b) ? _Utils_Tuple2(a, rest) : _Utils_Tuple2(
 								a,
 								A2(
@@ -5986,10 +6001,10 @@ var $author$project$League$nextMatchFiltered = F2(
 										rest))));
 							var head = _v5.a;
 							var tail = _v5.b;
-							var furthestAway = A2(
+							var closestRatingDistance = A2(
 								$elm$core$Maybe$withDefault,
 								0,
-								$elm$core$List$maximum(
+								$elm$core$List$minimum(
 									A2(
 										$elm$core$List$map,
 										function (player) {
@@ -6003,21 +6018,21 @@ var $author$project$League$nextMatchFiltered = F2(
 								A2(
 									$elm$random$Random$weighted,
 									_Utils_Tuple2(
-										A2(
-											$elm$core$Basics$pow,
-											furthestAway - $elm$core$Basics$abs(
-												$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(head)),
-											2),
+										baseWeight + (500 - A2(
+											$elm$core$Basics$min,
+											500,
+											$elm$core$Basics$abs(
+												$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(head)))),
 										head),
 									A2(
 										$elm$core$List$map,
 										function (player) {
 											return _Utils_Tuple2(
-												A2(
-													$elm$core$Basics$pow,
-													furthestAway - $elm$core$Basics$abs(
-														$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(player)),
-													2),
+												baseWeight + (500 - A2(
+													$elm$core$Basics$min,
+													500,
+													$elm$core$Basics$abs(
+														$author$project$Player$rating(firstPlayer) - $author$project$Player$rating(player)))),
 												player);
 										},
 										tail)));

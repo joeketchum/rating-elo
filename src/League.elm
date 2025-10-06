@@ -245,15 +245,18 @@ nextMatchFiltered allow (League league) =
                                 else
                                     ( a, b :: List.filter (\p -> p /= firstPlayer) rest )
 
-                            furthestAway =
+                            closestRatingDistance =
                                 (head :: tail)
                                     |> List.map (\player -> abs (Player.rating firstPlayer - Player.rating player))
-                                    |> List.maximum
+                                    |> List.minimum
                                     |> Maybe.withDefault 0
+                                    
+                            -- Add small constant to avoid division by zero and ensure all players have some chance
+                            baseWeight = 10.0
                         in
                         Random.weighted
-                            ( toFloat (furthestAway - abs (Player.rating firstPlayer - Player.rating head)) ^ 2, head )
-                            (List.map (\player -> ( toFloat (furthestAway - abs (Player.rating firstPlayer - Player.rating player)) ^ 2, player )) tail)
+                            ( baseWeight + toFloat (500 - min 500 (abs (Player.rating firstPlayer - Player.rating head))), head )
+                            (List.map (\player -> ( baseWeight + toFloat (500 - min 500 (abs (Player.rating firstPlayer - Player.rating player))), player )) tail)
                             |> Random.map (Tuple.pair firstPlayer)
                     )
                 |> Random.andThen
