@@ -1429,7 +1429,9 @@ smallRedXButtonSmall maybeMsg =
         [ css
             [ Css.padding2 (Css.px 2) (Css.px 8)
             , Css.margin2 Css.zero (Css.px 4)
-            , Css.minWidth (Css.px 36)
+            , Css.width (Css.px 40)
+            , Css.boxSizing Css.borderBox
+            , Css.textAlign Css.center
             , case maybeMsg of
                 Just _ -> Css.backgroundColor (Css.hex "E02020")
                 Nothing -> Css.backgroundColor (Css.hex "DDD")
@@ -1440,11 +1442,13 @@ smallRedXButtonSmall maybeMsg =
             , Css.fontWeight (Css.int 700)
             , Css.color (Css.hex "FFF")
             , modernSansSerif
+            , Css.whiteSpace Css.noWrap
             , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
                 [ Css.padding2 (Css.px 2) (Css.px 6)
                 , Css.marginRight (Css.px 2)
                 , Css.marginLeft (Css.px 2)
-                , Css.minWidth (Css.px 30)
+                , Css.width (Css.px 40)
+                , Css.boxSizing Css.borderBox
                 , Css.fontSize (Css.px 10)
                 ]
             ]
@@ -1495,7 +1499,9 @@ zzzIgnoreButtonSmall maybeMsg =
         [ css
             [ Css.padding2 (Css.px 2) (Css.px 8)
             , Css.margin2 Css.zero (Css.px 4)
-            , Css.minWidth (Css.px 36)
+            , Css.width (Css.px 40)
+            , Css.boxSizing Css.borderBox
+            , Css.textAlign Css.center
             , Css.backgroundColor (Css.hex "6B7280")
             , Css.border Css.zero
             , Css.borderRadius (Css.px 9999)
@@ -1504,8 +1510,9 @@ zzzIgnoreButtonSmall maybeMsg =
             , Css.fontWeight (Css.int 700)
             , Css.color (Css.hex "FFF")
             , modernSansSerif
-            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
-            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 400) ] ] [ Css.paddingLeft (Css.px 4), Css.paddingRight (Css.px 4), Css.minWidth (Css.px 30) ]
+            , Css.whiteSpace Css.noWrap
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10), Css.width (Css.px 40), Css.boxSizing Css.borderBox ]
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 400) ] ] [ Css.paddingLeft (Css.px 4), Css.paddingRight (Css.px 4), Css.width (Css.px 40) ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1553,7 +1560,9 @@ zzzUnignoreButtonSmall maybeMsg =
         [ css
             [ Css.padding2 (Css.px 2) (Css.px 8)
             , Css.margin2 Css.zero (Css.px 4)
-            , Css.minWidth (Css.px 36)
+            , Css.width (Css.px 40)
+            , Css.boxSizing Css.borderBox
+            , Css.textAlign Css.center
             , Css.backgroundColor (Css.hex "374151")
             , Css.border Css.zero
             , Css.borderRadius (Css.px 9999)
@@ -1563,8 +1572,9 @@ zzzUnignoreButtonSmall maybeMsg =
             , Css.color (Css.hex "FFF")
             , Css.textDecoration Css.lineThrough
             , modernSansSerif
-            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10) ]
-            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 400) ] ] [ Css.paddingLeft (Css.px 4), Css.paddingRight (Css.px 4), Css.minWidth (Css.px 30) ]
+            , Css.whiteSpace Css.noWrap
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.paddingLeft (Css.px 6), Css.paddingRight (Css.px 6), Css.fontSize (Css.px 10), Css.width (Css.px 40), Css.boxSizing Css.borderBox ]
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 400) ] ] [ Css.paddingLeft (Css.px 4), Css.paddingRight (Css.px 4), Css.width (Css.px 40) ]
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
@@ -1727,7 +1737,12 @@ toggleChipSmall label isOn colorOn msg =
             , Css.fontWeight (Css.int 700)
             , Css.border Css.zero
             , Css.cursor Css.pointer
-            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.padding2 (Css.px 2) (Css.px 5), Css.fontSize (Css.px 9) ]
+            , modernSansSerif
+            , Css.whiteSpace Css.noWrap
+            , Css.textAlign Css.center
+            , Css.width (Css.px 40)
+            , Css.boxSizing Css.borderBox
+            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.padding2 (Css.px 2) (Css.px 5), Css.fontSize (Css.px 10), Css.width (Css.px 40), Css.boxSizing Css.borderBox ]
             ]
         , Events.onClick msg
         ]

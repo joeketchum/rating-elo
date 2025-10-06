@@ -14273,6 +14273,7 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
+var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
 var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 	return A2(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$button,
@@ -14289,8 +14290,10 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$margin2,
 						$rtfeldman$elm_css$Css$zero,
 						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$px(40)),
+						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 						function () {
 						if (maybeMsg.$ === 'Just') {
 							return $rtfeldman$elm_css$Css$backgroundColor(
@@ -14311,6 +14314,7 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$color(
 						$rtfeldman$elm_css$Css$hex('FFF')),
 						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap),
 						A2(
 						$rtfeldman$elm_css$Css$Media$withMedia,
 						_List_fromArray(
@@ -14334,8 +14338,9 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$px(2)),
 								$rtfeldman$elm_css$Css$marginLeft(
 								$rtfeldman$elm_css$Css$px(2)),
-								$rtfeldman$elm_css$Css$minWidth(
-								$rtfeldman$elm_css$Css$px(30)),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$px(40)),
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
 								$rtfeldman$elm_css$Css$fontSize(
 								$rtfeldman$elm_css$Css$px(10))
 							]))
@@ -14392,6 +14397,12 @@ var $author$project$Main$toggleChipSmall = F4(
 							$rtfeldman$elm_css$Css$int(700)),
 							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
 							$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+							$author$project$Main$modernSansSerif,
+							$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap),
+							$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+							$rtfeldman$elm_css$Css$width(
+							$rtfeldman$elm_css$Css$px(40)),
+							$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
 							A2(
 							$rtfeldman$elm_css$Css$Media$withMedia,
 							_List_fromArray(
@@ -14412,7 +14423,10 @@ var $author$project$Main$toggleChipSmall = F4(
 									$rtfeldman$elm_css$Css$px(2),
 									$rtfeldman$elm_css$Css$px(5)),
 									$rtfeldman$elm_css$Css$fontSize(
-									$rtfeldman$elm_css$Css$px(9))
+									$rtfeldman$elm_css$Css$px(10)),
+									$rtfeldman$elm_css$Css$width(
+									$rtfeldman$elm_css$Css$px(40)),
+									$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
 								]))
 						])),
 					$rtfeldman$elm_css$Html$Styled$Events$onClick(msg)
@@ -14464,7 +14478,6 @@ var $author$project$Main$upArrow = function (color) {
 		_List_Nil);
 };
 var $rtfeldman$elm_css$Css$visible = {overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'visible', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
 var $rtfeldman$elm_css$Css$wrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'wrap'};
 var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 	return A2(
@@ -14482,8 +14495,10 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$margin2,
 						$rtfeldman$elm_css$Css$zero,
 						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$px(40)),
+						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 						$rtfeldman$elm_css$Css$backgroundColor(
 						$rtfeldman$elm_css$Css$hex('6B7280')),
 						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
@@ -14497,6 +14512,7 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$color(
 						$rtfeldman$elm_css$Css$hex('FFF')),
 						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap),
 						A2(
 						$rtfeldman$elm_css$Css$Media$withMedia,
 						_List_fromArray(
@@ -14517,7 +14533,10 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$paddingRight(
 								$rtfeldman$elm_css$Css$px(6)),
 								$rtfeldman$elm_css$Css$fontSize(
-								$rtfeldman$elm_css$Css$px(10))
+								$rtfeldman$elm_css$Css$px(10)),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$px(40)),
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
 							])),
 						A2(
 						$rtfeldman$elm_css$Css$Media$withMedia,
@@ -14538,8 +14557,8 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$px(4)),
 								$rtfeldman$elm_css$Css$paddingRight(
 								$rtfeldman$elm_css$Css$px(4)),
-								$rtfeldman$elm_css$Css$minWidth(
-								$rtfeldman$elm_css$Css$px(30))
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$px(40))
 							]))
 					])),
 				function () {
@@ -14572,8 +14591,10 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$margin2,
 						$rtfeldman$elm_css$Css$zero,
 						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(36)),
+						$rtfeldman$elm_css$Css$width(
+						$rtfeldman$elm_css$Css$px(40)),
+						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
+						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 						$rtfeldman$elm_css$Css$backgroundColor(
 						$rtfeldman$elm_css$Css$hex('374151')),
 						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
@@ -14588,6 +14609,7 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$hex('FFF')),
 						$rtfeldman$elm_css$Css$textDecoration($rtfeldman$elm_css$Css$lineThrough),
 						$author$project$Main$modernSansSerif,
+						$rtfeldman$elm_css$Css$whiteSpace($rtfeldman$elm_css$Css$noWrap),
 						A2(
 						$rtfeldman$elm_css$Css$Media$withMedia,
 						_List_fromArray(
@@ -14608,7 +14630,10 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$paddingRight(
 								$rtfeldman$elm_css$Css$px(6)),
 								$rtfeldman$elm_css$Css$fontSize(
-								$rtfeldman$elm_css$Css$px(10))
+								$rtfeldman$elm_css$Css$px(10)),
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$px(40)),
+								$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
 							])),
 						A2(
 						$rtfeldman$elm_css$Css$Media$withMedia,
@@ -14629,8 +14654,8 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 								$rtfeldman$elm_css$Css$px(4)),
 								$rtfeldman$elm_css$Css$paddingRight(
 								$rtfeldman$elm_css$Css$px(4)),
-								$rtfeldman$elm_css$Css$minWidth(
-								$rtfeldman$elm_css$Css$px(30))
+								$rtfeldman$elm_css$Css$width(
+								$rtfeldman$elm_css$Css$px(40))
 							]))
 					])),
 				function () {
