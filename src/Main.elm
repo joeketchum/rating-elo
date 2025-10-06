@@ -773,26 +773,27 @@ view model =
                             , modernSansSerif
                             ]
                         ]
-                        [ Html.div [] 
-                            [ Html.span [] [ Html.text message ]
-                            , if model.autoSaveInProgress then Html.span [ css [ Css.marginLeft (Css.px 8) ] ] [ Html.text "(Voting disabled)" ] else Html.text ""
-                            ]
-                        , Html.div []
-                            (case model.lastSynced of
-                                Just ts ->
-                                    [ Html.span
-                                        [ css
-                                            [ Css.fontSize (Css.px 12)
-                                            , Css.marginTop (Css.px 6)
-                                            , Css.display Css.inlineBlock
-                                            ]
-                                        ]
-                                        [ Html.text ("Last-synced: " ++ ts) ]
+                        [ Html.div 
+                            [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween ] ] 
+                            [ Html.span [] 
+                                [ Html.text (message ++ (if model.autoSaveInProgress then " (Voting disabled)" else "")) ]
+                            , Html.button
+                                [ css
+                                    [ Css.backgroundColor Css.transparent
+                                    , Css.border Css.zero
+                                    , Css.color (Css.hex "FFFFFF")
+                                    , Css.cursor Css.pointer
+                                    , Css.fontSize (Css.px 18)
+                                    , Css.fontWeight (Css.int 400)
+                                    , Css.marginLeft (Css.px 12)
+                                    , Css.padding Css.zero
+                                    , Css.opacity (Css.num 0.8)
+                                    , Css.hover [ Css.opacity (Css.num 1.0) ]
                                     ]
-
-                                Nothing ->
-                                    []
-                            )
+                                , Events.onClick ClearStatus
+                                ]
+                                [ Html.text "×" ]
+                            ]
                         , Html.span [ css [ Css.marginLeft (Css.px 8) ] ]
                             [ smallRedXButton (Just ClearStatus) ]
                         ]
