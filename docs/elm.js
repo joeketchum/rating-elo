@@ -5432,6 +5432,12 @@ var $elm$core$Set$Set_elm_builtin = function (a) {
 var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
 var $elm$core$Set$empty = $elm$core$Set$Set_elm_builtin($elm$core$Dict$empty);
+var $elm$json$Json$Encode$null = _Json_encodeNull;
+var $author$project$Main$getBackupCount = _Platform_outgoingPort(
+	'getBackupCount',
+	function ($) {
+		return $elm$json$Json$Encode$null;
+	});
 var $author$project$History$History = function (a) {
 	return {$: 'History', a: a};
 };
@@ -6087,10 +6093,12 @@ var $author$project$Main$init = function (_v0) {
 			{
 				autoSave: true,
 				autoSaveInProgress: false,
+				backupCount: 0,
 				customMatchupPlayerA: $elm$core$Maybe$Nothing,
 				customMatchupPlayerB: $elm$core$Maybe$Nothing,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				ignoredPlayers: $elm$core$Set$empty,
+				lastBackupTime: $elm$core$Maybe$Nothing,
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
 				playerASearch: '',
@@ -6110,7 +6118,8 @@ var $author$project$Main$init = function (_v0) {
 						$author$project$Main$askForAutoSave('init'),
 						$author$project$Main$askForTimeFilter('init'),
 						$author$project$Main$askForIgnoredPlayers('init'),
-						$author$project$Main$loadFromPublicDrive('init')
+						$author$project$Main$loadFromPublicDrive('init'),
+						$author$project$Main$getBackupCount(_Utils_Tuple0)
 					]))));
 };
 var $author$project$Main$AutoSaveCompleted = {$: 'AutoSaveCompleted'};
@@ -6122,9 +6131,13 @@ var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$MatchFinished = function (a) {
 	return {$: 'MatchFinished', a: a};
 };
+var $author$project$Main$PeriodicBackupTimer = {$: 'PeriodicBackupTimer'};
 var $author$project$Main$PeriodicSync = {$: 'PeriodicSync'};
 var $author$project$Main$ReceivedAutoSave = function (a) {
 	return {$: 'ReceivedAutoSave', a: a};
+};
+var $author$project$Main$ReceivedBackupCount = function (a) {
+	return {$: 'ReceivedBackupCount', a: a};
 };
 var $author$project$Main$ReceivedIgnoredPlayers = function (a) {
 	return {$: 'ReceivedIgnoredPlayers', a: a};
@@ -6777,6 +6790,8 @@ var $ohanhi$keyboard$Keyboard$rawValue = function (_v0) {
 };
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
+var $elm$json$Json$Decode$int = _Json_decodeInt;
+var $author$project$Main$receiveBackupCount = _Platform_incomingPort('receiveBackupCount', $elm$json$Json$Decode$int);
 var $author$project$Main$receiveIgnoredPlayers = _Platform_incomingPort('receiveIgnoredPlayers', $elm$json$Json$Decode$string);
 var $elm$json$Json$Decode$null = _Json_decodeNull;
 var $author$project$Main$receiveMatchSaveComplete = _Platform_incomingPort(
@@ -6869,8 +6884,15 @@ var $author$project$Main$subscriptions = function (model) {
 					function (_v8) {
 						return $author$project$Main$PeriodicSync;
 					}),
+					A2(
+					$elm$time$Time$every,
+					(5 * 60) * 1000,
+					function (_v9) {
+						return $author$project$Main$PeriodicBackupTimer;
+					}),
 					$author$project$Main$receiveTimeFilter($author$project$Main$ReceivedTimeFilter),
-					$author$project$Main$receiveIgnoredPlayers($author$project$Main$ReceivedIgnoredPlayers)
+					$author$project$Main$receiveIgnoredPlayers($author$project$Main$ReceivedIgnoredPlayers),
+					$author$project$Main$receiveBackupCount($author$project$Main$ReceivedBackupCount)
 				]));
 	}
 };
@@ -7158,7 +7180,6 @@ var $robinheghan$murmur3$Murmur3$hashString = F2(
 				A4($robinheghan$murmur3$Murmur3$HashData, 0, seed, 0, 0),
 				str));
 	});
-var $elm$json$Json$Decode$int = _Json_decodeInt;
 var $elm$json$Json$Decode$map6 = _Json_map6;
 var $elm$json$Json$Decode$oneOf = _Json_oneOf;
 var $author$project$Player$decoder = function () {
@@ -9115,6 +9136,7 @@ var $author$project$League$retirePlayer = F2(
 				}));
 	});
 var $author$project$Main$saveAutoSave = _Platform_outgoingPort('saveAutoSave', $elm$json$Json$Encode$bool);
+var $author$project$Main$saveBackup = _Platform_outgoingPort('saveBackup', $elm$json$Json$Encode$string);
 var $author$project$Main$saveIgnoredPlayers = _Platform_outgoingPort('saveIgnoredPlayers', $elm$json$Json$Encode$string);
 var $author$project$Player$setAM = F2(
 	function (val, _v0) {
@@ -9882,7 +9904,7 @@ var $author$project$Main$update = F2(
 						model,
 						{timeFilter: tf}),
 					$elm$core$Platform$Cmd$none);
-			default:
+			case 'ReceivedIgnoredPlayers':
 				var raw = msg.a;
 				var ignoredIds = $elm$core$String$isEmpty(raw) ? $elm$core$Set$empty : $elm$core$Set$fromList(
 					A2($elm$core$String$split, ',', raw));
@@ -9891,6 +9913,58 @@ var $author$project$Main$update = F2(
 						model,
 						{ignoredPlayers: ignoredIds}),
 					$elm$core$Platform$Cmd$none);
+			case 'TriggerBackup':
+				var backupData = A2(
+					$elm$json$Json$Encode$encode,
+					2,
+					$author$project$League$encode(
+						$author$project$History$current(model.history)));
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							lastBackupTime: $elm$core$Maybe$Just('Manual backup')
+						}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$saveBackup(backupData),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Backup saved successfully')))
+							])));
+			case 'ReceivedBackupCount':
+				var count = msg.a;
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{backupCount: count}),
+					$elm$core$Platform$Cmd$none);
+			default:
+				var backupData = A2(
+					$elm$json$Json$Encode$encode,
+					2,
+					$author$project$League$encode(
+						$author$project$History$current(model.history)));
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							lastBackupTime: $elm$core$Maybe$Just('Auto backup')
+						}),
+					$elm$core$Platform$Cmd$batch(
+						_List_fromArray(
+							[
+								$author$project$Main$saveBackup(backupData),
+								$author$project$Main$getBackupCount(_Utils_Tuple0),
+								A2(
+								$elm$core$Task$perform,
+								$elm$core$Basics$identity,
+								$elm$core$Task$succeed(
+									$author$project$Main$ShowStatus('Auto backup completed')))
+							])));
 		}
 	});
 var $author$project$Main$CancelPlayerDeletion = {$: 'CancelPlayerDeletion'};
@@ -9901,6 +9975,7 @@ var $author$project$Main$ConfirmPlayerDeletion = F2(
 var $author$project$Main$KeeperWantsToRefreshFromDrive = {$: 'KeeperWantsToRefreshFromDrive'};
 var $author$project$Main$KeeperWantsToSaveStandings = {$: 'KeeperWantsToSaveStandings'};
 var $author$project$Main$KeeperWantsToSaveToDrive = {$: 'KeeperWantsToSaveToDrive'};
+var $author$project$Main$TriggerBackup = {$: 'TriggerBackup'};
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
 };
@@ -16953,7 +17028,51 @@ var $author$project$Main$view = function (model) {
 													[
 														$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 														$rtfeldman$elm_css$Css$marginTop(
-														$rtfeldman$elm_css$Css$px(32))
+														$rtfeldman$elm_css$Css$px(16)),
+														$rtfeldman$elm_css$Css$marginBottom(
+														$rtfeldman$elm_css$Css$px(8))
+													]))
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$fontSize(
+																$rtfeldman$elm_css$Css$px(12)),
+																$rtfeldman$elm_css$Css$color(
+																$rtfeldman$elm_css$Css$hex('6B7280')),
+																$author$project$Main$modernSansSerif
+															]))
+													]),
+												_List_fromArray(
+													[
+														$tesk9$accessible_html_with_css$Accessibility$Styled$text(
+														'Backups: ' + ($elm$core$String$fromInt(model.backupCount) + (' saved' + function () {
+															var _v0 = model.lastBackupTime;
+															if (_v0.$ === 'Just') {
+																var time = _v0.a;
+																return ' | Last: ' + time;
+															} else {
+																return ' | Auto-backup every 5 minutes';
+															}
+														}())))
+													]))
+											])),
+										A2(
+										$tesk9$accessible_html_with_css$Accessibility$Styled$section,
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+														$rtfeldman$elm_css$Css$marginTop(
+														$rtfeldman$elm_css$Css$px(16))
 													]))
 											]),
 										_List_fromArray(
@@ -16969,18 +17088,22 @@ var $author$project$Main$view = function (model) {
 												A2(
 												$author$project$Main$blueButton,
 												'REFRESH FROM DRIVE',
-												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive))
+												$elm$core$Maybe$Just($author$project$Main$KeeperWantsToRefreshFromDrive)),
+												A2(
+												$author$project$Main$blueButton,
+												'CREATE BACKUP',
+												$elm$core$Maybe$Just($author$project$Main$TriggerBackup))
 											]))
 									]))
 							]))
 					]),
 				_Utils_ap(
 					function () {
-						var _v0 = model.playerDeletionConfirmation;
-						if (_v0.$ === 'Just') {
-							var _v1 = _v0.a;
-							var player = _v1.a;
-							var step = _v1.b;
+						var _v1 = model.playerDeletionConfirmation;
+						if (_v1.$ === 'Just') {
+							var _v2 = _v1.a;
+							var player = _v2.a;
+							var step = _v2.b;
 							return _List_fromArray(
 								[
 									A2(
@@ -17183,9 +17306,9 @@ var $author$project$Main$view = function (model) {
 						}
 					}(),
 					function () {
-						var _v2 = model.status;
-						if (_v2.$ === 'Just') {
-							var message = _v2.a;
+						var _v3 = model.status;
+						if (_v3.$ === 'Just') {
+							var message = _v3.a;
 							return _List_fromArray(
 								[
 									A2(

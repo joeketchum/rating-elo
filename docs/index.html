@@ -1,7 +1,7 @@
 ﻿﻿<!DOCTYPE HTML>
 <html>
 <head>
-  <meta charset=<script src="elm.js?v=20251006n"></script>UTF-8">
+  <meta charset=<script src="elm.js?v=20251006o"></script>UTF-8">
   <title>Hockey Rater</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- HOCKEY RATER - FORCE REDEPLOY 2025-10-04 -->
@@ -131,6 +131,58 @@ try {
     
     // Also ask for current (noop payload)
     app.ports.askForIgnoredPlayers.send('');
+  }
+
+  // Backup system
+  var LS_BACKUP_PREFIX = "EloTrackerBackup_";
+  var backupCounter = 0;
+  
+  // Load existing backup count on init
+  for (var i = 0; i < localStorage.length; i++) {
+    var key = localStorage.key(i);
+    if (key && key.startsWith(LS_BACKUP_PREFIX)) {
+      backupCounter++;
+    }
+  }
+  
+  if (app.ports.saveBackup && app.ports.saveBackup.subscribe) {
+    app.ports.saveBackup.subscribe(function(backupData) {
+      try {
+        var timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+        var backupKey = LS_BACKUP_PREFIX + timestamp;
+        localStorage.setItem(backupKey, backupData);
+        backupCounter++;
+        
+        // Keep only the last 10 backups to avoid storage issues
+        var backupKeys = [];
+        for (var i = 0; i < localStorage.length; i++) {
+          var key = localStorage.key(i);
+          if (key && key.startsWith(LS_BACKUP_PREFIX)) {
+            backupKeys.push(key);
+          }
+        }
+        backupKeys.sort();
+        while (backupKeys.length > 10) {
+          var oldestKey = backupKeys.shift();
+          localStorage.removeItem(oldestKey);
+          backupCounter--;
+        }
+        
+        if (app.ports.receiveBackupCount && app.ports.receiveBackupCount.send) {
+          app.ports.receiveBackupCount.send(backupCounter);
+        }
+      } catch (e) {
+        console.error('Backup failed:', e);
+      }
+    });
+  }
+  
+  if (app.ports.getBackupCount && app.ports.getBackupCount.subscribe) {
+    app.ports.getBackupCount.subscribe(function() {
+      if (app.ports.receiveBackupCount && app.ports.receiveBackupCount.send) {
+        app.ports.receiveBackupCount.send(backupCounter);
+      }
+    });
   }
 
   if (app.ports.loadStandings && app.ports.loadStandings.subscribe) {

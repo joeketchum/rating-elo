@@ -60,6 +60,11 @@ port saveIgnoredPlayers : String -> Cmd msg
 port askForIgnoredPlayers : String -> Cmd msg
 port receiveIgnoredPlayers : (String -> msg) -> Sub msg
 
+-- PORTS (Backup system)
+port saveBackup : String -> Cmd msg
+port getBackupCount : () -> Cmd msg
+port receiveBackupCount : (Int -> msg) -> Sub msg
+
 
 -- FLAGS / MODEL
 
@@ -86,6 +91,8 @@ type alias Model =
     , playerASearchResults : List Player
     , playerBSearchResults : List Player
     , playerDeletionConfirmation : Maybe (Player, Int)  -- Player to delete and confirmation step (1 or 2)
+    , lastBackupTime : Maybe String
+    , backupCount : Int
     }
 
 
@@ -135,6 +142,11 @@ type Msg
     | SetTimeFilter TimeFilter
     | ReceivedTimeFilter String
     | ReceivedIgnoredPlayers String
+    | TriggerBackup
+    | ReceivedBackupCount Int
+    | PeriodicBackupTimer
+
+
 type TimeFilter
     = All
     | AMOnly
@@ -165,8 +177,10 @@ init _ =
     , playerASearchResults = []
     , playerBSearchResults = []
     , playerDeletionConfirmation = Nothing
+    , lastBackupTime = Nothing
+    , backupCount = 0
       }
-        , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init" ]
+        , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init", getBackupCount () ]
     )
         |> startNextMatchIfPossible
 
@@ -255,8 +269,10 @@ subscriptions model =
                 , receivePublicDriveStatus ReceivedPublicDriveStatus
                 , receiveMatchSaveComplete (\_ -> AutoSaveCompleted)
                 , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
+                , Time.every (5 * 60 * 1000) (\_ -> PeriodicBackupTimer) -- Every 5 minutes
                 , receiveTimeFilter ReceivedTimeFilter
                 , receiveIgnoredPlayers ReceivedIgnoredPlayers
+                , receiveBackupCount ReceivedBackupCount
                 ]
 
 
@@ -738,6 +754,34 @@ update msg model =
             , Cmd.none
             )
 
+        TriggerBackup ->
+            let
+                backupData = encode 2 (League.encode (History.current model.history))
+            in
+            ( { model | lastBackupTime = Just "Manual backup" }
+            , Cmd.batch 
+                [ saveBackup backupData
+                , Task.succeed (ShowStatus "Backup saved successfully") |> Task.perform identity
+                ]
+            )
+
+        ReceivedBackupCount count ->
+            ( { model | backupCount = count }
+            , Cmd.none
+            )
+
+        PeriodicBackupTimer ->
+            let
+                backupData = encode 2 (League.encode (History.current model.history))
+            in
+            ( { model | lastBackupTime = Just "Auto backup" }
+            , Cmd.batch 
+                [ saveBackup backupData
+                , getBackupCount ()
+                , Task.succeed (ShowStatus "Auto backup completed") |> Task.perform identity
+                ]
+            )
+
 
 
 -- VIEW
@@ -765,10 +809,27 @@ view model =
                 , filterBar model
                 , rankings model
                 , Html.section
-                    [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
+                    [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 16), Css.marginBottom (Css.px 8) ] ]
+                    [ Html.div
+                        [ css 
+                            [ Css.fontSize (Css.px 12)
+                            , Css.color (Css.hex "6B7280")
+                            , modernSansSerif
+                            ]
+                        ]
+                        [ Html.text ("Backups: " ++ String.fromInt model.backupCount ++ " saved" ++
+                            (case model.lastBackupTime of
+                                Just time -> " | Last: " ++ time
+                                Nothing -> " | Auto-backup every 5 minutes"
+                            ))
+                        ]
+                    ]
+                , Html.section
+                    [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 16) ] ]
                     [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
                     , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
                     , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
+                    , blueButton "CREATE BACKUP" (Just TriggerBackup)
                     ]
                 ]
             ]
