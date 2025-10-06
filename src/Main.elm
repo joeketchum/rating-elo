@@ -1004,6 +1004,12 @@ currentMatch model =
                 [ css
                     [ Css.width (Css.pct 100)
                     , Css.margin2 (Css.px 32) Css.auto
+                    , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
+                        [ Css.marginLeft (Css.px 16)
+                        , Css.marginRight (Css.px 16)
+                        , Css.paddingLeft (Css.px 8)
+                        , Css.paddingRight (Css.px 8)
+                        ]
                     ]
                 ]
                 [ Html.div

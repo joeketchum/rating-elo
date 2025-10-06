@@ -13520,7 +13520,31 @@ var $author$project$Main$currentMatch = function (model) {
 							A2(
 							$rtfeldman$elm_css$Css$margin2,
 							$rtfeldman$elm_css$Css$px(32),
-							$rtfeldman$elm_css$Css$auto)
+							$rtfeldman$elm_css$Css$auto),
+							A2(
+							$rtfeldman$elm_css$Css$Media$withMedia,
+							_List_fromArray(
+								[
+									A2(
+									$rtfeldman$elm_css$Css$Media$only,
+									$rtfeldman$elm_css$Css$Media$screen,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$Media$maxWidth(
+											$rtfeldman$elm_css$Css$px(640))
+										]))
+								]),
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Css$marginLeft(
+									$rtfeldman$elm_css$Css$px(16)),
+									$rtfeldman$elm_css$Css$marginRight(
+									$rtfeldman$elm_css$Css$px(16)),
+									$rtfeldman$elm_css$Css$paddingLeft(
+									$rtfeldman$elm_css$Css$px(8)),
+									$rtfeldman$elm_css$Css$paddingRight(
+									$rtfeldman$elm_css$Css$px(8))
+								]))
 						]))
 				]),
 			_List_fromArray(
