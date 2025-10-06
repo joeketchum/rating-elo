@@ -13212,7 +13212,6 @@ var $author$project$Main$customMatchupUI = function (model) {
 					]))
 			]));
 };
-var $rtfeldman$elm_css$Css$flex = $rtfeldman$elm_css$Css$prop1('flex');
 var $rtfeldman$elm_css$Css$flexGrow = $rtfeldman$elm_css$Css$prop1('flex-grow');
 var $author$project$Main$greenButton = $author$project$Main$button(
 	$rtfeldman$elm_css$Css$hex('6DD400'));
@@ -13224,6 +13223,7 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attribut
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
+var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Media$feature = F2(
 	function (key, _v0) {
@@ -13280,7 +13280,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (att
 	return $rtfeldman$elm_css$Html$Styled$section(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$stretch = $rtfeldman$elm_css$Css$prop1('stretch');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
 	function (a, b) {
@@ -13961,12 +13960,8 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$stretch),
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-											A2(
-											$rtfeldman$elm_css$Css$margin2,
-											$rtfeldman$elm_css$Css$zero,
-											$rtfeldman$elm_css$Css$px(-4))
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
 										]))
 								]),
 							_List_fromArray(
@@ -13978,8 +13973,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$flex(
-													$rtfeldman$elm_css$Css$int(1))
+													$rtfeldman$elm_css$Css$marginRight(
+													$rtfeldman$elm_css$Css$px(4))
 												]))
 										]),
 									_List_fromArray(
@@ -14000,8 +13995,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$flex(
-													$rtfeldman$elm_css$Css$int(1))
+													$rtfeldman$elm_css$Css$marginLeft(
+													$rtfeldman$elm_css$Css$px(4))
 												]))
 										]),
 									_List_fromArray(
@@ -14021,12 +14016,10 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$stretch),
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
-											A2(
-											$rtfeldman$elm_css$Css$margin2,
-											$rtfeldman$elm_css$Css$px(8),
-											$rtfeldman$elm_css$Css$px(-4))
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$marginTop(
+											$rtfeldman$elm_css$Css$px(8))
 										]))
 								]),
 							_List_fromArray(
@@ -14038,8 +14031,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$flex(
-													$rtfeldman$elm_css$Css$int(1))
+													$rtfeldman$elm_css$Css$marginRight(
+													$rtfeldman$elm_css$Css$px(4))
 												]))
 										]),
 									_List_fromArray(
@@ -14057,8 +14050,8 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$flex(
-													$rtfeldman$elm_css$Css$int(1))
+													$rtfeldman$elm_css$Css$marginLeft(
+													$rtfeldman$elm_css$Css$px(4))
 												]))
 										]),
 									_List_fromArray(
@@ -14563,7 +14556,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$main_ = function (attri
 	return $rtfeldman$elm_css$Html$Styled$main_(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
 var $rtfeldman$elm_css$Css$Global$aside = $rtfeldman$elm_css$Css$Global$typeSelector('aside');
