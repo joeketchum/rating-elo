@@ -749,7 +749,6 @@ view model =
                     , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
                     , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
                     ]
-                , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                 ]
             ]
         ]
@@ -1206,6 +1205,14 @@ currentMatch model =
                             [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerA)) ]
                         )
                     , Html.div [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
+                , Html.div
+                    [ css
+                        [ Css.marginTop (Css.px 12)
+                        , Css.display Css.none
+                        , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.block ]
+                        ]
+                    ]
+                    [ if model.showCustomMatchup then customMatchupUI model else Html.text "" ]
                         [ Html.text "" ]
                     , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
                         (if isPlayerLocallyIgnored playerB model then
@@ -1216,23 +1223,23 @@ currentMatch model =
                     ]
                                 , Html.div
                                         [ css
-                                                [ Css.displayFlex
-                                                , Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
-                                                , Css.justifyContent Css.spaceAround
+                                                [ Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
+                                                , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
                                                 ]
                                         ]
-                                        [ -- Desktop controls: Undo/Redo/Skip same size
-                                            Html.div
-                                                [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround
-                                                            , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
-                                                            ]
-                                                ]
-                                                [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
-                                                , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
-                                                , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
-                                                , greenButton "CUSTOM" (Just KeeperWantsToShowCustomMatchup)
-                                                , greenButton "SAVE" (Just KeeperWantsToSaveToDrive)
-                                                ]
+                                        [ -- Desktop controls rows
+                                          Html.div
+                                            [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround, Css.marginBottom (Css.px 12) ] ]
+                                            [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
+                                            , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
+                                            , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
+                                            ]
+                                        , Html.div
+                                            [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround, Css.marginBottom (Css.px 8) ] ]
+                                            [ greenButton "CUSTOM MATCHUP" (Just KeeperWantsToShowCustomMatchup)
+                                            , greenButton "SAVE" (Just KeeperWantsToSaveToDrive)
+                                            ]
+                                        , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                                         ]
                 ]
 
