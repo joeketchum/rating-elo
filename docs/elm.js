@@ -13970,7 +13970,7 @@ var $author$project$Main$currentMatch = function (model) {
 											A3(
 											$author$project$Main$buttonCompact,
 											$rtfeldman$elm_css$Css$hex('6DD400'),
-											'CUSTOM MATCHUP',
+											'CUSTOM',
 											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToShowCustomMatchup))
 										])),
 									A2(

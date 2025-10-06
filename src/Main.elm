@@ -1158,7 +1158,7 @@ currentMatch model =
                       Html.div
                         [ css [ Css.displayFlex, Css.alignItems Css.stretch, Css.justifyContent Css.spaceBetween, Css.margin2 (Css.px 8) (Css.px -4) ] ]
                         [ Html.div [ css [ Css.flex (Css.int 1) ] ]
-                            [ buttonCompact (Css.hex "6DD400") "CUSTOM MATCHUP" (Just KeeperWantsToShowCustomMatchup) ]
+                            [ buttonCompact (Css.hex "6DD400") "CUSTOM" (Just KeeperWantsToShowCustomMatchup) ]
                         , Html.div [ css [ Css.flex (Css.int 1) ] ]
                             [ buttonCompact (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
                         ]
