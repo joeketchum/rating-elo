@@ -81,6 +81,10 @@ type alias Model =
     , customMatchupPlayerA : Maybe Player
     , customMatchupPlayerB : Maybe Player
     , showCustomMatchup : Bool
+    , playerASearch : String
+    , playerBSearch : String
+    , playerASearchResults : List Player
+    , playerBSearchResults : List Player
     }
 
 
@@ -112,6 +116,8 @@ type Msg
     | KeeperSelectedPlayerA Player
     | KeeperSelectedPlayerB Player
     | KeeperWantsToStartCustomMatch
+    | KeeperUpdatedPlayerASearch String
+    | KeeperUpdatedPlayerBSearch String
     | LoadedLeague (Result String League)
     | GotPlayers (Result Http.Error League)
     | ReceivedStandings String
@@ -151,6 +157,10 @@ init _ =
     , customMatchupPlayerA = Nothing
     , customMatchupPlayerB = Nothing
     , showCustomMatchup = False
+    , playerASearch = ""
+    , playerBSearch = ""
+    , playerASearchResults = []
+    , playerBSearchResults = []
       }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init" ]
     )
@@ -501,22 +511,62 @@ update msg model =
             )
 
         KeeperWantsToShowCustomMatchup ->
-            ( { model | showCustomMatchup = True, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing }
+            ( { model | showCustomMatchup = True, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing, playerASearch = "", playerBSearch = "", playerASearchResults = [], playerBSearchResults = [] }
             , Cmd.none
             )
 
         KeeperWantsToHideCustomMatchup ->
-            ( { model | showCustomMatchup = False, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing }
+            ( { model | showCustomMatchup = False, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing, playerASearch = "", playerBSearch = "", playerASearchResults = [], playerBSearchResults = [] }
             , Cmd.none
             )
 
         KeeperSelectedPlayerA player ->
-            ( { model | customMatchupPlayerA = Just player }
+            ( { model | customMatchupPlayerA = Just player, playerASearch = Player.name player, playerASearchResults = [] }
             , Cmd.none
             )
 
         KeeperSelectedPlayerB player ->
-            ( { model | customMatchupPlayerB = Just player }
+            ( { model | customMatchupPlayerB = Just player, playerBSearch = Player.name player, playerBSearchResults = [] }
+            , Cmd.none
+            )
+
+        KeeperUpdatedPlayerASearch searchText ->
+            let
+                currentLeague = History.current model.history
+                allPlayers = 
+                    currentLeague
+                        |> League.players
+                        |> List.filter (\p -> not (League.isPlayerIgnored p currentLeague))
+                        |> List.sortBy Player.name
+                searchResults = 
+                    if String.length searchText < 2 then
+                        []
+                    else
+                        allPlayers
+                            |> List.filter (\p -> String.contains (String.toLower searchText) (String.toLower (Player.name p)))
+                            |> List.take 8
+            in
+            ( { model | playerASearch = searchText, playerASearchResults = searchResults }
+            , Cmd.none
+            )
+
+        KeeperUpdatedPlayerBSearch searchText ->
+            let
+                currentLeague = History.current model.history
+                allPlayers = 
+                    currentLeague
+                        |> League.players
+                        |> List.filter (\p -> not (League.isPlayerIgnored p currentLeague))
+                        |> List.sortBy Player.name
+                searchResults = 
+                    if String.length searchText < 2 then
+                        []
+                    else
+                        allPlayers
+                            |> List.filter (\p -> String.contains (String.toLower searchText) (String.toLower (Player.name p)))
+                            |> List.take 8
+            in
+            ( { model | playerBSearch = searchText, playerBSearchResults = searchResults }
             , Cmd.none
             )
 
@@ -537,6 +587,10 @@ update msg model =
                             , showCustomMatchup = False
                             , customMatchupPlayerA = Nothing
                             , customMatchupPlayerB = Nothing
+                            , playerASearch = ""
+                            , playerBSearch = ""
+                            , playerASearchResults = []
+                            , playerBSearchResults = []
                             , status = Just ("Custom match: " ++ Player.name playerA ++ " vs " ++ Player.name playerB)
                           }
                         , Cmd.none
@@ -694,8 +748,6 @@ view model =
                     [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
                     , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
                     , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
-                    , Html.span [ css [ Css.marginLeft (Css.px 12) ] ]
-                        [ greenButton "CUSTOM MATCH" (Just KeeperWantsToShowCustomMatchup) ]
                     ]
                 , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                 ]
@@ -780,97 +832,134 @@ toggleBtn isOn label maybeMsg =
 customMatchupUI : Model -> Html Msg
 customMatchupUI model =
     let
-        currentLeague = History.current model.history
-        allPlayers = 
-            currentLeague
-                |> League.players
-                |> List.filter (\p -> not (League.isPlayerIgnored p currentLeague))
-                |> List.sortBy Player.name
-        
-        playerButton player selectedPlayer msg =
-            Html.button
-                [ css
-                    [ Css.padding2 (Css.px 6) (Css.px 12)
-                    , Css.margin2 (Css.px 2) (Css.px 4)
-                    , Css.borderRadius (Css.px 6)
-                    , Css.backgroundColor (case selectedPlayer of
-                        Just selected -> if Player.id selected == Player.id player then Css.hex "3B82F6" else Css.hex "E5E7EB"
-                        Nothing -> Css.hex "E5E7EB"
-                      )
-                    , Css.color (case selectedPlayer of
-                        Just selected -> if Player.id selected == Player.id player then Css.hex "FFF" else Css.hex "374151"
-                        Nothing -> Css.hex "374151"
-                      )
-                    , Css.border Css.zero
-                    , Css.cursor Css.pointer
-                    , modernSansSerif
-                    , Css.fontSize (Css.px 14)
+        searchInput searchValue onInput results onSelect placeholder selectedPlayer =
+            Html.div [ css [ Css.position Css.relative, Css.marginBottom (Css.px 16) ] ]
+                [ Html.inputText searchValue
+                    [ css
+                        [ Css.width (Css.pct 100)
+                        , Css.padding (Css.px 12)
+                        , Css.border3 (Css.px 2) Css.solid (case selectedPlayer of
+                            Just _ -> Css.hex "10B981"
+                            Nothing -> Css.hex "D1D5DB"
+                          )
+                        , Css.borderRadius (Css.px 8)
+                        , Css.fontSize (Css.px 16)
+                        , modernSansSerif
+                        , Css.boxSizing Css.borderBox
+                        , Css.focus [ Css.outline Css.none, Css.borderColor (Css.hex "3B82F6") ]
+                        ]
+                    , Attributes.placeholder placeholder
+                    , Events.onInput onInput
                     ]
-                , Events.onClick (msg player)
+                , if List.length results > 0 then
+                    Html.div 
+                        [ css 
+                            [ Css.position Css.absolute
+                            , Css.top (Css.pct 100)
+                            , Css.left Css.zero
+                            , Css.right Css.zero
+                            , Css.backgroundColor (Css.hex "FFF")
+                            , Css.border3 (Css.px 1) Css.solid (Css.hex "E5E7EB")
+                            , Css.borderRadius (Css.px 8)
+                            , Css.boxShadow5 Css.zero (Css.px 4) (Css.px 6) (Css.px -1) (Css.rgba 0 0 0 0.1)
+                            , Css.zIndex (Css.int 10)
+                            , Css.maxHeight (Css.px 200)
+                            , Css.overflowY Css.auto
+                            ]
+                        ]
+                        (List.map (\player ->
+                            Html.button
+                                [ css
+                                    [ Css.width (Css.pct 100)
+                                    , Css.padding (Css.px 12)
+                                    , Css.textAlign Css.left
+                                    , Css.border Css.zero
+                                    , Css.backgroundColor Css.transparent
+                                    , Css.cursor Css.pointer
+                                    , Css.fontSize (Css.px 14)
+                                    , modernSansSerif
+                                    , Css.hover [ Css.backgroundColor (Css.hex "F3F4F6") ]
+                                    , Css.displayFlex
+                                    , Css.justifyContent Css.spaceBetween
+                                    ]
+                                , Events.onClick (onSelect player)
+                                ]
+                                [ Html.span [] [ Html.text (Player.name player) ]
+                                , Html.span [ css [ Css.color (Css.hex "6B7280") ] ] 
+                                    [ Html.text (String.fromInt (Player.rating player)) ]
+                                ]
+                        ) results)
+                  else
+                    Html.text ""
                 ]
-                [ Html.text (Player.name player ++ " (" ++ String.fromInt (Player.rating player) ++ ")") ]
     in
     Html.div
         [ css 
             [ Css.backgroundColor (Css.hex "F9FAFB")
             , Css.border3 (Css.px 1) Css.solid (Css.hex "E5E7EB")
-            , Css.borderRadius (Css.px 8)
+            , Css.borderRadius (Css.px 12)
             , Css.padding (Css.px 24)
             , Css.margin2 (Css.px 24) Css.auto
-            , Css.maxWidth (Css.px 800)
+            , Css.maxWidth (Css.px 500)
             , modernSansSerif
             ]
         ]
-        [ Html.div [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween, Css.alignItems Css.center, Css.marginBottom (Css.px 16) ] ]
-            [ Html.h3 [ css [ Css.margin Css.zero, Css.fontSize (Css.px 18), Css.fontWeight (Css.int 600) ] ] 
-                [ Html.text "Custom Match Setup" ]
+        [ Html.div [ css [ Css.displayFlex, Css.justifyContent Css.spaceBetween, Css.alignItems Css.center, Css.marginBottom (Css.px 24) ] ]
+            [ Html.h3 [ css [ Css.margin Css.zero, Css.fontSize (Css.px 20), Css.fontWeight (Css.int 600) ] ] 
+                [ Html.text "Custom Match" ]
             , Html.button
                 [ css
                     [ Css.backgroundColor Css.transparent
                     , Css.border Css.zero
-                    , Css.fontSize (Css.px 20)
+                    , Css.fontSize (Css.px 24)
                     , Css.cursor Css.pointer
                     , Css.color (Css.hex "6B7280")
+                    , Css.hover [ Css.color (Css.hex "374151") ]
                     ]
                 , Events.onClick KeeperWantsToHideCustomMatchup
                 ]
-                [ Html.text "✕" ]
-            ]
-        , Html.div [ css [ Css.marginBottom (Css.px 16) ] ]
-            [ Html.h4 [ css [ Css.fontSize (Css.px 14), Css.fontWeight (Css.int 600), Css.marginBottom (Css.px 8), Css.color (Css.hex "374151") ] ]
-                [ Html.text ("Player A" ++ (case model.customMatchupPlayerA of
-                    Just p -> ": " ++ Player.name p
-                    Nothing -> " (select one)"
-                  ))
-                ]
-            , Html.div [ css [ Css.displayFlex, Css.flexWrap Css.wrap ] ]
-                (List.map (\player -> playerButton player model.customMatchupPlayerA KeeperSelectedPlayerA) allPlayers)
+                [ Html.text "×" ]
             ]
         , Html.div [ css [ Css.marginBottom (Css.px 20) ] ]
-            [ Html.h4 [ css [ Css.fontSize (Css.px 14), Css.fontWeight (Css.int 600), Css.marginBottom (Css.px 8), Css.color (Css.hex "374151") ] ]
-                [ Html.text ("Player B" ++ (case model.customMatchupPlayerB of
-                    Just p -> ": " ++ Player.name p
-                    Nothing -> " (select one)"
-                  ))
-                ]
-            , Html.div [ css [ Css.displayFlex, Css.flexWrap Css.wrap ] ]
-                (List.map (\player -> playerButton player model.customMatchupPlayerB KeeperSelectedPlayerB) allPlayers)
+            [ Html.label [ css [ Css.display Css.block, Css.fontSize (Css.px 14), Css.fontWeight (Css.int 600), Css.marginBottom (Css.px 8), Css.color (Css.hex "374151") ] ]
+                [ Html.text "Player A" ]
+            , searchInput model.playerASearch KeeperUpdatedPlayerASearch model.playerASearchResults KeeperSelectedPlayerA "Search for first player..." model.customMatchupPlayerA
+            ]
+        , Html.div [ css [ Css.marginBottom (Css.px 24) ] ]
+            [ Html.label [ css [ Css.display Css.block, Css.fontSize (Css.px 14), Css.fontWeight (Css.int 600), Css.marginBottom (Css.px 8), Css.color (Css.hex "374151") ] ]
+                [ Html.text "Player B" ]
+            , searchInput model.playerBSearch KeeperUpdatedPlayerBSearch model.playerBSearchResults KeeperSelectedPlayerB "Search for second player..." model.customMatchupPlayerB
             ]
         , Html.div [ css [ Css.textAlign Css.center ] ]
             [ case (model.customMatchupPlayerA, model.customMatchupPlayerB) of
                 (Just playerA, Just playerB) ->
                     if Player.id playerA == Player.id playerB then
-                        Html.span [ css [ Css.color (Css.hex "EF4444"), Css.fontSize (Css.px 14) ] ]
+                        Html.div [ css [ Css.color (Css.hex "EF4444"), Css.fontSize (Css.px 14), Css.marginBottom (Css.px 16) ] ]
                             [ Html.text "Please select two different players" ]
                     else
                         Html.div []
-                            [ Html.div [ css [ Css.marginBottom (Css.px 12), Css.fontSize (Css.px 14), Css.color (Css.hex "6B7280") ] ]
-                                [ Html.text ("Match Preview: " ++ Player.name playerA ++ " vs " ++ Player.name playerB) ]
-                            , greenButton "START CUSTOM MATCH" (Just KeeperWantsToStartCustomMatch)
+                            [ Html.div [ css [ Css.marginBottom (Css.px 16), Css.fontSize (Css.px 16), Css.color (Css.hex "374151"), Css.fontWeight (Css.int 500) ] ]
+                                [ Html.text (Player.name playerA ++ " vs " ++ Player.name playerB) ]
+                            , Html.button
+                                [ css
+                                    [ Css.backgroundColor (Css.hex "10B981")
+                                    , Css.color (Css.hex "FFF")
+                                    , Css.border Css.zero
+                                    , Css.padding2 (Css.px 12) (Css.px 24)
+                                    , Css.borderRadius (Css.px 8)
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.fontWeight (Css.int 600)
+                                    , Css.cursor Css.pointer
+                                    , modernSansSerif
+                                    , Css.hover [ Css.backgroundColor (Css.hex "059669") ]
+                                    ]
+                                , Events.onClick KeeperWantsToStartCustomMatch
+                                ]
+                                [ Html.text "Start Match" ]
                             ]
                 _ ->
-                    Html.span [ css [ Css.color (Css.hex "6B7280"), Css.fontSize (Css.px 14) ] ]
-                        [ Html.text "Select both players to start the match" ]
+                    Html.div [ css [ Css.color (Css.hex "6B7280"), Css.fontSize (Css.px 14) ] ]
+                        [ Html.text "Search and select both players to start the match" ]
             ]
         ]
 
@@ -1141,6 +1230,7 @@ currentMatch model =
                                                 [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
                                                 , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
                                                 , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
+                                                , greenButton "CUSTOM" (Just KeeperWantsToShowCustomMatchup)
                                                 , greenButton "SAVE" (Just KeeperWantsToSaveToDrive)
                                                 ]
                                         ]
