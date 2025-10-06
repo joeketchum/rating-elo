@@ -1102,7 +1102,7 @@ rankings model =
                             [ Html.text "" ]
                         )
                     , Html.td [ css [ numericRank, center, Css.width (Css.px 60), Css.maxWidth (Css.px 60) ] ] [ Html.text (String.fromInt (rank + 1)) ]
-                    , Html.td [ css [ textual, left, Css.width (Css.pct 60), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 70) ] ] ]
+                    , Html.td [ css [ textual, left, Css.width (Css.pct 50), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 65) ] ] ]
                         [ Html.span [] [ Html.text (Player.name player) ] ]
                     , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
@@ -1142,7 +1142,7 @@ rankings model =
                 [ css [ Css.height (Css.px 40), Css.borderBottom3 (Css.px 2) Css.solid (Css.hex "D1D5DB") ] ]
                 [ Html.th [ css [ Css.width (Css.px 24) ] ] []
                 , Html.th [ css [ header, center, Css.width (Css.px 60), Css.maxWidth (Css.px 60) ] ] [ Html.text "RANK" ]
-                , Html.th [ css [ header, left, Css.width (Css.pct 60), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 70) ] ] ] [ Html.text "NAME" ]
+                , Html.th [ css [ header, left, Css.width (Css.pct 50), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 65) ] ] ] [ Html.text "NAME" ]
                 , Html.th [ css [ header, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
                 , Html.th [ css [ header, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
                 , Html.th [ css [ header, center ] ] [ Html.text "ACTIONS" ]
@@ -1427,29 +1427,25 @@ smallRedXButtonSmall : Maybe Msg -> Html Msg
 smallRedXButtonSmall maybeMsg =
     Html.button
         [ css
-            [ Css.paddingTop (Css.px 2)
-            , Css.paddingBottom (Css.px 2)
-            , Css.paddingLeft (Css.px 6)
-            , Css.paddingRight (Css.px 6)
+            [ Css.padding2 (Css.px 2) (Css.px 8)
             , Css.margin2 Css.zero (Css.px 4)
-            , Css.minWidth (Css.px 28)
+            , Css.minWidth (Css.px 36)
             , case maybeMsg of
                 Just _ -> Css.backgroundColor (Css.hex "E02020")
                 Nothing -> Css.backgroundColor (Css.hex "DDD")
             , Css.border Css.zero
-            , Css.borderRadius (Css.px 4)
+            , Css.borderRadius (Css.px 9999)
             , Css.cursor Css.pointer
-            , Css.fontSize (Css.px 12)
+            , Css.fontSize (Css.px 11)
             , Css.fontWeight (Css.int 700)
             , Css.color (Css.hex "FFF")
             , modernSansSerif
             , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
-                [ Css.paddingLeft (Css.px 4)
-                , Css.paddingRight (Css.px 4)
+                [ Css.padding2 (Css.px 2) (Css.px 6)
                 , Css.marginRight (Css.px 2)
                 , Css.marginLeft (Css.px 2)
-                , Css.minWidth (Css.px 24)
-                , Css.fontSize (Css.px 11)
+                , Css.minWidth (Css.px 30)
+                , Css.fontSize (Css.px 10)
                 ]
             ]
         , case maybeMsg of
@@ -1497,10 +1493,7 @@ zzzIgnoreButtonSmall : Maybe Msg -> Html Msg
 zzzIgnoreButtonSmall maybeMsg =
     Html.button
         [ css
-            [ Css.paddingTop (Css.px 2)
-            , Css.paddingBottom (Css.px 4)
-            , Css.paddingLeft (Css.px 8)
-            , Css.paddingRight (Css.px 8)
+            [ Css.padding2 (Css.px 2) (Css.px 8)
             , Css.margin2 Css.zero (Css.px 4)
             , Css.minWidth (Css.px 36)
             , Css.backgroundColor (Css.hex "6B7280")
@@ -1558,10 +1551,7 @@ zzzUnignoreButtonSmall : Maybe Msg -> Html Msg
 zzzUnignoreButtonSmall maybeMsg =
     Html.button
         [ css
-            [ Css.paddingTop (Css.px 2)
-            , Css.paddingBottom (Css.px 4)
-            , Css.paddingLeft (Css.px 8)
-            , Css.paddingRight (Css.px 8)
+            [ Css.padding2 (Css.px 2) (Css.px 8)
             , Css.margin2 Css.zero (Css.px 4)
             , Css.minWidth (Css.px 36)
             , Css.backgroundColor (Css.hex "374151")
@@ -1729,11 +1719,11 @@ toggleChipSmall label isOn colorOn msg =
     Html.button
         [ css
             [ Css.display Css.inlineBlock
-            , Css.padding2 (Css.px 2) (Css.px 6)
+            , Css.padding2 (Css.px 2) (Css.px 8)
             , Css.borderRadius (Css.px 9999)
             , (if isOn then Css.backgroundColor colorOn else Css.backgroundColor (Css.hex "E5E7EB"))
             , (if isOn then Css.color (Css.hex "FFFFFF") else Css.color (Css.hex "6B7280"))
-            , Css.fontSize (Css.px 10)
+            , Css.fontSize (Css.px 11)
             , Css.fontWeight (Css.int 700)
             , Css.border Css.zero
             , Css.cursor Css.pointer

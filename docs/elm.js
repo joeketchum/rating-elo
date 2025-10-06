@@ -14281,20 +14281,16 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(2)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(2)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(6)),
-						$rtfeldman$elm_css$Css$paddingRight(
-						$rtfeldman$elm_css$Css$px(6)),
+						A2(
+						$rtfeldman$elm_css$Css$padding2,
+						$rtfeldman$elm_css$Css$px(2),
+						$rtfeldman$elm_css$Css$px(8)),
 						A2(
 						$rtfeldman$elm_css$Css$margin2,
 						$rtfeldman$elm_css$Css$zero,
 						$rtfeldman$elm_css$Css$px(4)),
 						$rtfeldman$elm_css$Css$minWidth(
-						$rtfeldman$elm_css$Css$px(28)),
+						$rtfeldman$elm_css$Css$px(36)),
 						function () {
 						if (maybeMsg.$ === 'Just') {
 							return $rtfeldman$elm_css$Css$backgroundColor(
@@ -14306,10 +14302,10 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 					}(),
 						$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
 						$rtfeldman$elm_css$Css$borderRadius(
-						$rtfeldman$elm_css$Css$px(4)),
+						$rtfeldman$elm_css$Css$px(9999)),
 						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
 						$rtfeldman$elm_css$Css$fontSize(
-						$rtfeldman$elm_css$Css$px(12)),
+						$rtfeldman$elm_css$Css$px(11)),
 						$rtfeldman$elm_css$Css$fontWeight(
 						$rtfeldman$elm_css$Css$int(700)),
 						$rtfeldman$elm_css$Css$color(
@@ -14330,18 +14326,18 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 							]),
 						_List_fromArray(
 							[
-								$rtfeldman$elm_css$Css$paddingLeft(
-								$rtfeldman$elm_css$Css$px(4)),
-								$rtfeldman$elm_css$Css$paddingRight(
-								$rtfeldman$elm_css$Css$px(4)),
+								A2(
+								$rtfeldman$elm_css$Css$padding2,
+								$rtfeldman$elm_css$Css$px(2),
+								$rtfeldman$elm_css$Css$px(6)),
 								$rtfeldman$elm_css$Css$marginRight(
 								$rtfeldman$elm_css$Css$px(2)),
 								$rtfeldman$elm_css$Css$marginLeft(
 								$rtfeldman$elm_css$Css$px(2)),
 								$rtfeldman$elm_css$Css$minWidth(
-								$rtfeldman$elm_css$Css$px(24)),
+								$rtfeldman$elm_css$Css$px(30)),
 								$rtfeldman$elm_css$Css$fontSize(
-								$rtfeldman$elm_css$Css$px(11))
+								$rtfeldman$elm_css$Css$px(10))
 							]))
 					])),
 				function () {
@@ -14382,7 +14378,7 @@ var $author$project$Main$toggleChipSmall = F4(
 							A2(
 							$rtfeldman$elm_css$Css$padding2,
 							$rtfeldman$elm_css$Css$px(2),
-							$rtfeldman$elm_css$Css$px(6)),
+							$rtfeldman$elm_css$Css$px(8)),
 							$rtfeldman$elm_css$Css$borderRadius(
 							$rtfeldman$elm_css$Css$px(9999)),
 							isOn ? $rtfeldman$elm_css$Css$backgroundColor(colorOn) : $rtfeldman$elm_css$Css$backgroundColor(
@@ -14391,7 +14387,7 @@ var $author$project$Main$toggleChipSmall = F4(
 							$rtfeldman$elm_css$Css$hex('FFFFFF')) : $rtfeldman$elm_css$Css$color(
 							$rtfeldman$elm_css$Css$hex('6B7280')),
 							$rtfeldman$elm_css$Css$fontSize(
-							$rtfeldman$elm_css$Css$px(10)),
+							$rtfeldman$elm_css$Css$px(11)),
 							$rtfeldman$elm_css$Css$fontWeight(
 							$rtfeldman$elm_css$Css$int(700)),
 							$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
@@ -14478,13 +14474,9 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(2)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(8)),
-						$rtfeldman$elm_css$Css$paddingRight(
+						A2(
+						$rtfeldman$elm_css$Css$padding2,
+						$rtfeldman$elm_css$Css$px(2),
 						$rtfeldman$elm_css$Css$px(8)),
 						A2(
 						$rtfeldman$elm_css$Css$margin2,
@@ -14572,13 +14564,9 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 				$rtfeldman$elm_css$Html$Styled$Attributes$css(
 				_List_fromArray(
 					[
-						$rtfeldman$elm_css$Css$paddingTop(
-						$rtfeldman$elm_css$Css$px(2)),
-						$rtfeldman$elm_css$Css$paddingBottom(
-						$rtfeldman$elm_css$Css$px(4)),
-						$rtfeldman$elm_css$Css$paddingLeft(
-						$rtfeldman$elm_css$Css$px(8)),
-						$rtfeldman$elm_css$Css$paddingRight(
+						A2(
+						$rtfeldman$elm_css$Css$padding2,
+						$rtfeldman$elm_css$Css$px(2),
 						$rtfeldman$elm_css$Css$px(8)),
 						A2(
 						$rtfeldman$elm_css$Css$margin2,
@@ -15035,7 +15023,7 @@ var $author$project$Main$rankings = function (model) {
 														header,
 														left,
 														$rtfeldman$elm_css$Css$width(
-														$rtfeldman$elm_css$Css$pct(60)),
+														$rtfeldman$elm_css$Css$pct(50)),
 														A2(
 														$rtfeldman$elm_css$Css$Media$withMedia,
 														_List_fromArray(
@@ -15052,7 +15040,7 @@ var $author$project$Main$rankings = function (model) {
 														_List_fromArray(
 															[
 																$rtfeldman$elm_css$Css$width(
-																$rtfeldman$elm_css$Css$pct(70))
+																$rtfeldman$elm_css$Css$pct(65))
 															]))
 													]))
 											]),
@@ -15290,7 +15278,7 @@ var $author$project$Main$rankings = function (model) {
 																	textual,
 																	left,
 																	$rtfeldman$elm_css$Css$width(
-																	$rtfeldman$elm_css$Css$pct(60)),
+																	$rtfeldman$elm_css$Css$pct(50)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
@@ -15307,7 +15295,7 @@ var $author$project$Main$rankings = function (model) {
 																	_List_fromArray(
 																		[
 																			$rtfeldman$elm_css$Css$width(
-																			$rtfeldman$elm_css$Css$pct(70))
+																			$rtfeldman$elm_css$Css$pct(65))
 																		]))
 																]))
 														]),
