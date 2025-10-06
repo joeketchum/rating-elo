@@ -15303,7 +15303,7 @@ var $author$project$Main$rankings = function (model) {
 																	textual,
 																	left,
 																	$rtfeldman$elm_css$Css$width(
-																	$rtfeldman$elm_css$Css$pct(50)),
+																	$rtfeldman$elm_css$Css$pct(40)),
 																	A2(
 																	$rtfeldman$elm_css$Css$Media$withMedia,
 																	_List_fromArray(
@@ -15320,7 +15320,7 @@ var $author$project$Main$rankings = function (model) {
 																	_List_fromArray(
 																		[
 																			$rtfeldman$elm_css$Css$width(
-																			$rtfeldman$elm_css$Css$pct(65))
+																			$rtfeldman$elm_css$Css$pct(60))
 																		]))
 																]))
 														]),
