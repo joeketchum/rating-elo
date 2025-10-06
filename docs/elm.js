@@ -13934,6 +13934,44 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$hex('999'),
 											'SKIP',
 											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToSkipMatch))
+										]))
+								])),
+							A2(
+							$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$displayFlex,
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$stretch),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween),
+											A2(
+											$rtfeldman$elm_css$Css$margin2,
+											$rtfeldman$elm_css$Css$px(8),
+											$rtfeldman$elm_css$Css$px(-4))
+										]))
+								]),
+							_List_fromArray(
+								[
+									A2(
+									$tesk9$accessible_html_with_css$Accessibility$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$flex(
+													$rtfeldman$elm_css$Css$int(1))
+												]))
+										]),
+									_List_fromArray(
+										[
+											A3(
+											$author$project$Main$buttonCompact,
+											$rtfeldman$elm_css$Css$hex('6DD400'),
+											'CUSTOM MATCHUP',
+											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToShowCustomMatchup))
 										])),
 									A2(
 									$tesk9$accessible_html_with_css$Accessibility$Styled$div,

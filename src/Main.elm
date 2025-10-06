@@ -1144,7 +1144,7 @@ currentMatch model =
                       Html.div
                         [ css [ Css.height (Css.px 4), Css.backgroundColor (Css.hex "D1D5DB"), Css.borderRadius (Css.px 2), Css.margin2 (Css.px 14) Css.zero ] ]
                         []
-                    , -- Row 3: TIE, SKIP, and SAVE in a single row (compact, one line on mobile)
+                    , -- Row 3: TIE and SKIP (compact, one line on mobile)
                       Html.div
                         [ css [ Css.displayFlex, Css.alignItems Css.stretch, Css.justifyContent Css.spaceBetween, Css.margin2 Css.zero (Css.px -4) ] ]
                         [ Html.div [ css [ Css.flex (Css.int 1) ] ]
@@ -1153,6 +1153,12 @@ currentMatch model =
                             ]
                         , Html.div [ css [ Css.flex (Css.int 1) ] ]
                             [ buttonCompact (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
+                        ]
+                    , -- Row 4 (new on mobile): CUSTOM MATCHUP and SAVE
+                      Html.div
+                        [ css [ Css.displayFlex, Css.alignItems Css.stretch, Css.justifyContent Css.spaceBetween, Css.margin2 (Css.px 8) (Css.px -4) ] ]
+                        [ Html.div [ css [ Css.flex (Css.int 1) ] ]
+                            [ buttonCompact (Css.hex "6DD400") "CUSTOM MATCHUP" (Just KeeperWantsToShowCustomMatchup) ]
                         , Html.div [ css [ Css.flex (Css.int 1) ] ]
                             [ buttonCompact (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
                         ]
