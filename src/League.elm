@@ -382,7 +382,7 @@ updateRatingsIncludingPlayInPeriod ratings players_ =
 {-| -}
 playInMatches : Int
 playInMatches =
-    5
+    12
 
 
 {-| -}
@@ -398,7 +398,7 @@ kFactor (League league) player =
     if Player.matchesPlayed player < playInMatches then
         -- players who are new to the league should move around more so that
         -- they can get ranked closer to their actual correct position sooner.
-        Elo.sensitiveKFactor * 2
+        Elo.sensitiveKFactor * 3
 
     else if Player.rating player >= p90 then
         -- players who have been at the top of the rankings for a while should

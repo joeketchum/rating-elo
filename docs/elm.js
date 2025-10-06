@@ -5773,7 +5773,7 @@ var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
 	});
-var $author$project$League$playInMatches = 5;
+var $author$project$League$playInMatches = 12;
 var $elm$core$Basics$pow = _Basics_pow;
 var $author$project$Player$rating = function (_v0) {
 	var player = _v0.a;
@@ -7947,7 +7947,7 @@ var $author$project$League$kFactor = F2(
 					$rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players))));
 		return (_Utils_cmp(
 			$author$project$Player$matchesPlayed(player),
-			$author$project$League$playInMatches) < 0) ? ($author$project$Elo$sensitiveKFactor * 2) : ((_Utils_cmp(
+			$author$project$League$playInMatches) < 0) ? ($author$project$Elo$sensitiveKFactor * 3) : ((_Utils_cmp(
 			$author$project$Player$rating(player),
 			p90) > -1) ? (($author$project$Elo$sensitiveKFactor / 2) | 0) : $author$project$Elo$sensitiveKFactor);
 	});
