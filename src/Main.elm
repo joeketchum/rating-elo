@@ -801,7 +801,7 @@ view model =
 filterBar : Model -> Html Msg
 filterBar model =
     Html.div
-        [ css [ Css.width (Css.pct 80), Css.margin2 Css.zero Css.auto, Css.marginTop (Css.px 10), Css.marginBottom (Css.px 10), Css.textAlign Css.center ] ]
+        [ css [ Css.width (Css.pct 100), Css.margin2 Css.zero Css.auto, Css.marginTop (Css.px 10), Css.marginBottom (Css.px 10), Css.textAlign Css.center ] ]
         [ Html.span [ css [ Css.marginRight (Css.px 10), modernSansSerif, Css.fontWeight (Css.int 600) ] ] [ Html.text "Filter:" ]
         , toggleBtn (model.timeFilter == All) "All" (Just (SetTimeFilter All))
         , toggleBtn (model.timeFilter == AMOnly) "AM" (Just (SetTimeFilter AMOnly))
@@ -1144,9 +1144,9 @@ currentMatch model =
                       Html.div
                         [ css [ Css.height (Css.px 4), Css.backgroundColor (Css.hex "D1D5DB"), Css.borderRadius (Css.px 2), Css.margin2 (Css.px 14) Css.zero ] ]
                         []
-                    , -- Row 3: TIE and SKIP (centered group on mobile)
-                      Html.div
-                        [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.marginTop (Css.px 4) ] ]
+                                        , -- Row 3: TIE and SKIP (centered group on mobile)
+                                            Html.div
+                                                [ css [ Css.width (Css.pct 100), Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.textAlign Css.center, Css.marginTop (Css.px 4) ] ]
                         [ Html.div []
                             [ buttonCompact (Css.hex "1F2937") "TIE"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
@@ -1154,9 +1154,9 @@ currentMatch model =
                         , Html.div []
                             [ buttonCompact (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                         ]
-                    , -- Row 4 (mobile): CUSTOM and SAVE (centered group)
-                      Html.div
-                        [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.marginTop (Css.px 8) ] ]
+                                        , -- Row 4 (mobile): CUSTOM and SAVE (centered group)
+                                            Html.div
+                                                [ css [ Css.width (Css.pct 100), Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.textAlign Css.center, Css.marginTop (Css.px 8) ] ]
                         [ Html.div []
                             [ buttonCompact (Css.hex "6DD400") "CUSTOM" (Just KeeperWantsToShowCustomMatchup) ]
                         , Html.div []

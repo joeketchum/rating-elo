@@ -13881,9 +13881,12 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Html$Styled$Attributes$css(
 									_List_fromArray(
 										[
+											$rtfeldman$elm_css$Css$width(
+											$rtfeldman$elm_css$Css$pct(100)),
 											$rtfeldman$elm_css$Css$displayFlex,
 											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$marginTop(
 											$rtfeldman$elm_css$Css$px(4))
 										]))
@@ -13923,9 +13926,12 @@ var $author$project$Main$currentMatch = function (model) {
 									$rtfeldman$elm_css$Html$Styled$Attributes$css(
 									_List_fromArray(
 										[
+											$rtfeldman$elm_css$Css$width(
+											$rtfeldman$elm_css$Css$pct(100)),
 											$rtfeldman$elm_css$Css$displayFlex,
 											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$marginTop(
 											$rtfeldman$elm_css$Css$px(8))
 										]))
@@ -14393,7 +14399,7 @@ var $author$project$Main$filterBar = function (model) {
 				_List_fromArray(
 					[
 						$rtfeldman$elm_css$Css$width(
-						$rtfeldman$elm_css$Css$pct(80)),
+						$rtfeldman$elm_css$Css$pct(100)),
 						A2($rtfeldman$elm_css$Css$margin2, $rtfeldman$elm_css$Css$zero, $rtfeldman$elm_css$Css$auto),
 						$rtfeldman$elm_css$Css$marginTop(
 						$rtfeldman$elm_css$Css$px(10)),
