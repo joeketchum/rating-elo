@@ -13203,7 +13203,6 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$section = function (att
 	return $rtfeldman$elm_css$Html$Styled$section(
 		$tesk9$accessible_html_with_css$Accessibility$Styled$Utils$nonInteractive(attributes));
 };
-var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-around');
 var $rtfeldman$elm_css$Css$stretch = $rtfeldman$elm_css$Css$prop1('stretch');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
@@ -14280,7 +14279,7 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$marginBottom(
 											$rtfeldman$elm_css$Css$px(12))
 										]))
@@ -14319,7 +14318,7 @@ var $author$project$Main$currentMatch = function (model) {
 									_List_fromArray(
 										[
 											$rtfeldman$elm_css$Css$displayFlex,
-											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
 											$rtfeldman$elm_css$Css$marginBottom(
 											$rtfeldman$elm_css$Css$px(8))
 										]))
