@@ -15151,7 +15151,12 @@ var $author$project$Main$rankings = function (model) {
 											[
 												$rtfeldman$elm_css$Html$Styled$Attributes$css(
 												_List_fromArray(
-													[header, center]))
+													[
+														header,
+														center,
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$pct(25))
+													]))
 											]),
 										_List_fromArray(
 											[
@@ -15418,7 +15423,9 @@ var $author$project$Main$rankings = function (model) {
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
 																[
-																	$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle)
+																	$rtfeldman$elm_css$Css$verticalAlign($rtfeldman$elm_css$Css$middle),
+																	$rtfeldman$elm_css$Css$width(
+																	$rtfeldman$elm_css$Css$pct(25))
 																]))
 														]),
 													_List_fromArray(

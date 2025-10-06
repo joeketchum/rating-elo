@@ -1106,7 +1106,7 @@ rankings model =
                         [ Html.span [] [ Html.text (Player.name player) ] ]
                     , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
-                    , Html.td [ css [ Css.verticalAlign Css.middle ] ]
+                    , Html.td [ css [ Css.verticalAlign Css.middle, Css.width (Css.pct 25) ] ]
                         [ Html.div
                             [ css
                                 [ Css.displayFlex
@@ -1145,7 +1145,7 @@ rankings model =
                 , Html.th [ css [ header, left, Css.width (Css.pct 50), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 65) ] ] ] [ Html.text "NAME" ]
                 , Html.th [ css [ header, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "RATING" ]
                 , Html.th [ css [ header, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text "MATCHES" ]
-                , Html.th [ css [ header, center ] ] [ Html.text "ACTIONS" ]
+                , Html.th [ css [ header, center, Css.width (Css.pct 25) ] ] [ Html.text "ACTIONS" ]
                 ]
             )
         |> (\tableGuts ->
