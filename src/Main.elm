@@ -682,7 +682,7 @@ update msg model =
 
         ShowStatus message ->
             ( { model | status = Just message }
-            , Process.sleep 3500 |> Task.perform (\_ -> ClearStatus)
+            , Process.sleep 2000 |> Task.perform (\_ -> ClearStatus)
             )
 
         ClearStatus ->
@@ -759,10 +759,17 @@ view model =
                             [ Css.position Css.fixed
                             , Css.top (Css.px 20)
                             , Css.right (Css.px 20)
-                            , Css.backgroundColor (if model.autoSaveInProgress then Css.hex "E02020" else Css.hex "333")
-                            , Css.color (Css.hex "FFF")
-                            , Css.padding4 (Css.px 8) (Css.px 12) (Css.px 8) (Css.px 12)
-                            , Css.borderRadius (Css.px 6)
+                            , Css.backgroundColor (if model.autoSaveInProgress then Css.hex "EF4444" else Css.hex "10B981")
+                            , Css.color (Css.hex "FFFFFF")
+                            , Css.padding4 (Css.px 12) (Css.px 16) (Css.px 12) (Css.px 16)
+                            , Css.borderRadius (Css.px 8)
+                            , Css.boxShadow4 (Css.px 0) (Css.px 4) (Css.px 12) (Css.rgba 0 0 0 0.15)
+                            , Css.border3 (Css.px 1) Css.solid (Css.rgba 255 255 255 0.2)
+                            , Css.property "animation" "slideInFromRight 0.3s ease-out"
+                            , Css.fontSize (Css.px 14)
+                            , Css.fontWeight (Css.int 500)
+                            , Css.maxWidth (Css.px 300)
+                            , Css.zIndex (Css.int 1000)
                             , modernSansSerif
                             ]
                         ]
