@@ -46,6 +46,7 @@ try {
   });
   
   console.log("Elm app created successfully:", app);
+  var hasFreshDriveData = false; // becomes true after first Drive load completes
 
   // Send initial config
   if (app.ports.askForAutoSave && app.ports.askForAutoSave.send) {
@@ -122,6 +123,9 @@ try {
   // Subscribe to the automatic save for matches 
   if (app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
     app.ports.saveToPublicDrive.subscribe(function(json) {
+      if (!hasFreshDriveData) {
+        console.warn('⏸️ Save requested before fresh Drive data loaded; proceeding but data origin may be stale');
+      }
       try { localStorage.setItem(LS_PUBLIC, json); } catch (_) {}
 
       // Google Apps Script URL for your deployed web app
@@ -230,11 +234,14 @@ try {
       .then(function(json) {
         console.log('✅ RELOAD SUCCESS: Loaded', json.length, 'bytes from Google Drive');
         console.log('📊 RELOAD DATA PREVIEW:', json.substring(0, 200) + '...');
+        // Refresh the local cache so next session's fast path matches Drive
+        try { localStorage.setItem(LS_PUBLIC, json); } catch(_) {}
         
         if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
           console.log('📤 Sending reloaded data to Elm app...');
           app.ports.receiveStandings.send(json);
           console.log('✅ Data sent to Elm successfully');
+          hasFreshDriveData = true;
         } else {
           console.log('❌ receiveStandings port not available');
         }
