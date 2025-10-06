@@ -1002,7 +1002,7 @@ currentMatch model =
             in
             Html.section
                 [ css
-                    [ Css.width (Css.pct 80)
+                    [ Css.width (Css.pct 100)
                     , Css.margin2 (Css.px 32) Css.auto
                     ]
                 ]
@@ -1144,22 +1144,22 @@ currentMatch model =
                       Html.div
                         [ css [ Css.height (Css.px 4), Css.backgroundColor (Css.hex "D1D5DB"), Css.borderRadius (Css.px 2), Css.margin2 (Css.px 14) Css.zero ] ]
                         []
-                    , -- Row 3: TIE and SKIP (compact, one line on mobile)
+                    , -- Row 3: TIE and SKIP (centered group on mobile)
                       Html.div
-                        [ css [ Css.displayFlex, Css.alignItems Css.stretch, Css.justifyContent Css.spaceBetween, Css.margin2 Css.zero (Css.px -4) ] ]
-                        [ Html.div [ css [ Css.flex (Css.int 1) ] ]
+                        [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.marginTop (Css.px 4) ] ]
+                        [ Html.div []
                             [ buttonCompact (Css.hex "1F2937") "TIE"
                                 (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                             ]
-                        , Html.div [ css [ Css.flex (Css.int 1) ] ]
+                        , Html.div []
                             [ buttonCompact (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                         ]
-                    , -- Row 4 (new on mobile): CUSTOM MATCHUP and SAVE
+                    , -- Row 4 (mobile): CUSTOM and SAVE (centered group)
                       Html.div
-                        [ css [ Css.displayFlex, Css.alignItems Css.stretch, Css.justifyContent Css.spaceBetween, Css.margin2 (Css.px 8) (Css.px -4) ] ]
-                        [ Html.div [ css [ Css.flex (Css.int 1) ] ]
+                        [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.marginTop (Css.px 8) ] ]
+                        [ Html.div []
                             [ buttonCompact (Css.hex "6DD400") "CUSTOM" (Just KeeperWantsToShowCustomMatchup) ]
-                        , Html.div [ css [ Css.flex (Css.int 1) ] ]
+                        , Html.div []
                             [ buttonCompact (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
                         ]
                     ]
@@ -1452,7 +1452,7 @@ rankings model =
            )
         |> Keyed.node "table"
             [ css
-                [ Css.width (Css.pct 80)
+                [ Css.width (Css.pct 100)
                 , Css.margin2 Css.zero Css.auto
                 , Css.borderCollapse Css.collapse
                 , Css.tableLayout Css.auto
@@ -1463,7 +1463,7 @@ rankings model =
         |> List.singleton
         |> Html.div
             [ css
-                [ Css.width (Css.pct 80)
+                [ Css.width (Css.pct 100)
                 , Css.margin2 Css.zero Css.auto
                 , Css.overflowX Css.auto
                 , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
