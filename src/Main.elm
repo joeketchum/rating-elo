@@ -1119,7 +1119,12 @@ currentMatch model =
                         [ Css.display Css.none
                         , Css.marginTop (Css.px 24)
                         , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
-                            [ Css.display Css.block ]
+                            [ Css.display Css.block
+                            , Css.marginLeft (Css.px 16)
+                            , Css.marginRight (Css.px 16)
+                            , Css.paddingLeft (Css.px 8)
+                            , Css.paddingRight (Css.px 8)
+                            ]
                         ]
                     ]
                     [ -- Row 1: Player A with WINNER on the right
