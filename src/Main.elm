@@ -1204,7 +1204,14 @@ currentMatch model =
                         else
                             [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerA)) ]
                         )
-                    , Html.div [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ]
+                    , Html.div [ css [ Css.width (Css.pct 20), Css.textAlign Css.center ] ] [ Html.text "" ]
+                    , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
+                        (if isPlayerLocallyIgnored playerB model then
+                            [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerB)) ]
+                        else
+                            [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerB)) ]
+                        )
+                    ]
                 , Html.div
                     [ css
                         [ Css.marginTop (Css.px 12)
@@ -1213,14 +1220,6 @@ currentMatch model =
                         ]
                     ]
                     [ if model.showCustomMatchup then customMatchupUI model else Html.text "" ]
-                        [ Html.text "" ]
-                    , Html.div [ css [ Css.width (Css.pct 40), Css.textAlign Css.center, Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ]
-                        (if isPlayerLocallyIgnored playerB model then
-                            [ zzzUnignoreButton (Just (KeeperWantsToUnignorePlayer playerB)) ]
-                        else
-                            [ zzzIgnoreButton (Just (KeeperWantsToIgnorePlayer playerB)) ]
-                        )
-                    ]
                                 , Html.div
                                         [ css
                                                 [ Css.padding4 (Css.px 32) (Css.pct 20) Css.zero (Css.pct 20)
