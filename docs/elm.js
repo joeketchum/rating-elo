@@ -15516,7 +15516,15 @@ var $author$project$Main$rankings = function (model) {
 							[
 								$rtfeldman$elm_css$Css$width(
 								$rtfeldman$elm_css$Css$pct(100)),
-								$rtfeldman$elm_css$Css$overflowX($rtfeldman$elm_css$Css$auto)
+								$rtfeldman$elm_css$Css$overflowX($rtfeldman$elm_css$Css$auto),
+								$rtfeldman$elm_css$Css$marginLeft(
+								$rtfeldman$elm_css$Css$px(16)),
+								$rtfeldman$elm_css$Css$marginRight(
+								$rtfeldman$elm_css$Css$px(16)),
+								$rtfeldman$elm_css$Css$paddingLeft(
+								$rtfeldman$elm_css$Css$px(8)),
+								$rtfeldman$elm_css$Css$paddingRight(
+								$rtfeldman$elm_css$Css$px(8))
 							]))
 					]))
 			]),

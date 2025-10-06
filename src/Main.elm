@@ -1474,6 +1474,10 @@ rankings model =
                 , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ]
                     [ Css.width (Css.pct 100)
                     , Css.overflowX Css.auto
+                    , Css.marginLeft (Css.px 16)
+                    , Css.marginRight (Css.px 16)
+                    , Css.paddingLeft (Css.px 8)
+                    , Css.paddingRight (Css.px 8)
                     ]
                 ]
             ]
