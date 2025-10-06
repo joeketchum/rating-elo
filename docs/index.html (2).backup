@@ -1,4 +1,4 @@
-﻿﻿<!DOCTYPE HTML>
+﻿<!DOCTYPE HTML>
 <html>
 <head>
   <meta charset="UTF-8">
@@ -24,7 +24,7 @@
 
 <pre id="elm"></pre>
 
-<script src="elm.js?v=20251006d"></script>
+<script src="elm.js?v=20251006i"></script>
 <script>
 try {
   console.log("Initializing Elm app...");
