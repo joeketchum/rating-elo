@@ -76,6 +76,7 @@ type alias Model =
     , votesUntilDriveSync : Int
     , shouldStartNextMatchAfterLoad : Bool
     , autoSaveInProgress : Bool
+    , driveLoadInProgress : Bool
     , timeFilter : TimeFilter
     , ignoredPlayers : Set String  -- Player IDs that are locally ignored
     , customMatchupPlayerA : Maybe Player
@@ -157,6 +158,7 @@ init _ =
     , votesUntilDriveSync = 25
       , shouldStartNextMatchAfterLoad = False
     , autoSaveInProgress = False
+    , driveLoadInProgress = True  -- Start with loading in progress
     , timeFilter = All
     , ignoredPlayers = Set.empty
     , customMatchupPlayerA = Nothing
@@ -193,6 +195,12 @@ httpErrorToString err =
 
         Http.BadBody b ->
             "Bad body: " ++ b
+
+
+-- Helper to check if voting should be disabled
+isVotingDisabled : Model -> Bool
+isVotingDisabled model =
+    model.autoSaveInProgress || model.driveLoadInProgress
 
 
 maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -464,7 +472,7 @@ update msg model =
             )
 
         KeeperWantsToRefreshFromDrive ->
-            ( model
+            ( { model | driveLoadInProgress = True }
             , Cmd.batch
                 [ loadFromPublicDrive ""
                 , Task.succeed (ShowStatus "Refreshing from Drive...") |> Task.perform identity
@@ -474,7 +482,7 @@ update msg model =
         PeriodicSync ->
             -- Only sync if no current match (don't interrupt voting)
             if League.currentMatch (History.current model.history) == Nothing then
-                ( model, loadFromPublicDrive "" )
+                ( { model | driveLoadInProgress = True }, loadFromPublicDrive "" )
             else
                 ( model, Cmd.none )
 
@@ -503,7 +511,7 @@ update msg model =
 
         TriggerReload ->
             -- Trigger the actual reload after save completion delay
-            ( model, loadFromPublicDrive "" )
+            ( { model | driveLoadInProgress = True }, loadFromPublicDrive "" )
 
         KeeperWantsToLoadStandings ->
             ( model, Select.file [ "application/json" ] SelectedStandingsFile )
@@ -658,7 +666,7 @@ update msg model =
             case Decode.decodeString League.decoder jsonString of
                 Ok league ->
                     let
-                        updatedModel = { model | history = History.init 50 league, shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False }
+                        updatedModel = { model | history = History.init 50 league, shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False, driveLoadInProgress = False }
                         baseResult = ( updatedModel, Task.succeed (ShowStatus "Standings loaded") |> Task.perform identity )
                     in
                     baseResult
@@ -666,7 +674,7 @@ update msg model =
                         |> maybeAutoSave
 
                 Err _ ->
-                    ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False }
+                    ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False, driveLoadInProgress = False }
                     , Cmd.none
                     )
 
@@ -872,7 +880,9 @@ view model =
                             [ Css.position Css.fixed
                             , Css.top (Css.px 20)
                             , Css.right (Css.px 20)
-                            , Css.backgroundColor (if model.autoSaveInProgress then Css.hex "EF4444" else Css.hex "10B981")
+                            , Css.backgroundColor (if model.autoSaveInProgress then Css.hex "EF4444" 
+                                                       else if model.driveLoadInProgress then Css.hex "F59E0B"
+                                                       else Css.hex "10B981")
                             , Css.color (Css.hex "FFFFFF")
                             , Css.padding4 (Css.px 12) (Css.px 16) (Css.px 12) (Css.px 16)
                             , Css.borderRadius (Css.px 8)
@@ -889,7 +899,10 @@ view model =
                         [ Html.div 
                             [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween ] ] 
                             [ Html.span [] 
-                                [ Html.text (message ++ (if model.autoSaveInProgress then " (Voting disabled)" else "")) ]
+                                [ Html.text (message ++ 
+                                    (if model.autoSaveInProgress then " (Voting disabled)" 
+                                     else if model.driveLoadInProgress then " (Loading data...)" 
+                                     else "")) ]
                             , Html.button
                                 [ css
                                     [ Css.backgroundColor Css.transparent
@@ -1247,7 +1260,7 @@ currentMatch model =
                         [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompactWithIgnore playerA model ]
                         , Html.div []
                             [ redButtonLarge "WINNER"
-                                (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
+                                (if isVotingDisabled model then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                             ]
                         ]
                     , -- Row 2: Player B with WINNER on the right
@@ -1256,7 +1269,7 @@ currentMatch model =
                         [ Html.div [ css [ Css.flexGrow (Css.num 1) ] ] [ activePlayerCompactWithIgnore playerB model ]
                         , Html.div []
                             [ blueButtonLarge "WINNER"
-                                (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
+                                (if isVotingDisabled model then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
                             ]
                         ]
                     , -- Separator between players and the tie/skip row
@@ -1268,7 +1281,7 @@ currentMatch model =
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center ] ]
                         [ Html.div [ css [ Css.marginRight (Css.px 4) ] ]
                             [ buttonCompact (Css.hex "1F2937") "TIE"
-                                (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
+                                (if isVotingDisabled model then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                             ]
                         , Html.div [ css [ Css.marginLeft (Css.px 4) ] ]
                             [ buttonCompact (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
@@ -1293,15 +1306,15 @@ currentMatch model =
                     ]
                     [ Html.div [ css [ Css.width (Css.pct 40) ] ]
                         [ redButton "WINNER" 
-                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
+                            (if isVotingDisabled model then Nothing else Just (MatchFinished (League.Win { lost = playerB, won = playerA })))
                         ]
                     , Html.div [ css [ Css.width (Css.pct 20) ] ]
                         [ blackButton "TIE" 
-                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
+                            (if isVotingDisabled model then Nothing else Just (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })))
                         ]
                     , Html.div [ css [ Css.width (Css.pct 40) ] ]
                         [ blueButton "WINNER" 
-                            (if model.autoSaveInProgress then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
+                            (if isVotingDisabled model then Nothing else Just (MatchFinished (League.Win { won = playerB, lost = playerA })))
                         ]
                     ]
                 , Html.div

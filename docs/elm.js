@@ -6089,6 +6089,7 @@ var $author$project$Main$init = function (_v0) {
 				autoSaveInProgress: false,
 				customMatchupPlayerA: $elm$core$Maybe$Nothing,
 				customMatchupPlayerB: $elm$core$Maybe$Nothing,
+				driveLoadInProgress: true,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				ignoredPlayers: $elm$core$Set$empty,
 				lastSynced: $elm$core$Maybe$Nothing,
@@ -9442,7 +9443,9 @@ var $author$project$Main$update = F2(
 							])));
 			case 'KeeperWantsToRefreshFromDrive':
 				return _Utils_Tuple2(
-					model,
+					_Utils_update(
+						model,
+						{driveLoadInProgress: true}),
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
@@ -9458,7 +9461,9 @@ var $author$project$Main$update = F2(
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)),
 					$elm$core$Maybe$Nothing) ? _Utils_Tuple2(
-					model,
+					_Utils_update(
+						model,
+						{driveLoadInProgress: true}),
 					$author$project$Main$loadFromPublicDrive('')) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'AutoSaveCompleted':
 				return model.autoSaveInProgress ? _Utils_Tuple2(
@@ -9498,7 +9503,9 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'TriggerReload':
 				return _Utils_Tuple2(
-					model,
+					_Utils_update(
+						model,
+						{driveLoadInProgress: true}),
 					$author$project$Main$loadFromPublicDrive(''));
 			case 'KeeperWantsToLoadStandings':
 				return _Utils_Tuple2(
@@ -9766,6 +9773,7 @@ var $author$project$Main$update = F2(
 						model,
 						{
 							autoSaveInProgress: false,
+							driveLoadInProgress: false,
 							history: A2($author$project$History$init, 50, league),
 							shouldStartNextMatchAfterLoad: false
 						});
@@ -9784,6 +9792,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								autoSaveInProgress: false,
+								driveLoadInProgress: false,
 								shouldStartNextMatchAfterLoad: false,
 								status: $elm$core$Maybe$Just('Saved standings malformed or unreadable')
 							}),
@@ -13253,6 +13262,9 @@ var $tesk9$accessible_html_with_css$Accessibility$Styled$h1 = function (attribut
 };
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $author$project$Main$isVotingDisabled = function (model) {
+	return model.autoSaveInProgress || model.driveLoadInProgress;
+};
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
@@ -13914,7 +13926,7 @@ var $author$project$Main$currentMatch = function (model) {
 											A2(
 											$author$project$Main$redButtonLarge,
 											'WINNER',
-											model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+											$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
 													$author$project$League$Win(
 														{lost: playerB, won: playerA}))))
@@ -13957,7 +13969,7 @@ var $author$project$Main$currentMatch = function (model) {
 											A2(
 											$author$project$Main$blueButtonLarge,
 											'WINNER',
-											model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+											$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
 													$author$project$League$Win(
 														{lost: playerA, won: playerB}))))
@@ -14014,7 +14026,7 @@ var $author$project$Main$currentMatch = function (model) {
 											$author$project$Main$buttonCompact,
 											$rtfeldman$elm_css$Css$hex('1F2937'),
 											'TIE',
-											model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+											$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
 													$author$project$League$Draw(
 														{playerA: playerA, playerB: playerB}))))
@@ -14143,7 +14155,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$redButton,
 									'WINNER',
-									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+									$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{lost: playerB, won: playerA}))))
@@ -14164,7 +14176,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blackButton,
 									'TIE',
-									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+									$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Draw(
 												{playerA: playerA, playerB: playerB}))))
@@ -14185,7 +14197,7 @@ var $author$project$Main$currentMatch = function (model) {
 									A2(
 									$author$project$Main$blueButton,
 									'WINNER',
-									model.autoSaveInProgress ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
+									$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
 												{lost: playerA, won: playerB}))))
@@ -17201,7 +17213,7 @@ var $author$project$Main$view = function (model) {
 													$rtfeldman$elm_css$Css$right(
 													$rtfeldman$elm_css$Css$px(20)),
 													$rtfeldman$elm_css$Css$backgroundColor(
-													model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
+													model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : (model.driveLoadInProgress ? $rtfeldman$elm_css$Css$hex('F59E0B') : $rtfeldman$elm_css$Css$hex('10B981'))),
 													$rtfeldman$elm_css$Css$color(
 													$rtfeldman$elm_css$Css$hex('FFFFFF')),
 													A4(
@@ -17259,7 +17271,7 @@ var $author$project$Main$view = function (model) {
 															$tesk9$accessible_html_with_css$Accessibility$Styled$text(
 															_Utils_ap(
 																message,
-																model.autoSaveInProgress ? ' (Voting disabled)' : ''))
+																model.autoSaveInProgress ? ' (Voting disabled)' : (model.driveLoadInProgress ? ' (Loading data...)' : '')))
 														])),
 													A2(
 													$tesk9$accessible_html_with_css$Accessibility$Styled$button,
