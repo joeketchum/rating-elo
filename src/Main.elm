@@ -4,6 +4,8 @@ port module Main exposing (..)
 import Html exposing (Html)
 import Html.Attributes as Attributes
 import Html.Events as Events
+import Html.Styled exposing (toUnstyled)
+import Html.Styled.Attributes as StyledAttributes exposing (css)
 import Css
 import League exposing (League, Match, Outcome, getPlayer, currentMatch, init)
 import Player exposing (Player)
@@ -117,10 +119,7 @@ type Msg
 
 -- HELPER FUNCTIONS AND PORTS
 
--- CSS helper
-css : List Css.Style -> Html.Attribute msg
-css styles =
-    Attributes.style "" ""
+-- CSS helper is now imported from Html.Styled.Attributes
 
 
 
