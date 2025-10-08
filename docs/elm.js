@@ -9322,16 +9322,7 @@ var $author$project$Main$update = F2(
 							return (p.id >= 1) && (p.id < 1000000);
 						},
 						supabasePlayers);
-					var validSupabasePlayers = A2(
-						$elm$core$List$filter,
-						function (p) {
-							return !A2(
-								$elm$core$Set$member,
-								$elm$core$String$fromInt(p.id),
-								model.ignoredPlayers);
-						},
-						validIdPlayers);
-					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validSupabasePlayers);
+					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validIdPlayers);
 					var playerCount = $elm$core$List$length(players);
 					var newLeague = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var invalidSupabasePlayers = A2(

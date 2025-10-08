@@ -772,12 +772,11 @@ update msg model =
             case result of
                 Ok supabasePlayers ->
                     let
-                        -- Filter out players with invalid hash-based IDs AND locally ignored players
+                        -- Filter out players with invalid hash-based IDs but keep ignored players for display
                         validIdPlayers = List.filter (\p -> p.id >= 1 && p.id < 1000000) supabasePlayers
-                        validSupabasePlayers = List.filter (\p -> not (Set.member (String.fromInt p.id) model.ignoredPlayers)) validIdPlayers
                         invalidSupabasePlayers = List.filter (\p -> p.id < 1 || p.id >= 1000000) supabasePlayers
                         
-                        players = List.map supabasePlayerToPlayer validSupabasePlayers
+                        players = List.map supabasePlayerToPlayer validIdPlayers
                         newLeague = List.foldl League.addPlayer League.init players
                         playerCount = List.length players
                         invalidCount = List.length invalidSupabasePlayers
