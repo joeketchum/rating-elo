@@ -51,7 +51,6 @@ type alias Model =
     , playerDeletionConfirmation : Maybe (Player, Int)
     , dataVersion : Int
     , lastModified : Int
-    , driveLoadInProgress : Bool
     }
 
 type alias VersionedLeague =
@@ -70,11 +69,7 @@ type TimeFilter
 type Msg
     = GotNextMatch (Maybe League.Match)
     | MatchFinished League.Outcome
-    | KeeperWantsToSaveStandings
-    | SelectedStandingsFile String
     | PeriodicSync
-    | AutoSaveCompleted
-    | AutoSaveTimeout
     | TriggerReload
     | KeeperWantsToUndo
     | KeeperWantsToRedo
@@ -87,7 +82,7 @@ type Msg
     | KeeperUpdatedPlayerBSearch String
     | LoadedLeague (Result String League)
     | GotPlayers (Result Http.Error (List Player))
-    | ReceivedStandings String
+
     | ReceivedAutoSave Bool
     | ToggleAutoSave
     | ShowStatus String
@@ -109,10 +104,7 @@ type Msg
     | KeeperWantsToIgnorePlayer Player
     | KeeperWantsToUnignorePlayer Player
     | KeeperWantsToSkipMatch
-    | KeeperWantsToSaveToDrive
-    | KeeperWantsToRefreshFromDrive
-    | KeeperWantsToLoadStandings
-    | ReceivedPublicDriveStatus String
+
 
 
 
@@ -142,22 +134,14 @@ versionedLeagueDecoder =
         (Decode.field "checksum" Decode.string)
         (Decode.field "league" League.decoder)
 
--- Port stubs (replace with actual ports if needed)
+-- Port stubs for local storage (can be kept for local persistence)
 port askForAutoSave : String -> Cmd msg
 port askForTimeFilter : String -> Cmd msg
 port askForIgnoredPlayers : String -> Cmd msg
-port saveStandings : String -> Cmd msg
-port saveAutoSave : Bool -> Cmd msg
-port receiveStandings : (String -> msg) -> Sub msg
 port receiveAutoSave : (Bool -> msg) -> Sub msg
 port receiveTimeFilter : (String -> msg) -> Sub msg
 port receiveIgnoredPlayers : (String -> msg) -> Sub msg
 port saveIgnoredPlayers : String -> Cmd msg
-
--- Stub functions for Drive operations (to be removed/replaced)
-loadFromPublicDrive : String -> Cmd msg
-loadFromPublicDrive _ =
-    Cmd.none
 
 
 
@@ -184,7 +168,6 @@ init _ =
         , playerDeletionConfirmation = Nothing
         , dataVersion = 1
         , lastModified = 0
-        , driveLoadInProgress = False
         }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
     )
@@ -284,12 +267,7 @@ isVotingDisabled model =
 maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 maybeAutoSave ( model, cmd ) =
     if model.autoSave then
-        ( model
-        , Cmd.batch
-            [ cmd
-            , saveStandings (encode 2 (League.encode (History.current model.history)))
-            ]
-        )
+        ( model, cmd )
 
     else
         ( model, cmd )
@@ -338,10 +316,7 @@ subscriptions model =
 
         Nothing ->
             Sub.batch
-                [ receiveStandings ReceivedStandings
-                , receiveAutoSave ReceivedAutoSave
-                
-                , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
+                [ receiveAutoSave ReceivedAutoSave
                 , receiveTimeFilter ReceivedTimeFilter
                 , receiveIgnoredPlayers ReceivedIgnoredPlayers
                 ]
@@ -531,84 +506,15 @@ update msg model =
                 Ok _ -> ( { model | status = Just "League state updated!" }, Cmd.none )
                 Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
 
-        KeeperWantsToSaveStandings ->
-            ( model
-            , Cmd.batch
-                [ -- Download functionality removed; replace with alternative if needed
-                    "standings.json"
-                    "application/json"
-                    (encode 2 (League.encode (History.current model.history)))
-                , Task.succeed (ShowStatus "Exported rankings") |> Task.perform identity
-                ]
-            )
 
-        KeeperWantsToSaveToDrive ->
-            ( model
-            , Cmd.batch
-                [ saveToPublicDrive (encode 2 (League.encode (History.current model.history)))
-                , Task.succeed (ShowStatus "Saving to Drive...") |> Task.perform identity
-                ]
-            )
-
-        KeeperWantsToRefreshFromDrive ->
-            ( { model | driveLoadInProgress = True }
-            , Cmd.batch
-                [ loadFromPublicDrive ""
-                , Task.succeed (ShowStatus "Refreshing from Drive...") |> Task.perform identity
-                ]
-            )
 
         PeriodicSync ->
-            -- Only sync if no current match (don't interrupt voting)
-            if League.currentMatch (History.current model.history) == Nothing then
-                ( { model | driveLoadInProgress = True }, loadFromPublicDrive "" )
-            else
-                ( model, Cmd.none )
+            -- With Supabase, periodic sync is automatic - no action needed
+            ( model, Cmd.none )
 
-        AutoSaveCompleted ->
-            -- Save completed, reload data. Only continue to next match if it was an auto-save
-            if model.autoSaveInProgress then
-                -- This was an auto-save, continue to next match after reload
-                ( { model | shouldStartNextMatchAfterLoad = True, autoSaveInProgress = False, status = Just "Auto-save completed! Reloading data..." }
-                , Process.sleep 1500 |> Task.perform (\_ -> TriggerReload)
-                )
-            else
-                -- This was a manual save, just reload without starting next match
-                ( { model | shouldStartNextMatchAfterLoad = False, status = Just "Manual save completed! Reloading data..." }
-                , Process.sleep 1000 |> Task.perform (\_ -> TriggerReload)
-                )
 
-        AutoSaveTimeout ->
-            -- Auto-save timed out, reset state and continue
-            if model.autoSaveInProgress then
-                ( { model | autoSaveInProgress = False, status = Just "Auto-save timed out. Voting re-enabled." }
-                , Cmd.none
-                )
-            else
-                -- Timeout arrived after completion, ignore it
-                ( model, Cmd.none )
 
-        TriggerReload ->
-            -- Trigger the actual reload after save completion delay
-            ( { model | driveLoadInProgress = True }, loadFromPublicDrive "" )
 
-        KeeperWantsToLoadStandings ->
-            ( model, Select.file [ "application/json" ] SelectedStandingsFile )
-
-        SelectedStandingsFile file ->
-            ( model
-            , File.toString file
-                |> Task.andThen
-                    (\jsonString ->
-                        case Decode.decodeString League.decoder jsonString of
-                            Ok decoded ->
-                                Task.succeed decoded
-
-                            Err err ->
-                                Task.fail (Decode.errorToString err)
-                    )
-                |> Task.attempt LoadedLeague
-            )
 
         KeeperWantsToUndo ->
             ( { model | history = History.goBack model.history |> Maybe.withDefault model.history }
@@ -736,62 +642,7 @@ update msg model =
                     , Cmd.none
                     )
 
-        ReceivedStandings jsonString ->
-            let
-                -- Handle empty/whitespace strings
-                cleanedJson = String.trim jsonString
-                actualDecoder = 
-                    if String.isEmpty cleanedJson then
-                        Decode.succeed 
-                            { version = 1
-                            , timestamp = 0  
-                            , checksum = "empty"
-                            , league = League.init
-                            }
-                    else
-                        versionedLeagueDecoder
-            in
-            case Decode.decodeString actualDecoder cleanedJson of
-                Ok versionedLeague ->
-                    let
-                        -- Check for potential conflicts (if incoming data is older than local)
-                        isStaleData = versionedLeague.timestamp > 0 && model.lastModified > versionedLeague.timestamp
-                        statusMsg = 
-                            if isStaleData then 
-                                "Warning: Loaded older data - potential conflicts detected"
-                            else 
-                                "Standings loaded"
-                        
-                        updatedModel = 
-                            { model 
-                            | history = History.init 50 versionedLeague.league
-                            , shouldStartNextMatchAfterLoad = False
-                            , autoSaveInProgress = False
-                            , driveLoadInProgress = False
-                            , dataVersion = max model.dataVersion versionedLeague.version
-                            , lastModified = max model.lastModified versionedLeague.timestamp
-                            }
-                        baseResult = ( updatedModel, Task.succeed (ShowStatus statusMsg) |> Task.perform identity )
-                    in
-                    baseResult
-                        |> startNextMatchIfPossible
-                        |> maybeAutoSave
 
-                Err error ->
-                    let
-                        errorMsg = "Decode error: " ++ Decode.errorToString error
-                        debugMsg = "JSON preview: " ++ String.left 100 jsonString ++ "..."
-                    in
-                    ( { model 
-                      | status = Just ("Data decode failed - trying legacy format compatibility")
-                      , shouldStartNextMatchAfterLoad = False
-                      , autoSaveInProgress = False
-                      , driveLoadInProgress = False
-                      }
-                    , Cmd.batch 
-                        [ Task.succeed (ShowStatus debugMsg) |> Task.perform identity
-                        ]
-                    )
 
         ReceivedCurrentTime time ->
             let
@@ -805,34 +656,18 @@ update msg model =
         ReceivedAutoSave value ->
             ( { model | autoSave = value }, Cmd.none )
 
-        ReceivedPublicDriveStatus msgStr ->
-            let
-                parts = String.split "|" msgStr
-                maybeTs =
-                    case List.drop 1 parts |> List.head of
-                        Just t -> Just t
-                        Nothing -> Nothing
-            in
-            ( { model
-                | status = Just (List.head parts |> Maybe.withDefault msgStr)
-                , lastSynced = maybeTs
-              }
-            , Cmd.none
-            )
+
 
         ToggleAutoSave ->
             let
                 newVal = not model.autoSave
             in
             ( { model | autoSave = newVal }
-            , Cmd.batch
-                [ saveAutoSave newVal
-                , Task.succeed
-                    (ShowStatus
-                        (if newVal then "Auto-save enabled" else "Auto-save disabled")
-                    )
-                    |> Task.perform identity
-                ]
+            , Task.succeed
+                (ShowStatus
+                    (if newVal then "Auto-save enabled" else "Auto-save disabled")
+                )
+                |> Task.perform identity
             )
 
         ShowStatus message ->
@@ -898,10 +733,6 @@ view model =
                 [ currentMatch model
                 , filterBar model
                 , rankings model
-                , Html.section
-                    [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
-                    [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
-                    ]
                 ]
             ]
         ]
@@ -1048,7 +879,7 @@ view model =
                 Nothing ->
                     []
            )
-            |> List.map Html.toUnstyled
+            |> List.map toUnstyled
     }
 
 

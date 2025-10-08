@@ -1,5 +1,7 @@
 -- Hockey Rating League Database Schema for Supabase
--- Run this in the Supabase SQL Editor
+
+-- Enable Row Level Security
+ALTER DATABASE postgres SET "app.jwt_secret" TO 'your-jwt-secret';
 
 -- Players table
 CREATE TABLE IF NOT EXISTS players (
