@@ -16403,8 +16403,11 @@ var $author$project$Main$rankings = function (model) {
 								function (player) {
 									return -$author$project$Player$rating(player);
 								},
-								$author$project$League$players(
-									$author$project$History$current(model.history)))))))));
+								A2(
+									$elm$core$List$filter,
+									$author$project$Main$combinedPlayerFilter(model),
+									$author$project$League$players(
+										$author$project$History$current(model.history))))))))));
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 	function (_v0, styles) {

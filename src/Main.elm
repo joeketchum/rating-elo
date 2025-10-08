@@ -1588,8 +1588,9 @@ rankings model =
     in
     History.current model.history
         |> League.players
-        |> List.sortBy (\player -> -(Player.rating player))
-        |> List.indexedMap
+        |> List.filter (combinedPlayerFilter model)  -- Filter first
+        |> List.sortBy (\player -> -(Player.rating player))  -- Then sort filtered list
+        |> List.indexedMap  -- Then rank with no gaps (1, 2, 3, etc.)
             (\rank player ->
                 let
                     previousRank =
