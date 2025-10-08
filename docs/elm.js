@@ -7404,6 +7404,7 @@ var $author$project$Main$MatchSaved = function (a) {
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
+var $author$project$Main$TriggerReload = {$: 'TriggerReload'};
 var $author$project$Elo$initialRating = 1500;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Node = F6(
@@ -8621,9 +8622,7 @@ var $author$project$League$startMatch = F2(
 								league.players)))
 				}));
 	});
-var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
-	var _v0 = A2($elm$core$Debug$log, 'Converting player ' + (supabasePlayer.name + ' with rating'), supabasePlayer.rating);
 	return $author$project$Player$Player(
 		{
 			am: supabasePlayer.playsAM,
@@ -8960,7 +8959,12 @@ var $author$project$Main$update = F2(
 							{
 								status: $elm$core$Maybe$Just('Match processed successfully! Refreshing standings...')
 							}),
-						A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
+						A2(
+							$elm$core$Task$perform,
+							function (_v16) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(500)));
 				} else {
 					var err = result.a;
 					return _Utils_Tuple2(
@@ -9122,10 +9126,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v17 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v17.a.$ === 'Just') && (_v17.b.$ === 'Just')) {
-					var playerA = _v17.a.a;
-					var playerB = _v17.b.a;
+				var _v18 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v18.a.$ === 'Just') && (_v18.b.$ === 'Just')) {
+					var playerA = _v18.a.a;
+					var playerB = _v18.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9205,9 +9209,9 @@ var $author$project$Main$update = F2(
 					var playerCount = $elm$core$List$length(players);
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var firstPlayerRating = function () {
-						var _v19 = $elm$core$List$head(supabasePlayers);
-						if (_v19.$ === 'Just') {
-							var p = _v19.a;
+						var _v20 = $elm$core$List$head(supabasePlayers);
+						if (_v20.$ === 'Just') {
+							var p = _v20.a;
 							return $elm$core$String$fromInt(p.rating);
 						} else {
 							return 'no players';
@@ -9273,7 +9277,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v20) {
+						function (_v21) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
