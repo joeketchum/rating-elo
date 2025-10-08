@@ -206,6 +206,8 @@ toSupabaseMatch league outcome =
                 League.Draw _ -> Player.id playerA -- or handle draw differently
         ratingBeforeA = Player.rating playerA
         ratingBeforeB = Player.rating playerB
+        -- Calculate K-factor based on the player who is being updated (typically use player A's stats)
+        kFactor = Elo.getKFactor (Player.matchesPlayed playerA) ratingBeforeA
         -- Calculate ratings after the match using Elo algorithm
         (newRatingA, newRatingB) = case outcome of
             League.Win { won } ->
@@ -220,7 +222,6 @@ toSupabaseMatch league outcome =
                 in (result.playerA, result.playerB)
         ratingAfterA = newRatingA
         ratingAfterB = newRatingB
-        kFactor = Elo.getKFactor ratingBeforeA ratingBeforeB
         now = Time.millisToPosix 1728346800000 -- Oct 8, 2025 approximate
     in
     { id = 0

@@ -8789,6 +8789,10 @@ var $author$project$Main$toSupabaseMatch = F2(
 		var playerA = _v0.a;
 		var playerB = _v0.b;
 		var ratingBeforeA = $author$project$Player$rating(playerA);
+		var kFactor = A2(
+			$author$project$Elo$getKFactor,
+			$author$project$Player$matchesPlayed(playerA),
+			ratingBeforeA);
 		var winnerId = function () {
 			if (outcome.$ === 'Win') {
 				var won = outcome.a.won;
@@ -8798,7 +8802,6 @@ var $author$project$Main$toSupabaseMatch = F2(
 			}
 		}();
 		var ratingBeforeB = $author$project$Player$rating(playerB);
-		var kFactor = A2($author$project$Elo$getKFactor, ratingBeforeA, ratingBeforeB);
 		var _v3 = function () {
 			if (outcome.$ === 'Win') {
 				var won = outcome.a.won;
