@@ -6956,7 +6956,8 @@ var $author$project$Main$init = function (_v0) {
 				showAddPlayerPopup: false,
 				showCustomMatchup: false,
 				status: $elm$core$Maybe$Nothing,
-				timeFilter: $author$project$Main$All
+				timeFilter: $author$project$Main$All,
+				votesSinceLastSync: 0
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -9002,27 +9003,31 @@ var $author$project$Main$update = F2(
 							_Utils_Tuple2(
 								_Utils_update(
 									model,
-									{
-										history: updatedHistory,
-										status: $elm$core$Maybe$Just('Processing match...')
-									}),
+									{history: updatedHistory, status: $elm$core$Maybe$Nothing}),
 								matchCmd)));
 				}
 			case 'MatchSaved':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
-					return _Utils_Tuple2(
+					var newVoteCount = model.votesSinceLastSync + 1;
+					var shouldSync = newVoteCount >= 10;
+					return shouldSync ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								status: $elm$core$Maybe$Just('Match processed successfully! Refreshing standings...')
+								status: $elm$core$Maybe$Just('Syncing data...'),
+								votesSinceLastSync: 0
 							}),
 						A2(
 							$elm$core$Task$perform,
 							function (_v16) {
 								return $author$project$Main$TriggerReload;
 							},
-							$elm$core$Process$sleep(500)));
+							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{status: $elm$core$Maybe$Nothing, votesSinceLastSync: newVoteCount}),
+						$elm$core$Platform$Cmd$none);
 				} else {
 					var err = result.a;
 					return _Utils_Tuple2(
@@ -9030,9 +9035,14 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								status: $elm$core$Maybe$Just(
-									'Failed to process match: ' + $author$project$Main$httpErrorToString(err))
+									'Failed to save match: ' + $author$project$Main$httpErrorToString(err))
 							}),
-						$elm$core$Platform$Cmd$none);
+						A2(
+							$elm$core$Task$perform,
+							function (_v17) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(1000)));
 				}
 			case 'LeagueStateSaved':
 				var result = msg.a;
@@ -9065,7 +9075,9 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'TriggerReload':
 				return _Utils_Tuple2(
-					model,
+					_Utils_update(
+						model,
+						{votesSinceLastSync: 0}),
 					A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
 			case 'KeeperWantsToUndo':
 				return _Utils_Tuple2(
@@ -9184,10 +9196,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v18 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v18.a.$ === 'Just') && (_v18.b.$ === 'Just')) {
-					var playerA = _v18.a.a;
-					var playerB = _v18.b.a;
+				var _v19 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v19.a.$ === 'Just') && (_v19.b.$ === 'Just')) {
+					var playerA = _v19.a.a;
+					var playerB = _v19.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9267,9 +9279,9 @@ var $author$project$Main$update = F2(
 					var playerCount = $elm$core$List$length(players);
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var firstPlayerRating = function () {
-						var _v20 = $elm$core$List$head(supabasePlayers);
-						if (_v20.$ === 'Just') {
-							var p = _v20.a;
+						var _v21 = $elm$core$List$head(supabasePlayers);
+						if (_v21.$ === 'Just') {
+							var p = _v21.a;
 							return $elm$core$String$fromInt(p.rating);
 						} else {
 							return 'no players';
@@ -9281,7 +9293,8 @@ var $author$project$Main$update = F2(
 							_Utils_update(
 								model,
 								{
-									history: A2($author$project$History$init, 50, league)
+									history: A2($author$project$History$init, 50, league),
+									votesSinceLastSync: 0
 								}),
 							A2(
 								$elm$core$Task$perform,
@@ -9335,7 +9348,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v21) {
+						function (_v22) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));

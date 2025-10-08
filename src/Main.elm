@@ -60,6 +60,7 @@ type alias Model =
     , addPlayerRating : String
     , addPlayerAM : Bool
     , addPlayerPM : Bool
+    , votesSinceLastSync : Int
     }
 
 type alias VersionedLeague =
@@ -192,6 +193,7 @@ init _ =
         , addPlayerRating = "500"
         , addPlayerAM = True
         , addPlayerPM = True
+        , votesSinceLastSync = 0
         }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
     )
@@ -612,7 +614,7 @@ update msg model =
                     -- Send only match outcome to Edge Function - let it handle all database operations
                     matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
                 in
-                    ( { model | history = updatedHistory, status = Just "Processing match..." }
+                    ( { model | history = updatedHistory, status = Nothing }
                     , matchCmd
                     )
                     |> startNextMatchIfPossible
@@ -620,10 +622,25 @@ update msg model =
         MatchSaved result ->
             case result of
                 Ok _ -> 
-                    ( { model | status = Just "Match processed successfully! Refreshing standings..." }
-                    , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
+                    let
+                        newVoteCount = model.votesSinceLastSync + 1
+                        shouldSync = newVoteCount >= 10
+                    in
+                    if shouldSync then
+                        -- Sync every 10 votes to keep data fresh but not disruptive
+                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0 }
+                        , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
+                        )
+                    else
+                        -- Just update vote count - no reload needed!
+                        ( { model | status = Nothing, votesSinceLastSync = newVoteCount }
+                        , Cmd.none
+                        )
+                Err err -> 
+                    -- Only reload on error to sync with database
+                    ( { model | status = Just ("Failed to save match: " ++ httpErrorToString err) }
+                    , Task.perform (\_ -> TriggerReload) (Process.sleep 1000)
                     )
-                Err err -> ( { model | status = Just ("Failed to process match: " ++ httpErrorToString err) }, Cmd.none )
 
         LeagueStateSaved result ->
             case result of
@@ -646,7 +663,7 @@ update msg model =
             
         TriggerReload ->
             -- Reload players from Supabase
-            ( model, Supabase.getPlayers Config.supabaseConfig GotPlayers )
+            ( { model | votesSinceLastSync = 0 }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
 
 
 
@@ -778,7 +795,7 @@ update msg model =
                             Nothing -> "no players"
                         statusMsg = "Loaded " ++ String.fromInt playerCount ++ " players (first rating: " ++ firstPlayerRating ++ ")"
                     in
-                    ( { model | history = History.init 50 league }
+                    ( { model | history = History.init 50 league, votesSinceLastSync = 0 }
                     , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
                         |> startNextMatchIfPossible
