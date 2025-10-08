@@ -716,6 +716,7 @@ update msg model =
                     let
                         updatedModel = { model | history = History.init 50 league, votesSinceLastSync = 0, isSyncing = False }
                         -- If we have a pending match from before sync, start it now
+                        hasPendingMatch = model.pendingMatchAfterSync /= Nothing
                         modelWithMatch = case model.pendingMatchAfterSync of
                             Just match ->
                                 { updatedModel 
@@ -728,7 +729,8 @@ update msg model =
                     ( modelWithMatch
                     , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
-                        |> startNextMatchIfPossible
+                        -- Only generate new match if we didn't restore a pending one
+                        |> (if hasPendingMatch then identity else startNextMatchIfPossible)
 
                 Err httpErr ->
                     ( { model | status = Just ("Failed to fetch players from Supabase: " ++ httpErrorToString httpErr) }
