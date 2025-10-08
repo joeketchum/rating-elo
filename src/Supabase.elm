@@ -13,6 +13,7 @@ module Supabase exposing
     , updateLeagueState
     , subscribeToPlayers
     , voteEdgeFunction
+    , undoMatchFunction
     )
 
 import Http
@@ -338,7 +339,7 @@ subscribeToPlayers config toMsg =
 
 
 -- Call Supabase Edge Function for voting and Elo update
-voteEdgeFunction : Config -> Int -> Int -> Int -> (Result Http.Error () -> msg) -> Cmd msg
+voteEdgeFunction : Config -> Int -> Int -> Int -> (Result Http.Error Int -> msg) -> Cmd msg
 voteEdgeFunction config aId bId winnerId toMsg =
     Http.request
         { method = "POST"
@@ -352,6 +353,25 @@ voteEdgeFunction config aId bId winnerId toMsg =
             [ ("a_id", Encode.int aId)
             , ("b_id", Encode.int bId)
             , ("winner", Encode.int winnerId)
+            ])
+        , expect = Http.expectJson toMsg (Decode.field "matchId" Decode.int)
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+-- Call Supabase Edge Function to undo a match
+undoMatchFunction : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
+undoMatchFunction config matchId toMsg =
+    Http.request
+        { method = "POST"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            ]
+        , url = config.url ++ "/functions/v1/undo"
+        , body = Http.jsonBody (Encode.object
+            [ ("match_id", Encode.int matchId)
             ])
         , expect = Http.expectWhatever toMsg
         , timeout = Nothing

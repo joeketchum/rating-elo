@@ -6944,6 +6944,7 @@ var $author$project$Main$init = function (_v0) {
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				ignoredPlayers: $elm$core$Set$empty,
 				isSyncing: false,
+				lastMatchId: $elm$core$Maybe$Nothing,
 				lastModified: 0,
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
@@ -7273,6 +7274,9 @@ var $author$project$Main$subscriptions = function (model) {
 var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$League$Draw = function (a) {
 	return {$: 'Draw', a: a};
+};
+var $author$project$Main$MatchUndone = function (a) {
+	return {$: 'MatchUndone', a: a};
 };
 var $author$project$Main$NewPlayerCreated = function (a) {
 	return {$: 'NewPlayerCreated', a: a};
@@ -8019,7 +8023,10 @@ var $author$project$Supabase$voteEdgeFunction = F5(
 								'winner',
 								$elm$json$Json$Encode$int(winnerId))
 							]))),
-				expect: $elm$http$Http$expectWhatever(toMsg),
+				expect: A2(
+					$elm$http$Http$expectJson,
+					toMsg,
+					A2($elm$json$Json$Decode$field, 'matchId', $elm$json$Json$Decode$int)),
 				headers: _List_fromArray(
 					[
 						A2($elm$http$Http$header, 'apikey', config.anonKey),
@@ -8663,6 +8670,31 @@ var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
 			rating: supabasePlayer.rating
 		});
 };
+var $author$project$Supabase$undoMatchFunction = F3(
+	function (config, matchId, toMsg) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$jsonBody(
+					$elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'match_id',
+								$elm$json$Json$Encode$int(matchId))
+							]))),
+				expect: $elm$http$Http$expectWhatever(toMsg),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'Content-Type', 'application/json')
+					]),
+				method: 'POST',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + '/functions/v1/undo'
+			});
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -8913,12 +8945,14 @@ var $author$project$Main$update = F2(
 			case 'MatchSaved':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
+					var matchId = result.a;
 					var newVoteCount = model.votesSinceLastSync + 1;
 					var shouldSync = newVoteCount >= 25;
 					return shouldSync ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
+								lastMatchId: $elm$core$Maybe$Just(matchId),
 								status: $elm$core$Maybe$Just('Syncing data...'),
 								votesSinceLastSync: 0
 							}),
@@ -8930,7 +8964,11 @@ var $author$project$Main$update = F2(
 							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{status: $elm$core$Maybe$Nothing, votesSinceLastSync: newVoteCount}),
+							{
+								lastMatchId: $elm$core$Maybe$Just(matchId),
+								status: $elm$core$Maybe$Nothing,
+								votesSinceLastSync: newVoteCount
+							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var err = result.a;
@@ -9066,16 +9104,57 @@ var $author$project$Main$update = F2(
 						{isSyncing: true, votesSinceLastSync: 0}),
 					A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
 			case 'KeeperWantsToUndo':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							history: A2(
-								$elm$core$Maybe$withDefault,
-								model.history,
-								$author$project$History$goBack(model.history))
-						}),
-					$elm$core$Platform$Cmd$none);
+				var _v16 = model.lastMatchId;
+				if (_v16.$ === 'Just') {
+					var matchId = _v16.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Undoing last match...')
+							}),
+						A3($author$project$Supabase$undoMatchFunction, $author$project$Config$supabaseConfig, matchId, $author$project$Main$MatchUndone));
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								history: A2(
+									$elm$core$Maybe$withDefault,
+									model.history,
+									$author$project$History$goBack(model.history))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'MatchUndone':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								lastMatchId: $elm$core$Maybe$Nothing,
+								status: $elm$core$Maybe$Just('Match undone, reloading...')
+							}),
+						A2(
+							$elm$core$Task$perform,
+							function (_v18) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(200)));
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								history: A2(
+									$elm$core$Maybe$withDefault,
+									model.history,
+									$author$project$History$goBack(model.history)),
+								status: $elm$core$Maybe$Just('Undo failed, using local undo')
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'KeeperWantsToRedo':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9182,10 +9261,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v16 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v16.a.$ === 'Just') && (_v16.b.$ === 'Just')) {
-					var playerA = _v16.a.a;
-					var playerB = _v16.b.a;
+				var _v19 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v19.a.$ === 'Just') && (_v19.b.$ === 'Just')) {
+					var playerA = _v19.a.a;
+					var playerB = _v19.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9336,7 +9415,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v19) {
+						function (_v22) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9348,18 +9427,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v20 = _Utils_Tuple2(
+				var _v23 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v20$5:
+				_v23$5:
 				while (true) {
-					switch (_v20.a) {
+					switch (_v23.a) {
 						case '1':
-							if (_v20.b.$ === 'Just') {
-								var _v21 = _v20.b.a;
-								var playerA = _v21.a;
-								var playerB = _v21.b;
+							if (_v23.b.$ === 'Just') {
+								var _v24 = _v23.b.a;
+								var playerA = _v24.a;
+								var playerB = _v24.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9381,13 +9460,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v20$5;
+								break _v23$5;
 							}
 						case '2':
-							if (_v20.b.$ === 'Just') {
-								var _v22 = _v20.b.a;
-								var playerA = _v22.a;
-								var playerB = _v22.b;
+							if (_v23.b.$ === 'Just') {
+								var _v25 = _v23.b.a;
+								var playerA = _v25.a;
+								var playerB = _v25.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9409,13 +9488,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v20$5;
+								break _v23$5;
 							}
 						case '0':
-							if (_v20.b.$ === 'Just') {
-								var _v23 = _v20.b.a;
-								var playerA = _v23.a;
-								var playerB = _v23.b;
+							if (_v23.b.$ === 'Just') {
+								var _v26 = _v23.b.a;
+								var playerA = _v26.a;
+								var playerB = _v26.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9437,7 +9516,7 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v20$5;
+								break _v23$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9460,7 +9539,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v20$5;
+							break _v23$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
