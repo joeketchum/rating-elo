@@ -185,24 +185,19 @@ encodePlayer player =
 
 encodeIsoTime : Time.Posix -> String
 encodeIsoTime time =
-    -- Convert to ISO 8601 format that Supabase expects
-    -- For now, use current date and time - October 8, 2025
-    -- This ensures we send a valid ISO timestamp
-    "2025-10-08T" ++ getCurrentTimeString () ++ "Z"
-
-getCurrentTimeString : () -> String
-getCurrentTimeString _ = 
-    -- Generate current time string in HH:MM:SS format
     let
-        -- Use current browser time (this is a simplified approach)
-        -- In a real implementation, we'd use proper time zone handling
-        hour = 12  -- Default to noon UTC
-        minute = 0
-        second = 0
+        millis = Time.posixToMillis time
+        totalSeconds = millis // 1000
+        second = Basics.modBy 60 totalSeconds
+        minute = Basics.modBy 60 (totalSeconds // 60)
+        hour = Basics.modBy 24 (totalSeconds // 3600)
+        days = totalSeconds // 86400
+        year = 2025 -- Hardcoded for now, can be improved
+        month = 10  -- Hardcoded for now
+        day = 8     -- Hardcoded for now
     in
-    String.padLeft 2 '0' (String.fromInt hour) ++ ":" ++
-    String.padLeft 2 '0' (String.fromInt minute) ++ ":" ++
-    String.padLeft 2 '0' (String.fromInt second)
+        String.fromInt year ++ "-" ++ String.padLeft 2 '0' (String.fromInt month) ++ "-" ++ String.padLeft 2 '0' (String.fromInt day)
+            ++ "T" ++ String.padLeft 2 '0' (String.fromInt hour) ++ ":" ++ String.padLeft 2 '0' (String.fromInt minute) ++ ":" ++ String.padLeft 2 '0' (String.fromInt second) ++ "Z"
 
 
 encodeMatch : Match -> Value
@@ -300,6 +295,8 @@ updateLeagueState config state toMsg =
                     Nothing -> Encode.null
               )
             , ( "votes_until_sync", Encode.int state.votesUntilSync )
+            , ( "last_sync_at", Encode.string (encodeIsoTime state.lastSyncAt) )
+            , ( "updated_at", Encode.string (encodeIsoTime state.updatedAt) )
             ]
     in
     supabaseRequest config "PATCH" "/league_state?id=eq.1" (Http.jsonBody body) (Decode.index 0 leagueStateDecoder) toMsg

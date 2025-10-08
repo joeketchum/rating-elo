@@ -8169,6 +8169,7 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
+var $elm$core$Basics$modBy = _Basics_modBy;
 var $elm$core$String$cons = _String_cons;
 var $elm$core$String$fromChar = function (_char) {
 	return A2($elm$core$String$cons, _char, '');
@@ -8195,11 +8196,25 @@ var $elm$core$String$padLeft = F3(
 				$elm$core$String$fromChar(_char)),
 			string);
 	});
-var $author$project$Supabase$getCurrentTimeString = function (_v0) {
-	var second = 0;
-	var minute = 0;
-	var hour = 12;
-	return A3(
+var $author$project$Supabase$encodeIsoTime = function (time) {
+	var year = 2025;
+	var month = 10;
+	var millis = $elm$time$Time$posixToMillis(time);
+	var totalSeconds = (millis / 1000) | 0;
+	var minute = A2($elm$core$Basics$modBy, 60, (totalSeconds / 60) | 0);
+	var second = A2($elm$core$Basics$modBy, 60, totalSeconds);
+	var hour = A2($elm$core$Basics$modBy, 24, (totalSeconds / 3600) | 0);
+	var days = (totalSeconds / 86400) | 0;
+	var day = 8;
+	return $elm$core$String$fromInt(year) + ('-' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(month)) + ('-' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(day)) + ('T' + (A3(
 		$elm$core$String$padLeft,
 		2,
 		_Utils_chr('0'),
@@ -8207,14 +8222,11 @@ var $author$project$Supabase$getCurrentTimeString = function (_v0) {
 		$elm$core$String$padLeft,
 		2,
 		_Utils_chr('0'),
-		$elm$core$String$fromInt(minute)) + (':' + A3(
+		$elm$core$String$fromInt(minute)) + (':' + (A3(
 		$elm$core$String$padLeft,
 		2,
 		_Utils_chr('0'),
-		$elm$core$String$fromInt(second)))));
-};
-var $author$project$Supabase$encodeIsoTime = function (time) {
-	return '2025-10-08T' + ($author$project$Supabase$getCurrentTimeString(_Utils_Tuple0) + 'Z');
+		$elm$core$String$fromInt(second)) + 'Z'))))))))));
 };
 var $author$project$Supabase$encodeMatch = function (match) {
 	return $elm$json$Json$Encode$object(
@@ -9025,7 +9037,15 @@ var $author$project$Supabase$updateLeagueState = F3(
 					}()),
 					_Utils_Tuple2(
 					'votes_until_sync',
-					$elm$json$Json$Encode$int(state.votesUntilSync))
+					$elm$json$Json$Encode$int(state.votesUntilSync)),
+					_Utils_Tuple2(
+					'last_sync_at',
+					$elm$json$Json$Encode$string(
+						$author$project$Supabase$encodeIsoTime(state.lastSyncAt))),
+					_Utils_Tuple2(
+					'updated_at',
+					$elm$json$Json$Encode$string(
+						$author$project$Supabase$encodeIsoTime(state.updatedAt)))
 				]));
 		return A6(
 			$author$project$Supabase$supabaseRequest,
@@ -10791,7 +10811,6 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 	});
 var $rtfeldman$elm_css$Hash$initialSeed = 15739;
 var $elm$core$String$fromList = _String_fromList;
-var $elm$core$Basics$modBy = _Basics_modBy;
 var $rtfeldman$elm_hex$Hex$unsafeToDigit = function (num) {
 	unsafeToDigit:
 	while (true) {
