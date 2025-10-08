@@ -1670,6 +1670,7 @@ currentMatch model =
                                                                                 , Html.div
                                                                                         [ css [ Css.displayFlex, Css.justifyContent Css.center, Css.marginBottom (Css.px 8) ] ]
                                             [ greenButton "CUSTOM MATCHUP" (Just KeeperWantsToShowCustomMatchup)
+                                            , greenButton "ADD PLAYER" (Just KeeperWantsToAddNewPlayer)
                                             ]
                                         , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                                         ]
@@ -1837,48 +1838,6 @@ rankings model =
                 , Html.th [ css [ header, center, Css.width (Css.pct 35) ] ] [ Html.text "ACTIONS" ]
                 ]
             )
-        |> (\tableGuts ->
-                tableGuts
-                    ++
-                        [ ( "add-player-form"
-                          , Html.tr
-                                [ css [ Css.height (Css.px 60) ] ]
-                                [ Html.td [] []
-                                                                , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "-" ]
-                                                                , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text (String.fromInt Elo.initialRating) ]
-                                                                , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "0" ]
-                                , Html.td
-                                    [ css [ textual, left ] ]
-                                    [ Html.input
-                                        [ StyledAttributes.value model.newPlayerName
-                                        , Events.onInput KeeperUpdatedNewPlayerName
-                                        , Events.on "keydown"
-                                            (Decode.field "key" Decode.string
-                                                |> Decode.andThen
-                                                    (\key ->
-                                                        case key of
-                                                            "Enter" ->
-                                                                Decode.succeed KeeperWantsToAddNewPlayer
-
-                                                            _ ->
-                                                                Decode.fail "ignoring"
-                                                    )
-                                            )
-                                        , css
-                                            [ Css.border Css.zero
-                                            , Css.fontSize (Css.px 18)
-                                            , Css.padding2 (Css.px 5) (Css.px 15)
-                                            , Css.width (Css.calc (Css.pct 100) Css.minus (Css.px 15))
-                                            , Css.boxShadow6 Css.inset Css.zero (Css.px 1) (Css.px 2) Css.zero (Css.rgba 0 0 0 0.5)
-                                            , Css.borderRadius (Css.px 5)
-                                            ]
-                                        ] []
-                                                                        ]
-                                                                , Html.td [ css [ numericDim, shrinkWidth, center ] ] [ greenButton "ADD" (Just KeeperWantsToAddNewPlayer) ]
-                                ]
-                          )
-                        ]
-           )
         |> Keyed.node "table"
             [ css
                 [ Css.width (Css.pct 80)
