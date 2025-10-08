@@ -7274,6 +7274,9 @@ var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$League$Draw = function (a) {
 	return {$: 'Draw', a: a};
 };
+var $author$project$Main$NewPlayerCreated = function (a) {
+	return {$: 'NewPlayerCreated', a: a};
+};
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
@@ -7430,93 +7433,138 @@ var $author$project$League$clearMatch = function (_v0) {
 			league,
 			{currentMatch: $elm$core$Maybe$Nothing}));
 };
-var $author$project$Player$Player = function (a) {
-	return {$: 'Player', a: a};
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
 };
-var $author$project$Player$PlayerId = function (a) {
-	return {$: 'PlayerId', a: a};
-};
-var $robinheghan$murmur3$Murmur3$HashData = F4(
-	function (shift, seed, hash, charsProcessed) {
-		return {charsProcessed: charsProcessed, hash: hash, seed: seed, shift: shift};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
 	});
-var $robinheghan$murmur3$Murmur3$c1 = 3432918353;
-var $robinheghan$murmur3$Murmur3$c2 = 461845907;
-var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
-var $robinheghan$murmur3$Murmur3$multiplyBy = F2(
-	function (b, a) {
-		return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
 	});
-var $elm$core$Bitwise$or = _Bitwise_or;
-var $robinheghan$murmur3$Murmur3$rotlBy = F2(
-	function (b, a) {
-		return (a << b) | (a >>> (32 - b));
-	});
-var $robinheghan$murmur3$Murmur3$finalize = function (data) {
-	var acc = (!(!data.hash)) ? (data.seed ^ A2(
-		$robinheghan$murmur3$Murmur3$multiplyBy,
-		$robinheghan$murmur3$Murmur3$c2,
-		A2(
-			$robinheghan$murmur3$Murmur3$rotlBy,
-			15,
-			A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, data.hash)))) : data.seed;
-	var h0 = acc ^ data.charsProcessed;
-	var h1 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 2246822507, h0 ^ (h0 >>> 16));
-	var h2 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 3266489909, h1 ^ (h1 >>> 13));
-	return (h2 ^ (h2 >>> 16)) >>> 0;
-};
-var $elm$core$String$foldl = _String_foldl;
-var $robinheghan$murmur3$Murmur3$mix = F2(
-	function (h1, k1) {
-		return A2(
-			$robinheghan$murmur3$Murmur3$multiplyBy,
-			5,
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
 			A2(
-				$robinheghan$murmur3$Murmur3$rotlBy,
-				13,
-				h1 ^ A2(
-					$robinheghan$murmur3$Murmur3$multiplyBy,
-					$robinheghan$murmur3$Murmur3$c2,
-					A2(
-						$robinheghan$murmur3$Murmur3$rotlBy,
-						15,
-						A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, k1))))) + 3864292196;
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
 	});
-var $robinheghan$murmur3$Murmur3$hashFold = F2(
-	function (c, data) {
-		var res = data.hash | ((255 & $elm$core$Char$toCode(c)) << data.shift);
-		var _v0 = data.shift;
-		if (_v0 === 24) {
-			return {
-				charsProcessed: data.charsProcessed + 1,
-				hash: 0,
-				seed: A2($robinheghan$murmur3$Murmur3$mix, data.seed, res),
-				shift: 0
-			};
-		} else {
-			return {charsProcessed: data.charsProcessed + 1, hash: res, seed: data.seed, shift: data.shift + 8};
-		}
-	});
-var $robinheghan$murmur3$Murmur3$hashString = F2(
-	function (seed, str) {
-		return $robinheghan$murmur3$Murmur3$finalize(
-			A3(
-				$elm$core$String$foldl,
-				$robinheghan$murmur3$Murmur3$hashFold,
-				A4($robinheghan$murmur3$Murmur3$HashData, 0, seed, 0, 0),
-				str));
-	});
-var $author$project$Player$create = F4(
-	function (name_, playerRating, isAvailableAM, isAvailablePM) {
-		return $author$project$Player$Player(
+var $author$project$Supabase$encodeIsoTime = function (time) {
+	var year = 2025;
+	var month = 10;
+	var millis = $elm$time$Time$posixToMillis(time);
+	var totalSeconds = (millis / 1000) | 0;
+	var minute = A2($elm$core$Basics$modBy, 60, (totalSeconds / 60) | 0);
+	var second = A2($elm$core$Basics$modBy, 60, totalSeconds);
+	var hour = A2($elm$core$Basics$modBy, 24, (totalSeconds / 3600) | 0);
+	var days = (totalSeconds / 86400) | 0;
+	var day = 8;
+	return $elm$core$String$fromInt(year) + ('-' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(month)) + ('-' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(day)) + ('T' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(hour)) + (':' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(minute)) + (':' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(second)) + 'Z'))))))))));
+};
+var $elm$json$Json$Decode$index = _Json_decodeIndex;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$http$Http$jsonBody = function (value) {
+	return A2(
+		_Http_pair,
+		'application/json',
+		A2($elm$json$Json$Encode$encode, 0, value));
+};
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $author$project$Supabase$createNewPlayer = F6(
+	function (config, name, rating, playsAM, playsPM, toMsg) {
+		var now = $elm$time$Time$millisToPosix(1728396000000);
+		var playerData = $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'name',
+					$elm$json$Json$Encode$string(name)),
+					_Utils_Tuple2(
+					'rating',
+					$elm$json$Json$Encode$int(rating)),
+					_Utils_Tuple2(
+					'matches_played',
+					$elm$json$Json$Encode$int(0)),
+					_Utils_Tuple2(
+					'plays_am',
+					$elm$json$Json$Encode$bool(playsAM)),
+					_Utils_Tuple2(
+					'plays_pm',
+					$elm$json$Json$Encode$bool(playsPM)),
+					_Utils_Tuple2(
+					'is_ignored',
+					$elm$json$Json$Encode$bool(false)),
+					_Utils_Tuple2(
+					'created_at',
+					$elm$json$Json$Encode$string(
+						$author$project$Supabase$encodeIsoTime(now))),
+					_Utils_Tuple2(
+					'updated_at',
+					$elm$json$Json$Encode$string(
+						$author$project$Supabase$encodeIsoTime(now)))
+				]));
+		return $elm$http$Http$request(
 			{
-				am: isAvailableAM,
-				id: $author$project$Player$PlayerId(
-					A2($robinheghan$murmur3$Murmur3$hashString, 0, name_)),
-				matches: 0,
-				name: name_,
-				pm: isAvailablePM,
-				rating: playerRating
+				body: $elm$http$Http$jsonBody(playerData),
+				expect: A2(
+					$elm$http$Http$expectJson,
+					toMsg,
+					A2($elm$json$Json$Decode$index, 0, $author$project$Supabase$playerDecoder)),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
+						A2($elm$http$Http$header, 'Prefer', 'return=representation')
+					]),
+				method: 'POST',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + '/rest/v1/players'
 			});
 	});
 var $elm$core$Set$insert = F2(
@@ -7667,6 +7715,9 @@ var $author$project$League$updatePlayer = F2(
 						league.players)
 				}));
 	});
+var $author$project$Player$Player = function (a) {
+	return {$: 'Player', a: a};
+};
 var $author$project$Player$incrementMatchesPlayed = function (_v0) {
 	var player = _v0.a;
 	return $author$project$Player$Player(
@@ -7912,6 +7963,10 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 	var cmd = _v0.b;
 	return model.autoSave ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(model, cmd);
 };
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$http$Http$expectBytesResponse = F2(
 	function (toMsg, toResult) {
@@ -7929,26 +7984,6 @@ var $elm$http$Http$expectWhatever = function (toMsg) {
 			function (_v0) {
 				return $elm$core$Result$Ok(_Utils_Tuple0);
 			}));
-};
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$http$Http$jsonBody = function (value) {
-	return A2(
-		_Http_pair,
-		'application/json',
-		A2($elm$json$Json$Encode$encode, 0, value));
-};
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
 };
 var $author$project$Supabase$voteEdgeFunction = F5(
 	function (config, aId, bId, winnerId, toMsg) {
@@ -7997,27 +8032,35 @@ var $author$project$Main$handleMatchFinished = F2(
 					$author$project$League$finishMatch(outcome),
 					model.history);
 				var playerBId = function () {
-					var _v5 = $author$project$Player$id(playerB);
-					var id = _v5.a;
+					var _v6 = $author$project$Player$id(playerB);
+					var id = _v6.a;
 					return id;
 				}();
 				var playerAId = function () {
-					var _v4 = $author$project$Player$id(playerA);
-					var id = _v4.a;
+					var _v5 = $author$project$Player$id(playerA);
+					var id = _v5.a;
 					return id;
 				}();
 				var winnerId = function () {
 					if (outcome.$ === 'Win') {
 						var won = outcome.a.won;
-						var _v3 = $author$project$Player$id(won);
-						var id = _v3.a;
+						var _v4 = $author$project$Player$id(won);
+						var id = _v4.a;
 						return id;
 					} else {
 						return playerAId;
 					}
 				}();
 				var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
-				var debugMsg = 'Sending vote: A=' + ($elm$core$String$fromInt(playerAId) + (' B=' + ($elm$core$String$fromInt(playerBId) + (' W=' + $elm$core$String$fromInt(winnerId)))));
+				var debugMsg = 'Sending vote to Supabase: a_id=' + ($elm$core$String$fromInt(playerAId) + (' b_id=' + ($elm$core$String$fromInt(playerBId) + (' winner=' + ($elm$core$String$fromInt(winnerId) + (' | outcome=' + function () {
+					if (outcome.$ === 'Win') {
+						var record = outcome.a;
+						return 'Win: ' + $author$project$Player$name(record.won);
+					} else {
+						var record = outcome.a;
+						return 'Draw: ' + ($author$project$Player$name(record.playerA) + (' vs ' + $author$project$Player$name(record.playerB)));
+					}
+				}()))))));
 				var updatedModel = _Utils_update(
 					model,
 					{
@@ -8082,10 +8125,6 @@ var $author$project$History$mapInPlace = F2(
 					current: fn(guts.current)
 				}));
 	});
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
 var $author$project$Main$AMOnly = {$: 'AMOnly'};
 var $author$project$Main$PMOnly = {$: 'PMOnly'};
 var $elm$core$String$toLower = _String_toLower;
@@ -8617,19 +8656,19 @@ var $author$project$League$startMatch = F2(
 								league.players)))
 				}));
 	});
-var $author$project$Player$setMatchesPlayedTestOnly = F2(
-	function (matches, _v0) {
-		var player = _v0.a;
-		return $author$project$Player$Player(
-			_Utils_update(
-				player,
-				{matches: matches}));
-	});
+var $author$project$Player$PlayerId = function (a) {
+	return {$: 'PlayerId', a: a};
+};
 var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
-	return A2(
-		$author$project$Player$setMatchesPlayedTestOnly,
-		supabasePlayer.matchesPlayed,
-		A4($author$project$Player$create, supabasePlayer.name, supabasePlayer.rating, supabasePlayer.playsAM, supabasePlayer.playsPM));
+	return $author$project$Player$Player(
+		{
+			am: supabasePlayer.playsAM,
+			id: $author$project$Player$PlayerId(supabasePlayer.id),
+			matches: supabasePlayer.matchesPlayed,
+			name: supabasePlayer.name,
+			pm: supabasePlayer.playsPM,
+			rating: supabasePlayer.rating
+		});
 };
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -8749,24 +8788,11 @@ var $author$project$Main$update = F2(
 					$elm$core$Maybe$withDefault,
 					500,
 					$elm$core$String$toInt(model.addPlayerRating));
-				var player = A4($author$project$Player$create, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM);
-				return $author$project$Main$maybeAutoSave(
-					$author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									addPlayerAM: true,
-									addPlayerName: '',
-									addPlayerPM: true,
-									addPlayerRating: '500',
-									history: A2(
-										$author$project$History$mapPush,
-										$author$project$League$addPlayer(player),
-										model.history),
-									showAddPlayerPopup: false
-								}),
-							$elm$core$Platform$Cmd$none)));
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
+					A6($author$project$Supabase$createNewPlayer, $author$project$Config$supabaseConfig, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM, $author$project$Main$NewPlayerCreated));
 			case 'KeeperWantsToRetirePlayer':
 				var player = msg.a;
 				return _Utils_Tuple2(
@@ -8902,14 +8928,28 @@ var $author$project$Main$update = F2(
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var err = result.a;
+					var debugInfo = function () {
+						var _v9 = model.status;
+						if (_v9.$ === 'Just') {
+							var s = _v9.a;
+							return s;
+						} else {
+							return '';
+						}
+					}();
+					var errorMsg = 'Failed to save match: ' + ($author$project$Main$httpErrorToString(err) + ('\n' + (debugInfo + ' (Try voting again)')));
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								status: $elm$core$Maybe$Just(
-									'Failed to save match: ' + ($author$project$Main$httpErrorToString(err) + ' (Try voting again)'))
+								status: $elm$core$Maybe$Just(errorMsg)
 							}),
-						$elm$core$Platform$Cmd$none);
+						A2(
+							$elm$core$Task$perform,
+							function (_v8) {
+								return $author$project$Main$ClearStatus;
+							},
+							$elm$core$Process$sleep(10000)));
 				}
 			case 'LeagueStateSaved':
 				var result = msg.a;
@@ -8934,10 +8974,63 @@ var $author$project$Main$update = F2(
 				}
 			case 'PlayerACreated':
 				var result = msg.b;
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				if (result.$ === 'Ok') {
+					var supabasePlayer = result.a;
+					var player = $author$project$Main$supabasePlayerToPlayer(supabasePlayer);
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2(
+											$author$project$History$mapPush,
+											$author$project$League$addPlayer(player),
+											model.history)
+									}),
+								$elm$core$Platform$Cmd$none)));
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just(
+									'Failed to create player: ' + $author$project$Main$httpErrorToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'PlayerBCreated':
 				var result = msg.b;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+			case 'NewPlayerCreated':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var supabasePlayer = result.a;
+					var player = $author$project$Main$supabasePlayerToPlayer(supabasePlayer);
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2(
+											$author$project$History$mapPush,
+											$author$project$League$addPlayer(player),
+											model.history)
+									}),
+								$elm$core$Platform$Cmd$none)));
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just(
+									'Failed to create player: ' + $author$project$Main$httpErrorToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'PeriodicSync':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'TriggerReload':
@@ -9063,10 +9156,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v9 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v9.a.$ === 'Just') && (_v9.b.$ === 'Just')) {
-					var playerA = _v9.a.a;
-					var playerB = _v9.b.a;
+				var _v13 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v13.a.$ === 'Just') && (_v13.b.$ === 'Just')) {
+					var playerA = _v13.a.a;
+					var playerB = _v13.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9115,19 +9208,13 @@ var $author$project$Main$update = F2(
 			case 'LoadedLeague':
 				if (msg.a.$ === 'Ok') {
 					var league = msg.a.a;
-					return $author$project$Main$maybeAutoSave(
-						$author$project$Main$startNextMatchIfPossible(
-							_Utils_Tuple2(
-								_Utils_update(
-									model,
-									{
-										history: A2($author$project$History$init, 50, league)
-									}),
-								A2(
-									$elm$core$Task$perform,
-									$elm$core$Basics$identity,
-									$elm$core$Task$succeed(
-										$author$project$Main$ShowStatus('Imported rankings'))))));
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Local data ignored - using Supabase data')
+							}),
+						$elm$core$Platform$Cmd$none);
 				} else {
 					var problem = msg.a.a;
 					return _Utils_Tuple2(
@@ -9146,9 +9233,9 @@ var $author$project$Main$update = F2(
 					var playerCount = $elm$core$List$length(players);
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var firstPlayerRating = function () {
-						var _v11 = $elm$core$List$head(supabasePlayers);
-						if (_v11.$ === 'Just') {
-							var p = _v11.a;
+						var _v15 = $elm$core$List$head(supabasePlayers);
+						if (_v15.$ === 'Just') {
+							var p = _v15.a;
 							return $elm$core$String$fromInt(p.rating);
 						} else {
 							return 'no players';
@@ -9217,7 +9304,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v12) {
+						function (_v16) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9229,18 +9316,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v13 = _Utils_Tuple2(
+				var _v17 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v13$5:
+				_v17$5:
 				while (true) {
-					switch (_v13.a) {
+					switch (_v17.a) {
 						case '1':
-							if (_v13.b.$ === 'Just') {
-								var _v14 = _v13.b.a;
-								var playerA = _v14.a;
-								var playerB = _v14.b;
+							if (_v17.b.$ === 'Just') {
+								var _v18 = _v17.b.a;
+								var playerA = _v18.a;
+								var playerB = _v18.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9262,13 +9349,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v13$5;
+								break _v17$5;
 							}
 						case '2':
-							if (_v13.b.$ === 'Just') {
-								var _v15 = _v13.b.a;
-								var playerA = _v15.a;
-								var playerB = _v15.b;
+							if (_v17.b.$ === 'Just') {
+								var _v19 = _v17.b.a;
+								var playerA = _v19.a;
+								var playerB = _v19.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9290,13 +9377,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v13$5;
+								break _v17$5;
 							}
 						case '0':
-							if (_v13.b.$ === 'Just') {
-								var _v16 = _v13.b.a;
-								var playerA = _v16.a;
-								var playerB = _v16.b;
+							if (_v17.b.$ === 'Just') {
+								var _v20 = _v17.b.a;
+								var playerA = _v20.a;
+								var playerB = _v20.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9318,7 +9405,7 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v13$5;
+								break _v17$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9341,7 +9428,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v13$5;
+							break _v17$5;
 					}
 				}
 				return _Utils_Tuple2(
@@ -10350,10 +10437,78 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 			first,
 			A2($rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock, update, rest));
 	});
-var $elm$core$String$cons = _String_cons;
+var $robinheghan$murmur3$Murmur3$HashData = F4(
+	function (shift, seed, hash, charsProcessed) {
+		return {charsProcessed: charsProcessed, hash: hash, seed: seed, shift: shift};
+	});
+var $robinheghan$murmur3$Murmur3$c1 = 3432918353;
+var $robinheghan$murmur3$Murmur3$c2 = 461845907;
+var $elm$core$Bitwise$shiftLeftBy = _Bitwise_shiftLeftBy;
+var $robinheghan$murmur3$Murmur3$multiplyBy = F2(
+	function (b, a) {
+		return ((a & 65535) * b) + ((((a >>> 16) * b) & 65535) << 16);
+	});
+var $elm$core$Bitwise$or = _Bitwise_or;
+var $robinheghan$murmur3$Murmur3$rotlBy = F2(
+	function (b, a) {
+		return (a << b) | (a >>> (32 - b));
+	});
+var $robinheghan$murmur3$Murmur3$finalize = function (data) {
+	var acc = (!(!data.hash)) ? (data.seed ^ A2(
+		$robinheghan$murmur3$Murmur3$multiplyBy,
+		$robinheghan$murmur3$Murmur3$c2,
+		A2(
+			$robinheghan$murmur3$Murmur3$rotlBy,
+			15,
+			A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, data.hash)))) : data.seed;
+	var h0 = acc ^ data.charsProcessed;
+	var h1 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 2246822507, h0 ^ (h0 >>> 16));
+	var h2 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 3266489909, h1 ^ (h1 >>> 13));
+	return (h2 ^ (h2 >>> 16)) >>> 0;
+};
+var $elm$core$String$foldl = _String_foldl;
+var $robinheghan$murmur3$Murmur3$mix = F2(
+	function (h1, k1) {
+		return A2(
+			$robinheghan$murmur3$Murmur3$multiplyBy,
+			5,
+			A2(
+				$robinheghan$murmur3$Murmur3$rotlBy,
+				13,
+				h1 ^ A2(
+					$robinheghan$murmur3$Murmur3$multiplyBy,
+					$robinheghan$murmur3$Murmur3$c2,
+					A2(
+						$robinheghan$murmur3$Murmur3$rotlBy,
+						15,
+						A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, k1))))) + 3864292196;
+	});
+var $robinheghan$murmur3$Murmur3$hashFold = F2(
+	function (c, data) {
+		var res = data.hash | ((255 & $elm$core$Char$toCode(c)) << data.shift);
+		var _v0 = data.shift;
+		if (_v0 === 24) {
+			return {
+				charsProcessed: data.charsProcessed + 1,
+				hash: 0,
+				seed: A2($robinheghan$murmur3$Murmur3$mix, data.seed, res),
+				shift: 0
+			};
+		} else {
+			return {charsProcessed: data.charsProcessed + 1, hash: res, seed: data.seed, shift: data.shift + 8};
+		}
+	});
+var $robinheghan$murmur3$Murmur3$hashString = F2(
+	function (seed, str) {
+		return $robinheghan$murmur3$Murmur3$finalize(
+			A3(
+				$elm$core$String$foldl,
+				$robinheghan$murmur3$Murmur3$hashFold,
+				A4($robinheghan$murmur3$Murmur3$HashData, 0, seed, 0, 0),
+				str));
+	});
 var $rtfeldman$elm_css$Hash$initialSeed = 15739;
 var $elm$core$String$fromList = _String_fromList;
-var $elm$core$Basics$modBy = _Basics_modBy;
 var $rtfeldman$elm_hex$Hex$unsafeToDigit = function (num) {
 	unsafeToDigit:
 	while (true) {
@@ -11064,7 +11219,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$St
 var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
 var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node('button');
 var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
 		return {$: 'Attribute', a: a, b: b, c: c};
@@ -11163,9 +11317,6 @@ var $rtfeldman$elm_css$Css$erroneousHex = function (str) {
 var $elm$core$String$foldr = _String_foldr;
 var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
-};
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
 };
 var $rtfeldman$elm_hex$Hex$fromStringHelp = F3(
 	function (position, chars, accumulated) {
@@ -17322,7 +17473,7 @@ var $author$project$Main$view = function (model) {
 																		$rtfeldman$elm_css$Html$Styled$text(
 																		_Utils_ap(
 																			message,
-																			model.autoSaveInProgress ? ' (Voting disabled)' : ''))
+																			model.autoSaveInProgress ? ' (Voting disabled - autoSave)' : (model.isSyncing ? ' (Voting disabled - syncing)' : ' (Voting enabled)')))
 																	])),
 																A2(
 																$rtfeldman$elm_css$Html$Styled$button,

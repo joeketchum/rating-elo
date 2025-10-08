@@ -68,6 +68,7 @@ type Msg
     | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
     | PlayerACreated League.Outcome (Result Http.Error Supabase.Player)
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
+    | NewPlayerCreated (Result Http.Error Supabase.Player)
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
     | KeeperWantsToShowAddPlayerPopup
@@ -206,8 +207,14 @@ init _ =
 -- Convert Supabase.Player to Player
 supabasePlayerToPlayer : Supabase.Player -> Player.Player
 supabasePlayerToPlayer supabasePlayer =
-    Player.create supabasePlayer.name supabasePlayer.rating supabasePlayer.playsAM supabasePlayer.playsPM
-        |> Player.setMatchesPlayedTestOnly supabasePlayer.matchesPlayed
+    Player.Player
+        { id = Player.PlayerId supabasePlayer.id
+        , name = supabasePlayer.name
+        , rating = supabasePlayer.rating
+        , matches = supabasePlayer.matchesPlayed
+        , am = supabasePlayer.playsAM
+        , pm = supabasePlayer.playsPM
+        }
 
 -- Convert Player to Supabase.Player
 toSupabasePlayer : Player.Player -> Supabase.Player
@@ -380,7 +387,15 @@ handleMatchFinished outcome model =
                     
                     -- Update history after getting player info
                     updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-                    debugMsg = "Sending vote: A=" ++ String.fromInt playerAId ++ " B=" ++ String.fromInt playerBId ++ " W=" ++ String.fromInt winnerId
+                    debugMsg =
+                        "Sending vote to Supabase: a_id=" ++ String.fromInt playerAId ++
+                        " b_id=" ++ String.fromInt playerBId ++
+                        " winner=" ++ String.fromInt winnerId ++
+                        " | outcome=" ++
+                        (case outcome of
+                            League.Win record -> "Win: " ++ Player.name record.won
+                            League.Draw record -> "Draw: " ++ Player.name record.playerA ++ " vs " ++ Player.name record.playerB
+                        )
                     updatedModel = { model | history = updatedHistory, status = Just debugMsg }
                 in
                 ( updatedModel, matchCmd )
@@ -467,22 +482,19 @@ update msg model =
             ( { model | addPlayerPM = not model.addPlayerPM }, Cmd.none )
 
         KeeperConfirmedAddPlayer ->
-            let
-                rating = String.toInt model.addPlayerRating |> Maybe.withDefault 500
-                player = Player.create model.addPlayerName rating model.addPlayerAM model.addPlayerPM
-            in
-            ( { model
-                | history = History.mapPush (League.addPlayer player) model.history
-                , showAddPlayerPopup = False
-                , addPlayerName = ""
-                , addPlayerRating = "500"
-                , addPlayerAM = True
-                , addPlayerPM = True
-              }
-            , Cmd.none
-            )
-                |> startNextMatchIfPossible
-                |> maybeAutoSave
+                        -- Player creation now requires a Supabase integer ID. Instead of creating locally, send a request to Supabase to create the player, then add to Elm after receiving the ID.
+                        let
+                                rating = String.toInt model.addPlayerRating |> Maybe.withDefault 500
+                        in
+                        ( { model
+                                | showAddPlayerPopup = False
+                                , addPlayerName = ""
+                                , addPlayerRating = "500"
+                                , addPlayerAM = True
+                                , addPlayerPM = True
+                            }
+                        , Supabase.createNewPlayer Config.supabaseConfig model.addPlayerName rating model.addPlayerAM model.addPlayerPM NewPlayerCreated
+                        )
 
         KeeperWantsToRetirePlayer player ->
             ( { model | playerDeletionConfirmation = Just (player, 1) }
@@ -564,9 +576,15 @@ update msg model =
                         , Cmd.none
                         )
                 Err err -> 
-                    -- Show error but don't force reload - let user try again
-                    ( { model | status = Just ("Failed to save match: " ++ httpErrorToString err ++ " (Try voting again)") }
-                    , Cmd.none
+                    -- Show error and debug info together, persist for 10 seconds
+                    let
+                        debugInfo = case model.status of
+                            Just s -> s
+                            Nothing -> ""
+                        errorMsg = "Failed to save match: " ++ httpErrorToString err ++ "\n" ++ debugInfo ++ " (Try voting again)"
+                    in
+                    ( { model | status = Just errorMsg }
+                    , Task.perform (\_ -> ClearStatus) (Process.sleep 10000)
                     )
 
         LeagueStateSaved result ->
@@ -575,12 +593,40 @@ update msg model =
                 Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
 
         PlayerACreated _ result ->
-            -- Unused - Edge Function handles everything now
-            ( model, Cmd.none )
+            case result of
+                Ok supabasePlayer ->
+                    let
+                        player = supabasePlayerToPlayer supabasePlayer
+                    in
+                    ( { model | history = History.mapPush (League.addPlayer player) model.history }
+                    , Cmd.none
+                    )
+                        |> startNextMatchIfPossible
+                        |> maybeAutoSave
+                Err err ->
+                    ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err) }
+                    , Cmd.none
+                    )
 
         PlayerBCreated _ result ->
             -- Unused - Edge Function handles everything now
             ( model, Cmd.none )
+
+        NewPlayerCreated result ->
+            case result of
+                Ok supabasePlayer ->
+                    let
+                        player = supabasePlayerToPlayer supabasePlayer
+                    in
+                    ( { model | history = History.mapPush (League.addPlayer player) model.history }
+                    , Cmd.none
+                    )
+                        |> startNextMatchIfPossible
+                        |> maybeAutoSave
+                Err err ->
+                    ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err) }
+                    , Cmd.none
+                    )
 
 
 
@@ -698,11 +744,10 @@ update msg model =
                     )
 
         LoadedLeague (Ok league) ->
-            ( { model | history = History.init 50 league }
-            , Task.succeed (ShowStatus "Imported rankings") |> Task.perform identity
+            -- Ignore local league data - always use Supabase data instead
+            ( { model | status = Just "Local data ignored - using Supabase data" }
+            , Cmd.none
             )
-                |> startNextMatchIfPossible
-                |> maybeAutoSave
 
         LoadedLeague (Err problem) ->
             ( { model | status = Just ("Failed to load standings: " ++ problem) }
@@ -1343,9 +1388,9 @@ view model =
                             [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.spaceBetween ] ] 
                             [ Html.span [] 
                                 [ Html.text (message ++ 
-                                    (if model.autoSaveInProgress then " (Voting disabled)" 
-                                     
-                                     else "")) ]
+                                    (if model.autoSaveInProgress then " (Voting disabled - autoSave)" 
+                                     else if model.isSyncing then " (Voting disabled - syncing)"
+                                     else " (Voting enabled)")) ]
                             , Html.button
                                 [ css
                                     [ Css.backgroundColor Css.transparent

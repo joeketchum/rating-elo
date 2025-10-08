@@ -4,6 +4,7 @@ module Supabase exposing
     , Match
     , LeagueState
     , getPlayers
+    , createNewPlayer
     , createPlayer
     , updatePlayer
     , deletePlayer
@@ -233,6 +234,37 @@ getPlayers : Config -> (Result Http.Error (List Player) -> msg) -> Cmd msg
 getPlayers config toMsg =
     supabaseRequest config "GET" "/players?order=rating.desc" Http.emptyBody (Decode.list playerDecoder) toMsg
 
+
+-- Create a new player (without ID, Supabase will assign one)
+createNewPlayer : Config -> String -> Int -> Bool -> Bool -> (Result Http.Error Player -> msg) -> Cmd msg
+createNewPlayer config name rating playsAM playsPM toMsg =
+    let
+        now = Time.millisToPosix 1728396000000 -- Oct 8, 2025 12:00 PM UTC
+        playerData = Encode.object
+            [ ("name", Encode.string name)
+            , ("rating", Encode.int rating)
+            , ("matches_played", Encode.int 0)
+            , ("plays_am", Encode.bool playsAM)
+            , ("plays_pm", Encode.bool playsPM)
+            , ("is_ignored", Encode.bool False)
+            , ("created_at", Encode.string (encodeIsoTime now))
+            , ("updated_at", Encode.string (encodeIsoTime now))
+            ]
+    in
+    Http.request
+        { method = "POST"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            , Http.header "Prefer" "return=representation"
+            ]
+        , url = config.url ++ "/rest/v1/players"
+        , body = Http.jsonBody playerData
+        , expect = Http.expectJson toMsg (Decode.index 0 playerDecoder)
+        , timeout = Nothing
+        , tracker = Nothing
+        }
 
 createPlayer : Config -> Player -> (Result Http.Error Player -> msg) -> Cmd msg
 createPlayer config player toMsg =

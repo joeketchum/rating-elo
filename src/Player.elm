@@ -91,10 +91,11 @@ type Player
         }
 
 
-init : String -> Player
-init name_ =
+-- Init now requires a Supabase integer ID
+init : Int -> String -> Player
+init supabaseId name_ =
     Player
-        { id = PlayerId (Murmur3.hashString 0 name_)
+        { id = PlayerId supabaseId
         , name = name_
         , rating = Elo.initialRating
         , matches = 0
@@ -103,10 +104,11 @@ init name_ =
         }
 
 
-create : String -> Int -> Bool -> Bool -> Player
-create name_ playerRating isAvailableAM isAvailablePM =
+-- Create now requires a Supabase integer ID
+create : Int -> String -> Int -> Bool -> Bool -> Player
+create supabaseId name_ playerRating isAvailableAM isAvailablePM =
     Player
-        { id = PlayerId (Murmur3.hashString 0 name_)
+        { id = PlayerId supabaseId
         , name = name_
         , rating = playerRating
         , matches = 0
@@ -219,7 +221,7 @@ decoder =
     Decode.map6
         (\id_ name_ rating_ matches am pm ->
             Player
-                { id = id_
+                { id = PlayerId id_
                 , name = name_
                 , rating = rating_
                 , matches = matches
@@ -227,13 +229,7 @@ decoder =
                 , pm = pm
                 }
         )
-        (Decode.oneOf
-            [ Decode.field "id" Decode.int
-            , Decode.field "name" Decode.string
-                |> Decode.map (Murmur3.hashString 0)
-            ]
-            |> Decode.map PlayerId
-        )
+        (Decode.field "id" Decode.int)
         (Decode.field "name" Decode.string)
         (Decode.field "rating" Decode.int)
         (Decode.field "matches" Decode.int)
