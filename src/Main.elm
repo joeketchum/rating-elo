@@ -186,6 +186,10 @@ init _ =
 -- Convert Supabase.Player to Player
 supabasePlayerToPlayer : Supabase.Player -> Player
 supabasePlayerToPlayer supabasePlayer =
+    let
+        -- Debug: let's see what we're actually converting
+        _ = Debug.log ("Converting player " ++ supabasePlayer.name ++ " with rating") supabasePlayer.rating
+    in
     Player.Player
         { id = Player.PlayerId supabasePlayer.id
         , name = supabasePlayer.name

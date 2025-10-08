@@ -8621,7 +8621,9 @@ var $author$project$League$startMatch = F2(
 								league.players)))
 				}));
 	});
+var $elm$core$Debug$log = _Debug_log;
 var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
+	var _v0 = A2($elm$core$Debug$log, 'Converting player ' + (supabasePlayer.name + ' with rating'), supabasePlayer.rating);
 	return $author$project$Player$Player(
 		{
 			am: supabasePlayer.playsAM,
