@@ -99,6 +99,8 @@ type Msg
     | ReceivedCurrentTime Time.Posix
     | MatchSaved (Result Http.Error Supabase.Match)
     | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
+    | PlayerACreated League.Outcome (Result Http.Error Supabase.Player)
+    | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
     | KeeperWantsToRetirePlayer Player
@@ -240,6 +242,25 @@ toSupabaseMatch league outcome =
     , playerBRatingAfter = ratingAfterB
     , kFactorUsed = kFactor
     , playedAt = now
+    }
+
+-- Convert Player to Supabase.Player
+toSupabasePlayer : Player.Player -> Supabase.Player
+toSupabasePlayer player =
+    let
+        playerId = case Player.id player of
+            Player.PlayerId id -> id
+        now = Time.millisToPosix 1728396000000 -- Oct 8, 2025 12:00 PM UTC
+    in
+    { id = playerId
+    , name = Player.name player
+    , rating = Player.rating player
+    , matchesPlayed = Player.matchesPlayed player
+    , playsAM = True -- Default values - adjust as needed
+    , playsPM = True
+    , isIgnored = False
+    , createdAt = now
+    , updatedAt = now
     }
 
 -- Convert League to Supabase.LeagueState
@@ -521,14 +542,17 @@ update msg model =
             else
                 let
                     updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-                    league = History.current updatedHistory
-                    match = toSupabaseMatch league outcome
-                    leagueState = toSupabaseLeagueState league
-                    matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
-                    leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                    league = History.current model.history  -- Use original league for player data
+                    (playerA, playerB) =
+                        case League.currentMatch league of
+                            Just (League.Match a b) -> (a, b)
+                            Nothing -> (Player.init "A", Player.init "B")
+                    -- Create players in Supabase first, then save match
+                    playerACmd = Supabase.createPlayer Config.supabaseConfig (toSupabasePlayer playerA) (PlayerACreated outcome)
+                    playerBCmd = Supabase.createPlayer Config.supabaseConfig (toSupabasePlayer playerB) (PlayerBCreated outcome)
                 in
                 ( { model | history = updatedHistory }
-                , Cmd.batch [ matchCmd, leagueStateCmd ]
+                , Cmd.batch [ playerACmd, playerBCmd ]
                 )
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
@@ -541,6 +565,48 @@ update msg model =
             case result of
                 Ok _ -> ( { model | status = Just "League state updated!" }, Cmd.none )
                 Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
+
+        PlayerACreated outcome result ->
+            case result of
+                Ok _ -> 
+                    -- Player A created successfully, now try to create Player B or save match if both are done
+                    ( { model | status = Just "Player A created in Supabase" }, Cmd.none )
+                Err err -> 
+                    -- If player already exists (409 conflict), proceed anyway
+                    if String.contains "409" (httpErrorToString err) then
+                        ( { model | status = Just "Player A already exists, continuing..." }, Cmd.none )
+                    else
+                        ( { model | status = Just ("Failed to create Player A: " ++ httpErrorToString err) }, Cmd.none )
+
+        PlayerBCreated outcome result ->
+            case result of
+                Ok _ -> 
+                    -- Both players should be created now, save the match
+                    let
+                        league = History.current model.history
+                        match = toSupabaseMatch league outcome
+                        leagueState = toSupabaseLeagueState league
+                        matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                        leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                    in
+                    ( { model | status = Just "Players created, saving match..." }
+                    , Cmd.batch [ matchCmd, leagueStateCmd ]
+                    )
+                Err err -> 
+                    -- If player already exists (409 conflict), proceed anyway
+                    if String.contains "409" (httpErrorToString err) then
+                        let
+                            league = History.current model.history
+                            match = toSupabaseMatch league outcome
+                            leagueState = toSupabaseLeagueState league
+                            matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                            leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                        in
+                        ( { model | status = Just "Players exist, saving match..." }
+                        , Cmd.batch [ matchCmd, leagueStateCmd ]
+                        )
+                    else
+                        ( { model | status = Just ("Failed to create Player B: " ++ httpErrorToString err) }, Cmd.none )
 
 
 

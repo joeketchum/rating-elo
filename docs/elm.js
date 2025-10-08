@@ -7403,6 +7403,14 @@ var $author$project$Main$LeagueStateSaved = function (a) {
 var $author$project$Main$MatchSaved = function (a) {
 	return {$: 'MatchSaved', a: a};
 };
+var $author$project$Main$PlayerACreated = F2(
+	function (a, b) {
+		return {$: 'PlayerACreated', a: a, b: b};
+	});
+var $author$project$Main$PlayerBCreated = F2(
+	function (a, b) {
+		return {$: 'PlayerBCreated', a: a, b: b};
+	});
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
@@ -7581,6 +7589,63 @@ var $author$project$League$clearMatch = function (_v0) {
 			league,
 			{currentMatch: $elm$core$Maybe$Nothing}));
 };
+var $elm$json$Json$Encode$bool = _Json_wrap;
+var $elm$json$Json$Encode$int = _Json_wrap;
+var $elm$json$Json$Encode$object = function (pairs) {
+	return _Json_wrap(
+		A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v0, obj) {
+					var k = _v0.a;
+					var v = _v0.b;
+					return A3(_Json_addField, k, v, obj);
+				}),
+			_Json_emptyObject(_Utils_Tuple0),
+			pairs));
+};
+var $author$project$Supabase$encodePlayer = function (player) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'name',
+				$elm$json$Json$Encode$string(player.name)),
+				_Utils_Tuple2(
+				'rating',
+				$elm$json$Json$Encode$int(player.rating)),
+				_Utils_Tuple2(
+				'matches_played',
+				$elm$json$Json$Encode$int(player.matchesPlayed)),
+				_Utils_Tuple2(
+				'plays_am',
+				$elm$json$Json$Encode$bool(player.playsAM)),
+				_Utils_Tuple2(
+				'plays_pm',
+				$elm$json$Json$Encode$bool(player.playsPM)),
+				_Utils_Tuple2(
+				'is_ignored',
+				$elm$json$Json$Encode$bool(player.isIgnored))
+			]));
+};
+var $elm$http$Http$jsonBody = function (value) {
+	return A2(
+		_Http_pair,
+		'application/json',
+		A2($elm$json$Json$Encode$encode, 0, value));
+};
+var $author$project$Supabase$createPlayer = F3(
+	function (config, player, toMsg) {
+		return A6(
+			$author$project$Supabase$supabaseRequest,
+			config,
+			'POST',
+			'/players',
+			$elm$http$Http$jsonBody(
+				$author$project$Supabase$encodePlayer(player)),
+			$author$project$Supabase$playerDecoder,
+			toMsg);
+	});
 var $author$project$Elo$odds = F2(
 	function (a, b) {
 		var rB = A2($elm$core$Basics$pow, 10, b / 600);
@@ -8150,20 +8215,6 @@ var $author$project$Supabase$getCurrentTimeString = function (_v0) {
 var $author$project$Supabase$encodeIsoTime = function (time) {
 	return '2025-10-08T' + ($author$project$Supabase$getCurrentTimeString(_Utils_Tuple0) + 'Z');
 };
-var $elm$json$Json$Encode$int = _Json_wrap;
-var $elm$json$Json$Encode$object = function (pairs) {
-	return _Json_wrap(
-		A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v0, obj) {
-					var k = _v0.a;
-					var v = _v0.b;
-					return A3(_Json_addField, k, v, obj);
-				}),
-			_Json_emptyObject(_Utils_Tuple0),
-			pairs));
-};
 var $author$project$Supabase$encodeMatch = function (match) {
 	return $elm$json$Json$Encode$object(
 		_List_fromArray(
@@ -8199,12 +8250,6 @@ var $author$project$Supabase$encodeMatch = function (match) {
 			]));
 };
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
-var $elm$http$Http$jsonBody = function (value) {
-	return A2(
-		_Http_pair,
-		'application/json',
-		A2($elm$json$Json$Encode$encode, 0, value));
-};
 var $author$project$Supabase$matchDecoder = A2(
 	$elm$json$Json$Decode$andThen,
 	function (partial) {
@@ -8899,6 +8944,25 @@ var $author$project$Main$toSupabaseMatch = F2(
 			}()
 		};
 	});
+var $author$project$Main$toSupabasePlayer = function (player) {
+	var playerId = function () {
+		var _v0 = $author$project$Player$id(player);
+		var id = _v0.a;
+		return id;
+	}();
+	var now = $elm$time$Time$millisToPosix(1728396000000);
+	return {
+		createdAt: now,
+		id: playerId,
+		isIgnored: false,
+		matchesPlayed: $author$project$Player$matchesPlayed(player),
+		name: $author$project$Player$name(player),
+		playsAM: true,
+		playsPM: true,
+		rating: $author$project$Player$rating(player),
+		updatedAt: now
+	};
+};
 var $author$project$Supabase$LeagueState = F6(
 	function (id, currentMatchPlayerA, currentMatchPlayerB, votesUntilSync, lastSyncAt, updatedAt) {
 		return {currentMatchPlayerA: currentMatchPlayerA, currentMatchPlayerB: currentMatchPlayerB, id: id, lastSyncAt: lastSyncAt, updatedAt: updatedAt, votesUntilSync: votesUntilSync};
@@ -9172,11 +9236,32 @@ var $author$project$Main$update = F2(
 						$author$project$History$mapPush,
 						$author$project$League$finishMatch(outcome),
 						model.history);
-					var league = $author$project$History$current(updatedHistory);
-					var leagueState = $author$project$Main$toSupabaseLeagueState(league);
-					var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
-					var match = A2($author$project$Main$toSupabaseMatch, league, outcome);
-					var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+					var league = $author$project$History$current(model.history);
+					var _v8 = function () {
+						var _v9 = $author$project$League$currentMatch(league);
+						if (_v9.$ === 'Just') {
+							var _v10 = _v9.a;
+							var a = _v10.a;
+							var b = _v10.b;
+							return _Utils_Tuple2(a, b);
+						} else {
+							return _Utils_Tuple2(
+								$author$project$Player$init('A'),
+								$author$project$Player$init('B'));
+						}
+					}();
+					var playerA = _v8.a;
+					var playerB = _v8.b;
+					var playerACmd = A3(
+						$author$project$Supabase$createPlayer,
+						$author$project$Config$supabaseConfig,
+						$author$project$Main$toSupabasePlayer(playerA),
+						$author$project$Main$PlayerACreated(outcome));
+					var playerBCmd = A3(
+						$author$project$Supabase$createPlayer,
+						$author$project$Config$supabaseConfig,
+						$author$project$Main$toSupabasePlayer(playerB),
+						$author$project$Main$PlayerBCreated(outcome));
 					return $author$project$Main$maybeAutoSave(
 						$author$project$Main$startNextMatchIfPossible(
 							_Utils_Tuple2(
@@ -9185,7 +9270,7 @@ var $author$project$Main$update = F2(
 									{history: updatedHistory}),
 								$elm$core$Platform$Cmd$batch(
 									_List_fromArray(
-										[matchCmd, leagueStateCmd])))));
+										[playerACmd, playerBCmd])))));
 				}
 			case 'MatchSaved':
 				var result = msg.a;
@@ -9228,6 +9313,86 @@ var $author$project$Main$update = F2(
 									'Failed to update league state: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
+				}
+			case 'PlayerACreated':
+				var outcome = msg.a;
+				var result = msg.b;
+				if (result.$ === 'Ok') {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Player A created in Supabase')
+							}),
+						$elm$core$Platform$Cmd$none);
+				} else {
+					var err = result.a;
+					return A2(
+						$elm$core$String$contains,
+						'409',
+						$author$project$Main$httpErrorToString(err)) ? _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Player A already exists, continuing...')
+							}),
+						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just(
+									'Failed to create Player A: ' + $author$project$Main$httpErrorToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'PlayerBCreated':
+				var outcome = msg.a;
+				var result = msg.b;
+				if (result.$ === 'Ok') {
+					var league = $author$project$History$current(model.history);
+					var leagueState = $author$project$Main$toSupabaseLeagueState(league);
+					var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
+					var match = A2($author$project$Main$toSupabaseMatch, league, outcome);
+					var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Players created, saving match...')
+							}),
+						$elm$core$Platform$Cmd$batch(
+							_List_fromArray(
+								[matchCmd, leagueStateCmd])));
+				} else {
+					var err = result.a;
+					if (A2(
+						$elm$core$String$contains,
+						'409',
+						$author$project$Main$httpErrorToString(err))) {
+						var league = $author$project$History$current(model.history);
+						var leagueState = $author$project$Main$toSupabaseLeagueState(league);
+						var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
+						var match = A2($author$project$Main$toSupabaseMatch, league, outcome);
+						var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Players exist, saving match...')
+								}),
+							$elm$core$Platform$Cmd$batch(
+								_List_fromArray(
+									[matchCmd, leagueStateCmd])));
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just(
+										'Failed to create Player B: ' + $author$project$Main$httpErrorToString(err))
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
 				}
 			case 'PeriodicSync':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -9352,10 +9517,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v10 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v10.a.$ === 'Just') && (_v10.b.$ === 'Just')) {
-					var playerA = _v10.a.a;
-					var playerB = _v10.b.a;
+				var _v15 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v15.a.$ === 'Just') && (_v15.b.$ === 'Just')) {
+					var playerA = _v15.a.a;
+					var playerB = _v15.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9492,7 +9657,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v12) {
+						function (_v17) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -11800,7 +11965,6 @@ var $author$project$Main$activePlayer = function (player) {
 };
 var $rtfeldman$elm_css$Html$Styled$h3 = $rtfeldman$elm_css$Html$Styled$node('h3');
 var $rtfeldman$elm_css$Css$cursor = $rtfeldman$elm_css$Css$prop1('cursor');
-var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
 		return A2(
