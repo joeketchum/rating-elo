@@ -1,5 +1,5 @@
 module Player exposing
-    ( Player(..), init, htmlKey
+    ( Player(..), init, create, htmlKey
     , PlayerId(..), id, idSorter
     , name
     , rating, setRating
@@ -11,7 +11,7 @@ module Player exposing
 
 {-|
 
-@docs Player, init, htmlKey
+@docs Player, init, create, htmlKey
 
 @docs PlayerId, id, idSorter
 
@@ -99,6 +99,18 @@ init name_ =
         , matches = 0
         , am = True
         , pm = True
+        }
+
+
+create : String -> Int -> Bool -> Bool -> Player
+create name_ playerRating isAvailableAM isAvailablePM =
+    Player
+        { id = PlayerId (Murmur3.hashString 0 name_)
+        , name = name_
+        , rating = playerRating
+        , matches = 0
+        , am = isAvailableAM
+        , pm = isAvailablePM
         }
 
 

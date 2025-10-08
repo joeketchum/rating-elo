@@ -55,6 +55,11 @@ type alias Model =
     , playerDeletionConfirmation : Maybe (Player, Int)
     , dataVersion : Int
     , lastModified : Int
+    , showAddPlayerPopup : Bool
+    , addPlayerName : String
+    , addPlayerRating : String
+    , addPlayerAM : Bool
+    , addPlayerPM : Bool
     }
 
 type alias VersionedLeague =
@@ -104,6 +109,13 @@ type Msg
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
+    | KeeperWantsToShowAddPlayerPopup
+    | KeeperWantsToHideAddPlayerPopup
+    | KeeperUpdatedAddPlayerName String
+    | KeeperUpdatedAddPlayerRating String
+    | KeeperToggledAddPlayerAM
+    | KeeperToggledAddPlayerPM
+    | KeeperConfirmedAddPlayer
     | KeeperWantsToRetirePlayer Player
     | ConfirmPlayerDeletion Player Int
     | CancelPlayerDeletion
@@ -175,6 +187,11 @@ init _ =
         , playerDeletionConfirmation = Nothing
         , dataVersion = 1
         , lastModified = 0
+        , showAddPlayerPopup = False
+        , addPlayerName = ""
+        , addPlayerRating = "1500"
+        , addPlayerAM = True
+        , addPlayerPM = True
         }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
     )
@@ -467,10 +484,44 @@ update msg model =
             ( { model | newPlayerName = newPlayerName }, Cmd.none )
 
         KeeperWantsToAddNewPlayer ->
+            ( { model | showAddPlayerPopup = True }, Cmd.none )
+
+        KeeperWantsToShowAddPlayerPopup ->
+            ( { model | showAddPlayerPopup = True }, Cmd.none )
+
+        KeeperWantsToHideAddPlayerPopup ->
+            ( { model 
+                | showAddPlayerPopup = False
+                , addPlayerName = ""
+                , addPlayerRating = "1500"
+                , addPlayerAM = True
+                , addPlayerPM = True
+              }, Cmd.none )
+
+        KeeperUpdatedAddPlayerName name ->
+            ( { model | addPlayerName = name }, Cmd.none )
+
+        KeeperUpdatedAddPlayerRating rating ->
+            ( { model | addPlayerRating = rating }, Cmd.none )
+
+        KeeperToggledAddPlayerAM ->
+            ( { model | addPlayerAM = not model.addPlayerAM }, Cmd.none )
+
+        KeeperToggledAddPlayerPM ->
+            ( { model | addPlayerPM = not model.addPlayerPM }, Cmd.none )
+
+        KeeperConfirmedAddPlayer ->
+            let
+                rating = String.toInt model.addPlayerRating |> Maybe.withDefault 1500
+                player = Player.create model.addPlayerName rating model.addPlayerAM model.addPlayerPM
+            in
             ( { model
-                | history =
-                    History.mapPush (League.addPlayer (Player.init model.newPlayerName)) model.history
-                , newPlayerName = ""
+                | history = History.mapPush (League.addPlayer player) model.history
+                , showAddPlayerPopup = False
+                , addPlayerName = ""
+                , addPlayerRating = "1500"
+                , addPlayerAM = True
+                , addPlayerPM = True
               }
             , Cmd.none
             )
@@ -921,6 +972,202 @@ view model =
 
                 Nothing ->
                     []
+           )
+        ++ (if model.showAddPlayerPopup then
+                [ Html.div
+                    [ css
+                        [ Css.position Css.fixed
+                        , Css.top Css.zero
+                        , Css.left Css.zero
+                        , Css.width (Css.pct 100)
+                        , Css.height (Css.pct 100)
+                        , Css.backgroundColor (Css.rgba 0 0 0 0.5)
+                        , Css.displayFlex
+                        , Css.alignItems Css.center
+                        , Css.justifyContent Css.center
+                        , Css.zIndex (Css.int 1500)
+                        ]
+                    ]
+                    [ Html.div
+                        [ css
+                            [ Css.backgroundColor (Css.hex "FFFFFF")
+                            , Css.borderRadius (Css.px 12)
+                            , Css.padding (Css.px 32)
+                            , Css.boxShadow4 (Css.px 0) (Css.px 20) (Css.px 25) (Css.rgba 0 0 0 0.15)
+                            , Css.maxWidth (Css.px 500)
+                            , Css.width (Css.pct 90)
+                            , modernSansSerif
+                            ]
+                        ]
+                        [ Html.h2
+                            [ css
+                                [ Css.fontSize (Css.px 24)
+                                , Css.fontWeight (Css.int 600)
+                                , Css.color (Css.hex "1F2937")
+                                , Css.marginBottom (Css.px 24)
+                                , Css.textAlign Css.center
+                                ]
+                            ]
+                            [ Html.text "Add New Player" ]
+                        , Html.div
+                            [ css [ Css.marginBottom (Css.px 20) ] ]
+                            [ Html.label
+                                [ css
+                                    [ Css.display Css.block
+                                    , Css.fontSize (Css.px 14)
+                                    , Css.fontWeight (Css.int 600)
+                                    , Css.color (Css.hex "374151")
+                                    , Css.marginBottom (Css.px 6)
+                                    ]
+                                ]
+                                [ Html.text "Player Name" ]
+                            , Html.input
+                                [ StyledAttributes.type_ "text"
+                                , StyledAttributes.placeholder "Enter player name"
+                                , StyledAttributes.value model.addPlayerName
+                                , Events.onInput KeeperUpdatedAddPlayerName
+                                , css
+                                    [ Css.width (Css.pct 100)
+                                    , Css.padding2 (Css.px 12) (Css.px 16)
+                                    , Css.border3 (Css.px 2) Css.solid (Css.hex "E5E7EB")
+                                    , Css.borderRadius (Css.px 8)
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.focus [ Css.borderColor (Css.hex "3B82F6"), Css.outline Css.none ]
+                                    , Css.boxSizing Css.borderBox
+                                    ]
+                                ] []
+                            ]
+                        , Html.div
+                            [ css [ Css.marginBottom (Css.px 20) ] ]
+                            [ Html.label
+                                [ css
+                                    [ Css.display Css.block
+                                    , Css.fontSize (Css.px 14)
+                                    , Css.fontWeight (Css.int 600)
+                                    , Css.color (Css.hex "374151")
+                                    , Css.marginBottom (Css.px 6)
+                                    ]
+                                ]
+                                [ Html.text "Estimated Rating" ]
+                            , Html.input
+                                [ StyledAttributes.type_ "number"
+                                , StyledAttributes.placeholder "1500"
+                                , StyledAttributes.value model.addPlayerRating
+                                , Events.onInput KeeperUpdatedAddPlayerRating
+                                , css
+                                    [ Css.width (Css.pct 100)
+                                    , Css.padding2 (Css.px 12) (Css.px 16)
+                                    , Css.border3 (Css.px 2) Css.solid (Css.hex "E5E7EB")
+                                    , Css.borderRadius (Css.px 8)
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.focus [ Css.borderColor (Css.hex "3B82F6"), Css.outline Css.none ]
+                                    , Css.boxSizing Css.borderBox
+                                    ]
+                                ] []
+                            ]
+                        , Html.div
+                            [ css [ Css.marginBottom (Css.px 24) ] ]
+                            [ Html.label
+                                [ css
+                                    [ Css.display Css.block
+                                    , Css.fontSize (Css.px 14)
+                                    , Css.fontWeight (Css.int 600)
+                                    , Css.color (Css.hex "374151")
+                                    , Css.marginBottom (Css.px 12)
+                                    ]
+                                ]
+                                [ Html.text "Available Times" ]
+                            , Html.div
+                                [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround ] ]
+                                [ Html.label
+                                    [ css
+                                        [ Css.displayFlex
+                                        , Css.alignItems Css.center
+                                        , Css.cursor Css.pointer
+                                        , Css.fontSize (Css.px 16)
+                                        ]
+                                    ]
+                                    [ Html.input
+                                        [ StyledAttributes.type_ "checkbox"
+                                        , StyledAttributes.checked model.addPlayerAM
+                                        , Events.onClick KeeperToggledAddPlayerAM
+                                        , css
+                                            [ Css.width (Css.px 20)
+                                            , Css.height (Css.px 20)
+                                            , Css.marginRight (Css.px 8)
+                                            ]
+                                        ] []
+                                    , Html.text "AM Games"
+                                    ]
+                                , Html.label
+                                    [ css
+                                        [ Css.displayFlex
+                                        , Css.alignItems Css.center
+                                        , Css.cursor Css.pointer
+                                        , Css.fontSize (Css.px 16)
+                                        ]
+                                    ]
+                                    [ Html.input
+                                        [ StyledAttributes.type_ "checkbox"
+                                        , StyledAttributes.checked model.addPlayerPM
+                                        , Events.onClick KeeperToggledAddPlayerPM
+                                        , css
+                                            [ Css.width (Css.px 20)
+                                            , Css.height (Css.px 20)
+                                            , Css.marginRight (Css.px 8)
+                                            ]
+                                        ] []
+                                    , Html.text "PM Games"
+                                    ]
+                                ]
+                            ]
+                        , Html.div
+                            [ css [ Css.displayFlex, Css.justifyContent Css.spaceAround ] ]
+                            [ Html.button
+                                [ css
+                                    [ Css.backgroundColor (Css.hex "6B7280")
+                                    , Css.color (Css.hex "FFFFFF")
+                                    , Css.border Css.zero
+                                    , Css.borderRadius (Css.px 8)
+                                    , Css.padding2 (Css.px 12) (Css.px 24)
+                                    , Css.cursor Css.pointer
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.fontWeight (Css.int 500)
+                                    , Css.hover [ Css.backgroundColor (Css.hex "4B5563") ]
+                                    , modernSansSerif
+                                    ]
+                                , Events.onClick KeeperWantsToHideAddPlayerPopup
+                                ]
+                                [ Html.text "Cancel" ]
+                            , Html.button
+                                [ css
+                                    [ Css.backgroundColor (Css.hex "10B981")
+                                    , Css.color (Css.hex "FFFFFF")
+                                    , Css.border Css.zero
+                                    , Css.borderRadius (Css.px 8)
+                                    , Css.padding2 (Css.px 12) (Css.px 24)
+                                    , Css.cursor Css.pointer
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.fontWeight (Css.int 500)
+                                    , Css.hover [ Css.backgroundColor (Css.hex "059669") ]
+                                    , modernSansSerif
+                                    , if String.isEmpty (String.trim model.addPlayerName) then
+                                        Css.batch [ Css.opacity (Css.num 0.5), Css.cursor Css.notAllowed ]
+                                      else
+                                        Css.batch []
+                                    ]
+                                , if String.isEmpty (String.trim model.addPlayerName) then
+                                    StyledAttributes.disabled True
+                                  else
+                                    Events.onClick KeeperConfirmedAddPlayer
+                                ]
+                                [ Html.text "Add Player" ]
+                            ]
+                        ]
+                    ]
+                ]
+            else
+                []
            )
         ++ (case model.status of
                 Just message ->
