@@ -7637,15 +7637,23 @@ var $elm$http$Http$jsonBody = function (value) {
 };
 var $author$project$Supabase$createPlayer = F3(
 	function (config, player, toMsg) {
-		return A6(
-			$author$project$Supabase$supabaseRequest,
-			config,
-			'POST',
-			'/players',
-			$elm$http$Http$jsonBody(
-				$author$project$Supabase$encodePlayer(player)),
-			$author$project$Supabase$playerDecoder,
-			toMsg);
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$jsonBody(
+					$author$project$Supabase$encodePlayer(player)),
+				expect: A2($elm$http$Http$expectJson, toMsg, $author$project$Supabase$playerDecoder),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
+						A2($elm$http$Http$header, 'Prefer', 'resolution=merge-duplicates,return=representation')
+					]),
+				method: 'POST',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + '/rest/v1/players?on_conflict=id'
+			});
 	});
 var $author$project$Elo$odds = F2(
 	function (a, b) {
@@ -8169,149 +8177,6 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
-var $elm$core$Basics$modBy = _Basics_modBy;
-var $elm$core$String$cons = _String_cons;
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
-};
-var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
-var $elm$core$String$repeatHelp = F3(
-	function (n, chunk, result) {
-		return (n <= 0) ? result : A3(
-			$elm$core$String$repeatHelp,
-			n >> 1,
-			_Utils_ap(chunk, chunk),
-			(!(n & 1)) ? result : _Utils_ap(result, chunk));
-	});
-var $elm$core$String$repeat = F2(
-	function (n, chunk) {
-		return A3($elm$core$String$repeatHelp, n, chunk, '');
-	});
-var $elm$core$String$padLeft = F3(
-	function (n, _char, string) {
-		return _Utils_ap(
-			A2(
-				$elm$core$String$repeat,
-				n - $elm$core$String$length(string),
-				$elm$core$String$fromChar(_char)),
-			string);
-	});
-var $author$project$Supabase$encodeIsoTime = function (time) {
-	var year = 2025;
-	var month = 10;
-	var millis = $elm$time$Time$posixToMillis(time);
-	var totalSeconds = (millis / 1000) | 0;
-	var minute = A2($elm$core$Basics$modBy, 60, (totalSeconds / 60) | 0);
-	var second = A2($elm$core$Basics$modBy, 60, totalSeconds);
-	var hour = A2($elm$core$Basics$modBy, 24, (totalSeconds / 3600) | 0);
-	var days = (totalSeconds / 86400) | 0;
-	var day = 8;
-	return $elm$core$String$fromInt(year) + ('-' + (A3(
-		$elm$core$String$padLeft,
-		2,
-		_Utils_chr('0'),
-		$elm$core$String$fromInt(month)) + ('-' + (A3(
-		$elm$core$String$padLeft,
-		2,
-		_Utils_chr('0'),
-		$elm$core$String$fromInt(day)) + ('T' + (A3(
-		$elm$core$String$padLeft,
-		2,
-		_Utils_chr('0'),
-		$elm$core$String$fromInt(hour)) + (':' + (A3(
-		$elm$core$String$padLeft,
-		2,
-		_Utils_chr('0'),
-		$elm$core$String$fromInt(minute)) + (':' + (A3(
-		$elm$core$String$padLeft,
-		2,
-		_Utils_chr('0'),
-		$elm$core$String$fromInt(second)) + 'Z'))))))))));
-};
-var $author$project$Supabase$encodeMatch = function (match) {
-	return $elm$json$Json$Encode$object(
-		_List_fromArray(
-			[
-				_Utils_Tuple2(
-				'player_a_id',
-				$elm$json$Json$Encode$int(match.playerAId)),
-				_Utils_Tuple2(
-				'player_b_id',
-				$elm$json$Json$Encode$int(match.playerBId)),
-				_Utils_Tuple2(
-				'winner_id',
-				$elm$json$Json$Encode$int(match.winnerId)),
-				_Utils_Tuple2(
-				'player_a_rating_before',
-				$elm$json$Json$Encode$int(match.playerARatingBefore)),
-				_Utils_Tuple2(
-				'player_b_rating_before',
-				$elm$json$Json$Encode$int(match.playerBRatingBefore)),
-				_Utils_Tuple2(
-				'player_a_rating_after',
-				$elm$json$Json$Encode$int(match.playerARatingAfter)),
-				_Utils_Tuple2(
-				'player_b_rating_after',
-				$elm$json$Json$Encode$int(match.playerBRatingAfter)),
-				_Utils_Tuple2(
-				'k_factor_used',
-				$elm$json$Json$Encode$int(match.kFactorUsed)),
-				_Utils_Tuple2(
-				'played_at',
-				$elm$json$Json$Encode$string(
-					$author$project$Supabase$encodeIsoTime(match.playedAt)))
-			]));
-};
-var $elm$json$Json$Decode$index = _Json_decodeIndex;
-var $author$project$Supabase$matchDecoder = A2(
-	$elm$json$Json$Decode$andThen,
-	function (partial) {
-		return A2(
-			$elm$json$Json$Decode$map,
-			partial,
-			A2(
-				$elm$json$Json$Decode$field,
-				'played_at',
-				A2($elm$json$Json$Decode$andThen, $author$project$Supabase$decodeIsoTime, $elm$json$Json$Decode$string)));
-	},
-	A2(
-		$elm$json$Json$Decode$andThen,
-		function (partial) {
-			return A2(
-				$elm$json$Json$Decode$map,
-				partial,
-				A2($elm$json$Json$Decode$field, 'k_factor_used', $elm$json$Json$Decode$int));
-		},
-		A9(
-			$elm$json$Json$Decode$map8,
-			F8(
-				function (id, playerAId, playerBId, winnerId, playerARatingBefore, playerBRatingBefore, playerARatingAfter, playerBRatingAfter) {
-					return function (kFactorUsed) {
-						return function (playedAt) {
-							return {id: id, kFactorUsed: kFactorUsed, playedAt: playedAt, playerAId: playerAId, playerARatingAfter: playerARatingAfter, playerARatingBefore: playerARatingBefore, playerBId: playerBId, playerBRatingAfter: playerBRatingAfter, playerBRatingBefore: playerBRatingBefore, winnerId: winnerId};
-						};
-					};
-				}),
-			A2($elm$json$Json$Decode$field, 'id', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'player_a_id', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'player_b_id', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'winner_id', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'player_a_rating_before', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'player_b_rating_before', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'player_a_rating_after', $elm$json$Json$Decode$int),
-			A2($elm$json$Json$Decode$field, 'player_b_rating_after', $elm$json$Json$Decode$int))));
-var $author$project$Supabase$recordMatch = F3(
-	function (config, match, toMsg) {
-		return A6(
-			$author$project$Supabase$supabaseRequest,
-			config,
-			'POST',
-			'/matches',
-			$elm$http$Http$jsonBody(
-				$author$project$Supabase$encodeMatch(match)),
-			A2($elm$json$Json$Decode$index, 0, $author$project$Supabase$matchDecoder),
-			toMsg);
-	});
 var $elm$core$Set$remove = F2(
 	function (key, _v0) {
 		var dict = _v0.a;
@@ -8976,6 +8841,66 @@ var $author$project$Main$toSupabasePlayer = function (player) {
 		updatedAt: now
 	};
 };
+var $elm$core$Basics$modBy = _Basics_modBy;
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $author$project$Supabase$encodeIsoTime = function (time) {
+	var year = 2025;
+	var month = 10;
+	var millis = $elm$time$Time$posixToMillis(time);
+	var totalSeconds = (millis / 1000) | 0;
+	var minute = A2($elm$core$Basics$modBy, 60, (totalSeconds / 60) | 0);
+	var second = A2($elm$core$Basics$modBy, 60, totalSeconds);
+	var hour = A2($elm$core$Basics$modBy, 24, (totalSeconds / 3600) | 0);
+	var days = (totalSeconds / 86400) | 0;
+	var day = 8;
+	return $elm$core$String$fromInt(year) + ('-' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(month)) + ('-' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(day)) + ('T' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(hour)) + (':' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(minute)) + (':' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(second)) + 'Z'))))))))));
+};
+var $elm$json$Json$Decode$index = _Json_decodeIndex;
 var $author$project$Supabase$LeagueState = F6(
 	function (id, currentMatchPlayerA, currentMatchPlayerB, votesUntilSync, lastSyncAt, updatedAt) {
 		return {currentMatchPlayerA: currentMatchPlayerA, currentMatchPlayerB: currentMatchPlayerB, id: id, lastSyncAt: lastSyncAt, updatedAt: updatedAt, votesUntilSync: votesUntilSync};
@@ -9055,6 +8980,54 @@ var $author$project$Supabase$updateLeagueState = F3(
 			$elm$http$Http$jsonBody(body),
 			A2($elm$json$Json$Decode$index, 0, $author$project$Supabase$leagueStateDecoder),
 			toMsg);
+	});
+var $elm$http$Http$expectBytesResponse = F2(
+	function (toMsg, toResult) {
+		return A3(
+			_Http_expect,
+			'arraybuffer',
+			_Http_toDataView,
+			A2($elm$core$Basics$composeR, toResult, toMsg));
+	});
+var $elm$http$Http$expectWhatever = function (toMsg) {
+	return A2(
+		$elm$http$Http$expectBytesResponse,
+		toMsg,
+		$elm$http$Http$resolve(
+			function (_v0) {
+				return $elm$core$Result$Ok(_Utils_Tuple0);
+			}));
+};
+var $author$project$Supabase$voteEdgeFunction = F5(
+	function (config, aId, bId, winnerId, toMsg) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$jsonBody(
+					$elm$json$Json$Encode$object(
+						_List_fromArray(
+							[
+								_Utils_Tuple2(
+								'a_id',
+								$elm$json$Json$Encode$int(aId)),
+								_Utils_Tuple2(
+								'b_id',
+								$elm$json$Json$Encode$int(bId)),
+								_Utils_Tuple2(
+								'winner',
+								$elm$json$Json$Encode$int(winnerId))
+							]))),
+				expect: $elm$http$Http$expectWhatever(toMsg),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'Content-Type', 'application/json')
+					]),
+				method: 'POST',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + '/functions/v1/vote'
+			});
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
@@ -9304,7 +9277,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								status: $elm$core$Maybe$Just('Match saved to Supabase!')
+								status: $elm$core$Maybe$Just('Match vote sent to Supabase Edge Function!')
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
@@ -9314,7 +9287,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								status: $elm$core$Maybe$Just(
-									'Failed to save match: ' + $author$project$Main$httpErrorToString(err))
+									'Failed to send match vote: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -9353,7 +9326,7 @@ var $author$project$Main$update = F2(
 							var leagueState = $author$project$Main$toSupabaseLeagueState(league);
 							var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
 							var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
-							var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+							var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, match.playerAId, match.playerBId, match.winnerId, $author$project$Main$MatchSaved);
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
@@ -9400,7 +9373,7 @@ var $author$project$Main$update = F2(
 								var leagueState = $author$project$Main$toSupabaseLeagueState(league);
 								var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
 								var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
-								var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+								var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, match.playerAId, match.playerBId, match.winnerId, $author$project$Main$MatchSaved);
 								return _Utils_Tuple2(
 									_Utils_update(
 										model,
@@ -9456,7 +9429,7 @@ var $author$project$Main$update = F2(
 							var leagueState = $author$project$Main$toSupabaseLeagueState(league);
 							var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
 							var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
-							var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+							var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, match.playerAId, match.playerBId, match.winnerId, $author$project$Main$MatchSaved);
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
@@ -9503,7 +9476,7 @@ var $author$project$Main$update = F2(
 								var leagueState = $author$project$Main$toSupabaseLeagueState(league);
 								var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
 								var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
-								var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+								var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, match.playerAId, match.playerBId, match.winnerId, $author$project$Main$MatchSaved);
 								return _Utils_Tuple2(
 									_Utils_update(
 										model,

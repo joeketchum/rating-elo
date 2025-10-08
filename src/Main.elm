@@ -98,7 +98,7 @@ type Msg
     | ReceivedTimeFilter String
     | ReceivedIgnoredPlayers String
     | ReceivedCurrentTime Time.Posix
-    | MatchSaved (Result Http.Error Supabase.Match)
+    | MatchSaved (Result Http.Error ())
     | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
     | PlayerACreated League.Outcome (Result Http.Error Supabase.Player)
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
@@ -560,8 +560,8 @@ update msg model =
                     |> maybeAutoSave
         MatchSaved result ->
             case result of
-                Ok _ -> ( { model | status = Just "Match saved to Supabase!" }, Cmd.none )
-                Err err -> ( { model | status = Just ("Failed to save match: " ++ httpErrorToString err) }, Cmd.none )
+                Ok _ -> ( { model | status = Just "Match vote sent to Supabase Edge Function!" }, Cmd.none )
+                Err err -> ( { model | status = Just ("Failed to send match vote: " ++ httpErrorToString err) }, Cmd.none )
 
         LeagueStateSaved result ->
             case result of
@@ -580,7 +580,7 @@ update msg model =
                                         league = History.current model.history
                                         match = toSupabaseMatch league pendingOutcome
                                         leagueState = toSupabaseLeagueState league
-                                        matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                        matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
                                         leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
                                     in
                                     ( { model | status = Just "Players created, saving match...", pendingMatch = Nothing }
@@ -603,7 +603,7 @@ update msg model =
                                             league = History.current model.history
                                             match = toSupabaseMatch league pendingOutcome
                                             leagueState = toSupabaseLeagueState league
-                                            matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                            matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
                                             leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
                                         in
                                         ( { model | status = Just "Players ready, saving match...", pendingMatch = Nothing }
@@ -629,7 +629,7 @@ update msg model =
                                         league = History.current model.history
                                         match = toSupabaseMatch league pendingOutcome
                                         leagueState = toSupabaseLeagueState league
-                                        matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                        matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
                                         leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
                                     in
                                     ( { model | status = Just "Players created, saving match...", pendingMatch = Nothing }
@@ -652,7 +652,7 @@ update msg model =
                                             league = History.current model.history
                                             match = toSupabaseMatch league pendingOutcome
                                             leagueState = toSupabaseLeagueState league
-                                            matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                            matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
                                             leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
                                         in
                                         ( { model | status = Just "Players ready, saving match...", pendingMatch = Nothing }

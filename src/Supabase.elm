@@ -11,18 +11,8 @@ module Supabase exposing
     , getLeagueState
     , updateLeagueState
     , subscribeToPlayers
+    , voteEdgeFunction
     )
-
-{-| Supabase API integration for the Hockey Rating League
-
-@docs Config
-@docs Player, Match, LeagueState
-@docs getPlayers, createPlayer, updatePlayer, deletePlayer
-@docs recordMatch
-@docs getLeagueState, updateLeagueState
-@docs subscribeToPlayers
-
--}
 
 import Http
 import Json.Decode as Decode exposing (Decoder)
@@ -246,7 +236,20 @@ getPlayers config toMsg =
 
 createPlayer : Config -> Player -> (Result Http.Error Player -> msg) -> Cmd msg
 createPlayer config player toMsg =
-    supabaseRequest config "POST" "/players" (Http.jsonBody (encodePlayer player)) playerDecoder toMsg
+    Http.request
+        { method = "POST"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            , Http.header "Prefer" "resolution=merge-duplicates,return=representation"
+            ]
+        , url = config.url ++ "/rest/v1/players?on_conflict=id"
+        , body = Http.jsonBody (encodePlayer player)
+        , expect = Http.expectJson toMsg playerDecoder
+        , timeout = Nothing
+        , tracker = Nothing
+        }
 
 
 updatePlayer : Config -> Int -> Player -> (Result Http.Error Player -> msg) -> Cmd msg
@@ -311,3 +314,25 @@ subscribeToPlayers config toMsg =
     -- This is a placeholder for real-time subscriptions
     -- You would implement WebSocket connection to Supabase realtime here
     Cmd.none
+
+
+-- Call Supabase Edge Function for voting and Elo update
+voteEdgeFunction : Config -> Int -> Int -> Int -> (Result Http.Error () -> msg) -> Cmd msg
+voteEdgeFunction config aId bId winnerId toMsg =
+    Http.request
+        { method = "POST"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            ]
+        , url = config.url ++ "/functions/v1/vote"
+        , body = Http.jsonBody (Encode.object
+            [ ("a_id", Encode.int aId)
+            , ("b_id", Encode.int bId)
+            , ("winner", Encode.int winnerId)
+            ])
+        , expect = Http.expectWhatever toMsg
+        , timeout = Nothing
+        , tracker = Nothing
+        }
