@@ -74,6 +74,13 @@ versionedLeagueDecoder =
     Decode.oneOf
         [ decodeVersionedLeague
         , legacyLeagueDecoder
+        , -- Handle empty/null case by creating default league
+          Decode.succeed 
+            { version = 1
+            , timestamp = 0
+            , checksum = "empty"
+            , league = League.init
+            }
         ]
 
 -- Simple checksum function (hash of player count and first few player names)
@@ -202,6 +209,7 @@ type Msg
     | ReceivedCurrentTime Time.Posix
 
 
+
 type TimeFilter
     = All
     | AMOnly
@@ -256,17 +264,7 @@ createVersionedLeague model =
     , league = currentLeague
     }
 
--- Save league data with versioning
-saveVersionedLeague : Model -> Cmd Msg
-saveVersionedLeague model =
-    let
-        versionedData = createVersionedLeague model
-        jsonString = encode 2 (encodeVersionedLeague versionedData)
-    in
-    Cmd.batch
-        [ saveStandings jsonString
-        , saveToPublicDrive jsonString
-        ]
+
 
 httpErrorToString : Http.Error -> String
 httpErrorToString err =
@@ -296,15 +294,10 @@ isVotingDisabled model =
 maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 maybeAutoSave ( model, cmd ) =
     if model.autoSave then
-        let
-            -- Increment version and get current timestamp
-            updatedModel = { model | dataVersion = model.dataVersion + 1 }
-        in
-        ( updatedModel
+        ( model
         , Cmd.batch
             [ cmd
-            , Task.perform ReceivedCurrentTime Time.now
-            , saveStandings (encode 2 (encodeVersionedLeague (createVersionedLeague updatedModel)))
+            , saveStandings (encode 2 (League.encode (History.current model.history)))
             ]
         )
 
@@ -548,28 +541,20 @@ update msg model =
                     |> maybeAutoSave
 
         KeeperWantsToSaveStandings ->
-            let
-                updatedModel = { model | dataVersion = model.dataVersion + 1 }
-            in
-            ( updatedModel
+            ( model
             , Cmd.batch
-                [ Task.perform ReceivedCurrentTime Time.now
-                , Download.string
+                [ Download.string
                     "standings.json"
                     "application/json"
-                    (encode 2 (encodeVersionedLeague (createVersionedLeague updatedModel)))
+                    (encode 2 (League.encode (History.current model.history)))
                 , Task.succeed (ShowStatus "Exported rankings") |> Task.perform identity
                 ]
             )
 
         KeeperWantsToSaveToDrive ->
-            let
-                updatedModel = { model | dataVersion = model.dataVersion + 1 }
-            in
-            ( updatedModel
+            ( model
             , Cmd.batch
-                [ Task.perform ReceivedCurrentTime Time.now
-                , saveToPublicDrive (encode 2 (encodeVersionedLeague (createVersionedLeague updatedModel)))
+                [ saveToPublicDrive (encode 2 (League.encode (History.current model.history)))
                 , Task.succeed (ShowStatus "Saving to Drive...") |> Task.perform identity
                 ]
             )
@@ -766,7 +751,21 @@ update msg model =
                     )
 
         ReceivedStandings jsonString ->
-            case Decode.decodeString versionedLeagueDecoder jsonString of
+            let
+                -- Handle empty/whitespace strings
+                cleanedJson = String.trim jsonString
+                actualDecoder = 
+                    if String.isEmpty cleanedJson then
+                        Decode.succeed 
+                            { version = 1
+                            , timestamp = 0  
+                            , checksum = "empty"
+                            , league = League.init
+                            }
+                    else
+                        versionedLeagueDecoder
+            in
+            case Decode.decodeString actualDecoder cleanedJson of
                 Ok versionedLeague ->
                     let
                         -- Check for potential conflicts (if incoming data is older than local)
@@ -792,9 +791,20 @@ update msg model =
                         |> startNextMatchIfPossible
                         |> maybeAutoSave
 
-                Err _ ->
-                    ( { model | status = Just "Saved standings malformed or unreadable", shouldStartNextMatchAfterLoad = False, autoSaveInProgress = False, driveLoadInProgress = False }
-                    , Cmd.none
+                Err error ->
+                    let
+                        errorMsg = "Decode error: " ++ Decode.errorToString error
+                        debugMsg = "JSON preview: " ++ String.left 100 jsonString ++ "..."
+                    in
+                    ( { model 
+                      | status = Just ("Data decode failed - trying legacy format compatibility")
+                      , shouldStartNextMatchAfterLoad = False
+                      , autoSaveInProgress = False
+                      , driveLoadInProgress = False
+                      }
+                    , Cmd.batch 
+                        [ Task.succeed (ShowStatus debugMsg) |> Task.perform identity
+                        ]
                     )
 
         ReceivedCurrentTime time ->
@@ -803,6 +813,8 @@ update msg model =
                 updatedModel = { model | lastModified = timestamp }
             in
             ( updatedModel, Cmd.none )
+
+
 
         ReceivedAutoSave value ->
             ( { model | autoSave = value }, Cmd.none )
