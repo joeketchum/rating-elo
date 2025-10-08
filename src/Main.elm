@@ -495,12 +495,22 @@ update msg model =
 
         ConfirmPlayerDeletion player step ->
             if step == 2 then
-                -- Final confirmation - delete the player from both Elm and Supabase
+                -- Final confirmation - try to delete from Supabase, but also mark as ignored locally
                 let
                     (Player.PlayerId playerId) = Player.id player
+                    -- Also mark player as ignored locally as a fallback
+                    newIgnoredPlayers = Set.insert (String.fromInt playerId) model.ignoredPlayers
+                    serializedIgnored = String.join "," (Set.toList newIgnoredPlayers)
                 in
-                ( { model | playerDeletionConfirmation = Nothing, history = History.mapPush (League.retirePlayer player) model.history }
-                , Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
+                ( { model 
+                    | playerDeletionConfirmation = Nothing
+                    , history = History.mapPush (League.retirePlayer player) model.history
+                    , ignoredPlayers = newIgnoredPlayers
+                  }
+                , Cmd.batch 
+                    [ Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
+                    , saveIgnoredPlayers serializedIgnored
+                    ]
                 )
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
@@ -762,8 +772,9 @@ update msg model =
             case result of
                 Ok supabasePlayers ->
                     let
-                        -- Filter out players with invalid hash-based IDs (keep reasonable auto-increment IDs under 1 million)
-                        validSupabasePlayers = List.filter (\p -> p.id >= 1 && p.id < 1000000) supabasePlayers
+                        -- Filter out players with invalid hash-based IDs AND locally ignored players
+                        validIdPlayers = List.filter (\p -> p.id >= 1 && p.id < 1000000) supabasePlayers
+                        validSupabasePlayers = List.filter (\p -> not (Set.member (String.fromInt p.id) model.ignoredPlayers)) validIdPlayers
                         invalidSupabasePlayers = List.filter (\p -> p.id < 1 || p.id >= 1000000) supabasePlayers
                         
                         players = List.map supabasePlayerToPlayer validSupabasePlayers

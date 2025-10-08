@@ -8802,6 +8802,14 @@ var $author$project$Main$update = F2(
 				if (step === 2) {
 					var _v3 = $author$project$Player$id(player);
 					var playerId = _v3.a;
+					var newIgnoredPlayers = A2(
+						$elm$core$Set$insert,
+						$elm$core$String$fromInt(playerId),
+						model.ignoredPlayers);
+					var serializedIgnored = A2(
+						$elm$core$String$join,
+						',',
+						$elm$core$Set$toList(newIgnoredPlayers));
 					return $author$project$Main$maybeAutoSave(
 						$author$project$Main$startNextMatchIfPossible(
 							_Utils_Tuple2(
@@ -8812,9 +8820,15 @@ var $author$project$Main$update = F2(
 											$author$project$History$mapPush,
 											$author$project$League$retirePlayer(player),
 											model.history),
+										ignoredPlayers: newIgnoredPlayers,
 										playerDeletionConfirmation: $elm$core$Maybe$Nothing
 									}),
-								A3($author$project$Supabase$deletePlayer, $author$project$Config$supabaseConfig, playerId, $author$project$Main$PlayerDeleted))));
+								$elm$core$Platform$Cmd$batch(
+									_List_fromArray(
+										[
+											A3($author$project$Supabase$deletePlayer, $author$project$Config$supabaseConfig, playerId, $author$project$Main$PlayerDeleted),
+											$author$project$Main$saveIgnoredPlayers(serializedIgnored)
+										])))));
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -9224,12 +9238,21 @@ var $author$project$Main$update = F2(
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var supabasePlayers = result.a;
-					var validSupabasePlayers = A2(
+					var validIdPlayers = A2(
 						$elm$core$List$filter,
 						function (p) {
 							return (p.id >= 1) && (p.id < 1000000);
 						},
 						supabasePlayers);
+					var validSupabasePlayers = A2(
+						$elm$core$List$filter,
+						function (p) {
+							return !A2(
+								$elm$core$Set$member,
+								$elm$core$String$fromInt(p.id),
+								model.ignoredPlayers);
+						},
+						validIdPlayers);
 					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validSupabasePlayers);
 					var playerCount = $elm$core$List$length(players);
 					var newLeague = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
