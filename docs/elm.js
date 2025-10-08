@@ -8103,9 +8103,52 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
+var $elm$core$String$cons = _String_cons;
+var $elm$core$String$fromChar = function (_char) {
+	return A2($elm$core$String$cons, _char, '');
+};
+var $elm$core$Bitwise$shiftRightBy = _Bitwise_shiftRightBy;
+var $elm$core$String$repeatHelp = F3(
+	function (n, chunk, result) {
+		return (n <= 0) ? result : A3(
+			$elm$core$String$repeatHelp,
+			n >> 1,
+			_Utils_ap(chunk, chunk),
+			(!(n & 1)) ? result : _Utils_ap(result, chunk));
+	});
+var $elm$core$String$repeat = F2(
+	function (n, chunk) {
+		return A3($elm$core$String$repeatHelp, n, chunk, '');
+	});
+var $elm$core$String$padLeft = F3(
+	function (n, _char, string) {
+		return _Utils_ap(
+			A2(
+				$elm$core$String$repeat,
+				n - $elm$core$String$length(string),
+				$elm$core$String$fromChar(_char)),
+			string);
+	});
+var $author$project$Supabase$getCurrentTimeString = function (_v0) {
+	var second = 0;
+	var minute = 0;
+	var hour = 12;
+	return A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(hour)) + (':' + (A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(minute)) + (':' + A3(
+		$elm$core$String$padLeft,
+		2,
+		_Utils_chr('0'),
+		$elm$core$String$fromInt(second)))));
+};
 var $author$project$Supabase$encodeIsoTime = function (time) {
-	var millis = $elm$time$Time$posixToMillis(time);
-	return '2025-10-08T00:00:00Z';
+	return '2025-10-08T' + ($author$project$Supabase$getCurrentTimeString(_Utils_Tuple0) + 'Z');
 };
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
@@ -8772,7 +8815,7 @@ var $author$project$Main$toSupabaseLeagueState = function (league) {
 };
 var $author$project$Main$toSupabaseMatch = F2(
 	function (league, outcome) {
-		var now = $elm$time$Time$millisToPosix(1728346800000);
+		var now = $elm$time$Time$millisToPosix(1728396000000);
 		var _v0 = function () {
 			var _v1 = $author$project$League$currentMatch(league);
 			if (_v1.$ === 'Just') {
@@ -10450,7 +10493,6 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 			first,
 			A2($rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock, update, rest));
 	});
-var $elm$core$String$cons = _String_cons;
 var $rtfeldman$elm_css$Hash$initialSeed = 15739;
 var $elm$core$String$fromList = _String_fromList;
 var $elm$core$Basics$modBy = _Basics_modBy;
@@ -11228,9 +11270,6 @@ var $rtfeldman$elm_css$Css$erroneousHex = function (str) {
 var $elm$core$String$foldr = _String_foldr;
 var $elm$core$String$toList = function (string) {
 	return A3($elm$core$String$foldr, $elm$core$List$cons, _List_Nil, string);
-};
-var $elm$core$String$fromChar = function (_char) {
-	return A2($elm$core$String$cons, _char, '');
 };
 var $rtfeldman$elm_hex$Hex$fromStringHelp = F3(
 	function (position, chars, accumulated) {

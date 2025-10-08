@@ -222,7 +222,7 @@ toSupabaseMatch league outcome =
                 in (result.playerA, result.playerB)
         ratingAfterA = newRatingA
         ratingAfterB = newRatingB
-        now = Time.millisToPosix 1728346800000 -- Oct 8, 2025 approximate
+        now = Time.millisToPosix 1728396000000 -- Oct 8, 2025 12:00 PM UTC
     in
     { id = 0
     , playerAId = 
