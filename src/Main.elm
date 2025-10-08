@@ -529,10 +529,13 @@ update msg model =
                     -- Send only match outcome to Edge Function - let it handle all database operations
                     matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
                 in
-                    ( { model | history = updatedHistory, status = Nothing }
-                    , matchCmd
-                    )
-                    |> startNextMatchIfPossible
+                let
+                    -- Check if this will be the 10th vote and trigger sync
+                    willSync = (model.votesSinceLastSync + 1) >= 10
+                    updatedModel = { model | history = updatedHistory, status = Nothing, isSyncing = willSync }
+                in
+                    ( updatedModel, matchCmd )
+                    |> (if willSync then identity else startNextMatchIfPossible)
                     |> maybeAutoSave
         MatchSaved result ->
             case result of
@@ -543,7 +546,7 @@ update msg model =
                     in
                     if shouldSync then
                         -- Sync every 10 votes to keep data fresh but not disruptive
-                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0, isSyncing = True }
+                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0 }
                         , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
                         )
                     else
@@ -578,7 +581,7 @@ update msg model =
             
         TriggerReload ->
             -- Reload players from Supabase
-            ( { model | votesSinceLastSync = 0, isSyncing = True }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
+            ( { model | votesSinceLastSync = 0 }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
 
 
 
