@@ -6980,6 +6980,283 @@ var $author$project$Main$ReceivedTimeFilter = function (a) {
 	return {$: 'ReceivedTimeFilter', a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
+var $author$project$Main$KeyPressed = function (a) {
+	return {$: 'KeyPressed', a: a};
+};
+var $author$project$Main$keyDecoder = A2(
+	$elm$json$Json$Decode$map,
+	$author$project$Main$KeyPressed,
+	A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
+var $elm$browser$Browser$Events$Document = {$: 'Document'};
+var $elm$browser$Browser$Events$MySub = F3(
+	function (a, b, c) {
+		return {$: 'MySub', a: a, b: b, c: c};
+	});
+var $elm$browser$Browser$Events$State = F2(
+	function (subs, pids) {
+		return {pids: pids, subs: subs};
+	});
+var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
+	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
+var $elm$browser$Browser$Events$nodeToKey = function (node) {
+	if (node.$ === 'Document') {
+		return 'd_';
+	} else {
+		return 'w_';
+	}
+};
+var $elm$browser$Browser$Events$addKey = function (sub) {
+	var node = sub.a;
+	var name = sub.b;
+	return _Utils_Tuple2(
+		_Utils_ap(
+			$elm$browser$Browser$Events$nodeToKey(node),
+			name),
+		sub);
+};
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
+var $elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3($elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
+	});
+var $elm$core$Dict$merge = F6(
+	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
+		var stepState = F3(
+			function (rKey, rValue, _v0) {
+				stepState:
+				while (true) {
+					var list = _v0.a;
+					var result = _v0.b;
+					if (!list.b) {
+						return _Utils_Tuple2(
+							list,
+							A3(rightStep, rKey, rValue, result));
+					} else {
+						var _v2 = list.a;
+						var lKey = _v2.a;
+						var lValue = _v2.b;
+						var rest = list.b;
+						if (_Utils_cmp(lKey, rKey) < 0) {
+							var $temp$rKey = rKey,
+								$temp$rValue = rValue,
+								$temp$_v0 = _Utils_Tuple2(
+								rest,
+								A3(leftStep, lKey, lValue, result));
+							rKey = $temp$rKey;
+							rValue = $temp$rValue;
+							_v0 = $temp$_v0;
+							continue stepState;
+						} else {
+							if (_Utils_cmp(lKey, rKey) > 0) {
+								return _Utils_Tuple2(
+									list,
+									A3(rightStep, rKey, rValue, result));
+							} else {
+								return _Utils_Tuple2(
+									rest,
+									A4(bothStep, lKey, lValue, rValue, result));
+							}
+						}
+					}
+				}
+			});
+		var _v3 = A3(
+			$elm$core$Dict$foldl,
+			stepState,
+			_Utils_Tuple2(
+				$elm$core$Dict$toList(leftDict),
+				initialResult),
+			rightDict);
+		var leftovers = _v3.a;
+		var intermediateResult = _v3.b;
+		return A3(
+			$elm$core$List$foldl,
+			F2(
+				function (_v4, result) {
+					var k = _v4.a;
+					var v = _v4.b;
+					return A3(leftStep, k, v, result);
+				}),
+			intermediateResult,
+			leftovers);
+	});
+var $elm$browser$Browser$Events$Event = F2(
+	function (key, event) {
+		return {event: event, key: key};
+	});
+var $elm$browser$Browser$Events$spawn = F3(
+	function (router, key, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var actualNode = function () {
+			if (node.$ === 'Document') {
+				return _Browser_doc;
+			} else {
+				return _Browser_window;
+			}
+		}();
+		return A2(
+			$elm$core$Task$map,
+			function (value) {
+				return _Utils_Tuple2(key, value);
+			},
+			A3(
+				_Browser_on,
+				actualNode,
+				name,
+				function (event) {
+					return A2(
+						$elm$core$Platform$sendToSelf,
+						router,
+						A2($elm$browser$Browser$Events$Event, key, event));
+				}));
+	});
+var $elm$core$Dict$union = F2(
+	function (t1, t2) {
+		return A3($elm$core$Dict$foldl, $elm$core$Dict$insert, t2, t1);
+	});
+var $elm$browser$Browser$Events$onEffects = F3(
+	function (router, subs, state) {
+		var stepRight = F3(
+			function (key, sub, _v6) {
+				var deads = _v6.a;
+				var lives = _v6.b;
+				var news = _v6.c;
+				return _Utils_Tuple3(
+					deads,
+					lives,
+					A2(
+						$elm$core$List$cons,
+						A3($elm$browser$Browser$Events$spawn, router, key, sub),
+						news));
+			});
+		var stepLeft = F3(
+			function (_v4, pid, _v5) {
+				var deads = _v5.a;
+				var lives = _v5.b;
+				var news = _v5.c;
+				return _Utils_Tuple3(
+					A2($elm$core$List$cons, pid, deads),
+					lives,
+					news);
+			});
+		var stepBoth = F4(
+			function (key, pid, _v2, _v3) {
+				var deads = _v3.a;
+				var lives = _v3.b;
+				var news = _v3.c;
+				return _Utils_Tuple3(
+					deads,
+					A3($elm$core$Dict$insert, key, pid, lives),
+					news);
+			});
+		var newSubs = A2($elm$core$List$map, $elm$browser$Browser$Events$addKey, subs);
+		var _v0 = A6(
+			$elm$core$Dict$merge,
+			stepLeft,
+			stepBoth,
+			stepRight,
+			state.pids,
+			$elm$core$Dict$fromList(newSubs),
+			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
+		var deadPids = _v0.a;
+		var livePids = _v0.b;
+		var makeNewPids = _v0.c;
+		return A2(
+			$elm$core$Task$andThen,
+			function (pids) {
+				return $elm$core$Task$succeed(
+					A2(
+						$elm$browser$Browser$Events$State,
+						newSubs,
+						A2(
+							$elm$core$Dict$union,
+							livePids,
+							$elm$core$Dict$fromList(pids))));
+			},
+			A2(
+				$elm$core$Task$andThen,
+				function (_v1) {
+					return $elm$core$Task$sequence(makeNewPids);
+				},
+				$elm$core$Task$sequence(
+					A2($elm$core$List$map, $elm$core$Process$kill, deadPids))));
+	});
+var $elm$browser$Browser$Events$onSelfMsg = F3(
+	function (router, _v0, state) {
+		var key = _v0.key;
+		var event = _v0.event;
+		var toMessage = function (_v2) {
+			var subKey = _v2.a;
+			var _v3 = _v2.b;
+			var node = _v3.a;
+			var name = _v3.b;
+			var decoder = _v3.c;
+			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
+		};
+		var messages = A2($elm$core$List$filterMap, toMessage, state.subs);
+		return A2(
+			$elm$core$Task$andThen,
+			function (_v1) {
+				return $elm$core$Task$succeed(state);
+			},
+			$elm$core$Task$sequence(
+				A2(
+					$elm$core$List$map,
+					$elm$core$Platform$sendToApp(router),
+					messages)));
+	});
+var $elm$browser$Browser$Events$subMap = F2(
+	function (func, _v0) {
+		var node = _v0.a;
+		var name = _v0.b;
+		var decoder = _v0.c;
+		return A3(
+			$elm$browser$Browser$Events$MySub,
+			node,
+			name,
+			A2($elm$json$Json$Decode$map, func, decoder));
+	});
+_Platform_effectManagers['Browser.Events'] = _Platform_createManager($elm$browser$Browser$Events$init, $elm$browser$Browser$Events$onEffects, $elm$browser$Browser$Events$onSelfMsg, 0, $elm$browser$Browser$Events$subMap);
+var $elm$browser$Browser$Events$subscription = _Platform_leaf('Browser.Events');
+var $elm$browser$Browser$Events$on = F3(
+	function (node, name, decoder) {
+		return $elm$browser$Browser$Events$subscription(
+			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
+	});
+var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
 var $author$project$Main$receiveIgnoredPlayers = _Platform_incomingPort('receiveIgnoredPlayers', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveTimeFilter = _Platform_incomingPort('receiveTimeFilter', $elm$json$Json$Decode$string);
@@ -6989,10 +7266,18 @@ var $author$project$Main$subscriptions = function (model) {
 			[
 				$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
 				$author$project$Main$receiveTimeFilter($author$project$Main$ReceivedTimeFilter),
-				$author$project$Main$receiveIgnoredPlayers($author$project$Main$ReceivedIgnoredPlayers)
+				$author$project$Main$receiveIgnoredPlayers($author$project$Main$ReceivedIgnoredPlayers),
+				$elm$browser$Browser$Events$onKeyDown($author$project$Main$keyDecoder)
 			]));
 };
 var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
+var $author$project$League$Draw = function (a) {
+	return {$: 'Draw', a: a};
+};
+var $author$project$Main$IgnoredKey = {$: 'IgnoredKey'};
+var $author$project$Main$MatchFinished = function (a) {
+	return {$: 'MatchFinished', a: a};
+};
 var $author$project$Main$MatchSaved = function (a) {
 	return {$: 'MatchSaved', a: a};
 };
@@ -7000,6 +7285,9 @@ var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
 var $author$project$Main$TriggerReload = {$: 'TriggerReload'};
+var $author$project$League$Win = function (a) {
+	return {$: 'Win', a: a};
+};
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Node = F6(
 	function (a, b, c, d, e, f) {
@@ -7518,6 +7806,9 @@ var $author$project$League$isPlayerIgnored = F2(
 			$author$project$Player$id(player),
 			league.ignored);
 	});
+var $author$project$Main$isVotingDisabled = function (model) {
+	return model.autoSaveInProgress || model.isSyncing;
+};
 var $author$project$History$mapInPlace = F2(
 	function (fn, _v0) {
 		var guts = _v0.a;
@@ -8302,681 +8593,751 @@ var $author$project$Supabase$voteEdgeFunction = F5(
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
-		switch (msg.$) {
-			case 'TogglePlayerAM':
-				var player = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							timeToggleConfirmation: $elm$core$Maybe$Just(
-								_Utils_Tuple2(player, 'AM'))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'TogglePlayerPM':
-				var player = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							timeToggleConfirmation: $elm$core$Maybe$Just(
-								_Utils_Tuple2(player, 'PM'))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'ConfirmTogglePlayerTime':
-				var player = msg.a;
-				var timeType = msg.b;
-				var newState = msg.c;
-				var updatedLeague = function (league) {
-					var _v2 = A2(
-						$author$project$League$getPlayer,
-						$author$project$Player$id(player),
-						league);
-					if (_v2.$ === 'Just') {
-						var p = _v2.a;
-						var newP = (timeType === 'AM') ? A2($author$project$Player$setAM, newState, p) : A2($author$project$Player$setPM, newState, p);
-						return A2($author$project$League$updatePlayer, newP, league);
-					} else {
-						return league;
-					}
-				}(
-					$author$project$History$current(model.history));
-				return $author$project$Main$maybeAutoSave(
-					$author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									history: A2(
-										$author$project$History$mapPush,
-										function (_v1) {
-											return updatedLeague;
-										},
-										model.history),
-									timeToggleConfirmation: $elm$core$Maybe$Nothing
-								}),
-							$elm$core$Platform$Cmd$none)));
-			case 'CancelTogglePlayerTime':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{timeToggleConfirmation: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedNewPlayerName':
-				var newPlayerName = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{newPlayerName: newPlayerName}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToAddNewPlayer':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{showAddPlayerPopup: true}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToShowAddPlayerPopup':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{showAddPlayerPopup: true}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToHideAddPlayerPopup':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedAddPlayerName':
-				var name = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{addPlayerName: name}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedAddPlayerRating':
-				var rating = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{addPlayerRating: rating}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperToggledAddPlayerAM':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{addPlayerAM: !model.addPlayerAM}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperToggledAddPlayerPM':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{addPlayerPM: !model.addPlayerPM}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperConfirmedAddPlayer':
-				var rating = A2(
-					$elm$core$Maybe$withDefault,
-					500,
-					$elm$core$String$toInt(model.addPlayerRating));
-				var player = A4($author$project$Player$create, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM);
-				return $author$project$Main$maybeAutoSave(
-					$author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									addPlayerAM: true,
-									addPlayerName: '',
-									addPlayerPM: true,
-									addPlayerRating: '500',
-									history: A2(
-										$author$project$History$mapPush,
-										$author$project$League$addPlayer(player),
-										model.history),
-									showAddPlayerPopup: false
-								}),
-							$elm$core$Platform$Cmd$none)));
-			case 'KeeperWantsToRetirePlayer':
-				var player = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							playerDeletionConfirmation: $elm$core$Maybe$Just(
-								_Utils_Tuple2(player, 1))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'ConfirmPlayerDeletion':
-				var player = msg.a;
-				var step = msg.b;
-				return (step === 2) ? $author$project$Main$maybeAutoSave(
-					$author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									history: A2(
-										$author$project$History$mapPush,
-										$author$project$League$retirePlayer(player),
-										model.history),
-									playerDeletionConfirmation: $elm$core$Maybe$Nothing
-								}),
-							$elm$core$Platform$Cmd$none))) : _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							playerDeletionConfirmation: $elm$core$Maybe$Just(
-								_Utils_Tuple2(player, 2))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'CancelPlayerDeletion':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{playerDeletionConfirmation: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToIgnorePlayer':
-				var player = msg.a;
-				var _v3 = $author$project$Player$id(player);
-				var idInt = _v3.a;
-				var newIgnoredPlayers = A2(
-					$elm$core$Set$insert,
-					$elm$core$String$fromInt(idInt),
-					model.ignoredPlayers);
-				var serializedIgnored = A2(
-					$elm$core$String$join,
-					',',
-					$elm$core$Set$toList(newIgnoredPlayers));
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{ignoredPlayers: newIgnoredPlayers}),
-						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
-			case 'KeeperWantsToUnignorePlayer':
-				var player = msg.a;
-				var _v4 = $author$project$Player$id(player);
-				var idInt = _v4.a;
-				var newIgnoredPlayers = A2(
-					$elm$core$Set$remove,
-					$elm$core$String$fromInt(idInt),
-					model.ignoredPlayers);
-				var serializedIgnored = A2(
-					$elm$core$String$join,
-					',',
-					$elm$core$Set$toList(newIgnoredPlayers));
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{ignoredPlayers: newIgnoredPlayers}),
-						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
-			case 'KeeperWantsToSkipMatch':
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								history: A2($author$project$History$mapPush, $author$project$League$clearMatch, model.history)
-							}),
-						$elm$core$Platform$Cmd$none));
-			case 'GotNextMatch':
-				if (msg.a.$ === 'Just') {
-					var match = msg.a.a;
+		update:
+		while (true) {
+			switch (msg.$) {
+				case 'TogglePlayerAM':
+					var player = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								history: A2(
-									$author$project$History$mapInPlace,
-									$author$project$League$startMatch(match),
-									model.history)
+								timeToggleConfirmation: $elm$core$Maybe$Just(
+									_Utils_Tuple2(player, 'AM'))
 							}),
 						$elm$core$Platform$Cmd$none);
-				} else {
-					var _v5 = msg.a;
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				}
-			case 'MatchFinished':
-				var outcome = msg.a;
-				if (model.autoSaveInProgress) {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-				} else {
-					var updatedHistory = A2(
-						$author$project$History$mapPush,
-						$author$project$League$finishMatch(outcome),
-						model.history);
-					var league = $author$project$History$current(model.history);
-					var _v6 = function () {
-						var _v7 = $author$project$League$currentMatch(league);
-						if (_v7.$ === 'Just') {
-							var _v8 = _v7.a;
-							var a = _v8.a;
-							var b = _v8.b;
-							return _Utils_Tuple2(a, b);
+				case 'TogglePlayerPM':
+					var player = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								timeToggleConfirmation: $elm$core$Maybe$Just(
+									_Utils_Tuple2(player, 'PM'))
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'ConfirmTogglePlayerTime':
+					var player = msg.a;
+					var timeType = msg.b;
+					var newState = msg.c;
+					var updatedLeague = function (league) {
+						var _v2 = A2(
+							$author$project$League$getPlayer,
+							$author$project$Player$id(player),
+							league);
+						if (_v2.$ === 'Just') {
+							var p = _v2.a;
+							var newP = (timeType === 'AM') ? A2($author$project$Player$setAM, newState, p) : A2($author$project$Player$setPM, newState, p);
+							return A2($author$project$League$updatePlayer, newP, league);
 						} else {
-							return _Utils_Tuple2(
-								$author$project$Player$init('A'),
-								$author$project$Player$init('B'));
+							return league;
 						}
-					}();
-					var playerA = _v6.a;
-					var playerB = _v6.b;
-					var playerAId = function () {
-						var _v12 = $author$project$Player$id(playerA);
-						var id = _v12.a;
-						return id;
-					}();
-					var winnerId = function () {
-						if (outcome.$ === 'Win') {
-							var won = outcome.a.won;
-							var _v11 = $author$project$Player$id(won);
-							var id = _v11.a;
-							return id;
-						} else {
-							return playerAId;
-						}
-					}();
-					var playerBId = function () {
-						var _v9 = $author$project$Player$id(playerB);
-						var id = _v9.a;
-						return id;
-					}();
-					var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
-					var updatedModel = _Utils_update(
-						model,
-						{history: updatedHistory, status: $elm$core$Maybe$Nothing});
-					return $author$project$Main$maybeAutoSave(
-						$author$project$Main$startNextMatchIfPossible(
-							_Utils_Tuple2(updatedModel, matchCmd)));
-				}
-			case 'MatchSaved':
-				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var newVoteCount = model.votesSinceLastSync + 1;
-					var shouldSync = newVoteCount >= 10;
-					return shouldSync ? _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Syncing data...'),
-								votesSinceLastSync: 0
-							}),
-						A2(
-							$elm$core$Task$perform,
-							function (_v14) {
-								return $author$project$Main$TriggerReload;
-							},
-							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{status: $elm$core$Maybe$Nothing, votesSinceLastSync: newVoteCount}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var err = result.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just(
-									'Failed to save match: ' + $author$project$Main$httpErrorToString(err))
-							}),
-						A2(
-							$elm$core$Task$perform,
-							function (_v15) {
-								return $author$project$Main$TriggerReload;
-							},
-							$elm$core$Process$sleep(1000)));
-				}
-			case 'LeagueStateSaved':
-				var result = msg.a;
-				if (result.$ === 'Ok') {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('League state updated!')
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var err = result.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just(
-									'Failed to update league state: ' + $author$project$Main$httpErrorToString(err))
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'PlayerACreated':
-				var result = msg.b;
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'PlayerBCreated':
-				var result = msg.b;
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'PeriodicSync':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'TriggerReload':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{isSyncing: true, votesSinceLastSync: 0}),
-					A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
-			case 'KeeperWantsToUndo':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							history: A2(
-								$elm$core$Maybe$withDefault,
-								model.history,
-								$author$project$History$goBack(model.history))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToRedo':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							history: A2(
-								$elm$core$Maybe$withDefault,
-								model.history,
-								$author$project$History$goForward(model.history))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToShowCustomMatchup':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: true}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToHideCustomMatchup':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: false}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperSelectedPlayerA':
-				var player = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							customMatchupPlayerA: $elm$core$Maybe$Just(player),
-							playerASearch: $author$project$Player$name(player),
-							playerASearchResults: _List_Nil
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperSelectedPlayerB':
-				var player = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							customMatchupPlayerB: $elm$core$Maybe$Just(player),
-							playerBSearch: $author$project$Player$name(player),
-							playerBSearchResults: _List_Nil
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedPlayerASearch':
-				var searchText = msg.a;
-				var currentLeague = $author$project$History$current(model.history);
-				var allPlayers = A2(
-					$elm$core$List$sortBy,
-					$author$project$Player$name,
-					A2(
-						$elm$core$List$filter,
-						function (p) {
-							return !A2($author$project$League$isPlayerIgnored, p, currentLeague);
-						},
-						$author$project$League$players(currentLeague)));
-				var searchResults = ($elm$core$String$length(searchText) < 2) ? _List_Nil : A2(
-					$elm$core$List$take,
-					8,
-					A2(
-						$elm$core$List$filter,
-						function (p) {
-							return A2(
-								$elm$core$String$contains,
-								$elm$core$String$toLower(searchText),
-								$elm$core$String$toLower(
-									$author$project$Player$name(p)));
-						},
-						allPlayers));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{playerASearch: searchText, playerASearchResults: searchResults}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedPlayerBSearch':
-				var searchText = msg.a;
-				var currentLeague = $author$project$History$current(model.history);
-				var allPlayers = A2(
-					$elm$core$List$sortBy,
-					$author$project$Player$name,
-					A2(
-						$elm$core$List$filter,
-						function (p) {
-							return !A2($author$project$League$isPlayerIgnored, p, currentLeague);
-						},
-						$author$project$League$players(currentLeague)));
-				var searchResults = ($elm$core$String$length(searchText) < 2) ? _List_Nil : A2(
-					$elm$core$List$take,
-					8,
-					A2(
-						$elm$core$List$filter,
-						function (p) {
-							return A2(
-								$elm$core$String$contains,
-								$elm$core$String$toLower(searchText),
-								$elm$core$String$toLower(
-									$author$project$Player$name(p)));
-						},
-						allPlayers));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{playerBSearch: searchText, playerBSearchResults: searchResults}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToStartCustomMatch':
-				var _v17 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v17.a.$ === 'Just') && (_v17.b.$ === 'Just')) {
-					var playerA = _v17.a.a;
-					var playerB = _v17.b.a;
-					if (_Utils_eq(
-						$author$project$Player$id(playerA),
-						$author$project$Player$id(playerB))) {
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									status: $elm$core$Maybe$Just('Cannot match a player against themselves')
-								}),
-							$elm$core$Platform$Cmd$none);
-					} else {
-						var updatedHistory = A2(
-							$author$project$History$mapPush,
-							A2(
-								$elm$core$Basics$composeR,
-								$author$project$League$clearMatch,
-								$author$project$League$startMatch(
-									A2($author$project$League$Match, playerA, playerB))),
-							model.history);
-						return _Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									customMatchupPlayerA: $elm$core$Maybe$Nothing,
-									customMatchupPlayerB: $elm$core$Maybe$Nothing,
-									history: updatedHistory,
-									playerASearch: '',
-									playerASearchResults: _List_Nil,
-									playerBSearch: '',
-									playerBSearchResults: _List_Nil,
-									showCustomMatchup: false,
-									status: $elm$core$Maybe$Just(
-										'Custom match: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
-								}),
-							$elm$core$Platform$Cmd$none);
-					}
-				} else {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Please select both players for the custom match')
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'LoadedLeague':
-				if (msg.a.$ === 'Ok') {
-					var league = msg.a.a;
+					}(
+						$author$project$History$current(model.history));
 					return $author$project$Main$maybeAutoSave(
 						$author$project$Main$startNextMatchIfPossible(
 							_Utils_Tuple2(
 								_Utils_update(
 									model,
 									{
-										history: A2($author$project$History$init, 50, league)
+										history: A2(
+											$author$project$History$mapPush,
+											function (_v1) {
+												return updatedLeague;
+											},
+											model.history),
+										timeToggleConfirmation: $elm$core$Maybe$Nothing
 									}),
+								$elm$core$Platform$Cmd$none)));
+				case 'CancelTogglePlayerTime':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{timeToggleConfirmation: $elm$core$Maybe$Nothing}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperUpdatedNewPlayerName':
+					var newPlayerName = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{newPlayerName: newPlayerName}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToAddNewPlayer':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{showAddPlayerPopup: true}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToShowAddPlayerPopup':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{showAddPlayerPopup: true}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToHideAddPlayerPopup':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperUpdatedAddPlayerName':
+					var name = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerName: name}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperUpdatedAddPlayerRating':
+					var rating = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerRating: rating}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperToggledAddPlayerAM':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerAM: !model.addPlayerAM}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperToggledAddPlayerPM':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerPM: !model.addPlayerPM}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperConfirmedAddPlayer':
+					var rating = A2(
+						$elm$core$Maybe$withDefault,
+						500,
+						$elm$core$String$toInt(model.addPlayerRating));
+					var player = A4($author$project$Player$create, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM);
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										addPlayerAM: true,
+										addPlayerName: '',
+										addPlayerPM: true,
+										addPlayerRating: '500',
+										history: A2(
+											$author$project$History$mapPush,
+											$author$project$League$addPlayer(player),
+											model.history),
+										showAddPlayerPopup: false
+									}),
+								$elm$core$Platform$Cmd$none)));
+				case 'KeeperWantsToRetirePlayer':
+					var player = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								playerDeletionConfirmation: $elm$core$Maybe$Just(
+									_Utils_Tuple2(player, 1))
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'ConfirmPlayerDeletion':
+					var player = msg.a;
+					var step = msg.b;
+					return (step === 2) ? $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2(
+											$author$project$History$mapPush,
+											$author$project$League$retirePlayer(player),
+											model.history),
+										playerDeletionConfirmation: $elm$core$Maybe$Nothing
+									}),
+								$elm$core$Platform$Cmd$none))) : _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								playerDeletionConfirmation: $elm$core$Maybe$Just(
+									_Utils_Tuple2(player, 2))
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'CancelPlayerDeletion':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{playerDeletionConfirmation: $elm$core$Maybe$Nothing}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToIgnorePlayer':
+					var player = msg.a;
+					var _v3 = $author$project$Player$id(player);
+					var idInt = _v3.a;
+					var newIgnoredPlayers = A2(
+						$elm$core$Set$insert,
+						$elm$core$String$fromInt(idInt),
+						model.ignoredPlayers);
+					var serializedIgnored = A2(
+						$elm$core$String$join,
+						',',
+						$elm$core$Set$toList(newIgnoredPlayers));
+					return $author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{ignoredPlayers: newIgnoredPlayers}),
+							$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
+				case 'KeeperWantsToUnignorePlayer':
+					var player = msg.a;
+					var _v4 = $author$project$Player$id(player);
+					var idInt = _v4.a;
+					var newIgnoredPlayers = A2(
+						$elm$core$Set$remove,
+						$elm$core$String$fromInt(idInt),
+						model.ignoredPlayers);
+					var serializedIgnored = A2(
+						$elm$core$String$join,
+						',',
+						$elm$core$Set$toList(newIgnoredPlayers));
+					return $author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{ignoredPlayers: newIgnoredPlayers}),
+							$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
+				case 'KeeperWantsToSkipMatch':
+					return $author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2($author$project$History$mapPush, $author$project$League$clearMatch, model.history)
+								}),
+							$elm$core$Platform$Cmd$none));
+				case 'GotNextMatch':
+					if (msg.a.$ === 'Just') {
+						var match = msg.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2(
+										$author$project$History$mapInPlace,
+										$author$project$League$startMatch(match),
+										model.history)
+								}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var _v5 = msg.a;
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					}
+				case 'MatchFinished':
+					var outcome = msg.a;
+					if (model.autoSaveInProgress) {
+						return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					} else {
+						var updatedHistory = A2(
+							$author$project$History$mapPush,
+							$author$project$League$finishMatch(outcome),
+							model.history);
+						var league = $author$project$History$current(model.history);
+						var _v6 = function () {
+							var _v7 = $author$project$League$currentMatch(league);
+							if (_v7.$ === 'Just') {
+								var _v8 = _v7.a;
+								var a = _v8.a;
+								var b = _v8.b;
+								return _Utils_Tuple2(a, b);
+							} else {
+								return _Utils_Tuple2(
+									$author$project$Player$init('A'),
+									$author$project$Player$init('B'));
+							}
+						}();
+						var playerA = _v6.a;
+						var playerB = _v6.b;
+						var playerAId = function () {
+							var _v12 = $author$project$Player$id(playerA);
+							var id = _v12.a;
+							return id;
+						}();
+						var winnerId = function () {
+							if (outcome.$ === 'Win') {
+								var won = outcome.a.won;
+								var _v11 = $author$project$Player$id(won);
+								var id = _v11.a;
+								return id;
+							} else {
+								return playerAId;
+							}
+						}();
+						var playerBId = function () {
+							var _v9 = $author$project$Player$id(playerB);
+							var id = _v9.a;
+							return id;
+						}();
+						var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
+						var updatedModel = _Utils_update(
+							model,
+							{history: updatedHistory, status: $elm$core$Maybe$Nothing});
+						return $author$project$Main$maybeAutoSave(
+							$author$project$Main$startNextMatchIfPossible(
+								_Utils_Tuple2(updatedModel, matchCmd)));
+					}
+				case 'MatchSaved':
+					var result = msg.a;
+					if (result.$ === 'Ok') {
+						var newVoteCount = model.votesSinceLastSync + 1;
+						var shouldSync = newVoteCount >= 10;
+						return shouldSync ? _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Syncing data...'),
+									votesSinceLastSync: 0
+								}),
+							A2(
+								$elm$core$Task$perform,
+								function (_v14) {
+									return $author$project$Main$TriggerReload;
+								},
+								$elm$core$Process$sleep(200))) : _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{status: $elm$core$Maybe$Nothing, votesSinceLastSync: newVoteCount}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var err = result.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just(
+										'Failed to save match: ' + $author$project$Main$httpErrorToString(err))
+								}),
+							A2(
+								$elm$core$Task$perform,
+								function (_v15) {
+									return $author$project$Main$TriggerReload;
+								},
+								$elm$core$Process$sleep(1000)));
+					}
+				case 'LeagueStateSaved':
+					var result = msg.a;
+					if (result.$ === 'Ok') {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('League state updated!')
+								}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						var err = result.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just(
+										'Failed to update league state: ' + $author$project$Main$httpErrorToString(err))
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
+				case 'PlayerACreated':
+					var result = msg.b;
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				case 'PlayerBCreated':
+					var result = msg.b;
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				case 'PeriodicSync':
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				case 'TriggerReload':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{isSyncing: true, votesSinceLastSync: 0}),
+						A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
+				case 'KeeperWantsToUndo':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								history: A2(
+									$elm$core$Maybe$withDefault,
+									model.history,
+									$author$project$History$goBack(model.history))
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToRedo':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								history: A2(
+									$elm$core$Maybe$withDefault,
+									model.history,
+									$author$project$History$goForward(model.history))
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToShowCustomMatchup':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: true}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToHideCustomMatchup':
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: false}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperSelectedPlayerA':
+					var player = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								customMatchupPlayerA: $elm$core$Maybe$Just(player),
+								playerASearch: $author$project$Player$name(player),
+								playerASearchResults: _List_Nil
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperSelectedPlayerB':
+					var player = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								customMatchupPlayerB: $elm$core$Maybe$Just(player),
+								playerBSearch: $author$project$Player$name(player),
+								playerBSearchResults: _List_Nil
+							}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperUpdatedPlayerASearch':
+					var searchText = msg.a;
+					var currentLeague = $author$project$History$current(model.history);
+					var allPlayers = A2(
+						$elm$core$List$sortBy,
+						$author$project$Player$name,
+						A2(
+							$elm$core$List$filter,
+							function (p) {
+								return !A2($author$project$League$isPlayerIgnored, p, currentLeague);
+							},
+							$author$project$League$players(currentLeague)));
+					var searchResults = ($elm$core$String$length(searchText) < 2) ? _List_Nil : A2(
+						$elm$core$List$take,
+						8,
+						A2(
+							$elm$core$List$filter,
+							function (p) {
+								return A2(
+									$elm$core$String$contains,
+									$elm$core$String$toLower(searchText),
+									$elm$core$String$toLower(
+										$author$project$Player$name(p)));
+							},
+							allPlayers));
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{playerASearch: searchText, playerASearchResults: searchResults}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperUpdatedPlayerBSearch':
+					var searchText = msg.a;
+					var currentLeague = $author$project$History$current(model.history);
+					var allPlayers = A2(
+						$elm$core$List$sortBy,
+						$author$project$Player$name,
+						A2(
+							$elm$core$List$filter,
+							function (p) {
+								return !A2($author$project$League$isPlayerIgnored, p, currentLeague);
+							},
+							$author$project$League$players(currentLeague)));
+					var searchResults = ($elm$core$String$length(searchText) < 2) ? _List_Nil : A2(
+						$elm$core$List$take,
+						8,
+						A2(
+							$elm$core$List$filter,
+							function (p) {
+								return A2(
+									$elm$core$String$contains,
+									$elm$core$String$toLower(searchText),
+									$elm$core$String$toLower(
+										$author$project$Player$name(p)));
+							},
+							allPlayers));
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{playerBSearch: searchText, playerBSearchResults: searchResults}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeeperWantsToStartCustomMatch':
+					var _v17 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+					if ((_v17.a.$ === 'Just') && (_v17.b.$ === 'Just')) {
+						var playerA = _v17.a.a;
+						var playerB = _v17.b.a;
+						if (_Utils_eq(
+							$author$project$Player$id(playerA),
+							$author$project$Player$id(playerB))) {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										status: $elm$core$Maybe$Just('Cannot match a player against themselves')
+									}),
+								$elm$core$Platform$Cmd$none);
+						} else {
+							var updatedHistory = A2(
+								$author$project$History$mapPush,
+								A2(
+									$elm$core$Basics$composeR,
+									$author$project$League$clearMatch,
+									$author$project$League$startMatch(
+										A2($author$project$League$Match, playerA, playerB))),
+								model.history);
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										customMatchupPlayerA: $elm$core$Maybe$Nothing,
+										customMatchupPlayerB: $elm$core$Maybe$Nothing,
+										history: updatedHistory,
+										playerASearch: '',
+										playerASearchResults: _List_Nil,
+										playerBSearch: '',
+										playerBSearchResults: _List_Nil,
+										showCustomMatchup: false,
+										status: $elm$core$Maybe$Just(
+											'Custom match: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
+									}),
+								$elm$core$Platform$Cmd$none);
+						}
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Please select both players for the custom match')
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
+				case 'LoadedLeague':
+					if (msg.a.$ === 'Ok') {
+						var league = msg.a.a;
+						return $author$project$Main$maybeAutoSave(
+							$author$project$Main$startNextMatchIfPossible(
+								_Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											history: A2($author$project$History$init, 50, league)
+										}),
+									A2(
+										$elm$core$Task$perform,
+										$elm$core$Basics$identity,
+										$elm$core$Task$succeed(
+											$author$project$Main$ShowStatus('Imported rankings'))))));
+					} else {
+						var problem = msg.a.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
+				case 'GotPlayers':
+					var result = msg.a;
+					if (result.$ === 'Ok') {
+						var supabasePlayers = result.a;
+						var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, supabasePlayers);
+						var playerCount = $elm$core$List$length(players);
+						var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
+						var firstPlayerRating = function () {
+							var _v19 = $elm$core$List$head(supabasePlayers);
+							if (_v19.$ === 'Just') {
+								var p = _v19.a;
+								return $elm$core$String$fromInt(p.rating);
+							} else {
+								return 'no players';
+							}
+						}();
+						var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + (' players (first rating: ' + (firstPlayerRating + ')')));
+						var updatedModel = _Utils_update(
+							model,
+							{
+								history: A2($author$project$History$init, 50, league),
+								isSyncing: false,
+								votesSinceLastSync: 0
+							});
+						return $author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								updatedModel,
 								A2(
 									$elm$core$Task$perform,
 									$elm$core$Basics$identity,
 									$elm$core$Task$succeed(
-										$author$project$Main$ShowStatus('Imported rankings'))))));
-				} else {
-					var problem = msg.a.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'GotPlayers':
-				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var supabasePlayers = result.a;
-					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, supabasePlayers);
-					var playerCount = $elm$core$List$length(players);
-					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
-					var firstPlayerRating = function () {
-						var _v19 = $elm$core$List$head(supabasePlayers);
-						if (_v19.$ === 'Just') {
-							var p = _v19.a;
-							return $elm$core$String$fromInt(p.rating);
-						} else {
-							return 'no players';
-						}
-					}();
-					var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + (' players (first rating: ' + (firstPlayerRating + ')')));
+										$author$project$Main$ShowStatus(statusMsg)))));
+					} else {
+						var httpErr = result.a;
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just(
+										'Failed to fetch players from Supabase: ' + $author$project$Main$httpErrorToString(httpErr))
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
+				case 'ReceivedCurrentTime':
+					var time = msg.a;
+					var timestamp = $elm$time$Time$posixToMillis(time);
 					var updatedModel = _Utils_update(
 						model,
-						{
-							history: A2($author$project$History$init, 50, league),
-							isSyncing: false,
-							votesSinceLastSync: 0
-						});
-					return $author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							updatedModel,
-							A2(
-								$elm$core$Task$perform,
-								$elm$core$Basics$identity,
-								$elm$core$Task$succeed(
-									$author$project$Main$ShowStatus(statusMsg)))));
-				} else {
-					var httpErr = result.a;
+						{lastModified: timestamp});
+					return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
+				case 'ReceivedAutoSave':
+					var value = msg.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{autoSave: value}),
+						$elm$core$Platform$Cmd$none);
+				case 'ToggleAutoSave':
+					var newVal = !model.autoSave;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{autoSave: newVal}),
+						A2(
+							$elm$core$Task$perform,
+							$elm$core$Basics$identity,
+							$elm$core$Task$succeed(
+								$author$project$Main$ShowStatus(
+									newVal ? 'Auto-save enabled' : 'Auto-save disabled'))));
+				case 'ShowStatus':
+					var message = msg.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								status: $elm$core$Maybe$Just(
-									'Failed to fetch players from Supabase: ' + $author$project$Main$httpErrorToString(httpErr))
+								status: $elm$core$Maybe$Just(message)
 							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'ReceivedCurrentTime':
-				var time = msg.a;
-				var timestamp = $elm$time$Time$posixToMillis(time);
-				var updatedModel = _Utils_update(
-					model,
-					{lastModified: timestamp});
-				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
-			case 'ReceivedAutoSave':
-				var value = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{autoSave: value}),
-					$elm$core$Platform$Cmd$none);
-			case 'ToggleAutoSave':
-				var newVal = !model.autoSave;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{autoSave: newVal}),
-					A2(
-						$elm$core$Task$perform,
-						$elm$core$Basics$identity,
-						$elm$core$Task$succeed(
-							$author$project$Main$ShowStatus(
-								newVal ? 'Auto-save enabled' : 'Auto-save disabled'))));
-			case 'ShowStatus':
-				var message = msg.a;
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							status: $elm$core$Maybe$Just(message)
-						}),
-					A2(
-						$elm$core$Task$perform,
-						function (_v20) {
-							return $author$project$Main$ClearStatus;
-						},
-						$elm$core$Process$sleep(2000)));
-			case 'ClearStatus':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{status: $elm$core$Maybe$Nothing}),
-					$elm$core$Platform$Cmd$none);
-			case 'IgnoredKey':
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'SetTimeFilter':
-				var tf = msg.a;
-				return $author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(
+						A2(
+							$elm$core$Task$perform,
+							function (_v20) {
+								return $author$project$Main$ClearStatus;
+							},
+							$elm$core$Process$sleep(2000)));
+				case 'ClearStatus':
+					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{
-								history: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.history),
-								timeFilter: tf
-							}),
-						$elm$core$Platform$Cmd$none));
-			case 'ReceivedTimeFilter':
-				var raw = msg.a;
-				var tf = A2(
-					$elm$core$Maybe$withDefault,
-					$author$project$Main$All,
-					$author$project$Main$parseFilter(raw));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{timeFilter: tf}),
-					$elm$core$Platform$Cmd$none);
-			default:
-				var raw = msg.a;
-				var ignoredIds = $elm$core$String$isEmpty(raw) ? $elm$core$Set$empty : $elm$core$Set$fromList(
-					A2($elm$core$String$split, ',', raw));
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{ignoredPlayers: ignoredIds}),
-					$elm$core$Platform$Cmd$none);
+							{status: $elm$core$Maybe$Nothing}),
+						$elm$core$Platform$Cmd$none);
+				case 'KeyPressed':
+					var key = msg.a;
+					var _v21 = _Utils_Tuple2(
+						key,
+						$author$project$League$currentMatch(
+							$author$project$History$current(model.history)));
+					_v21$3:
+					while (true) {
+						if (_v21.b.$ === 'Just') {
+							switch (_v21.a) {
+								case '1':
+									var _v22 = _v21.b.a;
+									var playerA = _v22.a;
+									var playerB = _v22.b;
+									if ($author$project$Main$isVotingDisabled(model)) {
+										return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+									} else {
+										var $temp$msg = $author$project$Main$MatchFinished(
+											$author$project$League$Win(
+												{lost: playerB, won: playerA})),
+											$temp$model = model;
+										msg = $temp$msg;
+										model = $temp$model;
+										continue update;
+									}
+								case '2':
+									var _v23 = _v21.b.a;
+									var playerA = _v23.a;
+									var playerB = _v23.b;
+									if ($author$project$Main$isVotingDisabled(model)) {
+										return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+									} else {
+										var $temp$msg = $author$project$Main$MatchFinished(
+											$author$project$League$Win(
+												{lost: playerA, won: playerB})),
+											$temp$model = model;
+										msg = $temp$msg;
+										model = $temp$model;
+										continue update;
+									}
+								case '3':
+									var _v24 = _v21.b.a;
+									var playerA = _v24.a;
+									var playerB = _v24.b;
+									if ($author$project$Main$isVotingDisabled(model)) {
+										return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+									} else {
+										var $temp$msg = $author$project$Main$MatchFinished(
+											$author$project$League$Draw(
+												{playerA: playerA, playerB: playerB})),
+											$temp$model = model;
+										msg = $temp$msg;
+										model = $temp$model;
+										continue update;
+									}
+								default:
+									break _v21$3;
+							}
+						} else {
+							break _v21$3;
+						}
+					}
+					var $temp$msg = $author$project$Main$IgnoredKey,
+						$temp$model = model;
+					msg = $temp$msg;
+					model = $temp$model;
+					continue update;
+				case 'IgnoredKey':
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				case 'SetTimeFilter':
+					var tf = msg.a;
+					return $author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									history: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.history),
+									timeFilter: tf
+								}),
+							$elm$core$Platform$Cmd$none));
+				case 'ReceivedTimeFilter':
+					var raw = msg.a;
+					var tf = A2(
+						$elm$core$Maybe$withDefault,
+						$author$project$Main$All,
+						$author$project$Main$parseFilter(raw));
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{timeFilter: tf}),
+						$elm$core$Platform$Cmd$none);
+				default:
+					var raw = msg.a;
+					var ignoredIds = $elm$core$String$isEmpty(raw) ? $elm$core$Set$empty : $elm$core$Set$fromList(
+						A2($elm$core$String$split, ',', raw));
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{ignoredPlayers: ignoredIds}),
+						$elm$core$Platform$Cmd$none);
+			}
 		}
 	});
 var $author$project$Main$CancelPlayerDeletion = {$: 'CancelPlayerDeletion'};
@@ -10716,9 +11077,6 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	return A3($rtfeldman$elm_css$VirtualDom$Styled$Attribute, classProperty, true, cssTemplate);
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
-var $author$project$League$Draw = function (a) {
-	return {$: 'Draw', a: a};
-};
 var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPlayer'};
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 	return {$: 'KeeperWantsToIgnorePlayer', a: a};
@@ -10729,12 +11087,6 @@ var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
 var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
 	return {$: 'KeeperWantsToUnignorePlayer', a: a};
-};
-var $author$project$Main$MatchFinished = function (a) {
-	return {$: 'MatchFinished', a: a};
-};
-var $author$project$League$Win = function (a) {
-	return {$: 'Win', a: a};
 };
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
@@ -12303,9 +12655,6 @@ var $author$project$Main$greenButton = $author$project$Main$button(
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $author$project$Main$isVotingDisabled = function (model) {
-	return model.autoSaveInProgress || model.isSyncing;
-};
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
@@ -14038,18 +14387,6 @@ var $author$project$Main$downArrow = function (color) {
 };
 var $rtfeldman$elm_css$Css$flexStart = $rtfeldman$elm_css$Css$prop1('flex-start');
 var $rtfeldman$elm_css$Css$flexWrap = $rtfeldman$elm_css$Css$prop1('flex-wrap');
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
-};
 var $author$project$Player$htmlKey = function (_v0) {
 	var player = _v0.a;
 	var _v1 = player.id;
@@ -15596,31 +15933,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
 				return _Utils_Tuple2(
 					A2($elm$core$List$cons, vdomNode, nodes),
 					finalStyles);
-		}
-	});
-var $elm$core$Dict$foldl = F3(
-	function (func, acc, dict) {
-		foldl:
-		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
-				return acc;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var $temp$func = func,
-					$temp$acc = A3(
-					func,
-					key,
-					value,
-					A3($elm$core$Dict$foldl, func, acc, left)),
-					$temp$dict = right;
-				func = $temp$func;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldl;
-			}
 		}
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$styleToDeclaration = F3(

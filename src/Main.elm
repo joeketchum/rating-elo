@@ -27,6 +27,7 @@ import File
 import File.Select as Select
 import Browser
 import Browser.Dom as Dom
+import Browser.Events
 
 type TimeFilter
     = All
@@ -53,6 +54,7 @@ type Msg
     | ToggleAutoSave
     | ShowStatus String
     | ClearStatus
+    | KeyPressed String
     | IgnoredKey
     | TogglePlayerAM Player
     | TogglePlayerPM Player
@@ -301,7 +303,14 @@ subscriptions model =
         [ receiveAutoSave ReceivedAutoSave
         , receiveTimeFilter ReceivedTimeFilter
         , receiveIgnoredPlayers ReceivedIgnoredPlayers
+        , Browser.Events.onKeyDown keyDecoder
         ]
+
+-- Decoder for keyboard events
+keyDecoder : Decode.Decoder Msg
+keyDecoder =
+    Decode.field "key" Decode.string
+        |> Decode.map KeyPressed
 
 
 -- Helper function to check if player is locally ignored
@@ -750,6 +759,29 @@ update msg model =
 
         ClearStatus ->
             ( { model | status = Nothing }, Cmd.none )
+
+        KeyPressed key ->
+            case ( key, League.currentMatch (History.current model.history) ) of
+                ( "1", Just (League.Match playerA playerB) ) ->
+                    if isVotingDisabled model then
+                        ( model, Cmd.none )
+                    else
+                        update (MatchFinished (League.Win { won = playerA, lost = playerB })) model
+
+                ( "2", Just (League.Match playerA playerB) ) ->
+                    if isVotingDisabled model then
+                        ( model, Cmd.none )
+                    else
+                        update (MatchFinished (League.Win { won = playerB, lost = playerA })) model
+
+                ( "3", Just (League.Match playerA playerB) ) ->
+                    if isVotingDisabled model then
+                        ( model, Cmd.none )
+                    else
+                        update (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })) model
+
+                _ ->
+                    update IgnoredKey model
 
         IgnoredKey ->
             ( model, Cmd.none )
