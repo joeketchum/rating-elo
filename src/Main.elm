@@ -53,6 +53,7 @@ type alias Model =
     , playerASearchResults : List Player
     , playerBSearchResults : List Player
     , playerDeletionConfirmation : Maybe (Player, Int)
+    , timeToggleConfirmation : Maybe (Player, String) -- Player and "AM" or "PM"
     , dataVersion : Int
     , lastModified : Int
     , showAddPlayerPopup : Bool
@@ -100,6 +101,8 @@ type Msg
     | IgnoredKey
     | TogglePlayerAM Player
     | TogglePlayerPM Player
+    | ConfirmTogglePlayerTime Player String -- Player and "AM" or "PM"
+    | CancelTogglePlayerTime
     | SetTimeFilter TimeFilter
     | ReceivedTimeFilter String
     | ReceivedIgnoredPlayers String
@@ -186,6 +189,7 @@ init _ =
         , playerASearchResults = []
         , playerBSearchResults = []
         , playerDeletionConfirmation = Nothing
+        , timeToggleConfirmation = Nothing
         , dataVersion = 1
         , lastModified = 0
         , showAddPlayerPopup = False
@@ -447,40 +451,83 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TogglePlayerAM player ->
+            -- Check if we're turning AM OFF - if so, require confirmation
+            if Player.playsAM player then
+                ( { model | timeToggleConfirmation = Just (player, "AM") }
+                , Cmd.none
+                )
+            else
+                -- Turning AM ON - no confirmation needed
+                let
+                    updatedLeague =
+                        History.current model.history
+                            |> \league ->
+                                case League.getPlayer (Player.id player) league of
+                                    Just p ->
+                                        let newP = Player.setAM True p in
+                                        League.updatePlayer newP league
+                                    Nothing ->
+                                        league
+                in
+                ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
+                , Cmd.none
+                )
+                    |> startNextMatchIfPossible
+                    |> maybeAutoSave
+
+        TogglePlayerPM player ->
+            -- Check if we're turning PM OFF - if so, require confirmation
+            if Player.playsPM player then
+                ( { model | timeToggleConfirmation = Just (player, "PM") }
+                , Cmd.none
+                )
+            else
+                -- Turning PM ON - no confirmation needed
+                let
+                    updatedLeague =
+                        History.current model.history
+                            |> \league ->
+                                case League.getPlayer (Player.id player) league of
+                                    Just p ->
+                                        let newP = Player.setPM True p in
+                                        League.updatePlayer newP league
+                                    Nothing ->
+                                        league
+                in
+                ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
+                , Cmd.none
+                )
+                    |> startNextMatchIfPossible
+                    |> maybeAutoSave
+
+        ConfirmTogglePlayerTime player timeType ->
             let
                 updatedLeague =
                     History.current model.history
                         |> \league ->
                             case League.getPlayer (Player.id player) league of
                                 Just p ->
-                                    let newP = Player.setAM (not (Player.playsAM p)) p in
+                                    let 
+                                        newP = 
+                                            if timeType == "AM" then
+                                                Player.setAM False p
+                                            else
+                                                Player.setPM False p
+                                    in
                                     League.updatePlayer newP league
                                 Nothing ->
                                     league
             in
-            ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
+            ( { model | history = History.mapPush (\_ -> updatedLeague) model.history, timeToggleConfirmation = Nothing }
             , Cmd.none
             )
                 |> startNextMatchIfPossible
                 |> maybeAutoSave
 
-        TogglePlayerPM player ->
-            let
-                updatedLeague =
-                    History.current model.history
-                        |> \league ->
-                            case League.getPlayer (Player.id player) league of
-                                Just p ->
-                                    let newP = Player.setPM (not (Player.playsPM p)) p in
-                                    League.updatePlayer newP league
-                                Nothing ->
-                                    league
-            in
-            ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
+        CancelTogglePlayerTime ->
+            ( { model | timeToggleConfirmation = Nothing }
             , Cmd.none
             )
-                |> startNextMatchIfPossible
-                |> maybeAutoSave
         KeeperUpdatedNewPlayerName newPlayerName ->
             ( { model | newPlayerName = newPlayerName }, Cmd.none )
 
@@ -981,6 +1028,93 @@ view model =
                                     , Events.onClick (ConfirmPlayerDeletion player (step + 1))
                                     ]
                                     [ Html.text (if step == 1 then "Yes, Delete" else "Final Answer: DELETE") ]
+                                ]
+                            ]
+                        ]
+                    ]
+
+                Nothing ->
+                    []
+           )
+        ++ (case model.timeToggleConfirmation of
+                Just (player, timeType) ->
+                    [ Html.div
+                        [ css
+                            [ Css.position Css.fixed
+                            , Css.top Css.zero
+                            , Css.left Css.zero
+                            , Css.width (Css.pct 100)
+                            , Css.height (Css.pct 100)
+                            , Css.backgroundColor (Css.rgba 0 0 0 0.5)
+                            , Css.displayFlex
+                            , Css.alignItems Css.center
+                            , Css.justifyContent Css.center
+                            , Css.zIndex (Css.int 1500)
+                            ]
+                        ]
+                        [ Html.div
+                            [ css
+                                [ Css.backgroundColor (Css.hex "FFFFFF")
+                                , Css.borderRadius (Css.px 12)
+                                , Css.padding (Css.px 24)
+                                , Css.boxShadow4 (Css.px 0) (Css.px 8) (Css.px 32) (Css.rgba 0 0 0 0.3)
+                                , Css.maxWidth (Css.px 400)
+                                , Css.textAlign Css.center
+                                , modernSansSerif
+                                ]
+                            ]
+                            [ Html.h3
+                                [ css 
+                                    [ Css.margin2 (Css.px 0) (Css.px 0)
+                                    , Css.marginBottom (Css.px 16)
+                                    , Css.fontSize (Css.px 18)
+                                    , Css.fontWeight (Css.int 600)
+                                    , Css.color (Css.hex "F59E0B")
+                                    ]
+                                ]
+                                [ Html.text "Change Time Availability?" ]
+                            , Html.p
+                                [ css 
+                                    [ Css.margin2 (Css.px 0) (Css.px 0)
+                                    , Css.marginBottom (Css.px 24)
+                                    , Css.fontSize (Css.px 16)
+                                    , Css.color (Css.hex "374151")
+                                    ]
+                                ]
+                                [ Html.text ("Are you sure you want to disable " ++ timeType ++ " availability for " ++ Player.name player ++ "?") ]
+                            , Html.div
+                                [ css [ Css.displayFlex, Css.justifyContent Css.center ] ]
+                                [ Html.button
+                                    [ css
+                                        [ Css.backgroundColor (Css.hex "6B7280")
+                                        , Css.color (Css.hex "FFFFFF")
+                                        , Css.border Css.zero
+                                        , Css.borderRadius (Css.px 6)
+                                        , Css.padding2 (Css.px 8) (Css.px 16)
+                                        , Css.cursor Css.pointer
+                                        , Css.fontSize (Css.px 14)
+                                        , Css.fontWeight (Css.int 500)
+                                        , Css.marginRight (Css.px 12)
+                                        , Css.hover [ Css.backgroundColor (Css.hex "4B5563") ]
+                                        ]
+                                    , Events.onClick CancelTogglePlayerTime
+                                    ]
+                                    [ Html.text "Cancel" ]
+                                , Html.button
+                                    [ css
+                                        [ Css.backgroundColor (Css.hex "F59E0B")
+                                        , Css.color (Css.hex "FFFFFF")
+                                        , Css.border Css.zero
+                                        , Css.borderRadius (Css.px 6)
+                                        , Css.padding2 (Css.px 8) (Css.px 16)
+                                        , Css.cursor Css.pointer
+                                        , Css.fontSize (Css.px 14)
+                                        , Css.fontWeight (Css.int 500)
+                                        , Css.hover [ Css.backgroundColor (Css.hex "D97706") ]
+                                        ]
+                                    , Events.onClick (ConfirmTogglePlayerTime player timeType)
+                                    ]
+                                    [ Html.text ("Yes, Disable " ++ timeType) ]
                                 ]
                             ]
                         ]
