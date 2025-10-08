@@ -360,32 +360,36 @@ handleMatchFinished outcome model =
         let
             -- Get current league BEFORE finishing the match to get the active players
             currentLeague = History.current model.history
-            (playerA, playerB) =
-                case League.currentMatch currentLeague of
-                    Just (League.Match a b) -> (a, b)
-                    Nothing -> (Player.init "A", Player.init "B") -- Fallback, should not happen
-            
-            -- Get player IDs  
-            playerAId = case Player.id playerA of
-                Player.PlayerId id -> id
-            playerBId = case Player.id playerB of
-                Player.PlayerId id -> id
-            winnerId = case outcome of
-                League.Win { won } -> 
-                    case Player.id won of
-                        Player.PlayerId id -> id
-                League.Draw _ -> playerAId -- For draws, use playerA as default
-            
-            -- Send match outcome to Edge Function
-            matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
-            
-            -- Update history after getting player info
-            updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-            updatedModel = { model | history = updatedHistory, status = Nothing }
         in
-            ( updatedModel, matchCmd )
-            |> startNextMatchIfPossible
-            |> maybeAutoSave
+        case League.currentMatch currentLeague of
+            Just (League.Match playerA playerB) ->
+                let
+                    -- Get player IDs  
+                    playerAId = case Player.id playerA of
+                        Player.PlayerId id -> id
+                    playerBId = case Player.id playerB of
+                        Player.PlayerId id -> id
+                    winnerId = case outcome of
+                        League.Win { won } -> 
+                            case Player.id won of
+                                Player.PlayerId id -> id
+                        League.Draw _ -> playerAId -- For draws, use playerA as default
+                    
+                    -- Send match outcome to Edge Function
+                    matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
+                    
+                    -- Update history after getting player info
+                    updatedHistory = History.mapPush (League.finishMatch outcome) model.history
+                    debugMsg = "Sending vote: A=" ++ String.fromInt playerAId ++ " B=" ++ String.fromInt playerBId ++ " W=" ++ String.fromInt winnerId
+                    updatedModel = { model | history = updatedHistory, status = Just debugMsg }
+                in
+                ( updatedModel, matchCmd )
+                |> startNextMatchIfPossible
+                |> maybeAutoSave
+
+            Nothing ->
+                -- No current match, just ignore
+                ( { model | status = Just "No active match to finish" }, Cmd.none )
 
 -- UPDATE
 

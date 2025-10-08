@@ -7755,19 +7755,6 @@ var $author$project$League$finishMatch = F2(
 					A2($author$project$League$updatePlayer, newPlayers.playerA, league)));
 		}
 	});
-var $author$project$Elo$initialRating = 500;
-var $author$project$Player$init = function (name_) {
-	return $author$project$Player$Player(
-		{
-			am: true,
-			id: $author$project$Player$PlayerId(
-				A2($robinheghan$murmur3$Murmur3$hashString, 0, name_)),
-			matches: 0,
-			name: name_,
-			pm: true,
-			rating: $author$project$Elo$initialRating
-		});
-};
 var $author$project$Main$isVotingDisabled = function (model) {
 	return model.autoSaveInProgress || model.isSyncing;
 };
@@ -7999,53 +7986,56 @@ var $author$project$Main$handleMatchFinished = F2(
 		if ($author$project$Main$isVotingDisabled(model)) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
-			var updatedHistory = A2(
-				$author$project$History$mapPush,
-				$author$project$League$finishMatch(outcome),
-				model.history);
-			var updatedModel = _Utils_update(
-				model,
-				{history: updatedHistory, status: $elm$core$Maybe$Nothing});
 			var currentLeague = $author$project$History$current(model.history);
-			var _v0 = function () {
-				var _v1 = $author$project$League$currentMatch(currentLeague);
-				if (_v1.$ === 'Just') {
-					var _v2 = _v1.a;
-					var a = _v2.a;
-					var b = _v2.b;
-					return _Utils_Tuple2(a, b);
-				} else {
-					return _Utils_Tuple2(
-						$author$project$Player$init('A'),
-						$author$project$Player$init('B'));
-				}
-			}();
-			var playerA = _v0.a;
-			var playerB = _v0.b;
-			var playerAId = function () {
-				var _v6 = $author$project$Player$id(playerA);
-				var id = _v6.a;
-				return id;
-			}();
-			var winnerId = function () {
-				if (outcome.$ === 'Win') {
-					var won = outcome.a.won;
-					var _v5 = $author$project$Player$id(won);
+			var _v0 = $author$project$League$currentMatch(currentLeague);
+			if (_v0.$ === 'Just') {
+				var _v1 = _v0.a;
+				var playerA = _v1.a;
+				var playerB = _v1.b;
+				var updatedHistory = A2(
+					$author$project$History$mapPush,
+					$author$project$League$finishMatch(outcome),
+					model.history);
+				var playerBId = function () {
+					var _v5 = $author$project$Player$id(playerB);
 					var id = _v5.a;
 					return id;
-				} else {
-					return playerAId;
-				}
-			}();
-			var playerBId = function () {
-				var _v3 = $author$project$Player$id(playerB);
-				var id = _v3.a;
-				return id;
-			}();
-			var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
-			return $author$project$Main$maybeAutoSave(
-				$author$project$Main$startNextMatchIfPossible(
-					_Utils_Tuple2(updatedModel, matchCmd)));
+				}();
+				var playerAId = function () {
+					var _v4 = $author$project$Player$id(playerA);
+					var id = _v4.a;
+					return id;
+				}();
+				var winnerId = function () {
+					if (outcome.$ === 'Win') {
+						var won = outcome.a.won;
+						var _v3 = $author$project$Player$id(won);
+						var id = _v3.a;
+						return id;
+					} else {
+						return playerAId;
+					}
+				}();
+				var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
+				var debugMsg = 'Sending vote: A=' + ($elm$core$String$fromInt(playerAId) + (' B=' + ($elm$core$String$fromInt(playerBId) + (' W=' + $elm$core$String$fromInt(winnerId)))));
+				var updatedModel = _Utils_update(
+					model,
+					{
+						history: updatedHistory,
+						status: $elm$core$Maybe$Just(debugMsg)
+					});
+				return $author$project$Main$maybeAutoSave(
+					$author$project$Main$startNextMatchIfPossible(
+						_Utils_Tuple2(updatedModel, matchCmd)));
+			} else {
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							status: $elm$core$Maybe$Just('No active match to finish')
+						}),
+					$elm$core$Platform$Cmd$none);
+			}
 		}
 	});
 var $elm$core$List$head = function (list) {
