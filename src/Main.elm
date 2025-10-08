@@ -387,16 +387,7 @@ handleMatchFinished outcome model =
                     
                     -- Update history after getting player info
                     updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-                    debugMsg =
-                        "Sending vote to Supabase: a_id=" ++ String.fromInt playerAId ++
-                        " b_id=" ++ String.fromInt playerBId ++
-                        " winner=" ++ String.fromInt winnerId ++
-                        " | outcome=" ++
-                        (case outcome of
-                            League.Win record -> "Win: " ++ Player.name record.won
-                            League.Draw record -> "Draw: " ++ Player.name record.playerA ++ " vs " ++ Player.name record.playerB
-                        )
-                    updatedModel = { model | history = updatedHistory, status = Just debugMsg }
+                    updatedModel = { model | history = updatedHistory }
                 in
                 ( updatedModel, matchCmd )
                 |> startNextMatchIfPossible
@@ -404,7 +395,7 @@ handleMatchFinished outcome model =
 
             Nothing ->
                 -- No current match, just ignore
-                ( { model | status = Just "No active match to finish" }, Cmd.none )
+                ( model, Cmd.none )
 
 -- UPDATE
 
@@ -557,7 +548,7 @@ update msg model =
             ( model, Cmd.none )
 
         MatchFinished outcome ->
-            handleMatchFinished outcome { model | status = Just "MatchFinished message received" }
+            handleMatchFinished outcome model
         MatchSaved result ->
             case result of
                 Ok _ -> 
@@ -589,7 +580,7 @@ update msg model =
 
         LeagueStateSaved result ->
             case result of
-                Ok _ -> ( { model | status = Just "League state updated!" }, Cmd.none )
+                Ok _ -> ( model, Cmd.none )
                 Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
 
         PlayerACreated _ result ->
@@ -733,7 +724,6 @@ update msg model =
                             , playerBSearch = ""
                             , playerASearchResults = []
                             , playerBSearchResults = []
-                            , status = Just ("Custom match: " ++ Player.name playerA ++ " vs " ++ Player.name playerB)
                           }
                         , Cmd.none
                         )
@@ -745,9 +735,7 @@ update msg model =
 
         LoadedLeague (Ok league) ->
             -- Ignore local league data - always use Supabase data instead
-            ( { model | status = Just "Local data ignored - using Supabase data" }
-            , Cmd.none
-            )
+            ( model, Cmd.none )
 
         LoadedLeague (Err problem) ->
             ( { model | status = Just ("Failed to load standings: " ++ problem) }
@@ -783,15 +771,18 @@ update msg model =
                         
                         statusMsg = 
                             if invalidCount > 0 then
-                                "Loaded " ++ String.fromInt playerCount ++ " valid players, filtered out " ++ String.fromInt invalidCount ++ " with invalid IDs"
+                                "Filtered out " ++ String.fromInt invalidCount ++ " players with invalid IDs"
                             else
-                                "Loaded " ++ String.fromInt playerCount ++ " players successfully"
+                                ""
                     in
                     let
                         updatedModel = { model | history = History.init 50 finalLeague, votesSinceLastSync = 0, isSyncing = False }
                     in
                     ( updatedModel
-                    , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
+                    , if String.isEmpty statusMsg then
+                        Cmd.none
+                      else
+                        Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
                         |> (if activeMatch == Nothing then startNextMatchIfPossible else identity)
 
@@ -882,7 +873,7 @@ update msg model =
                     )
 
                 _ ->
-                    ( { model | status = Just ("Unhandled key: " ++ key) }, Cmd.none )
+                    ( model, Cmd.none )
 
         IgnoredKey ->
             ( model, Cmd.none )

@@ -7963,10 +7963,6 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 	var cmd = _v0.b;
 	return model.autoSave ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(model, cmd);
 };
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$http$Http$expectBytesResponse = F2(
 	function (toMsg, toResult) {
@@ -8031,53 +8027,35 @@ var $author$project$Main$handleMatchFinished = F2(
 					$author$project$History$mapPush,
 					$author$project$League$finishMatch(outcome),
 					model.history);
+				var updatedModel = _Utils_update(
+					model,
+					{history: updatedHistory});
 				var playerBId = function () {
-					var _v6 = $author$project$Player$id(playerB);
-					var id = _v6.a;
+					var _v5 = $author$project$Player$id(playerB);
+					var id = _v5.a;
 					return id;
 				}();
 				var playerAId = function () {
-					var _v5 = $author$project$Player$id(playerA);
-					var id = _v5.a;
+					var _v4 = $author$project$Player$id(playerA);
+					var id = _v4.a;
 					return id;
 				}();
 				var winnerId = function () {
 					if (outcome.$ === 'Win') {
 						var won = outcome.a.won;
-						var _v4 = $author$project$Player$id(won);
-						var id = _v4.a;
+						var _v3 = $author$project$Player$id(won);
+						var id = _v3.a;
 						return id;
 					} else {
 						return playerAId;
 					}
 				}();
 				var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
-				var debugMsg = 'Sending vote to Supabase: a_id=' + ($elm$core$String$fromInt(playerAId) + (' b_id=' + ($elm$core$String$fromInt(playerBId) + (' winner=' + ($elm$core$String$fromInt(winnerId) + (' | outcome=' + function () {
-					if (outcome.$ === 'Win') {
-						var record = outcome.a;
-						return 'Win: ' + $author$project$Player$name(record.won);
-					} else {
-						var record = outcome.a;
-						return 'Draw: ' + ($author$project$Player$name(record.playerA) + (' vs ' + $author$project$Player$name(record.playerB)));
-					}
-				}()))))));
-				var updatedModel = _Utils_update(
-					model,
-					{
-						history: updatedHistory,
-						status: $elm$core$Maybe$Just(debugMsg)
-					});
 				return $author$project$Main$maybeAutoSave(
 					$author$project$Main$startNextMatchIfPossible(
 						_Utils_Tuple2(updatedModel, matchCmd)));
 			} else {
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							status: $elm$core$Maybe$Just('No active match to finish')
-						}),
-					$elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			}
 		}
 	});
@@ -8116,6 +8094,10 @@ var $author$project$History$mapInPlace = F2(
 					current: fn(guts.current)
 				}));
 	});
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
 var $author$project$Main$AMOnly = {$: 'AMOnly'};
 var $author$project$Main$PMOnly = {$: 'PMOnly'};
 var $elm$core$String$toLower = _String_toLower;
@@ -8887,14 +8869,7 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
-				return A2(
-					$author$project$Main$handleMatchFinished,
-					outcome,
-					_Utils_update(
-						model,
-						{
-							status: $elm$core$Maybe$Just('MatchFinished message received')
-						}));
+				return A2($author$project$Main$handleMatchFinished, outcome, model);
 			case 'MatchSaved':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
@@ -8945,13 +8920,7 @@ var $author$project$Main$update = F2(
 			case 'LeagueStateSaved':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('League state updated!')
-							}),
-						$elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					var err = result.a;
 					return _Utils_Tuple2(
@@ -9173,18 +9142,7 @@ var $author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{
-									customMatchupPlayerA: $elm$core$Maybe$Nothing,
-									customMatchupPlayerB: $elm$core$Maybe$Nothing,
-									history: updatedHistory,
-									playerASearch: '',
-									playerASearchResults: _List_Nil,
-									playerBSearch: '',
-									playerBSearchResults: _List_Nil,
-									showCustomMatchup: false,
-									status: $elm$core$Maybe$Just(
-										'Custom match: ' + ($author$project$Player$name(playerA) + (' vs ' + $author$project$Player$name(playerB))))
-								}),
+								{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, history: updatedHistory, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: false}),
 							$elm$core$Platform$Cmd$none);
 					}
 				} else {
@@ -9199,13 +9157,7 @@ var $author$project$Main$update = F2(
 			case 'LoadedLeague':
 				if (msg.a.$ === 'Ok') {
 					var league = msg.a.a;
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Local data ignored - using Supabase data')
-							}),
-						$elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					var problem = msg.a.a;
 					return _Utils_Tuple2(
@@ -9236,7 +9188,7 @@ var $author$project$Main$update = F2(
 						},
 						supabasePlayers);
 					var invalidCount = $elm$core$List$length(invalidSupabasePlayers);
-					var statusMsg = (invalidCount > 0) ? ('Loaded ' + ($elm$core$String$fromInt(playerCount) + (' valid players, filtered out ' + ($elm$core$String$fromInt(invalidCount) + ' with invalid IDs')))) : ('Loaded ' + ($elm$core$String$fromInt(playerCount) + ' players successfully'));
+					var statusMsg = (invalidCount > 0) ? ('Filtered out ' + ($elm$core$String$fromInt(invalidCount) + ' players with invalid IDs')) : '';
 					var currentLeague = $author$project$History$current(model.history);
 					var activeMatch = $author$project$League$currentMatch(currentLeague);
 					var finalLeague = function () {
@@ -9257,7 +9209,7 @@ var $author$project$Main$update = F2(
 					return (_Utils_eq(activeMatch, $elm$core$Maybe$Nothing) ? $author$project$Main$startNextMatchIfPossible : $elm$core$Basics$identity)(
 						_Utils_Tuple2(
 							updatedModel,
-							A2(
+							$elm$core$String$isEmpty(statusMsg) ? $elm$core$Platform$Cmd$none : A2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
 								$elm$core$Task$succeed(
@@ -9436,13 +9388,7 @@ var $author$project$Main$update = F2(
 							break _v17$5;
 					}
 				}
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							status: $elm$core$Maybe$Just('Unhandled key: ' + key)
-						}),
-					$elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'IgnoredKey':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'SetTimeFilter':
