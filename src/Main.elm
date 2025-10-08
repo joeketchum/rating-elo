@@ -186,14 +186,14 @@ init _ =
 -- Convert Supabase.Player to Player
 supabasePlayerToPlayer : Supabase.Player -> Player
 supabasePlayerToPlayer supabasePlayer =
-    let
-        player = Player.init supabasePlayer.name
-        playerWithRating = Player.setRating supabasePlayer.rating player
-        playerWithMatches = Player.setMatchesPlayedTestOnly supabasePlayer.matchesPlayed playerWithRating
-        playerWithAM = Player.setAM supabasePlayer.playsAM playerWithMatches
-        playerWithPM = Player.setPM supabasePlayer.playsPM playerWithAM
-    in
-    playerWithPM
+    Player.Player
+        { id = Player.PlayerId supabasePlayer.id
+        , name = supabasePlayer.name
+        , rating = supabasePlayer.rating
+        , matches = supabasePlayer.matchesPlayed
+        , am = supabasePlayer.playsAM
+        , pm = supabasePlayer.playsPM
+        }
 
 -- Convert League and Outcome to Supabase.Match  
 toSupabaseMatch : League -> League.Outcome -> Supabase.Match
@@ -544,18 +544,28 @@ update msg model =
             else
                 let
                     updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-                    league = History.current model.history  -- Use original league for player data
+                    league = History.current model.history
                     (playerA, playerB) =
                         case League.currentMatch league of
                             Just (League.Match a b) -> (a, b)
                             Nothing -> (Player.init "A", Player.init "B")
-                    -- Create players in Supabase first, then save match
-                    playerACmd = Supabase.createPlayer Config.supabaseConfig (toSupabasePlayer playerA) (PlayerACreated outcome)
-                    playerBCmd = Supabase.createPlayer Config.supabaseConfig (toSupabasePlayer playerB) (PlayerBCreated outcome)
+                    -- Prepare updated player records
+                    updatedPlayerA =
+                        { (toSupabasePlayer playerA)
+                            | rating = Player.rating playerA
+                            , matchesPlayed = Player.matchesPlayed playerA
+                        }
+                    updatedPlayerB =
+                        { (toSupabasePlayer playerB)
+                            | rating = Player.rating playerB
+                            , matchesPlayed = Player.matchesPlayed playerB
+                        }
+                    playerACmd = Supabase.updatePlayer Config.supabaseConfig updatedPlayerA.id updatedPlayerA (PlayerACreated outcome)
+                    playerBCmd = Supabase.updatePlayer Config.supabaseConfig updatedPlayerB.id updatedPlayerB (PlayerBCreated outcome)
                 in
                     ( { model | history = updatedHistory, pendingMatch = Just (outcome, False, False) }
-                , Cmd.batch [ playerACmd, playerBCmd ]
-                )
+                    , Cmd.batch [ playerACmd, playerBCmd ]
+                    )
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
         MatchSaved result ->
