@@ -545,7 +545,7 @@ update msg model =
             ( model, Cmd.none )
 
         MatchFinished outcome ->
-            handleMatchFinished outcome model
+            handleMatchFinished outcome { model | status = Just "MatchFinished message received" }
         MatchSaved result ->
             case result of
                 Ok _ -> 
@@ -776,32 +776,32 @@ update msg model =
                 ( "1", Just (League.Match playerA playerB) ) ->
                     -- Left player wins
                     if isVotingDisabled model then
-                        ( model, Cmd.none )
+                        ( { model | status = Just "Voting disabled during sync" }, Cmd.none )
                     else
                         let
                             outcome = League.Win { won = playerA, lost = playerB }
                         in
-                        handleMatchFinished outcome model
+                        handleMatchFinished outcome { model | status = Just "Key 1 pressed - Left player wins" }
 
                 ( "2", Just (League.Match playerA playerB) ) ->
                     -- Right player wins  
                     if isVotingDisabled model then
-                        ( model, Cmd.none )
+                        ( { model | status = Just "Voting disabled during sync" }, Cmd.none )
                     else
                         let
                             outcome = League.Win { won = playerB, lost = playerA }
                         in
-                        handleMatchFinished outcome model
+                        handleMatchFinished outcome { model | status = Just "Key 2 pressed - Right player wins" }
 
                 ( "0", Just (League.Match playerA playerB) ) ->
                     -- Tie/Draw
                     if isVotingDisabled model then
-                        ( model, Cmd.none )
+                        ( { model | status = Just "Voting disabled during sync" }, Cmd.none )
                     else
                         let
                             outcome = League.Draw { playerA = playerA, playerB = playerB }
                         in
-                        handleMatchFinished outcome model
+                        handleMatchFinished outcome { model | status = Just "Key 0 pressed - Tie/Draw" }
 
                 ( "Escape", _ ) ->
                     -- Skip match
@@ -817,7 +817,7 @@ update msg model =
                     )
 
                 _ ->
-                    ( model, Cmd.none )
+                    ( { model | status = Just ("Unhandled key: " ++ key) }, Cmd.none )
 
         IgnoredKey ->
             ( model, Cmd.none )

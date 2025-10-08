@@ -8870,7 +8870,14 @@ var $author$project$Main$update = F2(
 				}
 			case 'MatchFinished':
 				var outcome = msg.a;
-				return A2($author$project$Main$handleMatchFinished, outcome, model);
+				return A2(
+					$author$project$Main$handleMatchFinished,
+					outcome,
+					_Utils_update(
+						model,
+						{
+							status: $elm$core$Maybe$Just('MatchFinished message received')
+						}));
 			case 'MatchSaved':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
@@ -9235,11 +9242,24 @@ var $author$project$Main$update = F2(
 								var playerA = _v14.a;
 								var playerB = _v14.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
-									return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+									return _Utils_Tuple2(
+										_Utils_update(
+											model,
+											{
+												status: $elm$core$Maybe$Just('Voting disabled during sync')
+											}),
+										$elm$core$Platform$Cmd$none);
 								} else {
 									var outcome = $author$project$League$Win(
 										{lost: playerB, won: playerA});
-									return A2($author$project$Main$handleMatchFinished, outcome, model);
+									return A2(
+										$author$project$Main$handleMatchFinished,
+										outcome,
+										_Utils_update(
+											model,
+											{
+												status: $elm$core$Maybe$Just('Key 1 pressed - Left player wins')
+											}));
 								}
 							} else {
 								break _v13$5;
@@ -9250,11 +9270,24 @@ var $author$project$Main$update = F2(
 								var playerA = _v15.a;
 								var playerB = _v15.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
-									return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+									return _Utils_Tuple2(
+										_Utils_update(
+											model,
+											{
+												status: $elm$core$Maybe$Just('Voting disabled during sync')
+											}),
+										$elm$core$Platform$Cmd$none);
 								} else {
 									var outcome = $author$project$League$Win(
 										{lost: playerA, won: playerB});
-									return A2($author$project$Main$handleMatchFinished, outcome, model);
+									return A2(
+										$author$project$Main$handleMatchFinished,
+										outcome,
+										_Utils_update(
+											model,
+											{
+												status: $elm$core$Maybe$Just('Key 2 pressed - Right player wins')
+											}));
 								}
 							} else {
 								break _v13$5;
@@ -9265,11 +9298,24 @@ var $author$project$Main$update = F2(
 								var playerA = _v16.a;
 								var playerB = _v16.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
-									return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+									return _Utils_Tuple2(
+										_Utils_update(
+											model,
+											{
+												status: $elm$core$Maybe$Just('Voting disabled during sync')
+											}),
+										$elm$core$Platform$Cmd$none);
 								} else {
 									var outcome = $author$project$League$Draw(
 										{playerA: playerA, playerB: playerB});
-									return A2($author$project$Main$handleMatchFinished, outcome, model);
+									return A2(
+										$author$project$Main$handleMatchFinished,
+										outcome,
+										_Utils_update(
+											model,
+											{
+												status: $elm$core$Maybe$Just('Key 0 pressed - Tie/Draw')
+											}));
 								}
 							} else {
 								break _v13$5;
@@ -9298,7 +9344,13 @@ var $author$project$Main$update = F2(
 							break _v13$5;
 					}
 				}
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							status: $elm$core$Maybe$Just('Unhandled key: ' + key)
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'IgnoredKey':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'SetTimeFilter':
