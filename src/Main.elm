@@ -2,11 +2,14 @@
 port module Main exposing (..)
 
 import Html exposing (Html)
-import Html.Attributes as Attributes
-import Html.Events as Events
 import Html.Styled exposing (toUnstyled)
+import Html.Styled as Html
 import Html.Styled.Attributes as StyledAttributes exposing (css)
+import Html.Styled.Events as Events
 import Css
+import Css.Media as Media
+import Css.Reset
+import Dict
 import League exposing (League, Match, Outcome, getPlayer, currentMatch, init)
 import Player exposing (Player)
 import Supabase
@@ -98,6 +101,7 @@ type Msg
     | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
+    | KeeperWantsToSaveToDrive
     | KeeperWantsToRetirePlayer Player
     | ConfirmPlayerDeletion Player Int
     | CancelPlayerDeletion
@@ -358,9 +362,7 @@ startNextMatchIfPossible ( model, cmd ) =
         )
 
 
-maybeSaveToDriveAfterVote : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
-maybeSaveToDriveAfterVote ( model, cmd ) =
-    ( model, cmd )
+
 
 
 
@@ -535,6 +537,10 @@ update msg model =
             ( { model | showCustomMatchup = False, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing, playerASearch = "", playerBSearch = "", playerASearchResults = [], playerBSearchResults = [] }
             , Cmd.none
             )
+
+        KeeperWantsToSaveToDrive ->
+            -- No-op: Data is automatically saved to Supabase
+            ( model, Cmd.none )
 
         KeeperSelectedPlayerA player ->
             ( { model | customMatchupPlayerA = Just player, playerASearch = Player.name player, playerASearchResults = [] }
@@ -918,7 +924,7 @@ customMatchupUI model =
     let
         searchInput searchValue onInput results onSelect placeholder selectedPlayer =
             Html.div [ css [ Css.position Css.relative, Css.marginBottom (Css.px 16) ] ]
-                [ Html.inputText searchValue
+                [ Html.input
                     [ css
                         [ Css.width (Css.pct 100)
                         , Css.padding (Css.px 12)
@@ -932,9 +938,10 @@ customMatchupUI model =
                         , Css.boxSizing Css.borderBox
                         , Css.focus [ Css.outline Css.none, Css.borderColor (Css.hex "3B82F6") ]
                         ]
-                    , Attributes.placeholder placeholder
+                    , StyledAttributes.value searchValue
+                    , StyledAttributes.placeholder placeholder
                     , Events.onInput onInput
-                    ]
+                    ] []
                 , if List.length results > 0 then
                     Html.div 
                         [ css 
@@ -1244,8 +1251,7 @@ currentMatch model =
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.marginTop (Css.px 8) ] ]
                         [ Html.div [ css [ Css.marginRight (Css.px 4) ] ]
                             [ buttonCompact (Css.hex "6DD400") "CUSTOM" (Just KeeperWantsToShowCustomMatchup) ]
-                        , Html.div [ css [ Css.marginLeft (Css.px 4) ] ]
-                            [ buttonCompact (Css.hex "6DD400") "SAVE" (Just KeeperWantsToSaveToDrive) ]
+
                         ]
                     ]
                 , Html.div
@@ -1327,7 +1333,6 @@ currentMatch model =
                                                                                 , Html.div
                                                                                         [ css [ Css.displayFlex, Css.justifyContent Css.center, Css.marginBottom (Css.px 8) ] ]
                                             [ greenButton "CUSTOM MATCHUP" (Just KeeperWantsToShowCustomMatchup)
-                                            , greenButton "SAVE" (Just KeeperWantsToSaveToDrive)
                                             ]
                                         , if model.showCustomMatchup then customMatchupUI model else Html.text ""
                                         ]
@@ -1507,8 +1512,9 @@ rankings model =
                                                                 , Html.td [ css [ numericDim, shrinkWidth, center, Css.color (Css.hex "A6A6A6") ] ] [ Html.text "0" ]
                                 , Html.td
                                     [ css [ textual, left ] ]
-                                    [ Html.inputText model.newPlayerName
-                                        [ Events.onInput KeeperUpdatedNewPlayerName
+                                    [ Html.input
+                                        [ StyledAttributes.value model.newPlayerName
+                                        , Events.onInput KeeperUpdatedNewPlayerName
                                         , Events.on "keydown"
                                             (Decode.field "key" Decode.string
                                                 |> Decode.andThen
@@ -1529,7 +1535,7 @@ rankings model =
                                             , Css.boxShadow6 Css.inset Css.zero (Css.px 1) (Css.px 2) Css.zero (Css.rgba 0 0 0 0.5)
                                             , Css.borderRadius (Css.px 5)
                                             ]
-                                        ]
+                                        ] []
                                                                         ]
                                                                 , Html.td [ css [ numericDim, shrinkWidth, center ] ] [ greenButton "ADD" (Just KeeperWantsToAddNewPlayer) ]
                                 ]

@@ -63,39 +63,18 @@ try {
     throw new Error('Elm.Main is not defined');  
   }
   
-  console.log("Creating Elm app...");
+  console.log("Creating Elm app with Supabase backend...");
   var app = Elm.Main.init({
     node: document.getElementById('elm')
   });
   
   console.log("Elm app created successfully:", app);
-  var hasFreshDriveData = false; // becomes true after first Drive load completes
 
-  // Send initial config
-  if (app.ports.askForAutoSave && app.ports.askForAutoSave.send) {
-    app.ports.askForAutoSave.send('');
-  }
-
-  // Set up all the port subscriptions
-  var LS_KEY = "EloTrackerData";
-  var LS_PUBLIC = "EloTrackerPublic";
+  // Simple localStorage keys for local preferences
   var LS_FILTER = "EloTrackerTimeFilter"; // 'all' | 'am' | 'pm'
   var LS_IGNORED = "EloTrackerIgnoredPlayers"; // comma-separated player IDs
-  var LS_VERSION = "EloTrackerVersion"; // Track data format version
-  var DATA_VERSION = 2; // Increment when changing data structure
   
-  // Check if we need to clear old format data
-  try {
-    var storedVersion = localStorage.getItem(LS_VERSION);
-    if (!storedVersion || parseInt(storedVersion) < DATA_VERSION) {
-      console.log('🔄 Data format updated, clearing old cache for fresh load');
-      localStorage.removeItem(LS_KEY);
-      localStorage.removeItem(LS_PUBLIC);
-      localStorage.setItem(LS_VERSION, DATA_VERSION.toString());
-    }
-  } catch (e) {
-    console.warn('Version check failed:', e);
-  }
+  console.log("Setting up ports for local preferences...");
 
   if (app.ports.autoSave && app.ports.autoSave.subscribe) {
     app.ports.autoSave.subscribe(function(json) {
@@ -158,169 +137,20 @@ try {
     });
   }
 
-  // Subscribe to the automatic save for matches 
-  if (app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
-    app.ports.saveToPublicDrive.subscribe(function(json) {
-      if (!hasFreshDriveData) {
-        console.warn('⚠️ POTENTIAL CONFLICT: Save requested before fresh Drive data loaded; data may be stale!');
-        
-        // Send warning to Elm if possible
-        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-          app.ports.receivePublicDriveStatus.send('⚠️ Conflict Warning: Saving potentially stale data!');
-        }
-      }
-      try { localStorage.setItem(LS_PUBLIC, json); } catch (_) {}
+  // No Google Drive save needed - data is stored in Supabase
+  // Keeping ports for backwards compatibility but no actual save operation
 
-      // Google Apps Script URL for your deployed web app
-      var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
-      
-      // Send to Google Apps Script (use form data to avoid CORS preflight)
-      var formData = new FormData();
-      formData.append('data', json);
-      
-      fetch(APPS_SCRIPT_URL, {
-        method: 'POST',
-        body: formData
-      })
-      .then(function(response) {
-        console.log('Apps Script Response Status:', response.status);
-        return response.json().then(function(result) {
-          console.log('Apps Script Response:', result);
-          var ok = response.ok && result.ok;
-          var msg = ok ? 'Saved successfully to Google Drive (' + result.bytes + ' bytes)' : ('Save failed: ' + (result.error || 'Unknown error'));
-          
-          // Check if this was a match save (compact JSON) vs manual save (formatted JSON)
-          var isMatchSave = json.indexOf('\n') === -1; // No newlines = compact = match save
-          
-          // Debug: Log what we're checking
-          console.log('SAVE COMPLETION CHECK:', { 
-            ok: ok, 
-            isMatchSave: isMatchSave, 
-            jsonLength: json.length,
-            hasNewlines: json.indexOf('\n') !== -1,
-            jsonPreview: json.substring(0, 100) + '...'
-          });
-
-          if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-            var ts = new Date().toISOString();
-            app.ports.receivePublicDriveStatus.send(msg + (ok ? ('|' + ts) : ''));      
-          }
-
-          // Send completion signal for both auto-saves and manual saves to ensure data reload
-          console.log('📊 SAVE RESULT:', { 
-            ok: ok, 
-            isMatchSave: isMatchSave, 
-            bytes: result.bytes,
-            jsonHasNewlines: json.indexOf('\n') !== -1,
-            jsonLength: json.length
-          });
-          
-          if (ok && app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
-            if (isMatchSave) {
-              console.log('🔄 AUTO-SAVE COMPLETED: Sending completion signal to Elm');
-            } else {
-              console.log('💾 MANUAL SAVE COMPLETED: Sending completion signal to Elm');
-            }
-            app.ports.receiveMatchSaveComplete.send(null);        
-            // JS-side safety net: also trigger a reload after a brief delay
-            var delayMs = isMatchSave ? 1500 : 1000;
-            setTimeout(function(){
-              console.log('🧩 JS reload fallback: triggering reloadFromPublicDrive after save (delay', delayMs, 'ms)');
-              try { reloadFromPublicDrive(); } catch (e) { console.warn('reloadFromPublicDrive not defined yet:', e); }
-            }, delayMs);
-          } else {
-            console.log('❌ NO COMPLETION SIGNAL SENT:', { 
-              ok: ok, 
-              hasPort: !!(app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send)
-            });
-          }
-        });
-      })
-      .catch(function(err) {
-        console.error('Drive save failed:', err);
-        var errorMsg = 'Auto-save temporarily unavailable (CORS/network issue). Data saved locally.';
-        
-        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
-          app.ports.receivePublicDriveStatus.send(errorMsg); 
-        }
-        // Reset auto-save state on error so voting can continue
-        if (app.ports.receiveMatchSaveComplete && app.ports.receiveMatchSaveComplete.send) {
-          console.log('AUTO-SAVE ERROR: Sending completion signal to re-enable voting');
-          app.ports.receiveMatchSaveComplete.send(null);
-        }
-      });
-    });
-  }
-
-  // Unified reload function (can be called from Elm port or JS fallback)
-  var lastReloadTs = 0;
+  // No Google Drive reload needed - data comes from Supabase
+  // Keeping function stub for backwards compatibility
   function reloadFromPublicDrive(){
-    if (Date.now() - lastReloadTs < 300) {
-      console.log('⏭️ Skipping duplicate reload trigger');
-      return;
-    }
-    lastReloadTs = Date.now();
-
-    console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
-    var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
-    
-    // Try to load from Google Drive first (URL-based cache-busting to avoid CORS preflight)
-    var cacheBuster = '?_=' + Date.now() + '&v=' + Math.random() + '&nocache=1';
-    fetch(APPS_SCRIPT_URL + cacheBuster, { 
-      method: 'GET',
-      cache: 'no-cache'
-    })
-      .then(function(response) {
-        if (response.ok) {
-          return response.text();
-        } else {
-          throw new Error('Failed to load from Google Drive');
-        }
-      })
-      .then(function(json) {
-        console.log('✅ RELOAD SUCCESS: Loaded', json.length, 'bytes from Google Drive');
-        console.log('📊 RELOAD DATA PREVIEW:', json.substring(0, 200) + '...');
-        // Refresh the local cache so next session's fast path matches Drive
-        try { localStorage.setItem(LS_PUBLIC, json); } catch(_) {}
-        
-        if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-          console.log('📤 Sending reloaded data to Elm app...');
-          app.ports.receiveStandings.send(json);
-          console.log('✅ Data sent to Elm successfully');
-          hasFreshDriveData = true;
-        } else {
-          console.log('❌ receiveStandings port not available');
-        }
-      })
-      .catch(function(error) {
-        console.log('Loading from Google Drive failed, using localStorage:', error);
-        // Fallback to localStorage
-        var json = '';  
-        try { json = localStorage.getItem(LS_PUBLIC) || ''; } catch(_) {}
-        if (app.ports.receiveStandings && app.ports.receiveStandings.send) {
-          app.ports.receiveStandings.send(json);
-        }
-      });
+    console.log('reloadFromPublicDrive called but no action needed - data comes from Supabase');
   }
 
-  // Load from Google Drive, fallback to localStorage
+  // No Google Drive loading needed - data comes from Supabase
+  // Keeping port for backwards compatibility but no operation
   if (app.ports.loadFromPublicDrive && app.ports.loadFromPublicDrive.subscribe) {       
     app.ports.loadFromPublicDrive.subscribe(function(){
-      // Fast path: immediately show cached standings (stale-while-revalidate)
-      try {
-        var cached = localStorage.getItem(LS_PUBLIC) || '';
-        if (!cached) {
-          // Fall back to private local auto-save if public copy missing
-          cached = localStorage.getItem(LS_KEY) || '';
-        }
-        if (cached && app.ports.receiveStandings && app.ports.receiveStandings.send) {
-          console.log('⚡ Using cached standings from localStorage for instant load');
-          app.ports.receiveStandings.send(cached);
-        }
-      } catch(_) {}
-
-      // Fetch fresh from Drive in background
-      reloadFromPublicDrive();
+      console.log('loadFromPublicDrive called but no action needed - data comes from Supabase');
     });
   }
   
