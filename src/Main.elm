@@ -351,6 +351,39 @@ startNextMatchIfPossible ( model, cmd ) =
 
 
 
+-- Helper function to handle match finishing without recursive update calls
+handleMatchFinished : League.Outcome -> Model -> ( Model, Cmd Msg )
+handleMatchFinished outcome model =
+    if isVotingDisabled model then
+        ( model, Cmd.none )
+    else
+        let
+            updatedHistory = History.mapPush (League.finishMatch outcome) model.history
+            league = History.current model.history
+            (playerA, playerB) =
+                case League.currentMatch league of
+                    Just (League.Match a b) -> (a, b)
+                    Nothing -> (Player.init "A", Player.init "B")
+            -- Get player IDs
+            playerAId = case Player.id playerA of
+                Player.PlayerId id -> id
+            playerBId = case Player.id playerB of
+                Player.PlayerId id -> id
+            winnerId = case outcome of
+                League.Win { won } -> 
+                    case Player.id won of
+                        Player.PlayerId id -> id
+                League.Draw _ -> playerAId -- For draws, use playerA as default
+            -- Send only match outcome to Edge Function - let it handle all database operations
+            matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
+        in
+        let
+            updatedModel = { model | history = updatedHistory, status = Nothing }
+        in
+            ( updatedModel, matchCmd )
+            |> startNextMatchIfPossible
+            |> maybeAutoSave
+
 -- UPDATE
 
 update : Msg -> Model -> ( Model, Cmd Msg )
@@ -505,36 +538,7 @@ update msg model =
             ( model, Cmd.none )
 
         MatchFinished outcome ->
-            if model.autoSaveInProgress then
-                -- Ignore votes during auto-save to prevent race conditions
-                ( model, Cmd.none )
-            else
-                let
-                    updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-                    league = History.current model.history
-                    (playerA, playerB) =
-                        case League.currentMatch league of
-                            Just (League.Match a b) -> (a, b)
-                            Nothing -> (Player.init "A", Player.init "B")
-                    -- Get player IDs
-                    playerAId = case Player.id playerA of
-                        Player.PlayerId id -> id
-                    playerBId = case Player.id playerB of
-                        Player.PlayerId id -> id
-                    winnerId = case outcome of
-                        League.Win { won } -> 
-                            case Player.id won of
-                                Player.PlayerId id -> id
-                        League.Draw _ -> playerAId -- For draws, use playerA as default
-                    -- Send only match outcome to Edge Function - let it handle all database operations
-                    matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
-                in
-                let
-                    updatedModel = { model | history = updatedHistory, status = Nothing }
-                in
-                    ( updatedModel, matchCmd )
-                    |> startNextMatchIfPossible
-                    |> maybeAutoSave
+            handleMatchFinished outcome model
         MatchSaved result ->
             case result of
                 Ok _ -> 
@@ -763,25 +767,50 @@ update msg model =
         KeyPressed key ->
             case ( key, League.currentMatch (History.current model.history) ) of
                 ( "1", Just (League.Match playerA playerB) ) ->
+                    -- Left player wins
                     if isVotingDisabled model then
                         ( model, Cmd.none )
                     else
-                        update (MatchFinished (League.Win { won = playerA, lost = playerB })) model
+                        let
+                            outcome = League.Win { won = playerA, lost = playerB }
+                        in
+                        handleMatchFinished outcome model
 
                 ( "2", Just (League.Match playerA playerB) ) ->
+                    -- Right player wins  
                     if isVotingDisabled model then
                         ( model, Cmd.none )
                     else
-                        update (MatchFinished (League.Win { won = playerB, lost = playerA })) model
+                        let
+                            outcome = League.Win { won = playerB, lost = playerA }
+                        in
+                        handleMatchFinished outcome model
 
-                ( "3", Just (League.Match playerA playerB) ) ->
+                ( "0", Just (League.Match playerA playerB) ) ->
+                    -- Tie/Draw
                     if isVotingDisabled model then
                         ( model, Cmd.none )
                     else
-                        update (MatchFinished (League.Draw { playerA = playerA, playerB = playerB })) model
+                        let
+                            outcome = League.Draw { playerA = playerA, playerB = playerB }
+                        in
+                        handleMatchFinished outcome model
+
+                ( "Escape", _ ) ->
+                    -- Skip match
+                    ( { model | history = History.mapInPlace League.clearMatch model.history }
+                    , Cmd.none
+                    )
+                        |> startNextMatchIfPossible
+
+                ( "Backspace", _ ) ->
+                    -- Undo
+                    ( { model | history = History.goBack model.history |> Maybe.withDefault model.history }
+                    , Cmd.none
+                    )
 
                 _ ->
-                    update IgnoredKey model
+                    ( model, Cmd.none )
 
         IgnoredKey ->
             ( model, Cmd.none )
