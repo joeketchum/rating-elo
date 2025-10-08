@@ -7775,9 +7775,12 @@ var $elm$file$File$Select$file = F2(
 	});
 var $author$project$Elo$odds = F2(
 	function (a, b) {
-		var rB = A2($elm$core$Basics$pow, 10, b / 400);
-		var rA = A2($elm$core$Basics$pow, 10, a / 400);
-		return rA / (rA + rB);
+		var rB = A2($elm$core$Basics$pow, 10, b / 600);
+		var rA = A2($elm$core$Basics$pow, 10, a / 600);
+		var rawOdds = rA / (rA + rB);
+		var minOdds = 0.15;
+		var maxOdds = 0.85;
+		return (_Utils_cmp(rawOdds, minOdds) < 0) ? minOdds : ((_Utils_cmp(rawOdds, maxOdds) > 0) ? maxOdds : rawOdds);
 	});
 var $elm$core$Basics$round = _Basics_round;
 var $author$project$Elo$draw = F2(
