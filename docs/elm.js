@@ -9223,7 +9223,7 @@ var $author$project$Main$update = F2(
 					var validSupabasePlayers = A2(
 						$elm$core$List$filter,
 						function (p) {
-							return (p.id >= 1) && (p.id <= 103);
+							return (p.id >= 1) && (p.id < 1000000);
 						},
 						supabasePlayers);
 					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validSupabasePlayers);
@@ -9232,7 +9232,7 @@ var $author$project$Main$update = F2(
 					var invalidSupabasePlayers = A2(
 						$elm$core$List$filter,
 						function (p) {
-							return (p.id < 1) || (p.id > 103);
+							return (p.id < 1) || (p.id >= 1000000);
 						},
 						supabasePlayers);
 					var invalidCount = $elm$core$List$length(invalidSupabasePlayers);

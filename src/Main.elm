@@ -758,9 +758,9 @@ update msg model =
             case result of
                 Ok supabasePlayers ->
                     let
-                        -- Filter out players with invalid IDs (should be 1-103, anything else is hash-based)
-                        validSupabasePlayers = List.filter (\p -> p.id >= 1 && p.id <= 103) supabasePlayers
-                        invalidSupabasePlayers = List.filter (\p -> p.id < 1 || p.id > 103) supabasePlayers
+                        -- Filter out players with invalid hash-based IDs (keep reasonable auto-increment IDs under 1 million)
+                        validSupabasePlayers = List.filter (\p -> p.id >= 1 && p.id < 1000000) supabasePlayers
+                        invalidSupabasePlayers = List.filter (\p -> p.id < 1 || p.id >= 1000000) supabasePlayers
                         
                         players = List.map supabasePlayerToPlayer validSupabasePlayers
                         league = List.foldl League.addPlayer League.init players
