@@ -14056,7 +14056,7 @@ var $author$project$Main$currentMatch = function (model) {
 								[
 									A2(
 									$author$project$Main$blueButton,
-									'UNDO',
+									'UNDO (Backspace)',
 									A2(
 										$elm$core$Maybe$map,
 										function (_v2) {

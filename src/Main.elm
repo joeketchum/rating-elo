@@ -1894,7 +1894,7 @@ currentMatch model =
                                         [ -- Desktop controls rows
                                                                                     Html.div
                                                                                         [ css [ Css.displayFlex, Css.justifyContent Css.center, Css.marginBottom (Css.px 12) ] ]
-                                            [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
+                                            [ blueButton "UNDO (Backspace)" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
                                             , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
                                             , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
                                             ]
