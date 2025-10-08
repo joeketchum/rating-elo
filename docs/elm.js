@@ -13501,6 +13501,25 @@ var $author$project$Main$currentMatch = function (model) {
 											$rtfeldman$elm_css$Css$hex('6DD400'),
 											'CUSTOM',
 											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToShowCustomMatchup))
+										])),
+									A2(
+									$rtfeldman$elm_css$Html$Styled$div,
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Html$Styled$Attributes$css(
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Css$marginLeft(
+													$rtfeldman$elm_css$Css$px(4))
+												]))
+										]),
+									_List_fromArray(
+										[
+											A3(
+											$author$project$Main$buttonCompact,
+											$rtfeldman$elm_css$Css$hex('6DD400'),
+											'ADD PLAYER',
+											$elm$core$Maybe$Just($author$project$Main$KeeperWantsToAddNewPlayer))
 										]))
 								]))
 						])),

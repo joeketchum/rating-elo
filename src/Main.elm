@@ -1583,12 +1583,13 @@ currentMatch model =
                         , Html.div [ css [ Css.marginLeft (Css.px 4) ] ]
                             [ buttonCompact (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch) ]
                         ]
-                    , -- Row 4 (new on mobile): CUSTOM MATCHUP and SAVE (centered)
+                    , -- Row 4 (new on mobile): CUSTOM MATCHUP and ADD PLAYER (centered)
                       Html.div
                         [ css [ Css.displayFlex, Css.alignItems Css.center, Css.justifyContent Css.center, Css.marginTop (Css.px 8) ] ]
                         [ Html.div [ css [ Css.marginRight (Css.px 4) ] ]
                             [ buttonCompact (Css.hex "6DD400") "CUSTOM" (Just KeeperWantsToShowCustomMatchup) ]
-
+                        , Html.div [ css [ Css.marginLeft (Css.px 4) ] ]
+                            [ buttonCompact (Css.hex "6DD400") "ADD PLAYER" (Just KeeperWantsToAddNewPlayer) ]
                         ]
                     ]
                 , Html.div
