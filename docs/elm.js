@@ -6368,57 +6368,6 @@ var $author$project$League$init = $author$project$League$League(
 var $author$project$Main$GotNextMatch = function (a) {
 	return {$: 'GotNextMatch', a: a};
 };
-var $author$project$Player$id = function (_v0) {
-	var player = _v0.a;
-	return player.id;
-};
-var $elm$core$Dict$member = F2(
-	function (key, dict) {
-		var _v0 = A2($elm$core$Dict$get, key, dict);
-		if (_v0.$ === 'Just') {
-			return true;
-		} else {
-			return false;
-		}
-	});
-var $elm$core$Set$member = F2(
-	function (key, _v0) {
-		var dict = _v0.a;
-		return A2($elm$core$Dict$member, key, dict);
-	});
-var $author$project$Main$isPlayerLocallyIgnored = F2(
-	function (player, model) {
-		var _v0 = $author$project$Player$id(player);
-		var idInt = _v0.a;
-		return A2(
-			$elm$core$Set$member,
-			$elm$core$String$fromInt(idInt),
-			model.ignoredPlayers);
-	});
-var $elm$core$Basics$not = _Basics_not;
-var $author$project$Player$playsAM = function (_v0) {
-	var player = _v0.a;
-	return player.am;
-};
-var $author$project$Player$playsPM = function (_v0) {
-	var player = _v0.a;
-	return player.pm;
-};
-var $author$project$Main$combinedPlayerFilter = function (model) {
-	return function (player) {
-		return (!A2($author$project$Main$isPlayerLocallyIgnored, player, model)) && function () {
-			var _v0 = model.timeFilter;
-			switch (_v0.$) {
-				case 'All':
-					return true;
-				case 'AMOnly':
-					return $author$project$Player$playsAM(player);
-				default:
-					return $author$project$Player$playsPM(player);
-			}
-		}();
-	};
-};
 var $author$project$History$current = function (_v0) {
 	var guts = _v0.a;
 	return guts.current;
@@ -6530,6 +6479,33 @@ var $elm$random$Random$generate = F2(
 			$elm$random$Random$Generate(
 				A2($elm$random$Random$map, tagger, generator)));
 	});
+var $author$project$Player$id = function (_v0) {
+	var player = _v0.a;
+	return player.id;
+};
+var $elm$core$Dict$member = F2(
+	function (key, dict) {
+		var _v0 = A2($elm$core$Dict$get, key, dict);
+		if (_v0.$ === 'Just') {
+			return true;
+		} else {
+			return false;
+		}
+	});
+var $elm$core$Set$member = F2(
+	function (key, _v0) {
+		var dict = _v0.a;
+		return A2($elm$core$Dict$member, key, dict);
+	});
+var $author$project$Main$isPlayerLocallyIgnored = F2(
+	function (player, model) {
+		var _v0 = $author$project$Player$id(player);
+		var idInt = _v0.a;
+		return A2(
+			$elm$core$Set$member,
+			$elm$core$String$fromInt(idInt),
+			model.ignoredPlayers);
+	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$League$Match = F2(
 	function (a, b) {
@@ -6629,6 +6605,7 @@ var $elm$core$List$minimum = function (list) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$Basics$not = _Basics_not;
 var $elm$core$Tuple$pair = F2(
 	function (a, b) {
 		return _Utils_Tuple2(a, b);
@@ -6906,6 +6883,27 @@ var $author$project$League$nextMatchFiltered = F2(
 			return $elm$random$Random$constant($elm$core$Maybe$Nothing);
 		}
 	});
+var $author$project$Player$playsAM = function (_v0) {
+	var player = _v0.a;
+	return player.am;
+};
+var $author$project$Player$playsPM = function (_v0) {
+	var player = _v0.a;
+	return player.pm;
+};
+var $author$project$Main$timePlayerFilter = function (model) {
+	return function (player) {
+		var _v0 = model.timeFilter;
+		switch (_v0.$) {
+			case 'All':
+				return true;
+			case 'AMOnly':
+				return $author$project$Player$playsAM(player);
+			default:
+				return $author$project$Player$playsPM(player);
+		}
+	};
+};
 var $author$project$Main$startNextMatchIfPossible = function (_v0) {
 	var model = _v0.a;
 	var cmd = _v0.b;
@@ -6923,7 +6921,9 @@ var $author$project$Main$startNextMatchIfPossible = function (_v0) {
 					$author$project$Main$GotNextMatch,
 					A2(
 						$author$project$League$nextMatchFiltered,
-						$author$project$Main$combinedPlayerFilter(model),
+						function (player) {
+							return (!A2($author$project$Main$isPlayerLocallyIgnored, player, model)) && A2($author$project$Main$timePlayerFilter, model, player);
+						},
 						$author$project$History$current(model.history)))
 				])));
 };
@@ -15191,6 +15191,7 @@ var $author$project$Main$rankings = function (model) {
 										},
 										$author$project$League$currentMatch(
 											$author$project$History$current(model.history))));
+								var isIgnored = A2($author$project$Main$isPlayerLocallyIgnored, player, model);
 								return _Utils_Tuple2(
 									$author$project$Player$htmlKey(player),
 									A2(
@@ -15206,7 +15207,15 @@ var $author$project$Main$rankings = function (model) {
 														$rtfeldman$elm_css$Css$borderBottom3,
 														$rtfeldman$elm_css$Css$px(1),
 														$rtfeldman$elm_css$Css$solid,
-														$rtfeldman$elm_css$Css$hex('E5E7EB'))
+														$rtfeldman$elm_css$Css$hex('E5E7EB')),
+														isIgnored ? $rtfeldman$elm_css$Css$batch(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$opacity(
+																$rtfeldman$elm_css$Css$num(0.5)),
+																$rtfeldman$elm_css$Css$backgroundColor(
+																$rtfeldman$elm_css$Css$hex('F9F9F9'))
+															])) : $rtfeldman$elm_css$Css$batch(_List_Nil)
 													]))
 											]),
 										_List_fromArray(
@@ -15333,12 +15342,57 @@ var $author$project$Main$rankings = function (model) {
 												_List_fromArray(
 													[
 														A2(
-														$rtfeldman$elm_css$Html$Styled$span,
-														_List_Nil,
+														$rtfeldman$elm_css$Html$Styled$div,
 														_List_fromArray(
 															[
-																$rtfeldman$elm_css$Html$Styled$text(
-																$author$project$Player$name(player))
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$displayFlex,
+																		$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center)
+																	]))
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Html$Styled$span,
+																_List_Nil,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text(
+																		$author$project$Player$name(player))
+																	])),
+																isIgnored ? A2(
+																$rtfeldman$elm_css$Html$Styled$span,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$marginLeft(
+																				$rtfeldman$elm_css$Css$px(8)),
+																				A2(
+																				$rtfeldman$elm_css$Css$padding2,
+																				$rtfeldman$elm_css$Css$px(2),
+																				$rtfeldman$elm_css$Css$px(6)),
+																				$rtfeldman$elm_css$Css$backgroundColor(
+																				$rtfeldman$elm_css$Css$hex('FEF3C7')),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('92400E')),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(10)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(600)),
+																				$rtfeldman$elm_css$Css$borderRadius(
+																				$rtfeldman$elm_css$Css$px(4)),
+																				$rtfeldman$elm_css$Css$textTransform($rtfeldman$elm_css$Css$uppercase),
+																				$author$project$Main$modernSansSerif
+																			]))
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('SNOOZED')
+																	])) : $rtfeldman$elm_css$Html$Styled$text('')
 															]))
 													])),
 												A2(
@@ -15600,7 +15654,7 @@ var $author$project$Main$rankings = function (model) {
 							},
 							A2(
 								$elm$core$List$filter,
-								$author$project$Main$combinedPlayerFilter(model),
+								$author$project$Main$timePlayerFilter(model),
 								$author$project$League$players(
 									$author$project$History$current(model.history)))))))));
 };

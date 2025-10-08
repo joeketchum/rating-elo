@@ -409,11 +409,10 @@ isPlayerLocallyIgnored player model =
     Set.member (String.fromInt idInt) model.ignoredPlayers
 
 
--- Create a predicate that combines time filter and local ignore filter
-combinedPlayerFilter : Model -> (Player -> Bool)
-combinedPlayerFilter model =
+-- Create a predicate that only applies time filter (ignore filter now handled in display)
+timePlayerFilter : Model -> (Player -> Bool)
+timePlayerFilter model =
     \player ->
-        not (isPlayerLocallyIgnored player model) &&
         case model.timeFilter of
             All -> True
             AMOnly -> Player.playsAM player
@@ -430,7 +429,7 @@ startNextMatchIfPossible ( model, cmd ) =
         , Cmd.batch
             [ cmd
             , Random.generate GotNextMatch (
-                League.nextMatchFiltered (combinedPlayerFilter model) (History.current model.history)
+                League.nextMatchFiltered (\player -> not (isPlayerLocallyIgnored player model) && timePlayerFilter model player) (History.current model.history)
               )
             ]
         )
@@ -1747,7 +1746,7 @@ rankings model =
     in
     History.current model.history
         |> League.players
-        |> List.filter (combinedPlayerFilter model)  -- Filter first
+        |> List.filter (timePlayerFilter model)  -- Only filter by time, show ignored players grayed out
         |> List.sortBy (\player -> -(Player.rating player))  -- Then sort filtered list
         |> List.indexedMap  -- Then rank with no gaps (1, 2, 3, etc.)
             (\rank player ->
@@ -1761,10 +1760,19 @@ rankings model =
                             |> League.currentMatch
                             |> Maybe.map (\(League.Match a b) -> Player.id player == Player.id a || Player.id player == Player.id b)
                             |> Maybe.withDefault False
+
+                    isIgnored =
+                        isPlayerLocallyIgnored player model
                 in
                 ( Player.htmlKey player
                 , Html.tr
-                    [ css [ Css.height (Css.px 40), Css.borderBottom3 (Css.px 1) Css.solid (Css.hex "E5E7EB") ] ]
+                    [ css [ Css.height (Css.px 40)
+                          , Css.borderBottom3 (Css.px 1) Css.solid (Css.hex "E5E7EB")
+                          , if isIgnored then 
+                                Css.batch [ Css.opacity (Css.num 0.5), Css.backgroundColor (Css.hex "F9F9F9") ]
+                            else 
+                                Css.batch []
+                          ] ]
                     [ Html.td
                         [ css
                             [ Css.verticalAlign Css.middle
@@ -1794,7 +1802,27 @@ rankings model =
                         )
                     , Html.td [ css [ numericRank, center, Css.width (Css.px 60), Css.maxWidth (Css.px 60) ] ] [ Html.text (String.fromInt (rank + 1)) ]
                     , Html.td [ css [ textual, left, Css.width (Css.pct 25), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.width (Css.pct 60) ] ] ]
-                        [ Html.span [] [ Html.text (Player.name player) ] ]
+                        [ Html.div [ css [ Css.displayFlex, Css.alignItems Css.center ] ]
+                            [ Html.span [] [ Html.text (Player.name player) ]
+                            , if isIgnored then
+                                Html.span 
+                                    [ css 
+                                        [ Css.marginLeft (Css.px 8)
+                                        , Css.padding2 (Css.px 2) (Css.px 6)
+                                        , Css.backgroundColor (Css.hex "FEF3C7")
+                                        , Css.color (Css.hex "92400E")
+                                        , Css.fontSize (Css.px 10)
+                                        , Css.fontWeight (Css.int 600)
+                                        , Css.borderRadius (Css.px 4)
+                                        , Css.textTransform Css.uppercase
+                                        , modernSansSerif
+                                        ]
+                                    ] 
+                                    [ Html.text "SNOOZED" ]
+                              else
+                                Html.text ""
+                            ]
+                        ]
                     , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.rating player)) ]
                     , Html.td [ css [ numericDim, center, Css.width (Css.px 80), Css.maxWidth (Css.px 80), Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ] ] ] [ Html.text (String.fromInt (Player.matchesPlayed player)) ]
                     , Html.td [ css [ Css.verticalAlign Css.middle, Css.width (Css.pct 35) ] ]
