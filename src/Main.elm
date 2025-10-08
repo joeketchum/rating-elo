@@ -40,7 +40,6 @@ type Msg
     | PeriodicSync
     | TriggerReload
     | KeeperWantsToUndo
-    | MatchUndone (Result Http.Error ())
     | KeeperWantsToRedo
     | KeeperWantsToShowCustomMatchup
     | KeeperWantsToHideCustomMatchup
@@ -65,7 +64,7 @@ type Msg
     | ReceivedTimeFilter String
     | ReceivedIgnoredPlayers String
     | ReceivedCurrentTime Time.Posix
-    | MatchSaved (Result Http.Error Int)
+    | MatchSaved (Result Http.Error ())
     | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
     | PlayerACreated League.Outcome (Result Http.Error Supabase.Player)
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
@@ -158,7 +157,6 @@ type alias Model =
     , addPlayerPM : Bool
     , votesSinceLastSync : Int
     , isSyncing : Bool
-    , lastMatchId : Maybe Int
     }
 
 type alias VersionedLeague =
@@ -202,7 +200,6 @@ init _ =
         , addPlayerPM = True
         , votesSinceLastSync = 0
         , isSyncing = False
-        , lastMatchId = Nothing
         }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
     )
@@ -568,19 +565,19 @@ update msg model =
             handleMatchFinished outcome model
         MatchSaved result ->
             case result of
-                Ok matchId -> 
+                Ok _ -> 
                     let
                         newVoteCount = model.votesSinceLastSync + 1
                         shouldSync = newVoteCount >= 25
                     in
                     if shouldSync then
                         -- Sync every 25 votes to keep data fresh but not disruptive
-                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0, lastMatchId = Just matchId }
+                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0 }
                         , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
                         )
                     else
                         -- Just update vote count - no reload needed!
-                        ( { model | status = Nothing, votesSinceLastSync = newVoteCount, lastMatchId = Just matchId }
+                        ( { model | status = Nothing, votesSinceLastSync = newVoteCount }
                         , Cmd.none
                         )
                 Err err -> 
@@ -663,32 +660,9 @@ update msg model =
 
 
         KeeperWantsToUndo ->
-            case model.lastMatchId of
-                Just matchId ->
-                    -- Undo the match in the database
-                    ( { model | status = Just "Undoing last match..." }
-                    , Supabase.undoMatchFunction Config.supabaseConfig matchId MatchUndone
-                    )
-                
-                Nothing ->
-                    -- Fallback to local undo if no match ID available
-                    ( { model | history = History.goBack model.history |> Maybe.withDefault model.history }
-                    , Cmd.none
-                    )
-
-        MatchUndone result ->
-            case result of
-                Ok _ ->
-                    -- Match was undone successfully, reload from database
-                    ( { model | status = Just "Match undone, reloading...", lastMatchId = Nothing }
-                    , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
-                    )
-                
-                Err _ ->
-                    -- Database undo failed, fallback to local undo
-                    ( { model | status = Just "Undo failed, using local undo", history = History.goBack model.history |> Maybe.withDefault model.history }
-                    , Cmd.none
-                    )
+            ( { model | history = History.goBack model.history |> Maybe.withDefault model.history }
+            , Cmd.none
+            )
 
         KeeperWantsToRedo ->
             ( { model | history = History.goForward model.history |> Maybe.withDefault model.history }

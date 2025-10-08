@@ -120,8 +120,8 @@ serve(async (req) => {
       throw new Error(`Failed to update players: ${updateError.message}`)
     }
 
-    // Record the match in matches table and get the ID back
-    const { data: matchData, error: matchError } = await supabaseClient
+    // Record the match in matches table
+    const { error: matchError } = await supabaseClient
       .from('matches')
       .insert({
         player_a_id: a_id,
@@ -134,8 +134,6 @@ serve(async (req) => {
         k_factor_used: kFactorA,
         played_at: new Date().toISOString()
       })
-      .select('id')
-      .single()
 
     if (matchError) {
       throw new Error(`Failed to record match: ${matchError.message}`)
@@ -161,7 +159,6 @@ serve(async (req) => {
     return new Response(
       JSON.stringify({ 
         success: true,
-        matchId: matchData.id,
         match: {
           playerA: { id: a_id, oldRating: ratingA, newRating: newRatingA },
           playerB: { id: b_id, oldRating: ratingB, newRating: newRatingB },
