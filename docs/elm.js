@@ -7405,7 +7405,6 @@ var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
 var $author$project$Main$TriggerReload = {$: 'TriggerReload'};
-var $author$project$Elo$initialRating = 1500;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Node = F6(
 	function (a, b, c, d, e, f) {
@@ -7534,34 +7533,9 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$insert = F3(
 			return x;
 		}
 	});
-var $author$project$Player$Player = function (a) {
-	return {$: 'Player', a: a};
-};
-var $author$project$Player$setRating = F2(
-	function (rating_, _v0) {
-		var player = _v0.a;
-		return $author$project$Player$Player(
-			_Utils_update(
-				player,
-				{
-					rating: A2($elm$core$Basics$max, 0, rating_)
-				}));
-	});
 var $author$project$League$addPlayer = F2(
 	function (player, _v0) {
 		var league = _v0.a;
-		var initialRating = function () {
-			var _v1 = A2(
-				$elm$core$List$map,
-				$author$project$Player$rating,
-				$rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players));
-			if (!_v1.b) {
-				return $author$project$Elo$initialRating;
-			} else {
-				var nonEmpty = _v1;
-				return ($elm$core$List$sum(nonEmpty) / $elm$core$List$length(nonEmpty)) | 0;
-			}
-		}();
 		return $author$project$League$League(
 			_Utils_update(
 				league,
@@ -7569,7 +7543,7 @@ var $author$project$League$addPlayer = F2(
 					players: A3(
 						$rtfeldman$elm_sorter_experiment$Sort$Dict$insert,
 						$author$project$Player$id(player),
-						A2($author$project$Player$setRating, initialRating, player),
+						player,
 						league.players)
 				}));
 	});
@@ -7638,6 +7612,9 @@ var $author$project$League$updatePlayer = F2(
 						league.players)
 				}));
 	});
+var $author$project$Player$Player = function (a) {
+	return {$: 'Player', a: a};
+};
 var $author$project$Player$incrementMatchesPlayed = function (_v0) {
 	var player = _v0.a;
 	return $author$project$Player$Player(
@@ -7645,6 +7622,16 @@ var $author$project$Player$incrementMatchesPlayed = function (_v0) {
 			player,
 			{matches: player.matches + 1}));
 };
+var $author$project$Player$setRating = F2(
+	function (rating_, _v0) {
+		var player = _v0.a;
+		return $author$project$Player$Player(
+			_Utils_update(
+				player,
+				{
+					rating: A2($elm$core$Basics$max, 0, rating_)
+				}));
+	});
 var $author$project$League$updateRatingsIncludingPlayInPeriod = F2(
 	function (ratings, players_) {
 		var playerBInPlayInPeriod = _Utils_cmp(
@@ -7902,6 +7889,7 @@ var $robinheghan$murmur3$Murmur3$hashString = F2(
 				A4($robinheghan$murmur3$Murmur3$HashData, 0, seed, 0, 0),
 				str));
 	});
+var $author$project$Elo$initialRating = 1500;
 var $author$project$Player$init = function (name_) {
 	return $author$project$Player$Player(
 		{

@@ -135,16 +135,7 @@ getPlayer id (League league) =
 
 addPlayer : Player -> League -> League
 addPlayer player (League league) =
-    let
-        initialRating =
-            case Dict.values league.players |> List.map Player.rating of
-                [] ->
-                    Elo.initialRating
-
-                nonEmpty ->
-                    List.sum nonEmpty // List.length nonEmpty
-    in
-    League { league | players = Dict.insert (Player.id player) (Player.setRating initialRating player) league.players }
+    League { league | players = Dict.insert (Player.id player) player league.players }
 
 
 {-| -}
