@@ -204,7 +204,8 @@ init _ =
 -- Convert Supabase.Player to Player
 supabasePlayerToPlayer : Supabase.Player -> Player.Player
 supabasePlayerToPlayer supabasePlayer =
-    Player.init supabasePlayer.name
+    Player.create supabasePlayer.name supabasePlayer.rating supabasePlayer.playsAM supabasePlayer.playsPM
+        |> Player.setMatchesPlayedTestOnly supabasePlayer.matchesPlayed
 
 -- Convert Player to Supabase.Player
 toSupabasePlayer : Player.Player -> Supabase.Player

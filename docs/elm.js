@@ -8218,8 +8218,19 @@ var $author$project$League$startMatch = F2(
 								league.players)))
 				}));
 	});
+var $author$project$Player$setMatchesPlayedTestOnly = F2(
+	function (matches, _v0) {
+		var player = _v0.a;
+		return $author$project$Player$Player(
+			_Utils_update(
+				player,
+				{matches: matches}));
+	});
 var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
-	return $author$project$Player$init(supabasePlayer.name);
+	return A2(
+		$author$project$Player$setMatchesPlayedTestOnly,
+		supabasePlayer.matchesPlayed,
+		A4($author$project$Player$create, supabasePlayer.name, supabasePlayer.rating, supabasePlayer.playsAM, supabasePlayer.playsPM));
 };
 var $elm$http$Http$expectBytesResponse = F2(
 	function (toMsg, toResult) {
