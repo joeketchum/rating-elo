@@ -563,10 +563,10 @@ update msg model =
                 Ok _ -> 
                     let
                         newVoteCount = model.votesSinceLastSync + 1
-                        shouldSync = newVoteCount >= 10
+                        shouldSync = newVoteCount >= 25
                     in
                     if shouldSync then
-                        -- Sync every 10 votes to keep data fresh but not disruptive
+                        -- Sync every 25 votes to keep data fresh but not disruptive
                         ( { model | status = Just "Syncing data...", votesSinceLastSync = 0 }
                         , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
                         )

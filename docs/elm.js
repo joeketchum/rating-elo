@@ -8899,7 +8899,7 @@ var $author$project$Main$update = F2(
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var newVoteCount = model.votesSinceLastSync + 1;
-					var shouldSync = newVoteCount >= 10;
+					var shouldSync = newVoteCount >= 25;
 					return shouldSync ? _Utils_Tuple2(
 						_Utils_update(
 							model,
