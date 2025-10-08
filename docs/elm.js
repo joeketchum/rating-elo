@@ -8003,9 +8003,12 @@ var $author$project$Main$handleMatchFinished = F2(
 				$author$project$History$mapPush,
 				$author$project$League$finishMatch(outcome),
 				model.history);
-			var league = $author$project$History$current(model.history);
+			var updatedModel = _Utils_update(
+				model,
+				{history: updatedHistory, status: $elm$core$Maybe$Nothing});
+			var currentLeague = $author$project$History$current(model.history);
 			var _v0 = function () {
-				var _v1 = $author$project$League$currentMatch(league);
+				var _v1 = $author$project$League$currentMatch(currentLeague);
 				if (_v1.$ === 'Just') {
 					var _v2 = _v1.a;
 					var a = _v2.a;
@@ -8040,9 +8043,6 @@ var $author$project$Main$handleMatchFinished = F2(
 				return id;
 			}();
 			var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
-			var updatedModel = _Utils_update(
-				model,
-				{history: updatedHistory, status: $elm$core$Maybe$Nothing});
 			return $author$project$Main$maybeAutoSave(
 				$author$project$Main$startNextMatchIfPossible(
 					_Utils_Tuple2(updatedModel, matchCmd)));
@@ -8910,14 +8910,9 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								status: $elm$core$Maybe$Just(
-									'Failed to save match: ' + $author$project$Main$httpErrorToString(err))
+									'Failed to save match: ' + ($author$project$Main$httpErrorToString(err) + ' (Try voting again)'))
 							}),
-						A2(
-							$elm$core$Task$perform,
-							function (_v8) {
-								return $author$project$Main$TriggerReload;
-							},
-							$elm$core$Process$sleep(1000)));
+						$elm$core$Platform$Cmd$none);
 				}
 			case 'LeagueStateSaved':
 				var result = msg.a;
@@ -9071,10 +9066,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v10 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v10.a.$ === 'Just') && (_v10.b.$ === 'Just')) {
-					var playerA = _v10.a.a;
-					var playerB = _v10.b.a;
+				var _v9 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v9.a.$ === 'Just') && (_v9.b.$ === 'Just')) {
+					var playerA = _v9.a.a;
+					var playerB = _v9.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9154,9 +9149,9 @@ var $author$project$Main$update = F2(
 					var playerCount = $elm$core$List$length(players);
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var firstPlayerRating = function () {
-						var _v12 = $elm$core$List$head(supabasePlayers);
-						if (_v12.$ === 'Just') {
-							var p = _v12.a;
+						var _v11 = $elm$core$List$head(supabasePlayers);
+						if (_v11.$ === 'Just') {
+							var p = _v11.a;
 							return $elm$core$String$fromInt(p.rating);
 						} else {
 							return 'no players';
@@ -9225,7 +9220,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v13) {
+						function (_v12) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9237,18 +9232,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v14 = _Utils_Tuple2(
+				var _v13 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v14$5:
+				_v13$5:
 				while (true) {
-					switch (_v14.a) {
+					switch (_v13.a) {
 						case '1':
-							if (_v14.b.$ === 'Just') {
-								var _v15 = _v14.b.a;
-								var playerA = _v15.a;
-								var playerB = _v15.b;
+							if (_v13.b.$ === 'Just') {
+								var _v14 = _v13.b.a;
+								var playerA = _v14.a;
+								var playerB = _v14.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 								} else {
@@ -9257,13 +9252,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v14$5;
+								break _v13$5;
 							}
 						case '2':
-							if (_v14.b.$ === 'Just') {
-								var _v16 = _v14.b.a;
-								var playerA = _v16.a;
-								var playerB = _v16.b;
+							if (_v13.b.$ === 'Just') {
+								var _v15 = _v13.b.a;
+								var playerA = _v15.a;
+								var playerB = _v15.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 								} else {
@@ -9272,13 +9267,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v14$5;
+								break _v13$5;
 							}
 						case '0':
-							if (_v14.b.$ === 'Just') {
-								var _v17 = _v14.b.a;
-								var playerA = _v17.a;
-								var playerB = _v17.b;
+							if (_v13.b.$ === 'Just') {
+								var _v16 = _v13.b.a;
+								var playerA = _v16.a;
+								var playerB = _v16.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 								} else {
@@ -9287,7 +9282,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v14$5;
+								break _v13$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9310,7 +9305,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v14$5;
+							break _v13$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);

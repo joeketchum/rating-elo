@@ -358,13 +358,14 @@ handleMatchFinished outcome model =
         ( model, Cmd.none )
     else
         let
-            updatedHistory = History.mapPush (League.finishMatch outcome) model.history
-            league = History.current model.history
+            -- Get current league BEFORE finishing the match to get the active players
+            currentLeague = History.current model.history
             (playerA, playerB) =
-                case League.currentMatch league of
+                case League.currentMatch currentLeague of
                     Just (League.Match a b) -> (a, b)
-                    Nothing -> (Player.init "A", Player.init "B")
-            -- Get player IDs
+                    Nothing -> (Player.init "A", Player.init "B") -- Fallback, should not happen
+            
+            -- Get player IDs  
             playerAId = case Player.id playerA of
                 Player.PlayerId id -> id
             playerBId = case Player.id playerB of
@@ -374,10 +375,12 @@ handleMatchFinished outcome model =
                     case Player.id won of
                         Player.PlayerId id -> id
                 League.Draw _ -> playerAId -- For draws, use playerA as default
-            -- Send only match outcome to Edge Function - let it handle all database operations
+            
+            -- Send match outcome to Edge Function
             matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
-        in
-        let
+            
+            -- Update history after getting player info
+            updatedHistory = History.mapPush (League.finishMatch outcome) model.history
             updatedModel = { model | history = updatedHistory, status = Nothing }
         in
             ( updatedModel, matchCmd )
@@ -557,9 +560,9 @@ update msg model =
                         , Cmd.none
                         )
                 Err err -> 
-                    -- Only reload on error to sync with database
-                    ( { model | status = Just ("Failed to save match: " ++ httpErrorToString err) }
-                    , Task.perform (\_ -> TriggerReload) (Process.sleep 1000)
+                    -- Show error but don't force reload - let user try again
+                    ( { model | status = Just ("Failed to save match: " ++ httpErrorToString err ++ " (Try voting again)") }
+                    , Cmd.none
                     )
 
         LeagueStateSaved result ->
