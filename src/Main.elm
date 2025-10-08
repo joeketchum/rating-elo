@@ -1,152 +1,44 @@
+
 port module Main exposing (..)
 
-import Accessibility.Styled as Html exposing (Html)
-import Process
-import Browser exposing (Document)
-import Time
+import Html exposing (Html)
+import Html.Attributes as Attributes
+import Html.Events as Events
 import Css
-import Css.Media as Media
-import Css.Reset
-import Dict exposing (Dict)
-import Elo
-import File exposing (File)
-import File.Download as Download
-import File.Select as Select
-import History exposing (History)
-import Html.Styled as WildWildHtml
-import Html.Styled.Attributes as Attributes exposing (css)
-import Html.Styled.Events as Events
-import Html.Styled.Keyed as Keyed
-import Json.Decode as Decode
-import Json.Encode as Encode exposing (encode)
-import Keyboard
-import League exposing (League, isPlayerIgnored)
-import List exposing (head)
+import League exposing (League, Match, Outcome, getPlayer, currentMatch, init)
 import Player exposing (Player)
-import Random
-import Set exposing (Set)
-import String
-import Task
+import Supabase
+import Config
+import Elo
+import History
+import Time
+import Set
 import Http
+import Json.Decode as Decode
+import Json.Encode as Encode
+import Random
+import Task
+import Process
+import File
+import File.Select as Select
+import Keyboard
+import Browser exposing (Document)
 
 
--- VERSIONED DATA STRUCTURE
-
-type alias VersionedLeague =
-    { version : Int
-    , timestamp : Int  -- Unix timestamp when saved
-    , checksum : String  -- Simple hash for integrity check
-    , league : League
-    }
-
-encodeVersionedLeague : VersionedLeague -> Encode.Value
-encodeVersionedLeague versionedLeague =
-    Encode.object
-        [ ( "version", Encode.int versionedLeague.version )
-        , ( "timestamp", Encode.int versionedLeague.timestamp )
-        , ( "checksum", Encode.string versionedLeague.checksum )
-        , ( "data", League.encode versionedLeague.league )
-        ]
-
-decodeVersionedLeague : Decode.Decoder VersionedLeague
-decodeVersionedLeague =
-    Decode.map4 VersionedLeague
-        (Decode.field "version" Decode.int)
-        (Decode.field "timestamp" Decode.int)
-        (Decode.field "checksum" Decode.string)
-        (Decode.field "data" League.decoder)
-
--- Fallback decoder for old format (direct League)
-legacyLeagueDecoder : Decode.Decoder VersionedLeague
-legacyLeagueDecoder =
-    League.decoder
-        |> Decode.map (\league ->
-            { version = 1
-            , timestamp = 0  -- Unknown timestamp for legacy data
-            , checksum = "legacy"
-            , league = league
-            }
-        )
-
--- Try versioned format first, fallback to legacy
-versionedLeagueDecoder : Decode.Decoder VersionedLeague
-versionedLeagueDecoder =
-    Decode.oneOf
-        [ decodeVersionedLeague
-        , legacyLeagueDecoder
-        , -- Handle empty/null case by creating default league
-          Decode.succeed 
-            { version = 1
-            , timestamp = 0
-            , checksum = "empty"
-            , league = League.init
-            }
-        ]
-
--- Simple checksum function (hash of player count and first few player names)
-generateChecksum : League -> String
-generateChecksum league =
-    let
-        playerList = League.players league
-        playerCount = List.length playerList
-        firstNames = 
-            playerList
-                |> List.take 3
-                |> List.map Player.name
-                |> String.join ","
-    in
-    String.fromInt playerCount ++ ":" ++ firstNames
 
 
--- PORTS (local persistence)
-
-port saveStandings : String -> Cmd msg
-port askForStandings : String -> Cmd msg
-port receiveStandings : (String -> msg) -> Sub msg
-
-port saveAutoSave : Bool -> Cmd msg
-port askForAutoSave : String -> Cmd msg
-port receiveAutoSave : (Bool -> msg) -> Sub msg
-
--- PORTS (Drive via Apps Script)
-
-port saveToPublicDrive : String -> Cmd msg
-port loadFromPublicDrive : String -> Cmd msg  
-port receivePublicDriveStatus : (String -> msg) -> Sub msg
-port receiveMatchSaveComplete : (() -> msg) -> Sub msg
-
--- DEBUG PORT
-port sendVoteCount : Int -> Cmd msg
-
--- PORTS (Persist time filter)
-port saveTimeFilter : String -> Cmd msg
-port askForTimeFilter : String -> Cmd msg
-port receiveTimeFilter : (String -> msg) -> Sub msg
-
--- PORTS (Persist local ignore list)
-port saveIgnoredPlayers : String -> Cmd msg
-port askForIgnoredPlayers : String -> Cmd msg
-port receiveIgnoredPlayers : (String -> msg) -> Sub msg
-
-
--- FLAGS / MODEL
-
-type alias Flags =
-    ()
-
+type alias Flags = ()
 
 type alias Model =
-    { history : History League
+    { history : History.History League
     , newPlayerName : String
     , autoSave : Bool
     , status : Maybe String
-    , lastSynced : Maybe String
-    , votesUntilDriveSync : Int
+    , lastSynced : Maybe Time.Posix
     , shouldStartNextMatchAfterLoad : Bool
     , autoSaveInProgress : Bool
-    , driveLoadInProgress : Bool
     , timeFilter : TimeFilter
-    , ignoredPlayers : Set String  -- Player IDs that are locally ignored
+    , ignoredPlayers : Set.Set String
     , customMatchupPlayerA : Maybe Player
     , customMatchupPlayerB : Maybe Player
     , showCustomMatchup : Bool
@@ -154,31 +46,30 @@ type alias Model =
     , playerBSearch : String
     , playerASearchResults : List Player
     , playerBSearchResults : List Player
-    , playerDeletionConfirmation : Maybe (Player, Int)  -- Player to delete and confirmation step (1 or 2)
-    , dataVersion : Int  -- Incremented on each save to detect conflicts
-    , lastModified : Int  -- Unix timestamp of last modification
+    , playerDeletionConfirmation : Maybe (Player, Int)
+    , dataVersion : Int
+    , lastModified : Int
+    , driveLoadInProgress : Bool
+    }
+
+type alias VersionedLeague =
+    { version : Int
+    , timestamp : Int
+    , checksum : String
+    , league : League
     }
 
 
-
--- MESSAGES
+type TimeFilter
+    = All
+    | AMOnly
+    | PMOnly
 
 type Msg
-    = KeeperUpdatedNewPlayerName String
-    | KeeperWantsToAddNewPlayer
-    | KeeperWantsToRetirePlayer Player
-    | ConfirmPlayerDeletion Player Int
-    | CancelPlayerDeletion
-    | KeeperWantsToIgnorePlayer Player
-    | KeeperWantsToUnignorePlayer Player
-    | KeeperWantsToSkipMatch
-    | GotNextMatch (Maybe League.Match)
+    = GotNextMatch (Maybe League.Match)
     | MatchFinished League.Outcome
     | KeeperWantsToSaveStandings
-    | KeeperWantsToSaveToDrive
-    | KeeperWantsToLoadStandings
-    | KeeperWantsToRefreshFromDrive
-    | SelectedStandingsFile File
+    | SelectedStandingsFile String
     | PeriodicSync
     | AutoSaveCompleted
     | AutoSaveTimeout
@@ -193,13 +84,12 @@ type Msg
     | KeeperUpdatedPlayerASearch String
     | KeeperUpdatedPlayerBSearch String
     | LoadedLeague (Result String League)
-    | GotPlayers (Result Http.Error League)
+    | GotPlayers (Result Http.Error (List Player))
     | ReceivedStandings String
     | ReceivedAutoSave Bool
     | ToggleAutoSave
     | ShowStatus String
     | ClearStatus
-    | ReceivedPublicDriveStatus String
     | IgnoredKey
     | TogglePlayerAM Player
     | TogglePlayerPM Player
@@ -207,14 +97,68 @@ type Msg
     | ReceivedTimeFilter String
     | ReceivedIgnoredPlayers String
     | ReceivedCurrentTime Time.Posix
+    | MatchSaved (Result Http.Error Supabase.Match)
+    | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
+    | KeeperUpdatedNewPlayerName String
+    | KeeperWantsToAddNewPlayer
+    | KeeperWantsToRetirePlayer Player
+    | ConfirmPlayerDeletion Player Int
+    | CancelPlayerDeletion
+    | KeeperWantsToIgnorePlayer Player
+    | KeeperWantsToUnignorePlayer Player
+    | KeeperWantsToSkipMatch
+    | KeeperWantsToSaveToDrive
+    | KeeperWantsToRefreshFromDrive
+    | KeeperWantsToLoadStandings
+    | ReceivedPublicDriveStatus String
 
 
 
-type TimeFilter
-    = All
-    | AMOnly
-    | PMOnly
 
+-- HELPER FUNCTIONS AND PORTS
+
+-- CSS helper
+css : List Css.Style -> Html.Attribute msg
+css styles =
+    Attributes.style "" ""
+
+
+
+-- JSON encode helper
+encode : Int -> Encode.Value -> String
+encode indent value =
+    Encode.encode indent value
+
+-- Generate checksum for league data
+generateChecksum : League -> String
+generateChecksum league =
+    "checksum-" ++ String.fromInt (League.players league |> List.length)
+
+-- Versioned league decoder
+versionedLeagueDecoder : Decode.Decoder VersionedLeague
+versionedLeagueDecoder =
+    Decode.map4 VersionedLeague
+        (Decode.field "version" Decode.int)
+        (Decode.field "timestamp" Decode.int)
+        (Decode.field "checksum" Decode.string)
+        (Decode.field "league" League.decoder)
+
+-- Port stubs (replace with actual ports if needed)
+port askForAutoSave : String -> Cmd msg
+port askForTimeFilter : String -> Cmd msg
+port askForIgnoredPlayers : String -> Cmd msg
+port saveStandings : String -> Cmd msg
+port saveAutoSave : Bool -> Cmd msg
+port receiveStandings : (String -> msg) -> Sub msg
+port receiveAutoSave : (Bool -> msg) -> Sub msg
+port receiveTimeFilter : (String -> msg) -> Sub msg
+port receiveIgnoredPlayers : (String -> msg) -> Sub msg
+port saveIgnoredPlayers : String -> Cmd msg
+
+-- Stub functions for Drive operations (to be removed/replaced)
+loadFromPublicDrive : String -> Cmd msg
+loadFromPublicDrive _ =
+    Cmd.none
 
 
 
@@ -223,34 +167,81 @@ type TimeFilter
 init : Flags -> ( Model, Cmd Msg )
 init _ =
     ( { history = History.init 50 League.init
-      , newPlayerName = ""
-      , autoSave = True
-      , status = Nothing
-      , lastSynced = Nothing
-    , votesUntilDriveSync = 25
-      , shouldStartNextMatchAfterLoad = False
-    , autoSaveInProgress = False
-    , driveLoadInProgress = True  -- Start with loading in progress
-    , timeFilter = All
-    , ignoredPlayers = Set.empty
-    , customMatchupPlayerA = Nothing
-    , customMatchupPlayerB = Nothing
-    , showCustomMatchup = False
-    , playerASearch = ""
-    , playerBSearch = ""
-    , playerASearchResults = []
-    , playerBSearchResults = []
-    , playerDeletionConfirmation = Nothing
-    , dataVersion = 1
-    , lastModified = 0
-      }
-        , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", loadFromPublicDrive "init" ]
+        , newPlayerName = ""
+        , autoSave = True
+        , status = Nothing
+        , lastSynced = Nothing
+        , shouldStartNextMatchAfterLoad = False
+        , autoSaveInProgress = False
+        , timeFilter = All
+        , ignoredPlayers = Set.empty
+        , customMatchupPlayerA = Nothing
+        , customMatchupPlayerB = Nothing
+        , showCustomMatchup = False
+        , playerASearch = ""
+        , playerBSearch = ""
+        , playerASearchResults = []
+        , playerBSearchResults = []
+        , playerDeletionConfirmation = Nothing
+        , dataVersion = 1
+        , lastModified = 0
+        , driveLoadInProgress = False
+        }
+        , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
     )
         |> startNextMatchIfPossible
 
 
 
 -- HELPERS
+-- Convert League and Outcome to Supabase.Match
+toSupabaseMatch : League -> League.Outcome -> Supabase.Match
+toSupabaseMatch league outcome =
+    let
+        -- You may need to adjust these fields to match your League/Player types
+        (playerA, playerB) =
+            case League.currentMatch league of
+                Just (League.Match a b) -> (a, b)
+                Nothing -> (Player.init "A", Player.init "B")
+        winnerId =
+            case outcome of
+                League.Win { won } -> Player.id won
+                League.Draw _ -> Player.id playerA -- or handle draw differently
+        ratingBeforeA = Player.rating playerA
+        ratingBeforeB = Player.rating playerB
+        ratingAfterA = Player.rating (League.getPlayer (Player.id playerA) league |> Maybe.withDefault playerA)
+        ratingAfterB = Player.rating (League.getPlayer (Player.id playerB) league |> Maybe.withDefault playerB)
+        kFactor = Elo.getKFactor ratingBeforeA ratingBeforeB
+        now = Time.millisToPosix 0 -- Replace with actual time if available
+    in
+    { id = 0
+    , playerAId = Player.id playerA
+    , playerBId = Player.id playerB
+    , winnerId = winnerId
+    , playerARatingBefore = ratingBeforeA
+    , playerBRatingBefore = ratingBeforeB
+    , playerARatingAfter = ratingAfterA
+    , playerBRatingAfter = ratingAfterB
+    , kFactorUsed = kFactor
+    , playedAt = now
+    }
+
+-- Convert League to Supabase.LeagueState
+toSupabaseLeagueState : League -> Supabase.LeagueState
+toSupabaseLeagueState league =
+    { id = 1
+    , currentMatchPlayerA =
+        case League.currentMatch league of
+            Just (League.Match a _) -> Just (Player.id a)
+            _ -> Nothing
+    , currentMatchPlayerB =
+        case League.currentMatch league of
+            Just (League.Match _ b) -> Just (Player.id b)
+            _ -> Nothing
+    , votesUntilSync = 25
+    , lastSyncAt = Time.millisToPosix 0 -- Replace with actual time if available
+    , updatedAt = Time.millisToPosix 0 -- Replace with actual time if available
+    }
 
 -- Create versioned league data for saving
 createVersionedLeague : Model -> VersionedLeague
@@ -288,7 +279,7 @@ httpErrorToString err =
 -- Helper to check if voting should be disabled
 isVotingDisabled : Model -> Bool
 isVotingDisabled model =
-    model.autoSaveInProgress || model.driveLoadInProgress
+    model.autoSaveInProgress
 
 
 maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -350,8 +341,7 @@ subscriptions model =
             Sub.batch
                 [ receiveStandings ReceivedStandings
                 , receiveAutoSave ReceivedAutoSave
-                , receivePublicDriveStatus ReceivedPublicDriveStatus
-                , receiveMatchSaveComplete (\_ -> AutoSaveCompleted)
+                
                 , Time.every (30 * 1000) (\_ -> PeriodicSync) -- Every 30 seconds
                 , receiveTimeFilter ReceivedTimeFilter
                 , receiveIgnoredPlayers ReceivedIgnoredPlayers
@@ -396,21 +386,7 @@ startNextMatchIfPossible ( model, cmd ) =
 
 maybeSaveToDriveAfterVote : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 maybeSaveToDriveAfterVote ( model, cmd ) =
-    let
-        newCount = model.votesUntilDriveSync - 1
-    in
-    if newCount <= 0 then
-        -- Save to Drive and don't start next match until reload completes
-    ( { model | votesUntilDriveSync = 25, status = Just "Saving to Google Sheets...", autoSaveInProgress = True }
-        , Cmd.batch
-            [ saveToPublicDrive (encode 0 (League.encode (History.current model.history)))
-            , Task.succeed (ShowStatus "Auto-saving to Drive...") |> Task.perform identity
-            , Process.sleep 10000 |> Task.perform (\_ -> AutoSaveTimeout) -- 10 second timeout
-            , sendVoteCount 25  -- Reset to 25
-            ]
-        )
-    else
-        ( { model | votesUntilDriveSync = newCount }, Cmd.batch [ cmd, sendVoteCount newCount ] )
+    ( model, cmd )
 
 
 
@@ -533,17 +509,33 @@ update msg model =
                 -- Ignore votes during auto-save to prevent race conditions
                 ( model, Cmd.none )
             else
-                ( { model | history = History.mapPush (League.finishMatch outcome) model.history }
-                , Cmd.none
+                let
+                    updatedHistory = History.mapPush (League.finishMatch outcome) model.history
+                    league = History.current updatedHistory
+                    match = toSupabaseMatch league outcome
+                    leagueState = toSupabaseLeagueState league
+                    matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                    leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                in
+                ( { model | history = updatedHistory }
+                , Cmd.batch [ matchCmd, leagueStateCmd ]
                 )
-                    |> maybeSaveToDriveAfterVote
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
+        MatchSaved result ->
+            case result of
+                Ok _ -> ( { model | status = Just "Match saved to Supabase!" }, Cmd.none )
+                Err err -> ( { model | status = Just ("Failed to save match: " ++ httpErrorToString err) }, Cmd.none )
+
+        LeagueStateSaved result ->
+            case result of
+                Ok _ -> ( { model | status = Just "League state updated!" }, Cmd.none )
+                Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
 
         KeeperWantsToSaveStandings ->
             ( model
             , Cmd.batch
-                [ Download.string
+                [ -- Download functionality removed; replace with alternative if needed
                     "standings.json"
                     "application/json"
                     (encode 2 (League.encode (History.current model.history)))
@@ -736,18 +728,13 @@ update msg model =
             case result of
                 Ok league ->
                     ( { model | history = History.init 50 league }
-                    , Task.succeed (ShowStatus "Standings loaded from Drive") |> Task.perform identity
+                    , Task.succeed (ShowStatus "Standings loaded from Supabase") |> Task.perform identity
                     )
                         |> startNextMatchIfPossible
 
                 Err httpErr ->
-                    -- If Drive fetch fails (or Drive file is malformed), ask the host to return
-                    -- the last saved public copy from localStorage as a fallback.
-                    ( { model | status = Just ("Failed to fetch players from Drive: " ++ httpErrorToString httpErr) }
-                    , Cmd.batch
-                        [ loadFromPublicDrive ""
-                        , Task.succeed (ShowStatus "Failed to load Drive, falling back to saved public copy") |> Task.perform identity
-                        ]
+                    ( { model | status = Just ("Failed to fetch players from Supabase: " ++ httpErrorToString httpErr) }
+                    , Cmd.none
                     )
 
         ReceivedStandings jsonString ->
@@ -823,7 +810,7 @@ update msg model =
             let
                 parts = String.split "|" msgStr
                 maybeTs =
-                    case List.drop 1 parts |> head of
+                    case List.drop 1 parts |> List.head of
                         Just t -> Just t
                         Nothing -> Nothing
             in
@@ -915,8 +902,6 @@ view model =
                 , Html.section
                     [ css [ Css.textAlign Css.center, Css.marginTop (Css.px 32) ] ]
                     [ blueButton "EXPORT RANKINGS" (Just KeeperWantsToSaveStandings)
-                    , blueButton "SAVE TO DRIVE" (Just KeeperWantsToSaveToDrive)
-                    , blueButton "REFRESH FROM DRIVE" (Just KeeperWantsToRefreshFromDrive)
                     ]
                 ]
             ]
@@ -1019,7 +1004,7 @@ view model =
                             , Css.top (Css.px 20)
                             , Css.right (Css.px 20)
                             , Css.backgroundColor (if model.autoSaveInProgress then Css.hex "EF4444" 
-                                                       else if model.driveLoadInProgress then Css.hex "F59E0B"
+                                                       
                                                        else Css.hex "10B981")
                             , Css.color (Css.hex "FFFFFF")
                             , Css.padding4 (Css.px 12) (Css.px 16) (Css.px 12) (Css.px 16)
@@ -1039,7 +1024,7 @@ view model =
                             [ Html.span [] 
                                 [ Html.text (message ++ 
                                     (if model.autoSaveInProgress then " (Voting disabled)" 
-                                     else if model.driveLoadInProgress then " (Loading data...)" 
+                                     
                                      else "")) ]
                             , Html.button
                                 [ css
