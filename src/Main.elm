@@ -152,7 +152,6 @@ type alias Model =
     , addPlayerAM : Bool
     , addPlayerPM : Bool
     , votesSinceLastSync : Int
-    , pendingMatchAfterSync : Maybe League.Match
     , isSyncing : Bool
     }
 
@@ -196,7 +195,6 @@ init _ =
         , addPlayerAM = True
         , addPlayerPM = True
         , votesSinceLastSync = 0
-        , pendingMatchAfterSync = Nothing
         , isSyncing = False
         }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
@@ -284,7 +282,7 @@ httpErrorToString err =
 -- Helper to check if voting should be disabled
 isVotingDisabled : Model -> Bool
 isVotingDisabled model =
-    model.autoSaveInProgress
+    model.autoSaveInProgress || model.isSyncing
 
 
 maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -327,9 +325,6 @@ timePlayerFilter model =
 startNextMatchIfPossible : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 startNextMatchIfPossible ( model, cmd ) =
     if League.currentMatch (History.current model.history) /= Nothing then
-        ( model, cmd )
-    else if model.isSyncing then
-        -- Don't generate new matches while syncing - we'll restore after sync completes
         ( model, cmd )
     else
         ( model
@@ -492,14 +487,9 @@ update msg model =
                 |> startNextMatchIfPossible
 
         GotNextMatch (Just match) ->
-            if model.isSyncing then
-                -- Store the match for after sync completes
-                ( { model | pendingMatchAfterSync = Just match }, Cmd.none )
-            else
-                -- Start the match normally
-                ( { model | history = History.mapInPlace (League.startMatch match) model.history }
-                , Cmd.none
-                )
+            ( { model | history = History.mapInPlace (League.startMatch match) model.history }
+            , Cmd.none
+            )
 
         GotNextMatch Nothing ->
             ( model, Cmd.none )
@@ -530,12 +520,10 @@ update msg model =
                     matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
                 in
                 let
-                    -- Check if this will be the 10th vote and trigger sync
-                    willSync = (model.votesSinceLastSync + 1) >= 10
-                    updatedModel = { model | history = updatedHistory, status = Nothing, isSyncing = willSync }
+                    updatedModel = { model | history = updatedHistory, status = Nothing }
                 in
                     ( updatedModel, matchCmd )
-                    |> (if willSync then identity else startNextMatchIfPossible)
+                    |> startNextMatchIfPossible
                     |> maybeAutoSave
         MatchSaved result ->
             case result of
@@ -715,22 +703,11 @@ update msg model =
                     in
                     let
                         updatedModel = { model | history = History.init 50 league, votesSinceLastSync = 0, isSyncing = False }
-                        -- If we have a pending match from before sync, start it now
-                        hasPendingMatch = model.pendingMatchAfterSync /= Nothing
-                        modelWithMatch = case model.pendingMatchAfterSync of
-                            Just match ->
-                                { updatedModel 
-                                | history = History.mapInPlace (League.startMatch match) updatedModel.history
-                                , pendingMatchAfterSync = Nothing
-                                }
-                            Nothing ->
-                                updatedModel
                     in
-                    ( modelWithMatch
+                    ( updatedModel
                     , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
-                        -- Only generate new match if we didn't restore a pending one
-                        |> (if hasPendingMatch then identity else startNextMatchIfPossible)
+                        |> startNextMatchIfPossible
 
                 Err httpErr ->
                     ( { model | status = Just ("Failed to fetch players from Supabase: " ++ httpErrorToString httpErr) }

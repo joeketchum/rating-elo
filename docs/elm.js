@@ -6943,6 +6943,7 @@ var $author$project$Main$init = function (_v0) {
 				dataVersion: 1,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				ignoredPlayers: $elm$core$Set$empty,
+				isSyncing: false,
 				lastModified: 0,
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
@@ -6969,14 +6970,6 @@ var $author$project$Main$init = function (_v0) {
 						A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers)
 					]))));
 };
-var $author$project$League$Draw = function (a) {
-	return {$: 'Draw', a: a};
-};
-var $author$project$Main$IgnoredKey = {$: 'IgnoredKey'};
-var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
-var $author$project$Main$MatchFinished = function (a) {
-	return {$: 'MatchFinished', a: a};
-};
 var $author$project$Main$ReceivedAutoSave = function (a) {
 	return {$: 'ReceivedAutoSave', a: a};
 };
@@ -6986,423 +6979,18 @@ var $author$project$Main$ReceivedIgnoredPlayers = function (a) {
 var $author$project$Main$ReceivedTimeFilter = function (a) {
 	return {$: 'ReceivedTimeFilter', a: a};
 };
-var $author$project$League$Win = function (a) {
-	return {$: 'Win', a: a};
-};
 var $elm$core$Platform$Sub$batch = _Platform_batch;
-var $ohanhi$keyboard$Keyboard$Character = function (a) {
-	return {$: 'Character', a: a};
-};
-var $elm$core$String$toUpper = _String_toUpper;
-var $ohanhi$keyboard$Keyboard$characterKeyUpper = function (_v0) {
-	var value = _v0.a;
-	return ($elm$core$String$length(value) === 1) ? $elm$core$Maybe$Just(
-		$ohanhi$keyboard$Keyboard$Character(
-			$elm$core$String$toUpper(value))) : $elm$core$Maybe$Nothing;
-};
-var $ohanhi$keyboard$Keyboard$RawKey = function (a) {
-	return {$: 'RawKey', a: a};
-};
-var $ohanhi$keyboard$Keyboard$eventKeyDecoder = A2(
-	$elm$json$Json$Decode$field,
-	'key',
-	A2($elm$json$Json$Decode$map, $ohanhi$keyboard$Keyboard$RawKey, $elm$json$Json$Decode$string));
-var $elm$browser$Browser$Events$Document = {$: 'Document'};
-var $elm$browser$Browser$Events$MySub = F3(
-	function (a, b, c) {
-		return {$: 'MySub', a: a, b: b, c: c};
-	});
-var $elm$browser$Browser$Events$State = F2(
-	function (subs, pids) {
-		return {pids: pids, subs: subs};
-	});
-var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
-	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
-var $elm$browser$Browser$Events$nodeToKey = function (node) {
-	if (node.$ === 'Document') {
-		return 'd_';
-	} else {
-		return 'w_';
-	}
-};
-var $elm$browser$Browser$Events$addKey = function (sub) {
-	var node = sub.a;
-	var name = sub.b;
-	return _Utils_Tuple2(
-		_Utils_ap(
-			$elm$browser$Browser$Events$nodeToKey(node),
-			name),
-		sub);
-};
-var $elm$core$Dict$fromList = function (assocs) {
-	return A3(
-		$elm$core$List$foldl,
-		F2(
-			function (_v0, dict) {
-				var key = _v0.a;
-				var value = _v0.b;
-				return A3($elm$core$Dict$insert, key, value, dict);
-			}),
-		$elm$core$Dict$empty,
-		assocs);
-};
-var $elm$core$Dict$foldl = F3(
-	function (func, acc, dict) {
-		foldl:
-		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
-				return acc;
-			} else {
-				var key = dict.b;
-				var value = dict.c;
-				var left = dict.d;
-				var right = dict.e;
-				var $temp$func = func,
-					$temp$acc = A3(
-					func,
-					key,
-					value,
-					A3($elm$core$Dict$foldl, func, acc, left)),
-					$temp$dict = right;
-				func = $temp$func;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldl;
-			}
-		}
-	});
-var $elm$core$Dict$merge = F6(
-	function (leftStep, bothStep, rightStep, leftDict, rightDict, initialResult) {
-		var stepState = F3(
-			function (rKey, rValue, _v0) {
-				stepState:
-				while (true) {
-					var list = _v0.a;
-					var result = _v0.b;
-					if (!list.b) {
-						return _Utils_Tuple2(
-							list,
-							A3(rightStep, rKey, rValue, result));
-					} else {
-						var _v2 = list.a;
-						var lKey = _v2.a;
-						var lValue = _v2.b;
-						var rest = list.b;
-						if (_Utils_cmp(lKey, rKey) < 0) {
-							var $temp$rKey = rKey,
-								$temp$rValue = rValue,
-								$temp$_v0 = _Utils_Tuple2(
-								rest,
-								A3(leftStep, lKey, lValue, result));
-							rKey = $temp$rKey;
-							rValue = $temp$rValue;
-							_v0 = $temp$_v0;
-							continue stepState;
-						} else {
-							if (_Utils_cmp(lKey, rKey) > 0) {
-								return _Utils_Tuple2(
-									list,
-									A3(rightStep, rKey, rValue, result));
-							} else {
-								return _Utils_Tuple2(
-									rest,
-									A4(bothStep, lKey, lValue, rValue, result));
-							}
-						}
-					}
-				}
-			});
-		var _v3 = A3(
-			$elm$core$Dict$foldl,
-			stepState,
-			_Utils_Tuple2(
-				$elm$core$Dict$toList(leftDict),
-				initialResult),
-			rightDict);
-		var leftovers = _v3.a;
-		var intermediateResult = _v3.b;
-		return A3(
-			$elm$core$List$foldl,
-			F2(
-				function (_v4, result) {
-					var k = _v4.a;
-					var v = _v4.b;
-					return A3(leftStep, k, v, result);
-				}),
-			intermediateResult,
-			leftovers);
-	});
-var $elm$browser$Browser$Events$Event = F2(
-	function (key, event) {
-		return {event: event, key: key};
-	});
-var $elm$browser$Browser$Events$spawn = F3(
-	function (router, key, _v0) {
-		var node = _v0.a;
-		var name = _v0.b;
-		var actualNode = function () {
-			if (node.$ === 'Document') {
-				return _Browser_doc;
-			} else {
-				return _Browser_window;
-			}
-		}();
-		return A2(
-			$elm$core$Task$map,
-			function (value) {
-				return _Utils_Tuple2(key, value);
-			},
-			A3(
-				_Browser_on,
-				actualNode,
-				name,
-				function (event) {
-					return A2(
-						$elm$core$Platform$sendToSelf,
-						router,
-						A2($elm$browser$Browser$Events$Event, key, event));
-				}));
-	});
-var $elm$core$Dict$union = F2(
-	function (t1, t2) {
-		return A3($elm$core$Dict$foldl, $elm$core$Dict$insert, t2, t1);
-	});
-var $elm$browser$Browser$Events$onEffects = F3(
-	function (router, subs, state) {
-		var stepRight = F3(
-			function (key, sub, _v6) {
-				var deads = _v6.a;
-				var lives = _v6.b;
-				var news = _v6.c;
-				return _Utils_Tuple3(
-					deads,
-					lives,
-					A2(
-						$elm$core$List$cons,
-						A3($elm$browser$Browser$Events$spawn, router, key, sub),
-						news));
-			});
-		var stepLeft = F3(
-			function (_v4, pid, _v5) {
-				var deads = _v5.a;
-				var lives = _v5.b;
-				var news = _v5.c;
-				return _Utils_Tuple3(
-					A2($elm$core$List$cons, pid, deads),
-					lives,
-					news);
-			});
-		var stepBoth = F4(
-			function (key, pid, _v2, _v3) {
-				var deads = _v3.a;
-				var lives = _v3.b;
-				var news = _v3.c;
-				return _Utils_Tuple3(
-					deads,
-					A3($elm$core$Dict$insert, key, pid, lives),
-					news);
-			});
-		var newSubs = A2($elm$core$List$map, $elm$browser$Browser$Events$addKey, subs);
-		var _v0 = A6(
-			$elm$core$Dict$merge,
-			stepLeft,
-			stepBoth,
-			stepRight,
-			state.pids,
-			$elm$core$Dict$fromList(newSubs),
-			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
-		var deadPids = _v0.a;
-		var livePids = _v0.b;
-		var makeNewPids = _v0.c;
-		return A2(
-			$elm$core$Task$andThen,
-			function (pids) {
-				return $elm$core$Task$succeed(
-					A2(
-						$elm$browser$Browser$Events$State,
-						newSubs,
-						A2(
-							$elm$core$Dict$union,
-							livePids,
-							$elm$core$Dict$fromList(pids))));
-			},
-			A2(
-				$elm$core$Task$andThen,
-				function (_v1) {
-					return $elm$core$Task$sequence(makeNewPids);
-				},
-				$elm$core$Task$sequence(
-					A2($elm$core$List$map, $elm$core$Process$kill, deadPids))));
-	});
-var $elm$browser$Browser$Events$onSelfMsg = F3(
-	function (router, _v0, state) {
-		var key = _v0.key;
-		var event = _v0.event;
-		var toMessage = function (_v2) {
-			var subKey = _v2.a;
-			var _v3 = _v2.b;
-			var node = _v3.a;
-			var name = _v3.b;
-			var decoder = _v3.c;
-			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
-		};
-		var messages = A2($elm$core$List$filterMap, toMessage, state.subs);
-		return A2(
-			$elm$core$Task$andThen,
-			function (_v1) {
-				return $elm$core$Task$succeed(state);
-			},
-			$elm$core$Task$sequence(
-				A2(
-					$elm$core$List$map,
-					$elm$core$Platform$sendToApp(router),
-					messages)));
-	});
-var $elm$browser$Browser$Events$subMap = F2(
-	function (func, _v0) {
-		var node = _v0.a;
-		var name = _v0.b;
-		var decoder = _v0.c;
-		return A3(
-			$elm$browser$Browser$Events$MySub,
-			node,
-			name,
-			A2($elm$json$Json$Decode$map, func, decoder));
-	});
-_Platform_effectManagers['Browser.Events'] = _Platform_createManager($elm$browser$Browser$Events$init, $elm$browser$Browser$Events$onEffects, $elm$browser$Browser$Events$onSelfMsg, 0, $elm$browser$Browser$Events$subMap);
-var $elm$browser$Browser$Events$subscription = _Platform_leaf('Browser.Events');
-var $elm$browser$Browser$Events$on = F3(
-	function (node, name, decoder) {
-		return $elm$browser$Browser$Events$subscription(
-			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
-	});
-var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
-var $ohanhi$keyboard$Keyboard$downs = function (toMsg) {
-	return $elm$browser$Browser$Events$onKeyDown(
-		A2($elm$json$Json$Decode$map, toMsg, $ohanhi$keyboard$Keyboard$eventKeyDecoder));
-};
-var $ohanhi$keyboard$Keyboard$ArrowDown = {$: 'ArrowDown'};
-var $ohanhi$keyboard$Keyboard$ArrowLeft = {$: 'ArrowLeft'};
-var $ohanhi$keyboard$Keyboard$ArrowRight = {$: 'ArrowRight'};
-var $ohanhi$keyboard$Keyboard$ArrowUp = {$: 'ArrowUp'};
-var $ohanhi$keyboard$Keyboard$End = {$: 'End'};
-var $ohanhi$keyboard$Keyboard$Home = {$: 'Home'};
-var $ohanhi$keyboard$Keyboard$PageDown = {$: 'PageDown'};
-var $ohanhi$keyboard$Keyboard$PageUp = {$: 'PageUp'};
-var $ohanhi$keyboard$Keyboard$navigationKey = function (_v0) {
-	var value = _v0.a;
-	switch (value) {
-		case 'ArrowDown':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowDown);
-		case 'ArrowLeft':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowLeft);
-		case 'ArrowRight':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowRight);
-		case 'ArrowUp':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowUp);
-		case 'Down':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowDown);
-		case 'Left':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowLeft);
-		case 'Right':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowRight);
-		case 'Up':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$ArrowUp);
-		case 'End':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$End);
-		case 'Home':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$Home);
-		case 'PageDown':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$PageDown);
-		case 'PageUp':
-			return $elm$core$Maybe$Just($ohanhi$keyboard$Keyboard$PageUp);
-		default:
-			return $elm$core$Maybe$Nothing;
-	}
-};
-var $ohanhi$keyboard$Keyboard$rawValue = function (_v0) {
-	var key = _v0.a;
-	return key;
-};
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
 var $author$project$Main$receiveIgnoredPlayers = _Platform_incomingPort('receiveIgnoredPlayers', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveTimeFilter = _Platform_incomingPort('receiveTimeFilter', $elm$json$Json$Decode$string);
 var $author$project$Main$subscriptions = function (model) {
-	var _v0 = $author$project$League$currentMatch(
-		$author$project$History$current(model.history));
-	if (_v0.$ === 'Just') {
-		var _v1 = _v0.a;
-		var left = _v1.a;
-		var right = _v1.b;
-		return $ohanhi$keyboard$Keyboard$downs(
-			function (rawKey) {
-				var _v2 = $ohanhi$keyboard$Keyboard$navigationKey(rawKey);
-				_v2$3:
-				while (true) {
-					if (_v2.$ === 'Just') {
-						switch (_v2.a.$) {
-							case 'ArrowLeft':
-								var _v3 = _v2.a;
-								return $author$project$Main$MatchFinished(
-									$author$project$League$Win(
-										{lost: right, won: left}));
-							case 'ArrowRight':
-								var _v4 = _v2.a;
-								return $author$project$Main$MatchFinished(
-									$author$project$League$Win(
-										{lost: left, won: right}));
-							case 'ArrowUp':
-								var _v5 = _v2.a;
-								return $author$project$Main$MatchFinished(
-									$author$project$League$Draw(
-										{playerA: left, playerB: right}));
-							default:
-								break _v2$3;
-						}
-					} else {
-						break _v2$3;
-					}
-				}
-				var keyStr = $ohanhi$keyboard$Keyboard$rawValue(rawKey);
-				if ((keyStr === 'Escape') || (keyStr === 'Esc')) {
-					return model.autoSaveInProgress ? $author$project$Main$IgnoredKey : $author$project$Main$KeeperWantsToSkipMatch;
-				} else {
-					var _v6 = $ohanhi$keyboard$Keyboard$characterKeyUpper(rawKey);
-					_v6$3:
-					while (true) {
-						if ((_v6.$ === 'Just') && (_v6.a.$ === 'Character')) {
-							switch (_v6.a.a) {
-								case '1':
-									return $author$project$Main$MatchFinished(
-										$author$project$League$Win(
-											{lost: right, won: left}));
-								case '2':
-									return $author$project$Main$MatchFinished(
-										$author$project$League$Win(
-											{lost: left, won: right}));
-								case '0':
-									return $author$project$Main$MatchFinished(
-										$author$project$League$Draw(
-											{playerA: left, playerB: right}));
-								default:
-									break _v6$3;
-							}
-						} else {
-							break _v6$3;
-						}
-					}
-					return $author$project$Main$IgnoredKey;
-				}
-			});
-	} else {
-		return $elm$core$Platform$Sub$batch(
-			_List_fromArray(
-				[
-					$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
-					$author$project$Main$receiveTimeFilter($author$project$Main$ReceivedTimeFilter),
-					$author$project$Main$receiveIgnoredPlayers($author$project$Main$ReceivedIgnoredPlayers)
-				]));
-	}
+	return $elm$core$Platform$Sub$batch(
+		_List_fromArray(
+			[
+				$author$project$Main$receiveAutoSave($author$project$Main$ReceivedAutoSave),
+				$author$project$Main$receiveTimeFilter($author$project$Main$ReceivedTimeFilter),
+				$author$project$Main$receiveIgnoredPlayers($author$project$Main$ReceivedIgnoredPlayers)
+			]));
 };
 var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$Main$MatchSaved = function (a) {
@@ -8631,15 +8219,7 @@ var $author$project$League$startMatch = F2(
 				}));
 	});
 var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
-	return $author$project$Player$Player(
-		{
-			am: supabasePlayer.playsAM,
-			id: $author$project$Player$PlayerId(supabasePlayer.id),
-			matches: supabasePlayer.matchesPlayed,
-			name: supabasePlayer.name,
-			pm: supabasePlayer.playsPM,
-			rating: supabasePlayer.rating
-		});
+	return $author$project$Player$init(supabasePlayer.name);
 };
 var $elm$http$Http$expectBytesResponse = F2(
 	function (toMsg, toResult) {
@@ -8714,97 +8294,36 @@ var $author$project$Main$update = F2(
 		switch (msg.$) {
 			case 'TogglePlayerAM':
 				var player = msg.a;
-				if ($author$project$Player$playsAM(player)) {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								timeToggleConfirmation: $elm$core$Maybe$Just(
-									_Utils_Tuple2(player, 'AM'))
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var updatedLeague = function (league) {
-						var _v2 = A2(
-							$author$project$League$getPlayer,
-							$author$project$Player$id(player),
-							league);
-						if (_v2.$ === 'Just') {
-							var p = _v2.a;
-							var newP = A2($author$project$Player$setAM, true, p);
-							return A2($author$project$League$updatePlayer, newP, league);
-						} else {
-							return league;
-						}
-					}(
-						$author$project$History$current(model.history));
-					return $author$project$Main$maybeAutoSave(
-						$author$project$Main$startNextMatchIfPossible(
-							_Utils_Tuple2(
-								_Utils_update(
-									model,
-									{
-										history: A2(
-											$author$project$History$mapPush,
-											function (_v1) {
-												return updatedLeague;
-											},
-											model.history)
-									}),
-								$elm$core$Platform$Cmd$none)));
-				}
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							timeToggleConfirmation: $elm$core$Maybe$Just(
+								_Utils_Tuple2(player, 'AM'))
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'TogglePlayerPM':
 				var player = msg.a;
-				if ($author$project$Player$playsPM(player)) {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								timeToggleConfirmation: $elm$core$Maybe$Just(
-									_Utils_Tuple2(player, 'PM'))
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var updatedLeague = function (league) {
-						var _v4 = A2(
-							$author$project$League$getPlayer,
-							$author$project$Player$id(player),
-							league);
-						if (_v4.$ === 'Just') {
-							var p = _v4.a;
-							var newP = A2($author$project$Player$setPM, true, p);
-							return A2($author$project$League$updatePlayer, newP, league);
-						} else {
-							return league;
-						}
-					}(
-						$author$project$History$current(model.history));
-					return $author$project$Main$maybeAutoSave(
-						$author$project$Main$startNextMatchIfPossible(
-							_Utils_Tuple2(
-								_Utils_update(
-									model,
-									{
-										history: A2(
-											$author$project$History$mapPush,
-											function (_v3) {
-												return updatedLeague;
-											},
-											model.history)
-									}),
-								$elm$core$Platform$Cmd$none)));
-				}
+				return _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{
+							timeToggleConfirmation: $elm$core$Maybe$Just(
+								_Utils_Tuple2(player, 'PM'))
+						}),
+					$elm$core$Platform$Cmd$none);
 			case 'ConfirmTogglePlayerTime':
 				var player = msg.a;
 				var timeType = msg.b;
+				var newState = msg.c;
 				var updatedLeague = function (league) {
-					var _v6 = A2(
+					var _v2 = A2(
 						$author$project$League$getPlayer,
 						$author$project$Player$id(player),
 						league);
-					if (_v6.$ === 'Just') {
-						var p = _v6.a;
-						var newP = (timeType === 'AM') ? A2($author$project$Player$setAM, false, p) : A2($author$project$Player$setPM, false, p);
+					if (_v2.$ === 'Just') {
+						var p = _v2.a;
+						var newP = (timeType === 'AM') ? A2($author$project$Player$setAM, newState, p) : A2($author$project$Player$setPM, newState, p);
 						return A2($author$project$League$updatePlayer, newP, league);
 					} else {
 						return league;
@@ -8819,7 +8338,7 @@ var $author$project$Main$update = F2(
 								{
 									history: A2(
 										$author$project$History$mapPush,
-										function (_v5) {
+										function (_v1) {
 											return updatedLeague;
 										},
 										model.history),
@@ -8947,8 +8466,8 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToIgnorePlayer':
 				var player = msg.a;
-				var _v7 = $author$project$Player$id(player);
-				var idInt = _v7.a;
+				var _v3 = $author$project$Player$id(player);
+				var idInt = _v3.a;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$insert,
 					$elm$core$String$fromInt(idInt),
@@ -8965,8 +8484,8 @@ var $author$project$Main$update = F2(
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
 			case 'KeeperWantsToUnignorePlayer':
 				var player = msg.a;
-				var _v8 = $author$project$Player$id(player);
-				var idInt = _v8.a;
+				var _v4 = $author$project$Player$id(player);
+				var idInt = _v4.a;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$remove,
 					$elm$core$String$fromInt(idInt),
@@ -9004,7 +8523,7 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var _v9 = msg.a;
+					var _v5 = msg.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'MatchFinished':
@@ -9017,12 +8536,12 @@ var $author$project$Main$update = F2(
 						$author$project$League$finishMatch(outcome),
 						model.history);
 					var league = $author$project$History$current(model.history);
-					var _v10 = function () {
-						var _v11 = $author$project$League$currentMatch(league);
-						if (_v11.$ === 'Just') {
-							var _v12 = _v11.a;
-							var a = _v12.a;
-							var b = _v12.b;
+					var _v6 = function () {
+						var _v7 = $author$project$League$currentMatch(league);
+						if (_v7.$ === 'Just') {
+							var _v8 = _v7.a;
+							var a = _v8.a;
+							var b = _v8.b;
 							return _Utils_Tuple2(a, b);
 						} else {
 							return _Utils_Tuple2(
@@ -9030,36 +8549,35 @@ var $author$project$Main$update = F2(
 								$author$project$Player$init('B'));
 						}
 					}();
-					var playerA = _v10.a;
-					var playerB = _v10.b;
+					var playerA = _v6.a;
+					var playerB = _v6.b;
 					var playerAId = function () {
-						var _v16 = $author$project$Player$id(playerA);
-						var id = _v16.a;
+						var _v12 = $author$project$Player$id(playerA);
+						var id = _v12.a;
 						return id;
 					}();
 					var winnerId = function () {
 						if (outcome.$ === 'Win') {
 							var won = outcome.a.won;
-							var _v15 = $author$project$Player$id(won);
-							var id = _v15.a;
+							var _v11 = $author$project$Player$id(won);
+							var id = _v11.a;
 							return id;
 						} else {
 							return playerAId;
 						}
 					}();
 					var playerBId = function () {
-						var _v13 = $author$project$Player$id(playerB);
-						var id = _v13.a;
+						var _v9 = $author$project$Player$id(playerB);
+						var id = _v9.a;
 						return id;
 					}();
 					var matchCmd = A5($author$project$Supabase$voteEdgeFunction, $author$project$Config$supabaseConfig, playerAId, playerBId, winnerId, $author$project$Main$MatchSaved);
+					var updatedModel = _Utils_update(
+						model,
+						{history: updatedHistory, status: $elm$core$Maybe$Nothing});
 					return $author$project$Main$maybeAutoSave(
 						$author$project$Main$startNextMatchIfPossible(
-							_Utils_Tuple2(
-								_Utils_update(
-									model,
-									{history: updatedHistory, status: $elm$core$Maybe$Nothing}),
-								matchCmd)));
+							_Utils_Tuple2(updatedModel, matchCmd)));
 				}
 			case 'MatchSaved':
 				var result = msg.a;
@@ -9075,7 +8593,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v18) {
+							function (_v14) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
@@ -9094,7 +8612,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v19) {
+							function (_v15) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(1000)));
@@ -9251,10 +8769,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v21 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v21.a.$ === 'Just') && (_v21.b.$ === 'Just')) {
-					var playerA = _v21.a.a;
-					var playerB = _v21.b.a;
+				var _v17 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v17.a.$ === 'Just') && (_v17.b.$ === 'Just')) {
+					var playerA = _v17.a.a;
+					var playerB = _v17.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9334,23 +8852,25 @@ var $author$project$Main$update = F2(
 					var playerCount = $elm$core$List$length(players);
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var firstPlayerRating = function () {
-						var _v23 = $elm$core$List$head(supabasePlayers);
-						if (_v23.$ === 'Just') {
-							var p = _v23.a;
+						var _v19 = $elm$core$List$head(supabasePlayers);
+						if (_v19.$ === 'Just') {
+							var p = _v19.a;
 							return $elm$core$String$fromInt(p.rating);
 						} else {
 							return 'no players';
 						}
 					}();
 					var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + (' players (first rating: ' + (firstPlayerRating + ')')));
+					var updatedModel = _Utils_update(
+						model,
+						{
+							history: A2($author$project$History$init, 50, league),
+							isSyncing: false,
+							votesSinceLastSync: 0
+						});
 					return $author$project$Main$startNextMatchIfPossible(
 						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									history: A2($author$project$History$init, 50, league),
-									votesSinceLastSync: 0
-								}),
+							updatedModel,
 							A2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
@@ -9403,7 +8923,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v24) {
+						function (_v20) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9454,9 +8974,9 @@ var $author$project$Main$ConfirmPlayerDeletion = F2(
 	function (a, b) {
 		return {$: 'ConfirmPlayerDeletion', a: a, b: b};
 	});
-var $author$project$Main$ConfirmTogglePlayerTime = F2(
-	function (a, b) {
-		return {$: 'ConfirmTogglePlayerTime', a: a, b: b};
+var $author$project$Main$ConfirmTogglePlayerTime = F3(
+	function (a, b, c) {
+		return {$: 'ConfirmTogglePlayerTime', a: a, b: b, c: c};
 	});
 var $author$project$Main$KeeperConfirmedAddPlayer = {$: 'KeeperConfirmedAddPlayer'};
 var $author$project$Main$KeeperToggledAddPlayerAM = {$: 'KeeperToggledAddPlayerAM'};
@@ -11110,6 +10630,9 @@ var $rtfeldman$elm_css$Css$borderColor = function (c) {
 	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.value);
 };
 var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
+var $rtfeldman$elm_css$Css$borderTopColor = function (c) {
+	return A2($rtfeldman$elm_css$Css$property, 'border-top-color', c.value);
+};
 var $rtfeldman$elm_css$Css$prop4 = F5(
 	function (key, argA, argB, argC, argD) {
 		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
@@ -11182,15 +10705,25 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	return A3($rtfeldman$elm_css$VirtualDom$Styled$Attribute, classProperty, true, cssTemplate);
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
+var $author$project$League$Draw = function (a) {
+	return {$: 'Draw', a: a};
+};
 var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPlayer'};
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 	return {$: 'KeeperWantsToIgnorePlayer', a: a};
 };
 var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToShowCustomMatchup = {$: 'KeeperWantsToShowCustomMatchup'};
+var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
 var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
 	return {$: 'KeeperWantsToUnignorePlayer', a: a};
+};
+var $author$project$Main$MatchFinished = function (a) {
+	return {$: 'MatchFinished', a: a};
+};
+var $author$project$League$Win = function (a) {
+	return {$: 'Win', a: a};
 };
 var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
 var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
@@ -12760,7 +12293,7 @@ var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1'
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
 var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
 var $author$project$Main$isVotingDisabled = function (model) {
-	return model.autoSaveInProgress;
+	return model.autoSaveInProgress || model.isSyncing;
 };
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
@@ -14494,6 +14027,18 @@ var $author$project$Main$downArrow = function (color) {
 };
 var $rtfeldman$elm_css$Css$flexStart = $rtfeldman$elm_css$Css$prop1('flex-start');
 var $rtfeldman$elm_css$Css$flexWrap = $rtfeldman$elm_css$Css$prop1('flex-wrap');
+var $elm$core$Dict$fromList = function (assocs) {
+	return A3(
+		$elm$core$List$foldl,
+		F2(
+			function (_v0, dict) {
+				var key = _v0.a;
+				var value = _v0.b;
+				return A3($elm$core$Dict$insert, key, value, dict);
+			}),
+		$elm$core$Dict$empty,
+		assocs);
+};
 var $author$project$Player$htmlKey = function (_v0) {
 	var player = _v0.a;
 	var _v1 = player.id;
@@ -16042,6 +15587,31 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
 					finalStyles);
 		}
 	});
+var $elm$core$Dict$foldl = F3(
+	function (func, acc, dict) {
+		foldl:
+		while (true) {
+			if (dict.$ === 'RBEmpty_elm_builtin') {
+				return acc;
+			} else {
+				var key = dict.b;
+				var value = dict.c;
+				var left = dict.d;
+				var right = dict.e;
+				var $temp$func = func,
+					$temp$acc = A3(
+					func,
+					key,
+					value,
+					A3($elm$core$Dict$foldl, func, acc, left)),
+					$temp$dict = right;
+				func = $temp$func;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldl;
+			}
+		}
+	});
 var $rtfeldman$elm_css$VirtualDom$Styled$styleToDeclaration = F3(
 	function (template, classname, declaration) {
 		return declaration + ('\n' + A3($elm$core$String$replace, $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin, classname, template));
@@ -16271,6 +15841,14 @@ var $author$project$Main$view = function (model) {
 					[
 						$BrianHicks$elm_css_reset$Css$Reset$meyerV2,
 						$BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408,
+						A3(
+						$rtfeldman$elm_css$Html$Styled$node,
+						'style',
+						_List_Nil,
+						_List_fromArray(
+							[
+								$rtfeldman$elm_css$Html$Styled$text('@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }')
+							])),
 						A2(
 						$rtfeldman$elm_css$Html$Styled$div,
 						_List_fromArray(
@@ -16305,13 +15883,32 @@ var $author$project$Main$view = function (model) {
 							]))
 					]),
 				_Utils_ap(
-					function () {
-						var _v0 = model.playerDeletionConfirmation;
-						if (_v0.$ === 'Just') {
-							var _v1 = _v0.a;
-							var player = _v1.a;
-							var step = _v1.b;
-							return _List_fromArray(
+					model.isSyncing ? _List_fromArray(
+						[
+							A2(
+							$rtfeldman$elm_css$Html$Styled$div,
+							_List_fromArray(
+								[
+									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+									_List_fromArray(
+										[
+											$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
+											$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
+											$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
+											$rtfeldman$elm_css$Css$width(
+											$rtfeldman$elm_css$Css$pct(100)),
+											$rtfeldman$elm_css$Css$height(
+											$rtfeldman$elm_css$Css$pct(100)),
+											$rtfeldman$elm_css$Css$backgroundColor(
+											A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.6)),
+											$rtfeldman$elm_css$Css$displayFlex,
+											$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+											$rtfeldman$elm_css$Css$zIndex(
+											$rtfeldman$elm_css$Css$int(2000))
+										]))
+								]),
+							_List_fromArray(
 								[
 									A2(
 									$rtfeldman$elm_css$Html$Styled$div,
@@ -16320,20 +15917,20 @@ var $author$project$Main$view = function (model) {
 											$rtfeldman$elm_css$Html$Styled$Attributes$css(
 											_List_fromArray(
 												[
-													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
-													$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
-													$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
-													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(100)),
-													$rtfeldman$elm_css$Css$height(
-													$rtfeldman$elm_css$Css$pct(100)),
 													$rtfeldman$elm_css$Css$backgroundColor(
-													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5)),
-													$rtfeldman$elm_css$Css$displayFlex,
-													$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-													$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
-													$rtfeldman$elm_css$Css$zIndex(
-													$rtfeldman$elm_css$Css$int(1500))
+													$rtfeldman$elm_css$Css$hex('FFFFFF')),
+													$rtfeldman$elm_css$Css$borderRadius(
+													$rtfeldman$elm_css$Css$px(12)),
+													$rtfeldman$elm_css$Css$padding(
+													$rtfeldman$elm_css$Css$px(32)),
+													A4(
+													$rtfeldman$elm_css$Css$boxShadow4,
+													$rtfeldman$elm_css$Css$px(0),
+													$rtfeldman$elm_css$Css$px(8),
+													$rtfeldman$elm_css$Css$px(32),
+													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.3)),
+													$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+													$author$project$Main$modernSansSerif
 												]))
 										]),
 									_List_fromArray(
@@ -16345,180 +15942,79 @@ var $author$project$Main$view = function (model) {
 													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
 														[
-															$rtfeldman$elm_css$Css$backgroundColor(
-															$rtfeldman$elm_css$Css$hex('FFFFFF')),
+															$rtfeldman$elm_css$Css$width(
+															$rtfeldman$elm_css$Css$px(40)),
+															$rtfeldman$elm_css$Css$height(
+															$rtfeldman$elm_css$Css$px(40)),
+															A3(
+															$rtfeldman$elm_css$Css$border3,
+															$rtfeldman$elm_css$Css$px(4),
+															$rtfeldman$elm_css$Css$solid,
+															$rtfeldman$elm_css$Css$hex('E5E7EB')),
+															$rtfeldman$elm_css$Css$borderTopColor(
+															$rtfeldman$elm_css$Css$hex('3B82F6')),
 															$rtfeldman$elm_css$Css$borderRadius(
-															$rtfeldman$elm_css$Css$px(12)),
-															$rtfeldman$elm_css$Css$padding(
-															$rtfeldman$elm_css$Css$px(24)),
-															A4(
-															$rtfeldman$elm_css$Css$boxShadow4,
+															$rtfeldman$elm_css$Css$pct(50)),
+															A2($rtfeldman$elm_css$Css$property, 'animation', 'spin 1s linear infinite'),
+															A2(
+															$rtfeldman$elm_css$Css$margin2,
 															$rtfeldman$elm_css$Css$px(0),
-															$rtfeldman$elm_css$Css$px(8),
-															$rtfeldman$elm_css$Css$px(32),
-															A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.3)),
-															$rtfeldman$elm_css$Css$maxWidth(
-															$rtfeldman$elm_css$Css$px(400)),
-															$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
-															$author$project$Main$modernSansSerif
+															$rtfeldman$elm_css$Css$auto),
+															$rtfeldman$elm_css$Css$marginBottom(
+															$rtfeldman$elm_css$Css$px(16))
+														]))
+												]),
+											_List_Nil),
+											A2(
+											$rtfeldman$elm_css$Html$Styled$p,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
+													_List_fromArray(
+														[
+															$rtfeldman$elm_css$Css$fontSize(
+															$rtfeldman$elm_css$Css$px(16)),
+															$rtfeldman$elm_css$Css$fontWeight(
+															$rtfeldman$elm_css$Css$int(500)),
+															$rtfeldman$elm_css$Css$color(
+															$rtfeldman$elm_css$Css$hex('1F2937')),
+															$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero)
 														]))
 												]),
 											_List_fromArray(
 												[
-													A2(
-													$rtfeldman$elm_css$Html$Styled$h3,
+													$rtfeldman$elm_css$Html$Styled$text('Syncing with database...')
+												])),
+											A2(
+											$rtfeldman$elm_css$Html$Styled$p,
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$Attributes$css(
 													_List_fromArray(
 														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	A2(
-																	$rtfeldman$elm_css$Css$margin2,
-																	$rtfeldman$elm_css$Css$px(0),
-																	$rtfeldman$elm_css$Css$px(0)),
-																	$rtfeldman$elm_css$Css$marginBottom(
-																	$rtfeldman$elm_css$Css$px(16)),
-																	$rtfeldman$elm_css$Css$fontSize(
-																	$rtfeldman$elm_css$Css$px(18)),
-																	$rtfeldman$elm_css$Css$fontWeight(
-																	$rtfeldman$elm_css$Css$int(600)),
-																	$rtfeldman$elm_css$Css$color(
-																	$rtfeldman$elm_css$Css$hex('DC2626'))
-																]))
-														]),
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$text(
-															(step === 1) ? 'Delete Player?' : 'Final Warning!')
-														])),
-													A2(
-													$rtfeldman$elm_css$Html$Styled$p,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	A2(
-																	$rtfeldman$elm_css$Css$margin2,
-																	$rtfeldman$elm_css$Css$px(0),
-																	$rtfeldman$elm_css$Css$px(0)),
-																	$rtfeldman$elm_css$Css$marginBottom(
-																	$rtfeldman$elm_css$Css$px(24)),
-																	$rtfeldman$elm_css$Css$fontSize(
-																	$rtfeldman$elm_css$Css$px(16)),
-																	$rtfeldman$elm_css$Css$color(
-																	$rtfeldman$elm_css$Css$hex('374151'))
-																]))
-														]),
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$text(
-															(step === 1) ? ('Are you sure you want to delete ' + ($author$project$Player$name(player) + '?')) : 'Is that your final answer? This cannot be undone!')
-														])),
-													A2(
-													$rtfeldman$elm_css$Html$Styled$div,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Css$displayFlex,
-																	$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
-																]))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$rtfeldman$elm_css$Html$Styled$button,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$backgroundColor(
-																			$rtfeldman$elm_css$Css$hex('6B7280')),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
-																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-																			$rtfeldman$elm_css$Css$borderRadius(
-																			$rtfeldman$elm_css$Css$px(6)),
-																			A2(
-																			$rtfeldman$elm_css$Css$padding2,
-																			$rtfeldman$elm_css$Css$px(8),
-																			$rtfeldman$elm_css$Css$px(16)),
-																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(14)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(500)),
-																			$rtfeldman$elm_css$Css$marginRight(
-																			$rtfeldman$elm_css$Css$px(12)),
-																			$rtfeldman$elm_css$Css$hover(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$backgroundColor(
-																					$rtfeldman$elm_css$Css$hex('4B5563'))
-																				]))
-																		])),
-																	$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$CancelPlayerDeletion)
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text('Cancel')
-																])),
-															A2(
-															$rtfeldman$elm_css$Html$Styled$button,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$backgroundColor(
-																			$rtfeldman$elm_css$Css$hex('DC2626')),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
-																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-																			$rtfeldman$elm_css$Css$borderRadius(
-																			$rtfeldman$elm_css$Css$px(6)),
-																			A2(
-																			$rtfeldman$elm_css$Css$padding2,
-																			$rtfeldman$elm_css$Css$px(8),
-																			$rtfeldman$elm_css$Css$px(16)),
-																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(14)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(500)),
-																			$rtfeldman$elm_css$Css$hover(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$backgroundColor(
-																					$rtfeldman$elm_css$Css$hex('B91C1C'))
-																				]))
-																		])),
-																	$rtfeldman$elm_css$Html$Styled$Events$onClick(
-																	A2($author$project$Main$ConfirmPlayerDeletion, player, step + 1))
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text(
-																	(step === 1) ? 'Yes, Delete' : 'Final Answer: DELETE')
-																]))
+															$rtfeldman$elm_css$Css$fontSize(
+															$rtfeldman$elm_css$Css$px(14)),
+															$rtfeldman$elm_css$Css$color(
+															$rtfeldman$elm_css$Css$hex('6B7280')),
+															$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+															$rtfeldman$elm_css$Css$marginTop(
+															$rtfeldman$elm_css$Css$px(8))
 														]))
+												]),
+											_List_fromArray(
+												[
+													$rtfeldman$elm_css$Html$Styled$text('Your next match will start shortly')
 												]))
 										]))
-								]);
-						} else {
-							return _List_Nil;
-						}
-					}(),
+								]))
+						]) : _List_Nil,
 					_Utils_ap(
 						function () {
-							var _v2 = model.timeToggleConfirmation;
-							if (_v2.$ === 'Just') {
-								var _v3 = _v2.a;
-								var player = _v3.a;
-								var timeType = _v3.b;
+							var _v0 = model.playerDeletionConfirmation;
+							if (_v0.$ === 'Just') {
+								var _v1 = _v0.a;
+								var player = _v1.a;
+								var step = _v1.b;
 								return _List_fromArray(
 									[
 										A2(
@@ -16591,12 +16087,13 @@ var $author$project$Main$view = function (model) {
 																		$rtfeldman$elm_css$Css$fontWeight(
 																		$rtfeldman$elm_css$Css$int(600)),
 																		$rtfeldman$elm_css$Css$color(
-																		$rtfeldman$elm_css$Css$hex('F59E0B'))
+																		$rtfeldman$elm_css$Css$hex('DC2626'))
 																	]))
 															]),
 														_List_fromArray(
 															[
-																$rtfeldman$elm_css$Html$Styled$text('Change Time Availability?')
+																$rtfeldman$elm_css$Html$Styled$text(
+																(step === 1) ? 'Delete Player?' : 'Final Warning!')
 															])),
 														A2(
 														$rtfeldman$elm_css$Html$Styled$p,
@@ -16620,7 +16117,7 @@ var $author$project$Main$view = function (model) {
 														_List_fromArray(
 															[
 																$rtfeldman$elm_css$Html$Styled$text(
-																'Are you sure you want to disable ' + (timeType + (' availability for ' + ($author$project$Player$name(player) + '?'))))
+																(step === 1) ? ('Are you sure you want to delete ' + ($author$project$Player$name(player) + '?')) : 'Is that your final answer? This cannot be undone!')
 															])),
 														A2(
 														$rtfeldman$elm_css$Html$Styled$div,
@@ -16667,7 +16164,7 @@ var $author$project$Main$view = function (model) {
 																						$rtfeldman$elm_css$Css$hex('4B5563'))
 																					]))
 																			])),
-																		$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$CancelTogglePlayerTime)
+																		$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$CancelPlayerDeletion)
 																	]),
 																_List_fromArray(
 																	[
@@ -16681,7 +16178,7 @@ var $author$project$Main$view = function (model) {
 																		_List_fromArray(
 																			[
 																				$rtfeldman$elm_css$Css$backgroundColor(
-																				$rtfeldman$elm_css$Css$hex('F59E0B')),
+																				$rtfeldman$elm_css$Css$hex('DC2626')),
 																				$rtfeldman$elm_css$Css$color(
 																				$rtfeldman$elm_css$Css$hex('FFFFFF')),
 																				$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
@@ -16700,15 +16197,16 @@ var $author$project$Main$view = function (model) {
 																				_List_fromArray(
 																					[
 																						$rtfeldman$elm_css$Css$backgroundColor(
-																						$rtfeldman$elm_css$Css$hex('D97706'))
+																						$rtfeldman$elm_css$Css$hex('B91C1C'))
 																					]))
 																			])),
 																		$rtfeldman$elm_css$Html$Styled$Events$onClick(
-																		A2($author$project$Main$ConfirmTogglePlayerTime, player, timeType))
+																		A2($author$project$Main$ConfirmPlayerDeletion, player, step + 1))
 																	]),
 																_List_fromArray(
 																	[
-																		$rtfeldman$elm_css$Html$Styled$text('Yes, Disable ' + timeType)
+																		$rtfeldman$elm_css$Html$Styled$text(
+																		(step === 1) ? 'Yes, Delete' : 'Final Answer: DELETE')
 																	]))
 															]))
 													]))
@@ -16719,457 +16217,14 @@ var $author$project$Main$view = function (model) {
 							}
 						}(),
 						_Utils_ap(
-							model.showAddPlayerPopup ? _List_fromArray(
-								[
-									A2(
-									$rtfeldman$elm_css$Html$Styled$div,
-									_List_fromArray(
-										[
-											$rtfeldman$elm_css$Html$Styled$Attributes$css(
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
-													$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
-													$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
-													$rtfeldman$elm_css$Css$width(
-													$rtfeldman$elm_css$Css$pct(100)),
-													$rtfeldman$elm_css$Css$height(
-													$rtfeldman$elm_css$Css$pct(100)),
-													$rtfeldman$elm_css$Css$backgroundColor(
-													A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5)),
-													$rtfeldman$elm_css$Css$displayFlex,
-													$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-													$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
-													$rtfeldman$elm_css$Css$zIndex(
-													$rtfeldman$elm_css$Css$int(1500))
-												]))
-										]),
-									_List_fromArray(
-										[
-											A2(
-											$rtfeldman$elm_css$Html$Styled$div,
-											_List_fromArray(
-												[
-													$rtfeldman$elm_css$Html$Styled$Attributes$css(
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Css$backgroundColor(
-															$rtfeldman$elm_css$Css$hex('FFFFFF')),
-															$rtfeldman$elm_css$Css$borderRadius(
-															$rtfeldman$elm_css$Css$px(12)),
-															$rtfeldman$elm_css$Css$padding(
-															$rtfeldman$elm_css$Css$px(32)),
-															A4(
-															$rtfeldman$elm_css$Css$boxShadow4,
-															$rtfeldman$elm_css$Css$px(0),
-															$rtfeldman$elm_css$Css$px(20),
-															$rtfeldman$elm_css$Css$px(25),
-															A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
-															$rtfeldman$elm_css$Css$maxWidth(
-															$rtfeldman$elm_css$Css$px(500)),
-															$rtfeldman$elm_css$Css$width(
-															$rtfeldman$elm_css$Css$pct(90)),
-															$author$project$Main$modernSansSerif
-														]))
-												]),
-											_List_fromArray(
-												[
-													A2(
-													$rtfeldman$elm_css$Html$Styled$h2,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Css$fontSize(
-																	$rtfeldman$elm_css$Css$px(24)),
-																	$rtfeldman$elm_css$Css$fontWeight(
-																	$rtfeldman$elm_css$Css$int(600)),
-																	$rtfeldman$elm_css$Css$color(
-																	$rtfeldman$elm_css$Css$hex('1F2937')),
-																	$rtfeldman$elm_css$Css$marginBottom(
-																	$rtfeldman$elm_css$Css$px(24)),
-																	$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
-																]))
-														]),
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$text('Add New Player')
-														])),
-													A2(
-													$rtfeldman$elm_css$Html$Styled$div,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Css$marginBottom(
-																	$rtfeldman$elm_css$Css$px(20))
-																]))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$rtfeldman$elm_css$Html$Styled$label,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(14)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(600)),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('374151')),
-																			$rtfeldman$elm_css$Css$marginBottom(
-																			$rtfeldman$elm_css$Css$px(6))
-																		]))
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text('Player Name')
-																])),
-															A2(
-															$rtfeldman$elm_css$Html$Styled$input,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
-																	$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Enter player name'),
-																	$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerName),
-																	$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerName),
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$width(
-																			$rtfeldman$elm_css$Css$pct(100)),
-																			A2(
-																			$rtfeldman$elm_css$Css$padding2,
-																			$rtfeldman$elm_css$Css$px(12),
-																			$rtfeldman$elm_css$Css$px(16)),
-																			A3(
-																			$rtfeldman$elm_css$Css$border3,
-																			$rtfeldman$elm_css$Css$px(2),
-																			$rtfeldman$elm_css$Css$solid,
-																			$rtfeldman$elm_css$Css$hex('E5E7EB')),
-																			$rtfeldman$elm_css$Css$borderRadius(
-																			$rtfeldman$elm_css$Css$px(8)),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(16)),
-																			$rtfeldman$elm_css$Css$focus(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$borderColor(
-																					$rtfeldman$elm_css$Css$hex('3B82F6')),
-																					$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
-																				])),
-																			$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
-																		]))
-																]),
-															_List_Nil)
-														])),
-													A2(
-													$rtfeldman$elm_css$Html$Styled$div,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Css$marginBottom(
-																	$rtfeldman$elm_css$Css$px(20))
-																]))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$rtfeldman$elm_css$Html$Styled$label,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(14)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(600)),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('374151')),
-																			$rtfeldman$elm_css$Css$marginBottom(
-																			$rtfeldman$elm_css$Css$px(6))
-																		]))
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text('Estimated Rating')
-																])),
-															A2(
-															$rtfeldman$elm_css$Html$Styled$input,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
-																	$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('500'),
-																	$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerRating),
-																	$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerRating),
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$width(
-																			$rtfeldman$elm_css$Css$pct(100)),
-																			A2(
-																			$rtfeldman$elm_css$Css$padding2,
-																			$rtfeldman$elm_css$Css$px(12),
-																			$rtfeldman$elm_css$Css$px(16)),
-																			A3(
-																			$rtfeldman$elm_css$Css$border3,
-																			$rtfeldman$elm_css$Css$px(2),
-																			$rtfeldman$elm_css$Css$solid,
-																			$rtfeldman$elm_css$Css$hex('E5E7EB')),
-																			$rtfeldman$elm_css$Css$borderRadius(
-																			$rtfeldman$elm_css$Css$px(8)),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(16)),
-																			$rtfeldman$elm_css$Css$focus(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$borderColor(
-																					$rtfeldman$elm_css$Css$hex('3B82F6')),
-																					$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
-																				])),
-																			$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
-																		]))
-																]),
-															_List_Nil)
-														])),
-													A2(
-													$rtfeldman$elm_css$Html$Styled$div,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Css$marginBottom(
-																	$rtfeldman$elm_css$Css$px(24))
-																]))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$rtfeldman$elm_css$Html$Styled$label,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(14)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(600)),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('374151')),
-																			$rtfeldman$elm_css$Css$marginBottom(
-																			$rtfeldman$elm_css$Css$px(12))
-																		]))
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text('Available Times')
-																])),
-															A2(
-															$rtfeldman$elm_css$Html$Styled$div,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$displayFlex,
-																			$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround)
-																		]))
-																]),
-															_List_fromArray(
-																[
-																	A2(
-																	$rtfeldman$elm_css$Html$Styled$label,
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$displayFlex,
-																					$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-																					$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																					$rtfeldman$elm_css$Css$fontSize(
-																					$rtfeldman$elm_css$Css$px(16))
-																				]))
-																		]),
-																	_List_fromArray(
-																		[
-																			A2(
-																			$rtfeldman$elm_css$Html$Styled$input,
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Html$Styled$Attributes$type_('checkbox'),
-																					$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.addPlayerAM),
-																					$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperToggledAddPlayerAM),
-																					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																					_List_fromArray(
-																						[
-																							$rtfeldman$elm_css$Css$width(
-																							$rtfeldman$elm_css$Css$px(20)),
-																							$rtfeldman$elm_css$Css$height(
-																							$rtfeldman$elm_css$Css$px(20)),
-																							$rtfeldman$elm_css$Css$marginRight(
-																							$rtfeldman$elm_css$Css$px(8))
-																						]))
-																				]),
-																			_List_Nil),
-																			$rtfeldman$elm_css$Html$Styled$text('AM Games')
-																		])),
-																	A2(
-																	$rtfeldman$elm_css$Html$Styled$label,
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$displayFlex,
-																					$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-																					$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																					$rtfeldman$elm_css$Css$fontSize(
-																					$rtfeldman$elm_css$Css$px(16))
-																				]))
-																		]),
-																	_List_fromArray(
-																		[
-																			A2(
-																			$rtfeldman$elm_css$Html$Styled$input,
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Html$Styled$Attributes$type_('checkbox'),
-																					$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.addPlayerPM),
-																					$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperToggledAddPlayerPM),
-																					$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																					_List_fromArray(
-																						[
-																							$rtfeldman$elm_css$Css$width(
-																							$rtfeldman$elm_css$Css$px(20)),
-																							$rtfeldman$elm_css$Css$height(
-																							$rtfeldman$elm_css$Css$px(20)),
-																							$rtfeldman$elm_css$Css$marginRight(
-																							$rtfeldman$elm_css$Css$px(8))
-																						]))
-																				]),
-																			_List_Nil),
-																			$rtfeldman$elm_css$Html$Styled$text('PM Games')
-																		]))
-																]))
-														])),
-													A2(
-													$rtfeldman$elm_css$Html$Styled$div,
-													_List_fromArray(
-														[
-															$rtfeldman$elm_css$Html$Styled$Attributes$css(
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Css$displayFlex,
-																	$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround)
-																]))
-														]),
-													_List_fromArray(
-														[
-															A2(
-															$rtfeldman$elm_css$Html$Styled$button,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$backgroundColor(
-																			$rtfeldman$elm_css$Css$hex('6B7280')),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
-																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-																			$rtfeldman$elm_css$Css$borderRadius(
-																			$rtfeldman$elm_css$Css$px(8)),
-																			A2(
-																			$rtfeldman$elm_css$Css$padding2,
-																			$rtfeldman$elm_css$Css$px(12),
-																			$rtfeldman$elm_css$Css$px(24)),
-																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(16)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(500)),
-																			$rtfeldman$elm_css$Css$hover(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$backgroundColor(
-																					$rtfeldman$elm_css$Css$hex('4B5563'))
-																				])),
-																			$author$project$Main$modernSansSerif
-																		])),
-																	$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperWantsToHideAddPlayerPopup)
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text('Cancel')
-																])),
-															A2(
-															$rtfeldman$elm_css$Html$Styled$button,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
-																	_List_fromArray(
-																		[
-																			$rtfeldman$elm_css$Css$backgroundColor(
-																			$rtfeldman$elm_css$Css$hex('10B981')),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
-																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-																			$rtfeldman$elm_css$Css$borderRadius(
-																			$rtfeldman$elm_css$Css$px(8)),
-																			A2(
-																			$rtfeldman$elm_css$Css$padding2,
-																			$rtfeldman$elm_css$Css$px(12),
-																			$rtfeldman$elm_css$Css$px(24)),
-																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
-																			$rtfeldman$elm_css$Css$fontSize(
-																			$rtfeldman$elm_css$Css$px(16)),
-																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(500)),
-																			$rtfeldman$elm_css$Css$hover(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$backgroundColor(
-																					$rtfeldman$elm_css$Css$hex('059669'))
-																				])),
-																			$author$project$Main$modernSansSerif,
-																			$elm$core$String$isEmpty(
-																			$elm$core$String$trim(model.addPlayerName)) ? $rtfeldman$elm_css$Css$batch(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$opacity(
-																					$rtfeldman$elm_css$Css$num(0.5)),
-																					$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$notAllowed)
-																				])) : $rtfeldman$elm_css$Css$batch(_List_Nil)
-																		])),
-																	$elm$core$String$isEmpty(
-																	$elm$core$String$trim(model.addPlayerName)) ? $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true) : $rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperConfirmedAddPlayer)
-																]),
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text('Add Player')
-																]))
-														]))
-												]))
-										]))
-								]) : _List_Nil,
 							function () {
-								var _v4 = model.status;
-								if (_v4.$ === 'Just') {
-									var message = _v4.a;
+								var _v2 = model.timeToggleConfirmation;
+								if (_v2.$ === 'Just') {
+									var _v3 = _v2.a;
+									var player = _v3.a;
+									var timeType = _v3.b;
+									var currentState = (timeType === 'AM') ? $author$project$Player$playsAM(player) : $author$project$Player$playsPM(player);
+									var newState = !currentState;
 									return _List_fromArray(
 										[
 											A2(
@@ -17180,43 +16235,19 @@ var $author$project$Main$view = function (model) {
 													_List_fromArray(
 														[
 															$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
-															$rtfeldman$elm_css$Css$top(
-															$rtfeldman$elm_css$Css$px(20)),
-															$rtfeldman$elm_css$Css$right(
-															$rtfeldman$elm_css$Css$px(20)),
+															$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
+															$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
+															$rtfeldman$elm_css$Css$width(
+															$rtfeldman$elm_css$Css$pct(100)),
+															$rtfeldman$elm_css$Css$height(
+															$rtfeldman$elm_css$Css$pct(100)),
 															$rtfeldman$elm_css$Css$backgroundColor(
-															model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
-															$rtfeldman$elm_css$Css$color(
-															$rtfeldman$elm_css$Css$hex('FFFFFF')),
-															A4(
-															$rtfeldman$elm_css$Css$padding4,
-															$rtfeldman$elm_css$Css$px(12),
-															$rtfeldman$elm_css$Css$px(16),
-															$rtfeldman$elm_css$Css$px(12),
-															$rtfeldman$elm_css$Css$px(16)),
-															$rtfeldman$elm_css$Css$borderRadius(
-															$rtfeldman$elm_css$Css$px(8)),
-															A4(
-															$rtfeldman$elm_css$Css$boxShadow4,
-															$rtfeldman$elm_css$Css$px(0),
-															$rtfeldman$elm_css$Css$px(4),
-															$rtfeldman$elm_css$Css$px(12),
-															A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
-															A3(
-															$rtfeldman$elm_css$Css$border3,
-															$rtfeldman$elm_css$Css$px(1),
-															$rtfeldman$elm_css$Css$solid,
-															A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.2)),
-															A2($rtfeldman$elm_css$Css$property, 'animation', 'slideInFromRight 0.3s ease-out'),
-															$rtfeldman$elm_css$Css$fontSize(
-															$rtfeldman$elm_css$Css$px(14)),
-															$rtfeldman$elm_css$Css$fontWeight(
-															$rtfeldman$elm_css$Css$int(500)),
-															$rtfeldman$elm_css$Css$maxWidth(
-															$rtfeldman$elm_css$Css$px(300)),
+															A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5)),
+															$rtfeldman$elm_css$Css$displayFlex,
+															$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+															$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
 															$rtfeldman$elm_css$Css$zIndex(
-															$rtfeldman$elm_css$Css$int(1000)),
-															$author$project$Main$modernSansSerif
+															$rtfeldman$elm_css$Css$int(1500))
 														]))
 												]),
 											_List_fromArray(
@@ -17228,56 +16259,164 @@ var $author$project$Main$view = function (model) {
 															$rtfeldman$elm_css$Html$Styled$Attributes$css(
 															_List_fromArray(
 																[
-																	$rtfeldman$elm_css$Css$displayFlex,
-																	$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
-																	$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
+																	$rtfeldman$elm_css$Css$backgroundColor(
+																	$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																	$rtfeldman$elm_css$Css$borderRadius(
+																	$rtfeldman$elm_css$Css$px(12)),
+																	$rtfeldman$elm_css$Css$padding(
+																	$rtfeldman$elm_css$Css$px(24)),
+																	A4(
+																	$rtfeldman$elm_css$Css$boxShadow4,
+																	$rtfeldman$elm_css$Css$px(0),
+																	$rtfeldman$elm_css$Css$px(8),
+																	$rtfeldman$elm_css$Css$px(32),
+																	A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.3)),
+																	$rtfeldman$elm_css$Css$maxWidth(
+																	$rtfeldman$elm_css$Css$px(400)),
+																	$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
+																	$author$project$Main$modernSansSerif
 																]))
 														]),
 													_List_fromArray(
 														[
 															A2(
-															$rtfeldman$elm_css$Html$Styled$span,
-															_List_Nil,
-															_List_fromArray(
-																[
-																	$rtfeldman$elm_css$Html$Styled$text(
-																	_Utils_ap(
-																		message,
-																		model.autoSaveInProgress ? ' (Voting disabled)' : ''))
-																])),
-															A2(
-															$rtfeldman$elm_css$Html$Styled$button,
+															$rtfeldman$elm_css$Html$Styled$h3,
 															_List_fromArray(
 																[
 																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																	_List_fromArray(
 																		[
-																			$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
-																			$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
-																			$rtfeldman$elm_css$Css$color(
-																			$rtfeldman$elm_css$Css$hex('FFFFFF')),
-																			$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																			A2(
+																			$rtfeldman$elm_css$Css$margin2,
+																			$rtfeldman$elm_css$Css$px(0),
+																			$rtfeldman$elm_css$Css$px(0)),
+																			$rtfeldman$elm_css$Css$marginBottom(
+																			$rtfeldman$elm_css$Css$px(16)),
 																			$rtfeldman$elm_css$Css$fontSize(
 																			$rtfeldman$elm_css$Css$px(18)),
 																			$rtfeldman$elm_css$Css$fontWeight(
-																			$rtfeldman$elm_css$Css$int(400)),
-																			$rtfeldman$elm_css$Css$marginLeft(
-																			$rtfeldman$elm_css$Css$px(12)),
-																			$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
-																			$rtfeldman$elm_css$Css$opacity(
-																			$rtfeldman$elm_css$Css$num(0.8)),
-																			$rtfeldman$elm_css$Css$hover(
-																			_List_fromArray(
-																				[
-																					$rtfeldman$elm_css$Css$opacity(
-																					$rtfeldman$elm_css$Css$num(1.0))
-																				]))
-																		])),
-																	$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$ClearStatus)
+																			$rtfeldman$elm_css$Css$int(600)),
+																			$rtfeldman$elm_css$Css$color(
+																			$rtfeldman$elm_css$Css$hex('DC2626'))
+																		]))
 																]),
 															_List_fromArray(
 																[
-																	$rtfeldman$elm_css$Html$Styled$text('×')
+																	$rtfeldman$elm_css$Html$Styled$text('Confirm ' + (timeType + ' Toggle'))
+																])),
+															A2(
+															$rtfeldman$elm_css$Html$Styled$p,
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			A2(
+																			$rtfeldman$elm_css$Css$margin2,
+																			$rtfeldman$elm_css$Css$px(0),
+																			$rtfeldman$elm_css$Css$px(0)),
+																			$rtfeldman$elm_css$Css$marginBottom(
+																			$rtfeldman$elm_css$Css$px(24)),
+																			$rtfeldman$elm_css$Css$fontSize(
+																			$rtfeldman$elm_css$Css$px(16)),
+																			$rtfeldman$elm_css$Css$color(
+																			$rtfeldman$elm_css$Css$hex('374151'))
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$text(
+																	'Are you sure you want to ' + ((newState ? 'enable' : 'disable') + (' ' + (timeType + (' availability for ' + ($author$project$Player$name(player) + '?'))))))
+																])),
+															A2(
+															$rtfeldman$elm_css$Html$Styled$div,
+															_List_fromArray(
+																[
+																	$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Css$displayFlex,
+																			$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center)
+																		]))
+																]),
+															_List_fromArray(
+																[
+																	A2(
+																	$rtfeldman$elm_css$Html$Styled$button,
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																			_List_fromArray(
+																				[
+																					$rtfeldman$elm_css$Css$backgroundColor(
+																					$rtfeldman$elm_css$Css$hex('6B7280')),
+																					$rtfeldman$elm_css$Css$color(
+																					$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																					$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																					$rtfeldman$elm_css$Css$borderRadius(
+																					$rtfeldman$elm_css$Css$px(6)),
+																					A2(
+																					$rtfeldman$elm_css$Css$padding2,
+																					$rtfeldman$elm_css$Css$px(8),
+																					$rtfeldman$elm_css$Css$px(16)),
+																					$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																					$rtfeldman$elm_css$Css$fontSize(
+																					$rtfeldman$elm_css$Css$px(14)),
+																					$rtfeldman$elm_css$Css$fontWeight(
+																					$rtfeldman$elm_css$Css$int(500)),
+																					$rtfeldman$elm_css$Css$marginRight(
+																					$rtfeldman$elm_css$Css$px(12)),
+																					$rtfeldman$elm_css$Css$hover(
+																					_List_fromArray(
+																						[
+																							$rtfeldman$elm_css$Css$backgroundColor(
+																							$rtfeldman$elm_css$Css$hex('4B5563'))
+																						]))
+																				])),
+																			$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$CancelTogglePlayerTime)
+																		]),
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Html$Styled$text('Cancel')
+																		])),
+																	A2(
+																	$rtfeldman$elm_css$Html$Styled$button,
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																			_List_fromArray(
+																				[
+																					$rtfeldman$elm_css$Css$backgroundColor(
+																					$rtfeldman$elm_css$Css$hex('F59E0B')),
+																					$rtfeldman$elm_css$Css$color(
+																					$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																					$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																					$rtfeldman$elm_css$Css$borderRadius(
+																					$rtfeldman$elm_css$Css$px(6)),
+																					A2(
+																					$rtfeldman$elm_css$Css$padding2,
+																					$rtfeldman$elm_css$Css$px(8),
+																					$rtfeldman$elm_css$Css$px(16)),
+																					$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																					$rtfeldman$elm_css$Css$fontSize(
+																					$rtfeldman$elm_css$Css$px(14)),
+																					$rtfeldman$elm_css$Css$fontWeight(
+																					$rtfeldman$elm_css$Css$int(500)),
+																					$rtfeldman$elm_css$Css$hover(
+																					_List_fromArray(
+																						[
+																							$rtfeldman$elm_css$Css$backgroundColor(
+																							$rtfeldman$elm_css$Css$hex('D97706'))
+																						]))
+																				])),
+																			$rtfeldman$elm_css$Html$Styled$Events$onClick(
+																			A3($author$project$Main$ConfirmTogglePlayerTime, player, timeType, newState))
+																		]),
+																	_List_fromArray(
+																		[
+																			$rtfeldman$elm_css$Html$Styled$text(
+																			newState ? ('Yes, Enable ' + timeType) : ('Yes, Disable ' + timeType))
+																		]))
 																]))
 														]))
 												]))
@@ -17285,11 +16424,580 @@ var $author$project$Main$view = function (model) {
 								} else {
 									return _List_Nil;
 								}
-							}()))))),
+							}(),
+							_Utils_ap(
+								model.showAddPlayerPopup ? _List_fromArray(
+									[
+										A2(
+										$rtfeldman$elm_css$Html$Styled$div,
+										_List_fromArray(
+											[
+												$rtfeldman$elm_css$Html$Styled$Attributes$css(
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
+														$rtfeldman$elm_css$Css$top($rtfeldman$elm_css$Css$zero),
+														$rtfeldman$elm_css$Css$left($rtfeldman$elm_css$Css$zero),
+														$rtfeldman$elm_css$Css$width(
+														$rtfeldman$elm_css$Css$pct(100)),
+														$rtfeldman$elm_css$Css$height(
+														$rtfeldman$elm_css$Css$pct(100)),
+														$rtfeldman$elm_css$Css$backgroundColor(
+														A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.5)),
+														$rtfeldman$elm_css$Css$displayFlex,
+														$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+														$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$center),
+														$rtfeldman$elm_css$Css$zIndex(
+														$rtfeldman$elm_css$Css$int(1500))
+													]))
+											]),
+										_List_fromArray(
+											[
+												A2(
+												$rtfeldman$elm_css$Html$Styled$div,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$backgroundColor(
+																$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																$rtfeldman$elm_css$Css$borderRadius(
+																$rtfeldman$elm_css$Css$px(12)),
+																$rtfeldman$elm_css$Css$padding(
+																$rtfeldman$elm_css$Css$px(32)),
+																A4(
+																$rtfeldman$elm_css$Css$boxShadow4,
+																$rtfeldman$elm_css$Css$px(0),
+																$rtfeldman$elm_css$Css$px(20),
+																$rtfeldman$elm_css$Css$px(25),
+																A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
+																$rtfeldman$elm_css$Css$maxWidth(
+																$rtfeldman$elm_css$Css$px(500)),
+																$rtfeldman$elm_css$Css$width(
+																$rtfeldman$elm_css$Css$pct(90)),
+																$author$project$Main$modernSansSerif
+															]))
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$rtfeldman$elm_css$Html$Styled$h2,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$fontSize(
+																		$rtfeldman$elm_css$Css$px(24)),
+																		$rtfeldman$elm_css$Css$fontWeight(
+																		$rtfeldman$elm_css$Css$int(600)),
+																		$rtfeldman$elm_css$Css$color(
+																		$rtfeldman$elm_css$Css$hex('1F2937')),
+																		$rtfeldman$elm_css$Css$marginBottom(
+																		$rtfeldman$elm_css$Css$px(24)),
+																		$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center)
+																	]))
+															]),
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$text('Add New Player')
+															])),
+														A2(
+														$rtfeldman$elm_css$Html$Styled$div,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$marginBottom(
+																		$rtfeldman$elm_css$Css$px(20))
+																	]))
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Html$Styled$label,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(14)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(600)),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('374151')),
+																				$rtfeldman$elm_css$Css$marginBottom(
+																				$rtfeldman$elm_css$Css$px(6))
+																			]))
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('Player Name')
+																	])),
+																A2(
+																$rtfeldman$elm_css$Html$Styled$input,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Enter player name'),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerName),
+																		$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerName),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$width(
+																				$rtfeldman$elm_css$Css$pct(100)),
+																				A2(
+																				$rtfeldman$elm_css$Css$padding2,
+																				$rtfeldman$elm_css$Css$px(12),
+																				$rtfeldman$elm_css$Css$px(16)),
+																				A3(
+																				$rtfeldman$elm_css$Css$border3,
+																				$rtfeldman$elm_css$Css$px(2),
+																				$rtfeldman$elm_css$Css$solid,
+																				$rtfeldman$elm_css$Css$hex('E5E7EB')),
+																				$rtfeldman$elm_css$Css$borderRadius(
+																				$rtfeldman$elm_css$Css$px(8)),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(16)),
+																				$rtfeldman$elm_css$Css$focus(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$borderColor(
+																						$rtfeldman$elm_css$Css$hex('3B82F6')),
+																						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+																					])),
+																				$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
+																			]))
+																	]),
+																_List_Nil)
+															])),
+														A2(
+														$rtfeldman$elm_css$Html$Styled$div,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$marginBottom(
+																		$rtfeldman$elm_css$Css$px(20))
+																	]))
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Html$Styled$label,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(14)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(600)),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('374151')),
+																				$rtfeldman$elm_css$Css$marginBottom(
+																				$rtfeldman$elm_css$Css$px(6))
+																			]))
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('Estimated Rating')
+																	])),
+																A2(
+																$rtfeldman$elm_css$Html$Styled$input,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('500'),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerRating),
+																		$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerRating),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$width(
+																				$rtfeldman$elm_css$Css$pct(100)),
+																				A2(
+																				$rtfeldman$elm_css$Css$padding2,
+																				$rtfeldman$elm_css$Css$px(12),
+																				$rtfeldman$elm_css$Css$px(16)),
+																				A3(
+																				$rtfeldman$elm_css$Css$border3,
+																				$rtfeldman$elm_css$Css$px(2),
+																				$rtfeldman$elm_css$Css$solid,
+																				$rtfeldman$elm_css$Css$hex('E5E7EB')),
+																				$rtfeldman$elm_css$Css$borderRadius(
+																				$rtfeldman$elm_css$Css$px(8)),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(16)),
+																				$rtfeldman$elm_css$Css$focus(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$borderColor(
+																						$rtfeldman$elm_css$Css$hex('3B82F6')),
+																						$rtfeldman$elm_css$Css$outline($rtfeldman$elm_css$Css$none)
+																					])),
+																				$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox)
+																			]))
+																	]),
+																_List_Nil)
+															])),
+														A2(
+														$rtfeldman$elm_css$Html$Styled$div,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$marginBottom(
+																		$rtfeldman$elm_css$Css$px(24))
+																	]))
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Html$Styled$label,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$display($rtfeldman$elm_css$Css$block),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(14)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(600)),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('374151')),
+																				$rtfeldman$elm_css$Css$marginBottom(
+																				$rtfeldman$elm_css$Css$px(12))
+																			]))
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('Available Times')
+																	])),
+																A2(
+																$rtfeldman$elm_css$Html$Styled$div,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$displayFlex,
+																				$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround)
+																			]))
+																	]),
+																_List_fromArray(
+																	[
+																		A2(
+																		$rtfeldman$elm_css$Html$Styled$label,
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$displayFlex,
+																						$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+																						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																						$rtfeldman$elm_css$Css$fontSize(
+																						$rtfeldman$elm_css$Css$px(16))
+																					]))
+																			]),
+																		_List_fromArray(
+																			[
+																				A2(
+																				$rtfeldman$elm_css$Html$Styled$input,
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Html$Styled$Attributes$type_('checkbox'),
+																						$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.addPlayerAM),
+																						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperToggledAddPlayerAM),
+																						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																						_List_fromArray(
+																							[
+																								$rtfeldman$elm_css$Css$width(
+																								$rtfeldman$elm_css$Css$px(20)),
+																								$rtfeldman$elm_css$Css$height(
+																								$rtfeldman$elm_css$Css$px(20)),
+																								$rtfeldman$elm_css$Css$marginRight(
+																								$rtfeldman$elm_css$Css$px(8))
+																							]))
+																					]),
+																				_List_Nil),
+																				$rtfeldman$elm_css$Html$Styled$text('AM Games')
+																			])),
+																		A2(
+																		$rtfeldman$elm_css$Html$Styled$label,
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$displayFlex,
+																						$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+																						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																						$rtfeldman$elm_css$Css$fontSize(
+																						$rtfeldman$elm_css$Css$px(16))
+																					]))
+																			]),
+																		_List_fromArray(
+																			[
+																				A2(
+																				$rtfeldman$elm_css$Html$Styled$input,
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Html$Styled$Attributes$type_('checkbox'),
+																						$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.addPlayerPM),
+																						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperToggledAddPlayerPM),
+																						$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																						_List_fromArray(
+																							[
+																								$rtfeldman$elm_css$Css$width(
+																								$rtfeldman$elm_css$Css$px(20)),
+																								$rtfeldman$elm_css$Css$height(
+																								$rtfeldman$elm_css$Css$px(20)),
+																								$rtfeldman$elm_css$Css$marginRight(
+																								$rtfeldman$elm_css$Css$px(8))
+																							]))
+																					]),
+																				_List_Nil),
+																				$rtfeldman$elm_css$Html$Styled$text('PM Games')
+																			]))
+																	]))
+															])),
+														A2(
+														$rtfeldman$elm_css$Html$Styled$div,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$displayFlex,
+																		$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceAround)
+																	]))
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Html$Styled$button,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$backgroundColor(
+																				$rtfeldman$elm_css$Css$hex('6B7280')),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																				$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																				$rtfeldman$elm_css$Css$borderRadius(
+																				$rtfeldman$elm_css$Css$px(8)),
+																				A2(
+																				$rtfeldman$elm_css$Css$padding2,
+																				$rtfeldman$elm_css$Css$px(12),
+																				$rtfeldman$elm_css$Css$px(24)),
+																				$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(16)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(500)),
+																				$rtfeldman$elm_css$Css$hover(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$backgroundColor(
+																						$rtfeldman$elm_css$Css$hex('4B5563'))
+																					])),
+																				$author$project$Main$modernSansSerif
+																			])),
+																		$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperWantsToHideAddPlayerPopup)
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('Cancel')
+																	])),
+																A2(
+																$rtfeldman$elm_css$Html$Styled$button,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$backgroundColor(
+																				$rtfeldman$elm_css$Css$hex('10B981')),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																				$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																				$rtfeldman$elm_css$Css$borderRadius(
+																				$rtfeldman$elm_css$Css$px(8)),
+																				A2(
+																				$rtfeldman$elm_css$Css$padding2,
+																				$rtfeldman$elm_css$Css$px(12),
+																				$rtfeldman$elm_css$Css$px(24)),
+																				$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(16)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(500)),
+																				$rtfeldman$elm_css$Css$hover(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$backgroundColor(
+																						$rtfeldman$elm_css$Css$hex('059669'))
+																					])),
+																				$author$project$Main$modernSansSerif,
+																				$elm$core$String$isEmpty(
+																				$elm$core$String$trim(model.addPlayerName)) ? $rtfeldman$elm_css$Css$batch(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$opacity(
+																						$rtfeldman$elm_css$Css$num(0.5)),
+																						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$notAllowed)
+																					])) : $rtfeldman$elm_css$Css$batch(_List_Nil)
+																			])),
+																		$elm$core$String$isEmpty(
+																		$elm$core$String$trim(model.addPlayerName)) ? $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true) : $rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperConfirmedAddPlayer)
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('Add Player')
+																	]))
+															]))
+													]))
+											]))
+									]) : _List_Nil,
+								function () {
+									var _v4 = model.status;
+									if (_v4.$ === 'Just') {
+										var message = _v4.a;
+										return _List_fromArray(
+											[
+												A2(
+												$rtfeldman$elm_css$Html$Styled$div,
+												_List_fromArray(
+													[
+														$rtfeldman$elm_css$Html$Styled$Attributes$css(
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Css$position($rtfeldman$elm_css$Css$fixed),
+																$rtfeldman$elm_css$Css$top(
+																$rtfeldman$elm_css$Css$px(20)),
+																$rtfeldman$elm_css$Css$right(
+																$rtfeldman$elm_css$Css$px(20)),
+																$rtfeldman$elm_css$Css$backgroundColor(
+																model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
+																$rtfeldman$elm_css$Css$color(
+																$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																A4(
+																$rtfeldman$elm_css$Css$padding4,
+																$rtfeldman$elm_css$Css$px(12),
+																$rtfeldman$elm_css$Css$px(16),
+																$rtfeldman$elm_css$Css$px(12),
+																$rtfeldman$elm_css$Css$px(16)),
+																$rtfeldman$elm_css$Css$borderRadius(
+																$rtfeldman$elm_css$Css$px(8)),
+																A4(
+																$rtfeldman$elm_css$Css$boxShadow4,
+																$rtfeldman$elm_css$Css$px(0),
+																$rtfeldman$elm_css$Css$px(4),
+																$rtfeldman$elm_css$Css$px(12),
+																A4($rtfeldman$elm_css$Css$rgba, 0, 0, 0, 0.15)),
+																A3(
+																$rtfeldman$elm_css$Css$border3,
+																$rtfeldman$elm_css$Css$px(1),
+																$rtfeldman$elm_css$Css$solid,
+																A4($rtfeldman$elm_css$Css$rgba, 255, 255, 255, 0.2)),
+																A2($rtfeldman$elm_css$Css$property, 'animation', 'slideInFromRight 0.3s ease-out'),
+																$rtfeldman$elm_css$Css$fontSize(
+																$rtfeldman$elm_css$Css$px(14)),
+																$rtfeldman$elm_css$Css$fontWeight(
+																$rtfeldman$elm_css$Css$int(500)),
+																$rtfeldman$elm_css$Css$maxWidth(
+																$rtfeldman$elm_css$Css$px(300)),
+																$rtfeldman$elm_css$Css$zIndex(
+																$rtfeldman$elm_css$Css$int(1000)),
+																$author$project$Main$modernSansSerif
+															]))
+													]),
+												_List_fromArray(
+													[
+														A2(
+														$rtfeldman$elm_css$Html$Styled$div,
+														_List_fromArray(
+															[
+																$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Css$displayFlex,
+																		$rtfeldman$elm_css$Css$alignItems($rtfeldman$elm_css$Css$center),
+																		$rtfeldman$elm_css$Css$justifyContent($rtfeldman$elm_css$Css$spaceBetween)
+																	]))
+															]),
+														_List_fromArray(
+															[
+																A2(
+																$rtfeldman$elm_css$Html$Styled$span,
+																_List_Nil,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text(
+																		_Utils_ap(
+																			message,
+																			model.autoSaveInProgress ? ' (Voting disabled)' : ''))
+																	])),
+																A2(
+																$rtfeldman$elm_css$Html$Styled$button,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$backgroundColor($rtfeldman$elm_css$Css$transparent),
+																				$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																				$rtfeldman$elm_css$Css$color(
+																				$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																				$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																				$rtfeldman$elm_css$Css$fontSize(
+																				$rtfeldman$elm_css$Css$px(18)),
+																				$rtfeldman$elm_css$Css$fontWeight(
+																				$rtfeldman$elm_css$Css$int(400)),
+																				$rtfeldman$elm_css$Css$marginLeft(
+																				$rtfeldman$elm_css$Css$px(12)),
+																				$rtfeldman$elm_css$Css$padding($rtfeldman$elm_css$Css$zero),
+																				$rtfeldman$elm_css$Css$opacity(
+																				$rtfeldman$elm_css$Css$num(0.8)),
+																				$rtfeldman$elm_css$Css$hover(
+																				_List_fromArray(
+																					[
+																						$rtfeldman$elm_css$Css$opacity(
+																						$rtfeldman$elm_css$Css$num(1.0))
+																					]))
+																			])),
+																		$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$ClearStatus)
+																	]),
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$text('×')
+																	]))
+															]))
+													]))
+											]);
+									} else {
+										return _List_Nil;
+									}
+								}())))))),
 		title: 'Hockey Rater 🏒'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
 	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
-	$elm$json$Json$Decode$succeed(_Utils_Tuple0))(0)}});}(this));
+	$elm$json$Json$Decode$succeed(
+		{}))(0)}});}(this));
