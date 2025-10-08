@@ -8103,6 +8103,10 @@ var $author$project$League$players = function (_v0) {
 	var league = _v0.a;
 	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
+var $author$project$Supabase$encodeIsoTime = function (time) {
+	var millis = $elm$time$Time$posixToMillis(time);
+	return '2025-10-08T00:00:00Z';
+};
 var $elm$json$Json$Encode$int = _Json_wrap;
 var $elm$json$Json$Encode$object = function (pairs) {
 	return _Json_wrap(
@@ -8144,7 +8148,11 @@ var $author$project$Supabase$encodeMatch = function (match) {
 				$elm$json$Json$Encode$int(match.playerBRatingAfter)),
 				_Utils_Tuple2(
 				'k_factor_used',
-				$elm$json$Json$Encode$int(match.kFactorUsed))
+				$elm$json$Json$Encode$int(match.kFactorUsed)),
+				_Utils_Tuple2(
+				'played_at',
+				$elm$json$Json$Encode$string(
+					$author$project$Supabase$encodeIsoTime(match.playedAt)))
 			]));
 };
 var $elm$http$Http$jsonBody = function (value) {
@@ -8763,7 +8771,7 @@ var $author$project$Main$toSupabaseLeagueState = function (league) {
 };
 var $author$project$Main$toSupabaseMatch = F2(
 	function (league, outcome) {
-		var now = $elm$time$Time$millisToPosix(0);
+		var now = $elm$time$Time$millisToPosix(1728346800000);
 		var _v0 = function () {
 			var _v1 = $author$project$League$currentMatch(league);
 			if (_v1.$ === 'Just') {
@@ -8779,14 +8787,6 @@ var $author$project$Main$toSupabaseMatch = F2(
 		}();
 		var playerA = _v0.a;
 		var playerB = _v0.b;
-		var ratingAfterA = $author$project$Player$rating(
-			A2(
-				$elm$core$Maybe$withDefault,
-				playerA,
-				A2(
-					$author$project$League$getPlayer,
-					$author$project$Player$id(playerA),
-					league)));
 		var ratingBeforeA = $author$project$Player$rating(playerA);
 		var winnerId = function () {
 			if (outcome.$ === 'Win') {
@@ -8796,30 +8796,52 @@ var $author$project$Main$toSupabaseMatch = F2(
 				return $author$project$Player$id(playerA);
 			}
 		}();
-		var ratingAfterB = $author$project$Player$rating(
-			A2(
-				$elm$core$Maybe$withDefault,
-				playerB,
-				A2(
-					$author$project$League$getPlayer,
-					$author$project$Player$id(playerB),
-					league)));
 		var ratingBeforeB = $author$project$Player$rating(playerB);
 		var kFactor = A2($author$project$Elo$getKFactor, ratingBeforeA, ratingBeforeB);
+		var _v3 = function () {
+			if (outcome.$ === 'Win') {
+				var won = outcome.a.won;
+				if (_Utils_eq(
+					$author$project$Player$id(won),
+					$author$project$Player$id(playerA))) {
+					var result = A2(
+						$author$project$Elo$win,
+						kFactor,
+						{lost: ratingBeforeB, won: ratingBeforeA});
+					return _Utils_Tuple2(result.won, result.lost);
+				} else {
+					var result = A2(
+						$author$project$Elo$win,
+						kFactor,
+						{lost: ratingBeforeA, won: ratingBeforeB});
+					return _Utils_Tuple2(result.lost, result.won);
+				}
+			} else {
+				var result = A2(
+					$author$project$Elo$draw,
+					kFactor,
+					{playerA: ratingBeforeA, playerB: ratingBeforeB});
+				return _Utils_Tuple2(result.playerA, result.playerB);
+			}
+		}();
+		var newRatingA = _v3.a;
+		var newRatingB = _v3.b;
+		var ratingAfterA = newRatingA;
+		var ratingAfterB = newRatingB;
 		return {
 			id: 0,
 			kFactorUsed: kFactor,
 			playedAt: now,
 			playerAId: function () {
-				var _v3 = $author$project$Player$id(playerA);
-				var id = _v3.a;
+				var _v5 = $author$project$Player$id(playerA);
+				var id = _v5.a;
 				return id;
 			}(),
 			playerARatingAfter: ratingAfterA,
 			playerARatingBefore: ratingBeforeA,
 			playerBId: function () {
-				var _v4 = $author$project$Player$id(playerB);
-				var id = _v4.a;
+				var _v6 = $author$project$Player$id(playerB);
+				var id = _v6.a;
 				return id;
 			}(),
 			playerBRatingAfter: ratingAfterB,

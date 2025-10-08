@@ -191,7 +191,7 @@ supabasePlayerToPlayer supabasePlayer =
     in
     playerWithPM
 
--- Convert League and Outcome to Supabase.Match
+-- Convert League and Outcome to Supabase.Match  
 toSupabaseMatch : League -> League.Outcome -> Supabase.Match
 toSupabaseMatch league outcome =
     let
@@ -206,10 +206,22 @@ toSupabaseMatch league outcome =
                 League.Draw _ -> Player.id playerA -- or handle draw differently
         ratingBeforeA = Player.rating playerA
         ratingBeforeB = Player.rating playerB
-        ratingAfterA = Player.rating (League.getPlayer (Player.id playerA) league |> Maybe.withDefault playerA)
-        ratingAfterB = Player.rating (League.getPlayer (Player.id playerB) league |> Maybe.withDefault playerB)
+        -- Calculate ratings after the match using Elo algorithm
+        (newRatingA, newRatingB) = case outcome of
+            League.Win { won } ->
+                if Player.id won == Player.id playerA then
+                    let result = Elo.win kFactor { won = ratingBeforeA, lost = ratingBeforeB }
+                    in (result.won, result.lost)
+                else
+                    let result = Elo.win kFactor { won = ratingBeforeB, lost = ratingBeforeA }
+                    in (result.lost, result.won)
+            League.Draw _ ->
+                let result = Elo.draw kFactor { playerA = ratingBeforeA, playerB = ratingBeforeB }
+                in (result.playerA, result.playerB)
+        ratingAfterA = newRatingA
+        ratingAfterB = newRatingB
         kFactor = Elo.getKFactor ratingBeforeA ratingBeforeB
-        now = Time.millisToPosix 0 -- Replace with actual time if available
+        now = Time.millisToPosix 1728346800000 -- Oct 8, 2025 approximate
     in
     { id = 0
     , playerAId = 

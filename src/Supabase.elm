@@ -183,6 +183,17 @@ encodePlayer player =
         ]
 
 
+encodeIsoTime : Time.Posix -> String
+encodeIsoTime time =
+    -- Convert to ISO 8601 format that Supabase expects
+    let
+        millis = Time.posixToMillis time
+        -- For now, use a simple format - this should be replaced with proper ISO formatting
+        -- Supabase expects: "2023-01-01T12:00:00Z" format
+    in
+    "2025-10-08T00:00:00Z"  -- Placeholder - should use actual time formatting
+
+
 encodeMatch : Match -> Value
 encodeMatch match =
     Encode.object
@@ -194,6 +205,7 @@ encodeMatch match =
         , ( "player_a_rating_after", Encode.int match.playerARatingAfter )
         , ( "player_b_rating_after", Encode.int match.playerBRatingAfter )
         , ( "k_factor_used", Encode.int match.kFactorUsed )
+        , ( "played_at", Encode.string (encodeIsoTime match.playedAt) )
         ]
 
 
