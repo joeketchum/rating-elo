@@ -264,16 +264,11 @@ try {
     console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
     var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
     
-    // Try to load from Google Drive first (aggressive cache-busting)
-    var cacheBuster = '?_=' + Date.now() + '&v=' + Math.random();
+    // Try to load from Google Drive first (URL-based cache-busting to avoid CORS preflight)
+    var cacheBuster = '?_=' + Date.now() + '&v=' + Math.random() + '&nocache=1';
     fetch(APPS_SCRIPT_URL + cacheBuster, { 
       method: 'GET',
-      cache: 'no-cache',
-      headers: {
-        'Cache-Control': 'no-cache, no-store, must-revalidate',
-        'Pragma': 'no-cache',
-        'Expires': '0'
-      }
+      cache: 'no-cache'
     })
       .then(function(response) {
         if (response.ok) {
