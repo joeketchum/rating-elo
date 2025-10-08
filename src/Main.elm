@@ -1,4 +1,3 @@
-
 port module Main exposing (..)
 
 import Html.Styled exposing (Html, toUnstyled)
@@ -26,51 +25,8 @@ import Task
 import Process
 import File
 import File.Select as Select
-import Keyboard
-import Browser exposing (Document)
-
-
-
-
-type alias Flags = ()
-
-type alias Model =
-    { history : History.History League
-    , newPlayerName : String
-    , autoSave : Bool
-    , status : Maybe String
-    , lastSynced : Maybe Time.Posix
-    , shouldStartNextMatchAfterLoad : Bool
-    , autoSaveInProgress : Bool
-    , timeFilter : TimeFilter
-        , pendingMatch : Maybe (League.Outcome, Bool, Bool) -- outcome, playerA created, playerB created
-        , ignoredPlayers : Set.Set String
-    , customMatchupPlayerA : Maybe Player
-    , customMatchupPlayerB : Maybe Player
-    , showCustomMatchup : Bool
-    , playerASearch : String
-    , playerBSearch : String
-    , playerASearchResults : List Player
-    , playerBSearchResults : List Player
-    , playerDeletionConfirmation : Maybe (Player, Int)
-    , timeToggleConfirmation : Maybe (Player, String) -- Player and "AM" or "PM"
-    , dataVersion : Int
-    , lastModified : Int
-    , showAddPlayerPopup : Bool
-    , addPlayerName : String
-    , addPlayerRating : String
-    , addPlayerAM : Bool
-    , addPlayerPM : Bool
-    , votesSinceLastSync : Int
-    }
-
-type alias VersionedLeague =
-    { version : Int
-    , timestamp : Int
-    , checksum : String
-    , league : League
-    }
-
+import Browser
+import Browser.Dom as Dom
 
 type TimeFilter
     = All
@@ -93,7 +49,6 @@ type Msg
     | KeeperUpdatedPlayerBSearch String
     | LoadedLeague (Result String League)
     | GotPlayers (Result Http.Error (List Supabase.Player))
-
     | ReceivedAutoSave Bool
     | ToggleAutoSave
     | ShowStatus String
@@ -101,7 +56,7 @@ type Msg
     | IgnoredKey
     | TogglePlayerAM Player
     | TogglePlayerPM Player
-    | ConfirmTogglePlayerTime Player String -- Player and "AM" or "PM"
+    | ConfirmTogglePlayerTime Player String Bool -- Player, "AM" or "PM", and new state
     | CancelTogglePlayerTime
     | SetTimeFilter TimeFilter
     | ReceivedTimeFilter String
@@ -165,6 +120,47 @@ port receiveTimeFilter : (String -> msg) -> Sub msg
 port receiveIgnoredPlayers : (String -> msg) -> Sub msg
 port saveIgnoredPlayers : String -> Cmd msg
 
+-- TYPES
+
+type alias Flags = {}
+
+type alias Model =
+    { history : History.History League
+    , newPlayerName : String
+    , autoSave : Bool
+    , status : Maybe String
+    , lastSynced : Maybe Time.Posix
+    , shouldStartNextMatchAfterLoad : Bool
+    , autoSaveInProgress : Bool
+    , timeFilter : TimeFilter
+    , pendingMatch : Maybe League.Match
+    , ignoredPlayers : Set.Set String
+    , customMatchupPlayerA : Maybe Player
+    , customMatchupPlayerB : Maybe Player
+    , showCustomMatchup : Bool
+    , playerASearch : String
+    , playerBSearch : String
+    , playerASearchResults : List Player
+    , playerBSearchResults : List Player
+    , playerDeletionConfirmation : Maybe (Player, Int)
+    , timeToggleConfirmation : Maybe (Player, String)
+    , dataVersion : Int
+    , lastModified : Int
+    , showAddPlayerPopup : Bool
+    , addPlayerName : String
+    , addPlayerRating : String
+    , addPlayerAM : Bool
+    , addPlayerPM : Bool
+    , votesSinceLastSync : Int
+    }
+
+type alias VersionedLeague =
+    { version : Int
+    , timestamp : Int
+    , checksum : String
+    , league : League
+    }
+
 
 
 -- INIT
@@ -203,71 +199,10 @@ init _ =
     )
         |> startNextMatchIfPossible
 
-
-
--- HELPERS
 -- Convert Supabase.Player to Player
-supabasePlayerToPlayer : Supabase.Player -> Player
+supabasePlayerToPlayer : Supabase.Player -> Player.Player
 supabasePlayerToPlayer supabasePlayer =
-    Player.Player
-        { id = Player.PlayerId supabasePlayer.id
-        , name = supabasePlayer.name
-        , rating = supabasePlayer.rating
-        , matches = supabasePlayer.matchesPlayed
-        , am = supabasePlayer.playsAM
-        , pm = supabasePlayer.playsPM
-        }
-
--- Convert League and Outcome to Supabase.Match  
-toSupabaseMatch : League -> League.Outcome -> Supabase.Match
-toSupabaseMatch league outcome =
-    let
-        -- You may need to adjust these fields to match your League/Player types
-        (playerA, playerB) =
-            case League.currentMatch league of
-                Just (League.Match a b) -> (a, b)
-                Nothing -> (Player.init "A", Player.init "B")
-        winnerId =
-            case outcome of
-                League.Win { won } -> Player.id won
-                League.Draw _ -> Player.id playerA -- or handle draw differently
-        ratingBeforeA = Player.rating playerA
-        ratingBeforeB = Player.rating playerB
-        -- Calculate K-factor based on the player who is being updated (typically use player A's stats)
-        kFactor = Elo.getKFactor (Player.matchesPlayed playerA) ratingBeforeA
-        -- Calculate ratings after the match using Elo algorithm
-        (newRatingA, newRatingB) = case outcome of
-            League.Win { won } ->
-                if Player.id won == Player.id playerA then
-                    let result = Elo.win kFactor { won = ratingBeforeA, lost = ratingBeforeB }
-                    in (result.won, result.lost)
-                else
-                    let result = Elo.win kFactor { won = ratingBeforeB, lost = ratingBeforeA }
-                    in (result.lost, result.won)
-            League.Draw _ ->
-                let result = Elo.draw kFactor { playerA = ratingBeforeA, playerB = ratingBeforeB }
-                in (result.playerA, result.playerB)
-        ratingAfterA = newRatingA
-        ratingAfterB = newRatingB
-        now = Time.millisToPosix 1728396000000 -- Oct 8, 2025 12:00 PM UTC
-    in
-    { id = 0
-    , playerAId = 
-        case Player.id playerA of
-            Player.PlayerId id -> id
-    , playerBId = 
-        case Player.id playerB of
-            Player.PlayerId id -> id
-    , winnerId = 
-        case winnerId of
-            Player.PlayerId id -> id
-    , playerARatingBefore = ratingBeforeA
-    , playerBRatingBefore = ratingBeforeB
-    , playerARatingAfter = ratingAfterA
-    , playerBRatingAfter = ratingAfterB
-    , kFactorUsed = kFactor
-    , playedAt = now
-    }
+    Player.init supabasePlayer.name
 
 -- Convert Player to Supabase.Player
 toSupabasePlayer : Player.Player -> Supabase.Player
@@ -359,51 +294,11 @@ maybeAutoSave ( model, cmd ) =
 
 subscriptions : Model -> Sub Msg
 subscriptions model =
-    case League.currentMatch (History.current model.history) of
-        Just (League.Match left right) ->
-            Keyboard.downs
-                (\rawKey ->
-                    case Keyboard.navigationKey rawKey of
-                        Just Keyboard.ArrowLeft ->
-                            MatchFinished (League.Win { won = left, lost = right })
-
-                        Just Keyboard.ArrowRight ->
-                            MatchFinished (League.Win { won = right, lost = left })
-
-                        Just Keyboard.ArrowUp ->
-                            MatchFinished (League.Draw { playerA = left, playerB = right })
-
-                        _ ->
-                            -- Try other keys: Escape to skip, digits 1/2/0 for vote shortcuts
-                            let
-                                keyStr = Keyboard.rawValue rawKey
-                            in
-                            if keyStr == "Escape" || keyStr == "Esc" then
-                                if model.autoSaveInProgress then
-                                    IgnoredKey
-                                else
-                                    KeeperWantsToSkipMatch
-                            else
-                                case Keyboard.characterKeyUpper rawKey of
-                                    Just (Keyboard.Character "1") ->
-                                        MatchFinished (League.Win { won = left, lost = right })
-
-                                    Just (Keyboard.Character "2") ->
-                                        MatchFinished (League.Win { won = right, lost = left })
-
-                                    Just (Keyboard.Character "0") ->
-                                        MatchFinished (League.Draw { playerA = left, playerB = right })
-
-                                    _ ->
-                                        IgnoredKey
-                )
-
-        Nothing ->
-            Sub.batch
-                [ receiveAutoSave ReceivedAutoSave
-                , receiveTimeFilter ReceivedTimeFilter
-                , receiveIgnoredPlayers ReceivedIgnoredPlayers
-                ]
+    Sub.batch
+        [ receiveAutoSave ReceivedAutoSave
+        , receiveTimeFilter ReceivedTimeFilter
+        , receiveIgnoredPlayers ReceivedIgnoredPlayers
+        ]
 
 
 -- Helper function to check if player is locally ignored
@@ -451,56 +346,18 @@ update : Msg -> Model -> ( Model, Cmd Msg )
 update msg model =
     case msg of
         TogglePlayerAM player ->
-            -- Check if we're turning AM OFF - if so, require confirmation
-            if Player.playsAM player then
-                ( { model | timeToggleConfirmation = Just (player, "AM") }
-                , Cmd.none
-                )
-            else
-                -- Turning AM ON - no confirmation needed
-                let
-                    updatedLeague =
-                        History.current model.history
-                            |> \league ->
-                                case League.getPlayer (Player.id player) league of
-                                    Just p ->
-                                        let newP = Player.setAM True p in
-                                        League.updatePlayer newP league
-                                    Nothing ->
-                                        league
-                in
-                ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
-                , Cmd.none
-                )
-                    |> startNextMatchIfPossible
-                    |> maybeAutoSave
+            -- Show confirmation dialog for both enabling and disabling AM
+            ( { model | timeToggleConfirmation = Just (player, "AM") }
+            , Cmd.none
+            )
 
         TogglePlayerPM player ->
-            -- Check if we're turning PM OFF - if so, require confirmation
-            if Player.playsPM player then
-                ( { model | timeToggleConfirmation = Just (player, "PM") }
-                , Cmd.none
-                )
-            else
-                -- Turning PM ON - no confirmation needed
-                let
-                    updatedLeague =
-                        History.current model.history
-                            |> \league ->
-                                case League.getPlayer (Player.id player) league of
-                                    Just p ->
-                                        let newP = Player.setPM True p in
-                                        League.updatePlayer newP league
-                                    Nothing ->
-                                        league
-                in
-                ( { model | history = History.mapPush (\_ -> updatedLeague) model.history }
-                , Cmd.none
-                )
-                    |> startNextMatchIfPossible
-                    |> maybeAutoSave
+            -- Show confirmation dialog for both enabling and disabling PM
+            ( { model | timeToggleConfirmation = Just (player, "PM") }
+            , Cmd.none
+            )
 
-        ConfirmTogglePlayerTime player timeType ->
+        ConfirmTogglePlayerTime player timeType newState ->
             let
                 updatedLeague =
                     History.current model.history
@@ -510,9 +367,9 @@ update msg model =
                                     let 
                                         newP = 
                                             if timeType == "AM" then
-                                                Player.setAM False p
+                                                Player.setAM newState p
                                             else
-                                                Player.setPM False p
+                                                Player.setPM newState p
                                     in
                                     League.updatePlayer newP league
                                 Nothing ->
@@ -926,7 +783,7 @@ modernSansSerif =
     Css.fontFamilies [ "system-ui", "-apple-system", "BlinkMacSystemFont", "'Segoe UI'", "'Roboto'", "'Inter'", "'Helvetica Neue'", "Arial", "sans-serif" ]
 
 
-view : Model -> Document Msg
+view : Model -> Browser.Document Msg
 view model =
     { title = "Hockey Rater 🏒"
     , body =
@@ -1038,6 +895,10 @@ view model =
            )
         ++ (case model.timeToggleConfirmation of
                 Just (player, timeType) ->
+                    let
+                        currentState = if timeType == "AM" then Player.playsAM player else Player.playsPM player
+                        newState = not currentState
+                    in
                     [ Html.div
                         [ css
                             [ Css.position Css.fixed
@@ -1064,24 +925,24 @@ view model =
                                 ]
                             ]
                             [ Html.h3
-                                [ css 
+                                [ css
                                     [ Css.margin2 (Css.px 0) (Css.px 0)
                                     , Css.marginBottom (Css.px 16)
                                     , Css.fontSize (Css.px 18)
                                     , Css.fontWeight (Css.int 600)
-                                    , Css.color (Css.hex "F59E0B")
+                                    , Css.color (Css.hex "DC2626")
                                     ]
                                 ]
-                                [ Html.text "Change Time Availability?" ]
+                                [ Html.text ("Confirm " ++ timeType ++ " Toggle") ]
                             , Html.p
-                                [ css 
+                                [ css
                                     [ Css.margin2 (Css.px 0) (Css.px 0)
                                     , Css.marginBottom (Css.px 24)
                                     , Css.fontSize (Css.px 16)
                                     , Css.color (Css.hex "374151")
                                     ]
                                 ]
-                                [ Html.text ("Are you sure you want to disable " ++ timeType ++ " availability for " ++ Player.name player ++ "?") ]
+                                [ Html.text ("Are you sure you want to " ++ (if newState then "enable" else "disable") ++ " " ++ timeType ++ " availability for " ++ Player.name player ++ "?") ]
                             , Html.div
                                 [ css [ Css.displayFlex, Css.justifyContent Css.center ] ]
                                 [ Html.button
@@ -1112,9 +973,9 @@ view model =
                                         , Css.fontWeight (Css.int 500)
                                         , Css.hover [ Css.backgroundColor (Css.hex "D97706") ]
                                         ]
-                                    , Events.onClick (ConfirmTogglePlayerTime player timeType)
+                                    , Events.onClick (ConfirmTogglePlayerTime player timeType newState)
                                     ]
-                                    [ Html.text ("Yes, Disable " ++ timeType) ]
+                                    [ Html.text (if newState then "Yes, Enable " ++ timeType else "Yes, Disable " ++ timeType) ]
                                 ]
                             ]
                         ]
