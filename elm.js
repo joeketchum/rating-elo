@@ -9037,9 +9037,7 @@ var $author$project$Main$update = F2(
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{
-								status: $elm$core$Maybe$Just('Player deleted from database, syncing...')
-							}),
+							{status: $elm$core$Maybe$Nothing}),
 						A2(
 							$elm$core$Task$perform,
 							function (_v15) {
@@ -9371,14 +9369,7 @@ var $author$project$Main$update = F2(
 								} else {
 									var outcome = $author$project$League$Win(
 										{lost: playerB, won: playerA});
-									return A2(
-										$author$project$Main$handleMatchFinished,
-										outcome,
-										_Utils_update(
-											model,
-											{
-												status: $elm$core$Maybe$Just('Key 1 pressed - Left player wins')
-											}));
+									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
 								break _v20$5;
@@ -9399,14 +9390,7 @@ var $author$project$Main$update = F2(
 								} else {
 									var outcome = $author$project$League$Win(
 										{lost: playerA, won: playerB});
-									return A2(
-										$author$project$Main$handleMatchFinished,
-										outcome,
-										_Utils_update(
-											model,
-											{
-												status: $elm$core$Maybe$Just('Key 2 pressed - Right player wins')
-											}));
+									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
 								break _v20$5;
@@ -9427,14 +9411,7 @@ var $author$project$Main$update = F2(
 								} else {
 									var outcome = $author$project$League$Draw(
 										{playerA: playerA, playerB: playerB});
-									return A2(
-										$author$project$Main$handleMatchFinished,
-										outcome,
-										_Utils_update(
-											model,
-											{
-												status: $elm$core$Maybe$Just('Key 0 pressed - Tie/Draw')
-											}));
+									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
 								break _v20$5;
@@ -13858,7 +13835,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$rtfeldman$elm_css$Html$Styled$text('Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc)')
+							$rtfeldman$elm_css$Html$Styled$text('Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc) • Undo (Backspace)')
 						])),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$div,
@@ -14056,7 +14033,7 @@ var $author$project$Main$currentMatch = function (model) {
 								[
 									A2(
 									$author$project$Main$blueButton,
-									'UNDO (Backspace)',
+									'UNDO',
 									A2(
 										$elm$core$Maybe$map,
 										function (_v2) {

@@ -637,7 +637,7 @@ update msg model =
             case result of
                 Ok _ ->
                     -- Player successfully deleted from Supabase - trigger reload to sync
-                    ( { model | status = Just "Player deleted from database, syncing..." }
+                    ( { model | status = Nothing }
                     , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
                     )
                 Err err ->
@@ -864,7 +864,7 @@ update msg model =
                         let
                             outcome = League.Win { won = playerA, lost = playerB }
                         in
-                        handleMatchFinished outcome { model | status = Just "Key 1 pressed - Left player wins" }
+                        handleMatchFinished outcome model
 
                 ( "2", Just (League.Match playerA playerB) ) ->
                     -- Right player wins  
@@ -874,7 +874,7 @@ update msg model =
                         let
                             outcome = League.Win { won = playerB, lost = playerA }
                         in
-                        handleMatchFinished outcome { model | status = Just "Key 2 pressed - Right player wins" }
+                        handleMatchFinished outcome model
 
                 ( "0", Just (League.Match playerA playerB) ) ->
                     -- Tie/Draw
@@ -884,7 +884,7 @@ update msg model =
                         let
                             outcome = League.Draw { playerA = playerA, playerB = playerB }
                         in
-                        handleMatchFinished outcome { model | status = Just "Key 0 pressed - Tie/Draw" }
+                        handleMatchFinished outcome model
 
                 ( "Escape", _ ) ->
                     -- Skip match
@@ -1855,7 +1855,7 @@ currentMatch model =
                         , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
                         ]
                     ]
-                    [ Html.text "Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc)" ]
+                    [ Html.text "Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc) • Undo (Backspace)" ]
                 , Html.div
                     [ css
                         [ Css.displayFlex
@@ -1894,7 +1894,7 @@ currentMatch model =
                                         [ -- Desktop controls rows
                                                                                     Html.div
                                                                                         [ css [ Css.displayFlex, Css.justifyContent Css.center, Css.marginBottom (Css.px 12) ] ]
-                                            [ blueButton "UNDO (Backspace)" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
+                                            [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
                                             , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
                                             , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
                                             ]
