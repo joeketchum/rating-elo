@@ -391,27 +391,10 @@ playInMatches =
 {-| -}
 kFactor : League -> Player -> Int
 kFactor (League league) player =
-    let
-        p90 =
-            Dict.values league.players
-                |> List.map Player.rating
-                |> percentile 0.9
-                |> Maybe.withDefault Elo.initialRating
-    in
-    if Player.matchesPlayed player < playInMatches then
-        -- players who are new to the league should move around more so that
-        -- they can get ranked closer to their actual correct position sooner.
-        Elo.sensitiveKFactor * 3
-
-    else if Player.rating player >= p90 then
-        -- players who have been at the top of the rankings for a while should
-        -- be stabler. In my use case, I'm picking things to do next. The
-        -- "most important" thing to do next doesn't actually change a lot,
-        -- and the algorithm should reflect that.
-        Elo.sensitiveKFactor // 2
-
-    else
-        Elo.sensitiveKFactor
+    -- Use dynamic K-factor based on games played and rating for better scaling
+    -- This provides optimal convergence for new players while maintaining
+    -- stability for experienced players in high-volume environments
+    Elo.getKFactor (Player.matchesPlayed player) (Player.rating player)
 
 
 {-| Not 100% correct because of the rounding but good enough for our

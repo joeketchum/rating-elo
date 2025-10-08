@@ -6,6 +6,7 @@ module Player exposing
     , matchesPlayed, setMatchesPlayedTestOnly, incrementMatchesPlayed
     , playsAM, playsPM, setAM, setPM
     , encode, decoder
+    , RatingClass(..), getRatingClass, ratingClassToString, ratingClassColor
     )
 
 {-|
@@ -22,6 +23,8 @@ module Player exposing
 
 @docs encode, decoder
 
+@docs RatingClass, getRatingClass, ratingClassToString, ratingClassColor
+
 -}
 
 import Elo
@@ -29,6 +32,51 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Murmur3
 import Sort exposing (Sorter)
+
+
+{-| Rating classes for organizing players by skill level
+-}
+type RatingClass
+    = Novice      -- 1000-1299
+    | Intermediate -- 1300-1599  
+    | Advanced    -- 1600-1899
+    | Expert      -- 1900+
+
+
+{-| Determine a player's rating class based on their current rating
+-}
+getRatingClass : Int -> RatingClass
+getRatingClass playerRating =
+    if playerRating < 1300 then
+        Novice
+    else if playerRating < 1600 then
+        Intermediate
+    else if playerRating < 1900 then
+        Advanced
+    else
+        Expert
+
+
+{-| Convert rating class to display string
+-}
+ratingClassToString : RatingClass -> String
+ratingClassToString ratingClass =
+    case ratingClass of
+        Novice -> "Novice"
+        Intermediate -> "Intermediate"
+        Advanced -> "Advanced"
+        Expert -> "Expert"
+
+
+{-| Get color hex code for rating class (for UI styling)
+-}
+ratingClassColor : RatingClass -> String
+ratingClassColor ratingClass =
+    case ratingClass of
+        Novice -> "#8B4513"       -- Brown
+        Intermediate -> "#C0C0C0"  -- Silver
+        Advanced -> "#FFD700"     -- Gold
+        Expert -> "#9932CC"       -- Purple
 
 
 type Player

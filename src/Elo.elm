@@ -1,31 +1,53 @@
-module Elo exposing (draw, initialRating, odds, sensitiveKFactor, win)
+module Elo exposing (draw, initialRating, odds, sensitiveKFactor, win, dynamicKFactor, getKFactor)
 
 {-| Calculate [Elo](https://en.wikipedia.org/wiki/Elo_rating_system) scores.
 -}
 
 
-{-| The initial rating can be whatever you want it to be, but somewhere
-between 1,000 and 1,500 seems to be pretty normal. This sets initial ratings
-at 1200.
+{-| The initial rating for new players. Set to 1500 to provide better
+room for growth and align with standard chess ratings. This gives more
+psychological space for players to improve and reduces "rating floor" issues.
 -}
 initialRating : Int
 initialRating =
-    1200
+    1500
 
 
-{-| A sensitive K-factor. This is good for if you have relatively few matches
-(like American Football) because score adjustments will be larger per game
-played. If you notice scores jumping around a lot, lessen this.
-
-You may also want to consider using a staggered K-factor to adjust
-for new players so as to find a stable rating quicker, as in chess (see
-[Wikipedia](https://en.wikipedia.org/wiki/Elo_rating_system#Most_accurate_K-factor)
-for more on this approach.)
-
+{-| A sensitive K-factor for players with few games. Use dynamicKFactor
+for better scaling with many players and games.
 -}
 sensitiveKFactor : Int
 sensitiveKFactor =
     32
+
+
+{-| Dynamic K-factor based on games played and rating level.
+This provides faster convergence for new players while maintaining
+stability for experienced players in high-volume environments.
+
+- New players (0-20 games): K=40 for rapid rating discovery
+- Developing players (21-50 games): K=24 for continued adjustment  
+- Established players (50+ games): K=16 for stability
+- High-rated players (1800+): K=12 for minimal volatility
+-}
+dynamicKFactor : Int -> Int -> Int
+dynamicKFactor gamesPlayed currentRating =
+    if gamesPlayed <= 20 then
+        40  -- New players need rapid adjustment
+    else if gamesPlayed <= 50 then
+        24  -- Still learning, moderate adjustment
+    else if currentRating >= 1800 then
+        12  -- High-rated players get stability
+    else
+        16  -- Standard for established players
+
+
+{-| Get the appropriate K-factor for a player based on their experience.
+Uses dynamic K-factor by default for better scaling.
+-}
+getKFactor : Int -> Int -> Int
+getKFactor gamesPlayed currentRating =
+    dynamicKFactor gamesPlayed currentRating
 
 
 {-| The odds that a will beat b

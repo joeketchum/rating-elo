@@ -6888,7 +6888,7 @@ var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
 var $author$project$Main$TriggerReload = {$: 'TriggerReload'};
-var $author$project$Elo$initialRating = 1200;
+var $author$project$Elo$initialRating = 1500;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Node = F6(
 	function (a, b, c, d, e, f) {
@@ -7798,189 +7798,21 @@ var $author$project$League$higherRankedPlayer = F2(
 			$author$project$Player$rating(b)) > 0) ? a : b;
 	});
 var $elm$core$Basics$ge = _Utils_ge;
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
-var $elm$core$List$sortBy = _List_sortBy;
-var $elm$core$List$sort = function (xs) {
-	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
-};
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
+var $author$project$Elo$dynamicKFactor = F2(
+	function (gamesPlayed, currentRating) {
+		return (gamesPlayed <= 20) ? 40 : ((gamesPlayed <= 50) ? 24 : ((currentRating >= 1800) ? 12 : 16));
 	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+var $author$project$Elo$getKFactor = F2(
+	function (gamesPlayed, currentRating) {
+		return A2($author$project$Elo$dynamicKFactor, gamesPlayed, currentRating);
 	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
-var $author$project$League$percentile = F2(
-	function (pct, items) {
-		var sorted = $elm$core$List$sort(items);
-		var offset = pct * $elm$core$List$length(items);
-		var index = $elm$core$Basics$floor(offset);
-		if (_Utils_eq(index, offset)) {
-			return $elm$core$List$head(
-				A2($elm$core$List$drop, index - 1, sorted));
-		} else {
-			var fractionalPart = offset - index;
-			var betweenThese = A2(
-				$elm$core$List$take,
-				2,
-				A2($elm$core$List$drop, index - 1, sorted));
-			if ((betweenThese.b && betweenThese.b.b) && (!betweenThese.b.b.b)) {
-				var a = betweenThese.a;
-				var _v1 = betweenThese.b;
-				var b = _v1.a;
-				return $elm$core$Maybe$Just(
-					$elm$core$Basics$round(a + (fractionalPart * (b - a))));
-			} else {
-				return $elm$core$Maybe$Nothing;
-			}
-		}
-	});
-var $author$project$Elo$sensitiveKFactor = 32;
 var $author$project$League$kFactor = F2(
 	function (_v0, player) {
 		var league = _v0.a;
-		var p90 = A2(
-			$elm$core$Maybe$withDefault,
-			$author$project$Elo$initialRating,
-			A2(
-				$author$project$League$percentile,
-				0.9,
-				A2(
-					$elm$core$List$map,
-					$author$project$Player$rating,
-					$rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players))));
-		return (_Utils_cmp(
+		return A2(
+			$author$project$Elo$getKFactor,
 			$author$project$Player$matchesPlayed(player),
-			$author$project$League$playInMatches) < 0) ? ($author$project$Elo$sensitiveKFactor * 3) : ((_Utils_cmp(
-			$author$project$Player$rating(player),
-			p90) > -1) ? (($author$project$Elo$sensitiveKFactor / 2) | 0) : $author$project$Elo$sensitiveKFactor);
+			$author$project$Player$rating(player));
 	});
 var $author$project$League$updatePlayer = F2(
 	function (player, _v0) {
@@ -8156,6 +7988,15 @@ var $author$project$History$goForward = function (_v0) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $author$project$Main$httpErrorToString = function (err) {
 	switch (err.$) {
 		case 'BadUrl':
@@ -8202,6 +8043,132 @@ var $author$project$History$mapInPlace = F2(
 				{
 					current: fn(guts.current)
 				}));
+	});
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
 	});
 var $author$project$History$push = F2(
 	function (a, _v0) {
@@ -9135,6 +9102,7 @@ var $author$project$Player$setPM = F2(
 				player,
 				{pm: val}));
 	});
+var $elm$core$List$sortBy = _List_sortBy;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
