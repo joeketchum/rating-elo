@@ -37,21 +37,22 @@ import Sort exposing (Sorter)
 {-| Rating classes for organizing players by skill level
 -}
 type RatingClass
-    = Novice      -- 1000-1299
-    | Intermediate -- 1300-1599  
-    | Advanced    -- 1600-1899
-    | Expert      -- 1900+
+    = Novice      -- 300-549 (below starting rating)
+    | Intermediate -- 550-699 (around starting rating)  
+    | Advanced    -- 700-849 (above average)
+    | Expert      -- 850+     (top tier)
 
 
 {-| Determine a player's rating class based on their current rating
+Adjusted for 500-base rating system with expected range 300-1100
 -}
 getRatingClass : Int -> RatingClass
 getRatingClass playerRating =
-    if playerRating < 1300 then
+    if playerRating < 550 then
         Novice
-    else if playerRating < 1600 then
+    else if playerRating < 700 then
         Intermediate
-    else if playerRating < 1900 then
+    else if playerRating < 850 then
         Advanced
     else
         Expert

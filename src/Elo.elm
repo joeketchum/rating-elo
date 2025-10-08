@@ -24,11 +24,12 @@ sensitiveKFactor =
 {-| Dynamic K-factor based on games played and rating level.
 This provides faster convergence for new players while maintaining
 stability for experienced players in high-volume environments.
+Adjusted for 500 base rating system with lots of voting.
 
 - New players (0-20 games): K=40 for rapid rating discovery
 - Developing players (21-50 games): K=24 for continued adjustment  
 - Established players (50+ games): K=16 for stability
-- High-rated players (1800+): K=12 for minimal volatility
+- High-rated players (800+): K=12 for minimal volatility (adjusted for 500 base)
 -}
 dynamicKFactor : Int -> Int -> Int
 dynamicKFactor gamesPlayed currentRating =
@@ -36,8 +37,8 @@ dynamicKFactor gamesPlayed currentRating =
         40  -- New players need rapid adjustment
     else if gamesPlayed <= 50 then
         24  -- Still learning, moderate adjustment
-    else if currentRating >= 1800 then
-        12  -- High-rated players get stability
+    else if currentRating >= 800 then
+        12  -- High-rated players get stability (adjusted for 500 base)
     else
         16  -- Standard for established players
 

@@ -7678,7 +7678,7 @@ var $author$project$League$higherRankedPlayer = F2(
 var $elm$core$Basics$ge = _Utils_ge;
 var $author$project$Elo$dynamicKFactor = F2(
 	function (gamesPlayed, currentRating) {
-		return (gamesPlayed <= 20) ? 40 : ((gamesPlayed <= 50) ? 24 : ((currentRating >= 1800) ? 12 : 16));
+		return (gamesPlayed <= 20) ? 40 : ((gamesPlayed <= 50) ? 24 : ((currentRating >= 800) ? 12 : 16));
 	});
 var $author$project$Elo$getKFactor = F2(
 	function (gamesPlayed, currentRating) {
