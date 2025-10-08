@@ -1,11 +1,11 @@
 
 port module Main exposing (..)
 
-import Html exposing (Html)
-import Html.Styled exposing (toUnstyled)
+import Html.Styled exposing (Html, toUnstyled)
 import Html.Styled as Html
 import Html.Styled.Attributes as StyledAttributes exposing (css)
 import Html.Styled.Events as Events
+import Html.Styled.Keyed as Keyed
 import Css
 import Css.Media as Media
 import Css.Reset
@@ -84,7 +84,7 @@ type Msg
     | KeeperUpdatedPlayerASearch String
     | KeeperUpdatedPlayerBSearch String
     | LoadedLeague (Result String League)
-    | GotPlayers (Result Http.Error (List Player))
+    | GotPlayers (Result Http.Error (List Supabase.Player))
 
     | ReceivedAutoSave Bool
     | ToggleAutoSave
@@ -101,7 +101,6 @@ type Msg
     | LeagueStateSaved (Result Http.Error Supabase.LeagueState)
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
-    | KeeperWantsToSaveToDrive
     | KeeperWantsToRetirePlayer Player
     | ConfirmPlayerDeletion Player Int
     | CancelPlayerDeletion
@@ -180,6 +179,18 @@ init _ =
 
 
 -- HELPERS
+-- Convert Supabase.Player to Player
+supabasePlayerToPlayer : Supabase.Player -> Player
+supabasePlayerToPlayer supabasePlayer =
+    let
+        player = Player.init supabasePlayer.name
+        playerWithRating = Player.setRating supabasePlayer.rating player
+        playerWithMatches = Player.setMatchesPlayedTestOnly supabasePlayer.matchesPlayed playerWithRating
+        playerWithAM = Player.setAM supabasePlayer.playsAM playerWithMatches
+        playerWithPM = Player.setPM supabasePlayer.playsPM playerWithAM
+    in
+    playerWithPM
+
 -- Convert League and Outcome to Supabase.Match
 toSupabaseMatch : League -> League.Outcome -> Supabase.Match
 toSupabaseMatch league outcome =
@@ -201,9 +212,15 @@ toSupabaseMatch league outcome =
         now = Time.millisToPosix 0 -- Replace with actual time if available
     in
     { id = 0
-    , playerAId = Player.id playerA
-    , playerBId = Player.id playerB
-    , winnerId = winnerId
+    , playerAId = 
+        case Player.id playerA of
+            Player.PlayerId id -> id
+    , playerBId = 
+        case Player.id playerB of
+            Player.PlayerId id -> id
+    , winnerId = 
+        case winnerId of
+            Player.PlayerId id -> id
     , playerARatingBefore = ratingBeforeA
     , playerBRatingBefore = ratingBeforeB
     , playerARatingAfter = ratingAfterA
@@ -218,11 +235,15 @@ toSupabaseLeagueState league =
     { id = 1
     , currentMatchPlayerA =
         case League.currentMatch league of
-            Just (League.Match a _) -> Just (Player.id a)
+            Just (League.Match a _) -> 
+                case Player.id a of
+                    Player.PlayerId id -> Just id
             _ -> Nothing
     , currentMatchPlayerB =
         case League.currentMatch league of
-            Just (League.Match _ b) -> Just (Player.id b)
+            Just (League.Match _ b) -> 
+                case Player.id b of
+                    Player.PlayerId id -> Just id
             _ -> Nothing
     , votesUntilSync = 25
     , lastSyncAt = Time.millisToPosix 0 -- Replace with actual time if available
@@ -513,6 +534,10 @@ update msg model =
         PeriodicSync ->
             -- With Supabase, periodic sync is automatic - no action needed
             ( model, Cmd.none )
+            
+        TriggerReload ->
+            -- Reload players from Supabase
+            ( model, Supabase.getPlayers Config.supabaseConfig GotPlayers )
 
 
 
@@ -537,10 +562,6 @@ update msg model =
             ( { model | showCustomMatchup = False, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing, playerASearch = "", playerBSearch = "", playerASearchResults = [], playerBSearchResults = [] }
             , Cmd.none
             )
-
-        KeeperWantsToSaveToDrive ->
-            -- No-op: Data is automatically saved to Supabase
-            ( model, Cmd.none )
 
         KeeperSelectedPlayerA player ->
             ( { model | customMatchupPlayerA = Just player, playerASearch = Player.name player, playerASearchResults = [] }
@@ -637,7 +658,11 @@ update msg model =
 
         GotPlayers result ->
             case result of
-                Ok league ->
+                Ok supabasePlayers ->
+                    let
+                        players = List.map supabasePlayerToPlayer supabasePlayers
+                        league = List.foldl League.addPlayer League.init players
+                    in
                     ( { model | history = History.init 50 league }
                     , Task.succeed (ShowStatus "Standings loaded from Supabase") |> Task.perform identity
                     )
@@ -914,7 +939,7 @@ toggleBtn isOn label maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text label ]
 
@@ -1592,7 +1617,7 @@ button baseColor label maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text label ]
 
@@ -1617,30 +1642,7 @@ blackButton =
     button (Css.hex "1F2937")
 
 
--- Save icon (small) for top-right quick save
-saveIconButton : Maybe Msg -> Html Msg
-saveIconButton maybeMsg =
-    Html.button
-        [ css
-            [ Css.padding2 (Css.px 6) (Css.px 10)
-            , Css.border Css.zero
-            , Css.borderRadius (Css.px 6)
-            , case maybeMsg of
-                Just _ -> Css.backgroundColor (Css.hex "3B82F6")
-                Nothing -> Css.backgroundColor (Css.hex "B0C4FF")
-            , Css.color (Css.hex "FFF")
-            , Css.cursor Css.pointer
-            , Css.fontWeight (Css.int 700)
-            , Css.display Css.inlineBlock
-            , modernSansSerif
-            ]
-        , case maybeMsg of
-            Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
-        ]
-        [ Html.span [] [ Html.text "💾" ]
-        , Html.span [ css [ Css.marginLeft (Css.px 6) ] ] [ Html.text "Save" ]
-        ]
+
 
 
 -- Large button variants (especially for mobile)
@@ -1669,7 +1671,7 @@ buttonLarge baseColor label maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text label ]
 
@@ -1713,7 +1715,7 @@ buttonCompact baseColor label maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text label ]
 
@@ -1742,7 +1744,7 @@ goldButton label maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text label ]
 
@@ -1771,7 +1773,7 @@ smallRedXButton maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "X" ]
 
@@ -1807,7 +1809,7 @@ smallRedXButtonSmall maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "X" ]
 
@@ -1841,7 +1843,7 @@ zzzIgnoreButton maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "Zzz" ]
 
@@ -1869,7 +1871,7 @@ zzzIgnoreButtonSmall maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "Zzz" ]
 
@@ -1903,7 +1905,7 @@ zzzUnignoreButton maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "Zzz" ]
 
@@ -1931,7 +1933,7 @@ zzzUnignoreButtonSmall maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "Zzz" ]
 
@@ -2046,7 +2048,7 @@ zzzIgnoreButtonTiny maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "Zzz" ]
 
@@ -2072,7 +2074,7 @@ zzzUnignoreButtonTiny maybeMsg =
             ]
         , case maybeMsg of
             Just m -> Events.onClick m
-            Nothing -> Attributes.disabled True
+            Nothing -> StyledAttributes.disabled True
         ]
         [ Html.text "Zzz" ]
 
