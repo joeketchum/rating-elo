@@ -43,7 +43,8 @@ type alias Model =
     , shouldStartNextMatchAfterLoad : Bool
     , autoSaveInProgress : Bool
     , timeFilter : TimeFilter
-    , ignoredPlayers : Set.Set String
+        , pendingMatch : Maybe (League.Outcome, Bool, Bool) -- outcome, playerA created, playerB created
+        , ignoredPlayers : Set.Set String
     , customMatchupPlayerA : Maybe Player
     , customMatchupPlayerB : Maybe Player
     , showCustomMatchup : Bool
@@ -162,6 +163,7 @@ init _ =
         , shouldStartNextMatchAfterLoad = False
         , autoSaveInProgress = False
         , timeFilter = All
+        , pendingMatch = Nothing
         , ignoredPlayers = Set.empty
         , customMatchupPlayerA = Nothing
         , customMatchupPlayerB = Nothing
@@ -551,7 +553,7 @@ update msg model =
                     playerACmd = Supabase.createPlayer Config.supabaseConfig (toSupabasePlayer playerA) (PlayerACreated outcome)
                     playerBCmd = Supabase.createPlayer Config.supabaseConfig (toSupabasePlayer playerB) (PlayerBCreated outcome)
                 in
-                ( { model | history = updatedHistory }
+                    ( { model | history = updatedHistory, pendingMatch = Just (outcome, False, False) }
                 , Cmd.batch [ playerACmd, playerBCmd ]
                 )
                     |> startNextMatchIfPossible
@@ -569,42 +571,98 @@ update msg model =
         PlayerACreated outcome result ->
             case result of
                 Ok _ -> 
-                    -- Player A created successfully, now try to create Player B or save match if both are done
-                    ( { model | status = Just "Player A created in Supabase" }, Cmd.none )
+                        -- Player A created successfully
+                        case model.pendingMatch of
+                            Just (pendingOutcome, _, playerBCreated) ->
+                                if playerBCreated then
+                                    -- Both players created, save match now
+                                    let
+                                        league = History.current model.history
+                                        match = toSupabaseMatch league pendingOutcome
+                                        leagueState = toSupabaseLeagueState league
+                                        matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                        leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                                    in
+                                    ( { model | status = Just "Players created, saving match...", pendingMatch = Nothing }
+                                    , Cmd.batch [ matchCmd, leagueStateCmd ]
+                                    )
+                                else
+                                    -- Player A done, waiting for Player B
+                                    ( { model | status = Just "Player A created, waiting for Player B...", pendingMatch = Just (pendingOutcome, True, False) }, Cmd.none )
+                            Nothing ->
+                                ( { model | status = Just "Player A created but no pending match found" }, Cmd.none )
                 Err err -> 
                     -- If player already exists (409 conflict), proceed anyway
                     if String.contains "409" (httpErrorToString err) then
-                        ( { model | status = Just "Player A already exists, continuing..." }, Cmd.none )
+                            -- Treat as successful creation
+                            case model.pendingMatch of
+                                Just (pendingOutcome, _, playerBCreated) ->
+                                    if playerBCreated then
+                                        -- Both players ready, save match now
+                                        let
+                                            league = History.current model.history
+                                            match = toSupabaseMatch league pendingOutcome
+                                            leagueState = toSupabaseLeagueState league
+                                            matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                            leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                                        in
+                                        ( { model | status = Just "Players ready, saving match...", pendingMatch = Nothing }
+                                        , Cmd.batch [ matchCmd, leagueStateCmd ]
+                                        )
+                                    else
+                                        -- Player A done, waiting for Player B
+                                        ( { model | status = Just "Player A ready, waiting for Player B...", pendingMatch = Just (pendingOutcome, True, False) }, Cmd.none )
+                                Nothing ->
+                                    ( { model | status = Just "Player A ready but no pending match found" }, Cmd.none )
                     else
                         ( { model | status = Just ("Failed to create Player A: " ++ httpErrorToString err) }, Cmd.none )
 
         PlayerBCreated outcome result ->
             case result of
                 Ok _ -> 
-                    -- Both players should be created now, save the match
-                    let
-                        league = History.current model.history
-                        match = toSupabaseMatch league outcome
-                        leagueState = toSupabaseLeagueState league
-                        matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
-                        leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
-                    in
-                    ( { model | status = Just "Players created, saving match..." }
-                    , Cmd.batch [ matchCmd, leagueStateCmd ]
-                    )
+                        -- Player B created successfully
+                        case model.pendingMatch of
+                            Just (pendingOutcome, playerACreated, _) ->
+                                if playerACreated then
+                                    -- Both players created, save match now
+                                    let
+                                        league = History.current model.history
+                                        match = toSupabaseMatch league pendingOutcome
+                                        leagueState = toSupabaseLeagueState league
+                                        matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                        leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                                    in
+                                    ( { model | status = Just "Players created, saving match...", pendingMatch = Nothing }
+                                    , Cmd.batch [ matchCmd, leagueStateCmd ]
+                                    )
+                                else
+                                    -- Player B done, waiting for Player A
+                                    ( { model | status = Just "Player B created, waiting for Player A...", pendingMatch = Just (pendingOutcome, False, True) }, Cmd.none )
+                            Nothing ->
+                                ( { model | status = Just "Player B created but no pending match found" }, Cmd.none )
                 Err err -> 
                     -- If player already exists (409 conflict), proceed anyway
                     if String.contains "409" (httpErrorToString err) then
-                        let
-                            league = History.current model.history
-                            match = toSupabaseMatch league outcome
-                            leagueState = toSupabaseLeagueState league
-                            matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
-                            leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
-                        in
-                        ( { model | status = Just "Players exist, saving match..." }
-                        , Cmd.batch [ matchCmd, leagueStateCmd ]
-                        )
+                            -- Treat as successful creation
+                            case model.pendingMatch of
+                                Just (pendingOutcome, playerACreated, _) ->
+                                    if playerACreated then
+                                        -- Both players ready, save match now
+                                        let
+                                            league = History.current model.history
+                                            match = toSupabaseMatch league pendingOutcome
+                                            leagueState = toSupabaseLeagueState league
+                                            matchCmd = Supabase.recordMatch Config.supabaseConfig match MatchSaved
+                                            leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
+                                        in
+                                        ( { model | status = Just "Players ready, saving match...", pendingMatch = Nothing }
+                                        , Cmd.batch [ matchCmd, leagueStateCmd ]
+                                        )
+                                    else
+                                        -- Player B done, waiting for Player A
+                                        ( { model | status = Just "Player B ready, waiting for Player A...", pendingMatch = Just (pendingOutcome, False, True) }, Cmd.none )
+                                Nothing ->
+                                    ( { model | status = Just "Player B ready but no pending match found" }, Cmd.none )
                     else
                         ( { model | status = Just ("Failed to create Player B: " ++ httpErrorToString err) }, Cmd.none )
 

@@ -6942,6 +6942,7 @@ var $author$project$Main$init = function (_v0) {
 				lastModified: 0,
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
+				pendingMatch: $elm$core$Maybe$Nothing,
 				playerASearch: '',
 				playerASearchResults: _List_Nil,
 				playerBSearch: '',
@@ -9267,7 +9268,11 @@ var $author$project$Main$update = F2(
 							_Utils_Tuple2(
 								_Utils_update(
 									model,
-									{history: updatedHistory}),
+									{
+										history: updatedHistory,
+										pendingMatch: $elm$core$Maybe$Just(
+											_Utils_Tuple3(outcome, false, false))
+									}),
 								$elm$core$Platform$Cmd$batch(
 									_List_fromArray(
 										[playerACmd, playerBCmd])))));
@@ -9318,71 +9323,197 @@ var $author$project$Main$update = F2(
 				var outcome = msg.a;
 				var result = msg.b;
 				if (result.$ === 'Ok') {
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Player A created in Supabase')
-							}),
-						$elm$core$Platform$Cmd$none);
-				} else {
-					var err = result.a;
-					return A2(
-						$elm$core$String$contains,
-						'409',
-						$author$project$Main$httpErrorToString(err)) ? _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Player A already exists, continuing...')
-							}),
-						$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just(
-									'Failed to create Player A: ' + $author$project$Main$httpErrorToString(err))
-							}),
-						$elm$core$Platform$Cmd$none);
-				}
-			case 'PlayerBCreated':
-				var outcome = msg.a;
-				var result = msg.b;
-				if (result.$ === 'Ok') {
-					var league = $author$project$History$current(model.history);
-					var leagueState = $author$project$Main$toSupabaseLeagueState(league);
-					var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
-					var match = A2($author$project$Main$toSupabaseMatch, league, outcome);
-					var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
-					return _Utils_Tuple2(
-						_Utils_update(
-							model,
-							{
-								status: $elm$core$Maybe$Just('Players created, saving match...')
-							}),
-						$elm$core$Platform$Cmd$batch(
-							_List_fromArray(
-								[matchCmd, leagueStateCmd])));
+					var _v14 = model.pendingMatch;
+					if (_v14.$ === 'Just') {
+						var _v15 = _v14.a;
+						var pendingOutcome = _v15.a;
+						var playerBCreated = _v15.c;
+						if (playerBCreated) {
+							var league = $author$project$History$current(model.history);
+							var leagueState = $author$project$Main$toSupabaseLeagueState(league);
+							var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
+							var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
+							var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										pendingMatch: $elm$core$Maybe$Nothing,
+										status: $elm$core$Maybe$Just('Players created, saving match...')
+									}),
+								$elm$core$Platform$Cmd$batch(
+									_List_fromArray(
+										[matchCmd, leagueStateCmd])));
+						} else {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										pendingMatch: $elm$core$Maybe$Just(
+											_Utils_Tuple3(pendingOutcome, true, false)),
+										status: $elm$core$Maybe$Just('Player A created, waiting for Player B...')
+									}),
+								$elm$core$Platform$Cmd$none);
+						}
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Player A created but no pending match found')
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
 				} else {
 					var err = result.a;
 					if (A2(
 						$elm$core$String$contains,
 						'409',
 						$author$project$Main$httpErrorToString(err))) {
-						var league = $author$project$History$current(model.history);
-						var leagueState = $author$project$Main$toSupabaseLeagueState(league);
-						var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
-						var match = A2($author$project$Main$toSupabaseMatch, league, outcome);
-						var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+						var _v16 = model.pendingMatch;
+						if (_v16.$ === 'Just') {
+							var _v17 = _v16.a;
+							var pendingOutcome = _v17.a;
+							var playerBCreated = _v17.c;
+							if (playerBCreated) {
+								var league = $author$project$History$current(model.history);
+								var leagueState = $author$project$Main$toSupabaseLeagueState(league);
+								var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
+								var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
+								var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											pendingMatch: $elm$core$Maybe$Nothing,
+											status: $elm$core$Maybe$Just('Players ready, saving match...')
+										}),
+									$elm$core$Platform$Cmd$batch(
+										_List_fromArray(
+											[matchCmd, leagueStateCmd])));
+							} else {
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											pendingMatch: $elm$core$Maybe$Just(
+												_Utils_Tuple3(pendingOutcome, true, false)),
+											status: $elm$core$Maybe$Just('Player A ready, waiting for Player B...')
+										}),
+									$elm$core$Platform$Cmd$none);
+							}
+						} else {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										status: $elm$core$Maybe$Just('Player A ready but no pending match found')
+									}),
+								$elm$core$Platform$Cmd$none);
+						}
+					} else {
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									status: $elm$core$Maybe$Just('Players exist, saving match...')
+									status: $elm$core$Maybe$Just(
+										'Failed to create Player A: ' + $author$project$Main$httpErrorToString(err))
 								}),
-							$elm$core$Platform$Cmd$batch(
-								_List_fromArray(
-									[matchCmd, leagueStateCmd])));
+							$elm$core$Platform$Cmd$none);
+					}
+				}
+			case 'PlayerBCreated':
+				var outcome = msg.a;
+				var result = msg.b;
+				if (result.$ === 'Ok') {
+					var _v19 = model.pendingMatch;
+					if (_v19.$ === 'Just') {
+						var _v20 = _v19.a;
+						var pendingOutcome = _v20.a;
+						var playerACreated = _v20.b;
+						if (playerACreated) {
+							var league = $author$project$History$current(model.history);
+							var leagueState = $author$project$Main$toSupabaseLeagueState(league);
+							var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
+							var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
+							var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										pendingMatch: $elm$core$Maybe$Nothing,
+										status: $elm$core$Maybe$Just('Players created, saving match...')
+									}),
+								$elm$core$Platform$Cmd$batch(
+									_List_fromArray(
+										[matchCmd, leagueStateCmd])));
+						} else {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										pendingMatch: $elm$core$Maybe$Just(
+											_Utils_Tuple3(pendingOutcome, false, true)),
+										status: $elm$core$Maybe$Just('Player B created, waiting for Player A...')
+									}),
+								$elm$core$Platform$Cmd$none);
+						}
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									status: $elm$core$Maybe$Just('Player B created but no pending match found')
+								}),
+							$elm$core$Platform$Cmd$none);
+					}
+				} else {
+					var err = result.a;
+					if (A2(
+						$elm$core$String$contains,
+						'409',
+						$author$project$Main$httpErrorToString(err))) {
+						var _v21 = model.pendingMatch;
+						if (_v21.$ === 'Just') {
+							var _v22 = _v21.a;
+							var pendingOutcome = _v22.a;
+							var playerACreated = _v22.b;
+							if (playerACreated) {
+								var league = $author$project$History$current(model.history);
+								var leagueState = $author$project$Main$toSupabaseLeagueState(league);
+								var leagueStateCmd = A3($author$project$Supabase$updateLeagueState, $author$project$Config$supabaseConfig, leagueState, $author$project$Main$LeagueStateSaved);
+								var match = A2($author$project$Main$toSupabaseMatch, league, pendingOutcome);
+								var matchCmd = A3($author$project$Supabase$recordMatch, $author$project$Config$supabaseConfig, match, $author$project$Main$MatchSaved);
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											pendingMatch: $elm$core$Maybe$Nothing,
+											status: $elm$core$Maybe$Just('Players ready, saving match...')
+										}),
+									$elm$core$Platform$Cmd$batch(
+										_List_fromArray(
+											[matchCmd, leagueStateCmd])));
+							} else {
+								return _Utils_Tuple2(
+									_Utils_update(
+										model,
+										{
+											pendingMatch: $elm$core$Maybe$Just(
+												_Utils_Tuple3(pendingOutcome, false, true)),
+											status: $elm$core$Maybe$Just('Player B ready, waiting for Player A...')
+										}),
+									$elm$core$Platform$Cmd$none);
+							}
+						} else {
+							return _Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										status: $elm$core$Maybe$Just('Player B ready but no pending match found')
+									}),
+								$elm$core$Platform$Cmd$none);
+						}
 					} else {
 						return _Utils_Tuple2(
 							_Utils_update(
@@ -9517,10 +9648,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v15 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v15.a.$ === 'Just') && (_v15.b.$ === 'Just')) {
-					var playerA = _v15.a.a;
-					var playerB = _v15.b.a;
+				var _v23 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v23.a.$ === 'Just') && (_v23.b.$ === 'Just')) {
+					var playerA = _v23.a.a;
+					var playerB = _v23.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9657,7 +9788,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v17) {
+						function (_v25) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
