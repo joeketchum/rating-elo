@@ -763,9 +763,23 @@ update msg model =
                         invalidSupabasePlayers = List.filter (\p -> p.id < 1 || p.id >= 1000000) supabasePlayers
                         
                         players = List.map supabasePlayerToPlayer validSupabasePlayers
-                        league = List.foldl League.addPlayer League.init players
+                        newLeague = List.foldl League.addPlayer League.init players
                         playerCount = List.length players
                         invalidCount = List.length invalidSupabasePlayers
+                        
+                        -- Preserve current match if syncing, otherwise start fresh
+                        currentLeague = History.current model.history
+                        activeMatch = League.currentMatch currentLeague
+                        
+                        finalLeague = case activeMatch of
+                            Just match -> 
+                                -- If there's a current match and we're syncing, preserve it
+                                if model.isSyncing then
+                                    League.startMatch match newLeague
+                                else
+                                    newLeague
+                            Nothing -> 
+                                newLeague
                         
                         statusMsg = 
                             if invalidCount > 0 then
@@ -774,12 +788,12 @@ update msg model =
                                 "Loaded " ++ String.fromInt playerCount ++ " players successfully"
                     in
                     let
-                        updatedModel = { model | history = History.init 50 league, votesSinceLastSync = 0, isSyncing = False }
+                        updatedModel = { model | history = History.init 50 finalLeague, votesSinceLastSync = 0, isSyncing = False }
                     in
                     ( updatedModel
                     , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
-                        |> startNextMatchIfPossible
+                        |> (if activeMatch == Nothing then startNextMatchIfPossible else identity)
 
                 Err httpErr ->
                     ( { model | status = Just ("Failed to fetch players from Supabase: " ++ httpErrorToString httpErr) }

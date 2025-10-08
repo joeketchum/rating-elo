@@ -9228,7 +9228,7 @@ var $author$project$Main$update = F2(
 						supabasePlayers);
 					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validSupabasePlayers);
 					var playerCount = $elm$core$List$length(players);
-					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
+					var newLeague = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					var invalidSupabasePlayers = A2(
 						$elm$core$List$filter,
 						function (p) {
@@ -9237,14 +9237,24 @@ var $author$project$Main$update = F2(
 						supabasePlayers);
 					var invalidCount = $elm$core$List$length(invalidSupabasePlayers);
 					var statusMsg = (invalidCount > 0) ? ('Loaded ' + ($elm$core$String$fromInt(playerCount) + (' valid players, filtered out ' + ($elm$core$String$fromInt(invalidCount) + ' with invalid IDs')))) : ('Loaded ' + ($elm$core$String$fromInt(playerCount) + ' players successfully'));
+					var currentLeague = $author$project$History$current(model.history);
+					var activeMatch = $author$project$League$currentMatch(currentLeague);
+					var finalLeague = function () {
+						if (activeMatch.$ === 'Just') {
+							var match = activeMatch.a;
+							return model.isSyncing ? A2($author$project$League$startMatch, match, newLeague) : newLeague;
+						} else {
+							return newLeague;
+						}
+					}();
 					var updatedModel = _Utils_update(
 						model,
 						{
-							history: A2($author$project$History$init, 50, league),
+							history: A2($author$project$History$init, 50, finalLeague),
 							isSyncing: false,
 							votesSinceLastSync: 0
 						});
-					return $author$project$Main$startNextMatchIfPossible(
+					return (_Utils_eq(activeMatch, $elm$core$Maybe$Nothing) ? $author$project$Main$startNextMatchIfPossible : $elm$core$Basics$identity)(
 						_Utils_Tuple2(
 							updatedModel,
 							A2(
@@ -9299,7 +9309,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v15) {
+						function (_v16) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9311,18 +9321,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v16 = _Utils_Tuple2(
+				var _v17 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v16$5:
+				_v17$5:
 				while (true) {
-					switch (_v16.a) {
+					switch (_v17.a) {
 						case '1':
-							if (_v16.b.$ === 'Just') {
-								var _v17 = _v16.b.a;
-								var playerA = _v17.a;
-								var playerB = _v17.b;
+							if (_v17.b.$ === 'Just') {
+								var _v18 = _v17.b.a;
+								var playerA = _v18.a;
+								var playerB = _v18.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9344,13 +9354,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v16$5;
+								break _v17$5;
 							}
 						case '2':
-							if (_v16.b.$ === 'Just') {
-								var _v18 = _v16.b.a;
-								var playerA = _v18.a;
-								var playerB = _v18.b;
+							if (_v17.b.$ === 'Just') {
+								var _v19 = _v17.b.a;
+								var playerA = _v19.a;
+								var playerB = _v19.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9372,13 +9382,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v16$5;
+								break _v17$5;
 							}
 						case '0':
-							if (_v16.b.$ === 'Just') {
-								var _v19 = _v16.b.a;
-								var playerA = _v19.a;
-								var playerB = _v19.b;
+							if (_v17.b.$ === 'Just') {
+								var _v20 = _v17.b.a;
+								var playerA = _v20.a;
+								var playerB = _v20.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9400,7 +9410,7 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v16$5;
+								break _v17$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9423,7 +9433,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v16$5;
+							break _v17$5;
 					}
 				}
 				return _Utils_Tuple2(
