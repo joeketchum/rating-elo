@@ -3,6 +3,7 @@ module League exposing
     , addPlayer, players, getPlayer, retirePlayer, updatePlayer
     , Match(..), currentMatch, nextMatch, nextMatchFiltered, startMatch, Outcome(..), finishMatch, kFactor, clearMatch
     , ignorePlayer, unignorePlayer, isPlayerIgnored
+    , getPlayerRanking
     )
 
 {-|
@@ -194,6 +195,18 @@ nextMatch league =
     nextMatchFiltered (\_ -> True) league
 
 
+-- Get player ranking by rating (1-indexed, higher rating = lower rank number)
+getPlayerRanking : Player -> League -> Int  
+getPlayerRanking player (League league) =
+    Dict.values league.players
+        |> List.sortBy (\p -> -(Player.rating p))  -- Sort by rating descending
+        |> List.indexedMap (\index p -> (index + 1, p))  -- Convert to 1-indexed rankings
+        |> List.filter (\(_, p) -> Player.id p == Player.id player)
+        |> List.head
+        |> Maybe.map Tuple.first
+        |> Maybe.withDefault 999  -- Default high ranking if not found
+
+
 nextMatchFiltered : (Player -> Bool) -> League -> Generator (Maybe Match)
 nextMatchFiltered allow (League league) =
     let
@@ -226,15 +239,32 @@ nextMatchFiltered allow (League league) =
                 |> Random.andThen
                     (\firstPlayer ->
                         let
-                            ( head, tail ) =
+                            allOpponents =
                                 if firstPlayer == a then
-                                    ( b, rest )
-
+                                    b :: rest
                                 else if firstPlayer == b then
-                                    ( a, rest )
-
+                                    a :: rest
                                 else
-                                    ( a, b :: List.filter (\p -> p /= firstPlayer) rest )
+                                    a :: b :: List.filter (\p -> p /= firstPlayer) rest
+
+                            -- Filter opponents to within ±10 ranking positions for more competitive matches
+                            firstPlayerRanking = getPlayerRanking firstPlayer (League league)
+                            eligibleOpponents =
+                                List.filter 
+                                    (\opponent -> 
+                                        let opponentRanking = getPlayerRanking opponent (League league)
+                                        in abs (firstPlayerRanking - opponentRanking) <= 10
+                                    ) 
+                                    allOpponents
+
+                            -- Fall back to all opponents if no eligible ones within range
+                            (head, tail) = 
+                                case eligibleOpponents of
+                                    h :: t -> (h, t)
+                                    [] -> 
+                                        case allOpponents of
+                                            h :: t -> (h, t)
+                                            [] -> (firstPlayer, [])  -- This shouldn't happen
 
                             closestRatingDistance =
                                 (head :: tail)

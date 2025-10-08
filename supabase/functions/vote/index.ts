@@ -13,10 +13,10 @@ function calculateExpectedScore(ratingA: number, ratingB: number): number {
 }
 
 function getKFactor(matchesPlayed: number, rating: number): number {
-  if (matchesPlayed <= 20) return 40     // New players need rapid adjustment
-  if (matchesPlayed <= 50) return 24     // Still learning, moderate adjustment
-  if (rating >= 800) return 12           // High-rated players get stability (adjusted for 500 base)
-  return 16                              // Standard for established players
+  if (matchesPlayed <= 20) return 24     // New players need adjustment, but reduced from 40
+  if (matchesPlayed <= 50) return 16     // Still learning, reduced from 24
+  if (rating >= 800) return 8            // High-rated players get extra stability, reduced from 12
+  return 12                              // Standard for established players, reduced from 16
 }
 
 function calculateNewRating(currentRating: number, kFactor: number, actualScore: number, expectedScore: number): number {

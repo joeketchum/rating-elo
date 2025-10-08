@@ -34,13 +34,13 @@ Adjusted for 500 base rating system with lots of voting.
 dynamicKFactor : Int -> Int -> Int
 dynamicKFactor gamesPlayed currentRating =
     if gamesPlayed <= 20 then
-        40  -- New players need rapid adjustment
+        24  -- New players need adjustment, but reduced from 40
     else if gamesPlayed <= 50 then
-        24  -- Still learning, moderate adjustment
+        16  -- Still learning, reduced from 24
     else if currentRating >= 800 then
-        12  -- High-rated players get stability (adjusted for 500 base)
+        8   -- High-rated players get extra stability, reduced from 12
     else
-        16  -- Standard for established players
+        12  -- Standard for established players, reduced from 16
 
 
 {-| Get the appropriate K-factor for a player based on their experience.

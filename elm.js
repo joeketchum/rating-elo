@@ -6547,6 +6547,109 @@ var $elm$core$List$filter = F2(
 			_List_Nil,
 			list);
 	});
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
+var $elm$core$Maybe$map = F2(
+	function (f, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return $elm$core$Maybe$Just(
+				f(value));
+		} else {
+			return $elm$core$Maybe$Nothing;
+		}
+	});
+var $author$project$Player$rating = function (_v0) {
+	var player = _v0.a;
+	return player.rating;
+};
+var $elm$core$List$sortBy = _List_sortBy;
+var $rtfeldman$elm_sorter_experiment$Internal$Dict$foldr = F3(
+	function (f, acc, dict) {
+		foldr:
+		while (true) {
+			if (dict.$ === 'Leaf') {
+				return acc;
+			} else {
+				var key = dict.c;
+				var value = dict.d;
+				var left = dict.e;
+				var right = dict.f;
+				var $temp$f = f,
+					$temp$acc = A3(
+					f,
+					key,
+					value,
+					A3($rtfeldman$elm_sorter_experiment$Internal$Dict$foldr, f, acc, right)),
+					$temp$dict = left;
+				f = $temp$f;
+				acc = $temp$acc;
+				dict = $temp$dict;
+				continue foldr;
+			}
+		}
+	});
+var $rtfeldman$elm_sorter_experiment$Sort$Dict$foldr = F3(
+	function (f, acc, dict) {
+		return A3($rtfeldman$elm_sorter_experiment$Internal$Dict$foldr, f, acc, dict);
+	});
+var $rtfeldman$elm_sorter_experiment$Sort$Dict$values = function (dict) {
+	return A3(
+		$rtfeldman$elm_sorter_experiment$Sort$Dict$foldr,
+		F3(
+			function (_v0, value, valueList) {
+				return A2($elm$core$List$cons, value, valueList);
+			}),
+		_List_Nil,
+		dict);
+};
+var $elm$core$Maybe$withDefault = F2(
+	function (_default, maybe) {
+		if (maybe.$ === 'Just') {
+			var value = maybe.a;
+			return value;
+		} else {
+			return _default;
+		}
+	});
+var $author$project$League$getPlayerRanking = F2(
+	function (player, _v0) {
+		var league = _v0.a;
+		return A2(
+			$elm$core$Maybe$withDefault,
+			999,
+			A2(
+				$elm$core$Maybe$map,
+				$elm$core$Tuple$first,
+				$elm$core$List$head(
+					A2(
+						$elm$core$List$filter,
+						function (_v1) {
+							var p = _v1.b;
+							return _Utils_eq(
+								$author$project$Player$id(p),
+								$author$project$Player$id(player));
+						},
+						A2(
+							$elm$core$List$indexedMap,
+							F2(
+								function (index, p) {
+									return _Utils_Tuple2(index + 1, p);
+								}),
+							A2(
+								$elm$core$List$sortBy,
+								function (p) {
+									return -$author$project$Player$rating(p);
+								},
+								$rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players)))))));
+	});
 var $author$project$Player$matchesPlayed = function (_v0) {
 	var player = _v0.a;
 	return player.matches;
@@ -6612,10 +6715,6 @@ var $elm$core$Tuple$pair = F2(
 	});
 var $author$project$League$playInMatches = 12;
 var $elm$core$Basics$pow = _Basics_pow;
-var $author$project$Player$rating = function (_v0) {
-	var player = _v0.a;
-	return player.rating;
-};
 var $elm$random$Random$addOne = function (value) {
 	return _Utils_Tuple2(1, value);
 };
@@ -6693,54 +6792,6 @@ var $elm$random$Random$uniform = F2(
 			$elm$random$Random$addOne(value),
 			A2($elm$core$List$map, $elm$random$Random$addOne, valueList));
 	});
-var $rtfeldman$elm_sorter_experiment$Internal$Dict$foldr = F3(
-	function (f, acc, dict) {
-		foldr:
-		while (true) {
-			if (dict.$ === 'Leaf') {
-				return acc;
-			} else {
-				var key = dict.c;
-				var value = dict.d;
-				var left = dict.e;
-				var right = dict.f;
-				var $temp$f = f,
-					$temp$acc = A3(
-					f,
-					key,
-					value,
-					A3($rtfeldman$elm_sorter_experiment$Internal$Dict$foldr, f, acc, right)),
-					$temp$dict = left;
-				f = $temp$f;
-				acc = $temp$acc;
-				dict = $temp$dict;
-				continue foldr;
-			}
-		}
-	});
-var $rtfeldman$elm_sorter_experiment$Sort$Dict$foldr = F3(
-	function (f, acc, dict) {
-		return A3($rtfeldman$elm_sorter_experiment$Internal$Dict$foldr, f, acc, dict);
-	});
-var $rtfeldman$elm_sorter_experiment$Sort$Dict$values = function (dict) {
-	return A3(
-		$rtfeldman$elm_sorter_experiment$Sort$Dict$foldr,
-		F3(
-			function (_v0, value, valueList) {
-				return A2($elm$core$List$cons, value, valueList);
-			}),
-		_List_Nil,
-		dict);
-};
-var $elm$core$Maybe$withDefault = F2(
-	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return value;
-		} else {
-			return _default;
-		}
-	});
 var $author$project$League$nextMatchFiltered = F2(
 	function (allow, _v0) {
 		var league = _v0.a;
@@ -6793,9 +6844,9 @@ var $author$project$League$nextMatchFiltered = F2(
 				$elm$core$Maybe$Just,
 				A2(
 					$elm$random$Random$andThen,
-					function (_v6) {
-						var playerA = _v6.a;
-						var playerB = _v6.b;
+					function (_v8) {
+						var playerA = _v8.a;
+						var playerB = _v8.b;
 						return A2(
 							$elm$random$Random$map,
 							function (flip) {
@@ -6810,8 +6861,13 @@ var $author$project$League$nextMatchFiltered = F2(
 					A2(
 						$elm$random$Random$andThen,
 						function (firstPlayer) {
+							var firstPlayerRanking = A2(
+								$author$project$League$getPlayerRanking,
+								firstPlayer,
+								$author$project$League$League(league));
 							var baseWeight = 10.0;
-							var _v5 = _Utils_eq(firstPlayer, a) ? _Utils_Tuple2(b, rest) : (_Utils_eq(firstPlayer, b) ? _Utils_Tuple2(a, rest) : _Utils_Tuple2(
+							var allOpponents = _Utils_eq(firstPlayer, a) ? A2($elm$core$List$cons, b, rest) : (_Utils_eq(firstPlayer, b) ? A2($elm$core$List$cons, a, rest) : A2(
+								$elm$core$List$cons,
 								a,
 								A2(
 									$elm$core$List$cons,
@@ -6822,6 +6878,31 @@ var $author$project$League$nextMatchFiltered = F2(
 											return !_Utils_eq(p, firstPlayer);
 										},
 										rest))));
+							var eligibleOpponents = A2(
+								$elm$core$List$filter,
+								function (opponent) {
+									var opponentRanking = A2(
+										$author$project$League$getPlayerRanking,
+										opponent,
+										$author$project$League$League(league));
+									return $elm$core$Basics$abs(firstPlayerRanking - opponentRanking) <= 10;
+								},
+								allOpponents);
+							var _v5 = function () {
+								if (eligibleOpponents.b) {
+									var h = eligibleOpponents.a;
+									var t = eligibleOpponents.b;
+									return _Utils_Tuple2(h, t);
+								} else {
+									if (allOpponents.b) {
+										var h = allOpponents.a;
+										var t = allOpponents.b;
+										return _Utils_Tuple2(h, t);
+									} else {
+										return _Utils_Tuple2(firstPlayer, _List_Nil);
+									}
+								}
+							}();
 							var head = _v5.a;
 							var tail = _v5.b;
 							var closestRatingDistance = A2(
@@ -7724,7 +7805,7 @@ var $author$project$League$higherRankedPlayer = F2(
 	});
 var $author$project$Elo$dynamicKFactor = F2(
 	function (gamesPlayed, currentRating) {
-		return (gamesPlayed <= 20) ? 40 : ((gamesPlayed <= 50) ? 24 : ((currentRating >= 800) ? 12 : 16));
+		return (gamesPlayed <= 20) ? 24 : ((gamesPlayed <= 50) ? 16 : ((currentRating >= 800) ? 8 : 12));
 	});
 var $author$project$Elo$getKFactor = F2(
 	function (gamesPlayed, currentRating) {
@@ -8594,7 +8675,6 @@ var $author$project$Player$setPM = F2(
 				{pm: val}));
 	});
 var $elm$core$Process$sleep = _Process_sleep;
-var $elm$core$List$sortBy = _List_sortBy;
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
 		if (maybeValue.$ === 'Just') {
@@ -9499,15 +9579,6 @@ var $author$project$Main$KeeperWantsToHideAddPlayerPopup = {$: 'KeeperWantsToHid
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
 };
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};
 };
@@ -9817,16 +9888,6 @@ var $rtfeldman$elm_css$Css$Structure$compactStylesheet = function (_v0) {
 		namespaces: namespaces
 	};
 };
-var $elm$core$Maybe$map = F2(
-	function (f, maybe) {
-		if (maybe.$ === 'Just') {
-			var value = maybe.a;
-			return $elm$core$Maybe$Just(
-				f(value));
-		} else {
-			return $elm$core$Maybe$Nothing;
-		}
-	});
 var $rtfeldman$elm_css$Css$Structure$Output$charsetToString = function (charset) {
 	return A2(
 		$elm$core$Maybe$withDefault,
