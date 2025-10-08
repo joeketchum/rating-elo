@@ -722,7 +722,11 @@ update msg model =
                         players = List.map supabasePlayerToPlayer supabasePlayers
                         league = List.foldl League.addPlayer League.init players
                         playerCount = List.length players
-                        statusMsg = "Loaded " ++ String.fromInt playerCount ++ " players from Supabase"
+                        -- Debug: check if we're getting actual ratings from Supabase
+                        firstPlayerRating = case List.head supabasePlayers of
+                            Just p -> String.fromInt p.rating
+                            Nothing -> "no players"
+                        statusMsg = "Loaded " ++ String.fromInt playerCount ++ " players (first rating: " ++ firstPlayerRating ++ ")"
                     in
                     ( { model | history = History.init 50 league }
                     , Task.succeed (ShowStatus statusMsg) |> Task.perform identity

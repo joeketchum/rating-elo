@@ -7802,6 +7802,15 @@ var $author$project$History$goForward = function (_v0) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
+};
 var $author$project$Main$httpErrorToString = function (err) {
 	switch (err.$) {
 		case 'BadUrl':
@@ -9192,8 +9201,17 @@ var $author$project$Main$update = F2(
 					var supabasePlayers = result.a;
 					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, supabasePlayers);
 					var playerCount = $elm$core$List$length(players);
-					var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + ' players from Supabase');
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
+					var firstPlayerRating = function () {
+						var _v19 = $elm$core$List$head(supabasePlayers);
+						if (_v19.$ === 'Just') {
+							var p = _v19.a;
+							return $elm$core$String$fromInt(p.rating);
+						} else {
+							return 'no players';
+						}
+					}();
+					var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + (' players (first rating: ' + (firstPlayerRating + ')')));
 					return $author$project$Main$startNextMatchIfPossible(
 						_Utils_Tuple2(
 							_Utils_update(
@@ -9253,7 +9271,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v19) {
+						function (_v20) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9305,15 +9323,6 @@ var $author$project$Main$ConfirmPlayerDeletion = F2(
 	});
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
-};
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
 };
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};
