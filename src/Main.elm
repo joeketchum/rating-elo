@@ -549,132 +549,41 @@ update msg model =
                         case League.currentMatch league of
                             Just (League.Match a b) -> (a, b)
                             Nothing -> (Player.init "A", Player.init "B")
-                    -- Prepare updated player records
-                    updatedPlayerA =
-                        { (toSupabasePlayer playerA)
-                            | rating = Player.rating playerA
-                            , matchesPlayed = Player.matchesPlayed playerA
-                        }
-                    updatedPlayerB =
-                        { (toSupabasePlayer playerB)
-                            | rating = Player.rating playerB
-                            , matchesPlayed = Player.matchesPlayed playerB
-                        }
-                    playerACmd = Supabase.updatePlayer Config.supabaseConfig updatedPlayerA.id updatedPlayerA (PlayerACreated outcome)
-                    playerBCmd = Supabase.updatePlayer Config.supabaseConfig updatedPlayerB.id updatedPlayerB (PlayerBCreated outcome)
+                    -- Get player IDs
+                    playerAId = case Player.id playerA of
+                        Player.PlayerId id -> id
+                    playerBId = case Player.id playerB of
+                        Player.PlayerId id -> id
+                    winnerId = case outcome of
+                        League.Win { won } -> 
+                            case Player.id won of
+                                Player.PlayerId id -> id
+                        League.Draw _ -> playerAId -- For draws, use playerA as default
+                    -- Send only match outcome to Edge Function - let it handle all database operations
+                    matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig playerAId playerBId winnerId MatchSaved
                 in
-                    ( { model | history = updatedHistory, pendingMatch = Just (outcome, False, False) }
-                    , Cmd.batch [ playerACmd, playerBCmd ]
+                    ( { model | history = updatedHistory, status = Just "Processing match..." }
+                    , matchCmd
                     )
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
         MatchSaved result ->
             case result of
-                Ok _ -> ( { model | status = Just "Match vote sent to Supabase Edge Function!" }, Cmd.none )
-                Err err -> ( { model | status = Just ("Failed to send match vote: " ++ httpErrorToString err) }, Cmd.none )
+                Ok _ -> ( { model | status = Just "Match processed successfully!" }, Cmd.none )
+                Err err -> ( { model | status = Just ("Failed to process match: " ++ httpErrorToString err) }, Cmd.none )
 
         LeagueStateSaved result ->
             case result of
                 Ok _ -> ( { model | status = Just "League state updated!" }, Cmd.none )
                 Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
 
-        PlayerACreated outcome result ->
-            case result of
-                Ok _ -> 
-                        -- Player A created successfully
-                        case model.pendingMatch of
-                            Just (pendingOutcome, _, playerBCreated) ->
-                                if playerBCreated then
-                                    -- Both players created, save match now
-                                    let
-                                        league = History.current model.history
-                                        match = toSupabaseMatch league pendingOutcome
-                                        leagueState = toSupabaseLeagueState league
-                                        matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
-                                        leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
-                                    in
-                                    ( { model | status = Just "Players created, saving match...", pendingMatch = Nothing }
-                                    , Cmd.batch [ matchCmd, leagueStateCmd ]
-                                    )
-                                else
-                                    -- Player A done, waiting for Player B
-                                    ( { model | status = Just "Player A created, waiting for Player B...", pendingMatch = Just (pendingOutcome, True, False) }, Cmd.none )
-                            Nothing ->
-                                ( { model | status = Just "Player A created but no pending match found" }, Cmd.none )
-                Err err -> 
-                    -- If player already exists (409 conflict), proceed anyway
-                    if String.contains "409" (httpErrorToString err) then
-                            -- Treat as successful creation
-                            case model.pendingMatch of
-                                Just (pendingOutcome, _, playerBCreated) ->
-                                    if playerBCreated then
-                                        -- Both players ready, save match now
-                                        let
-                                            league = History.current model.history
-                                            match = toSupabaseMatch league pendingOutcome
-                                            leagueState = toSupabaseLeagueState league
-                                            matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
-                                            leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
-                                        in
-                                        ( { model | status = Just "Players ready, saving match...", pendingMatch = Nothing }
-                                        , Cmd.batch [ matchCmd, leagueStateCmd ]
-                                        )
-                                    else
-                                        -- Player A done, waiting for Player B
-                                        ( { model | status = Just "Player A ready, waiting for Player B...", pendingMatch = Just (pendingOutcome, True, False) }, Cmd.none )
-                                Nothing ->
-                                    ( { model | status = Just "Player A ready but no pending match found" }, Cmd.none )
-                    else
-                        ( { model | status = Just ("Failed to create Player A: " ++ httpErrorToString err) }, Cmd.none )
+        PlayerACreated _ result ->
+            -- Unused - Edge Function handles everything now
+            ( model, Cmd.none )
 
-        PlayerBCreated outcome result ->
-            case result of
-                Ok _ -> 
-                        -- Player B created successfully
-                        case model.pendingMatch of
-                            Just (pendingOutcome, playerACreated, _) ->
-                                if playerACreated then
-                                    -- Both players created, save match now
-                                    let
-                                        league = History.current model.history
-                                        match = toSupabaseMatch league pendingOutcome
-                                        leagueState = toSupabaseLeagueState league
-                                        matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
-                                        leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
-                                    in
-                                    ( { model | status = Just "Players created, saving match...", pendingMatch = Nothing }
-                                    , Cmd.batch [ matchCmd, leagueStateCmd ]
-                                    )
-                                else
-                                    -- Player B done, waiting for Player A
-                                    ( { model | status = Just "Player B created, waiting for Player A...", pendingMatch = Just (pendingOutcome, False, True) }, Cmd.none )
-                            Nothing ->
-                                ( { model | status = Just "Player B created but no pending match found" }, Cmd.none )
-                Err err -> 
-                    -- If player already exists (409 conflict), proceed anyway
-                    if String.contains "409" (httpErrorToString err) then
-                            -- Treat as successful creation
-                            case model.pendingMatch of
-                                Just (pendingOutcome, playerACreated, _) ->
-                                    if playerACreated then
-                                        -- Both players ready, save match now
-                                        let
-                                            league = History.current model.history
-                                            match = toSupabaseMatch league pendingOutcome
-                                            leagueState = toSupabaseLeagueState league
-                                            matchCmd = Supabase.voteEdgeFunction Config.supabaseConfig match.playerAId match.playerBId match.winnerId MatchSaved
-                                            leagueStateCmd = Supabase.updateLeagueState Config.supabaseConfig leagueState LeagueStateSaved
-                                        in
-                                        ( { model | status = Just "Players ready, saving match...", pendingMatch = Nothing }
-                                        , Cmd.batch [ matchCmd, leagueStateCmd ]
-                                        )
-                                    else
-                                        -- Player B done, waiting for Player A
-                                        ( { model | status = Just "Player B ready, waiting for Player A...", pendingMatch = Just (pendingOutcome, False, True) }, Cmd.none )
-                                Nothing ->
-                                    ( { model | status = Just "Player B ready but no pending match found" }, Cmd.none )
-                    else
-                        ( { model | status = Just ("Failed to create Player B: " ++ httpErrorToString err) }, Cmd.none )
+        PlayerBCreated _ result ->
+            -- Unused - Edge Function handles everything now
+            ( model, Cmd.none )
 
 
 

@@ -1,5 +1,5 @@
 module Player exposing
-    ( Player, init, htmlKey
+    ( Player(..), init, htmlKey
     , PlayerId(..), id, idSorter
     , name
     , rating, setRating
