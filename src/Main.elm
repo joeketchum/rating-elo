@@ -626,8 +626,10 @@ update msg model =
         PlayerDeleted result ->
             case result of
                 Ok _ ->
-                    -- Player successfully deleted from Supabase
-                    ( model, Cmd.none )
+                    -- Player successfully deleted from Supabase - trigger reload to sync
+                    ( { model | status = Just "Player deleted from database, syncing..." }
+                    , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
+                    )
                 Err err ->
                     ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err) }
                     , Cmd.none

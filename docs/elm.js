@@ -9020,7 +9020,18 @@ var $author$project$Main$update = F2(
 			case 'PlayerDeleted':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
-					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just('Player deleted from database, syncing...')
+							}),
+						A2(
+							$elm$core$Task$perform,
+							function (_v15) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(500)));
 				} else {
 					var err = result.a;
 					return _Utils_Tuple2(
@@ -9157,10 +9168,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v15 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v15.a.$ === 'Just') && (_v15.b.$ === 'Just')) {
-					var playerA = _v15.a.a;
-					var playerB = _v15.b.a;
+				var _v16 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v16.a.$ === 'Just') && (_v16.b.$ === 'Just')) {
+					var playerA = _v16.a.a;
+					var playerB = _v16.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9302,7 +9313,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v18) {
+						function (_v19) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9314,18 +9325,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v19 = _Utils_Tuple2(
+				var _v20 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v19$5:
+				_v20$5:
 				while (true) {
-					switch (_v19.a) {
+					switch (_v20.a) {
 						case '1':
-							if (_v19.b.$ === 'Just') {
-								var _v20 = _v19.b.a;
-								var playerA = _v20.a;
-								var playerB = _v20.b;
+							if (_v20.b.$ === 'Just') {
+								var _v21 = _v20.b.a;
+								var playerA = _v21.a;
+								var playerB = _v21.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9347,13 +9358,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v19$5;
+								break _v20$5;
 							}
 						case '2':
-							if (_v19.b.$ === 'Just') {
-								var _v21 = _v19.b.a;
-								var playerA = _v21.a;
-								var playerB = _v21.b;
+							if (_v20.b.$ === 'Just') {
+								var _v22 = _v20.b.a;
+								var playerA = _v22.a;
+								var playerB = _v22.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9375,13 +9386,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v19$5;
+								break _v20$5;
 							}
 						case '0':
-							if (_v19.b.$ === 'Just') {
-								var _v22 = _v19.b.a;
-								var playerA = _v22.a;
-								var playerB = _v22.b;
+							if (_v20.b.$ === 'Just') {
+								var _v23 = _v20.b.a;
+								var playerA = _v23.a;
+								var playerB = _v23.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9403,7 +9414,7 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v19$5;
+								break _v20$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9426,7 +9437,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v19$5;
+							break _v20$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
