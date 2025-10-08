@@ -152,6 +152,8 @@ type alias Model =
     , addPlayerAM : Bool
     , addPlayerPM : Bool
     , votesSinceLastSync : Int
+    , pendingMatchAfterSync : Maybe League.Match
+    , isSyncing : Bool
     }
 
 type alias VersionedLeague =
@@ -194,6 +196,8 @@ init _ =
         , addPlayerAM = True
         , addPlayerPM = True
         , votesSinceLastSync = 0
+        , pendingMatchAfterSync = Nothing
+        , isSyncing = False
         }
         , Cmd.batch [ askForAutoSave "init", askForTimeFilter "init", askForIgnoredPlayers "init", Supabase.getPlayers Config.supabaseConfig GotPlayers ]
     )
@@ -324,7 +328,9 @@ startNextMatchIfPossible : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 startNextMatchIfPossible ( model, cmd ) =
     if League.currentMatch (History.current model.history) /= Nothing then
         ( model, cmd )
-
+    else if model.isSyncing then
+        -- Don't generate new matches while syncing - we'll restore after sync completes
+        ( model, cmd )
     else
         ( model
         , Cmd.batch
@@ -486,9 +492,14 @@ update msg model =
                 |> startNextMatchIfPossible
 
         GotNextMatch (Just match) ->
-            ( { model | history = History.mapInPlace (League.startMatch match) model.history }
-            , Cmd.none
-            )
+            if model.isSyncing then
+                -- Store the match for after sync completes
+                ( { model | pendingMatchAfterSync = Just match }, Cmd.none )
+            else
+                -- Start the match normally
+                ( { model | history = History.mapInPlace (League.startMatch match) model.history }
+                , Cmd.none
+                )
 
         GotNextMatch Nothing ->
             ( model, Cmd.none )
@@ -532,7 +543,7 @@ update msg model =
                     in
                     if shouldSync then
                         -- Sync every 10 votes to keep data fresh but not disruptive
-                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0 }
+                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0, isSyncing = True }
                         , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
                         )
                     else
@@ -567,7 +578,7 @@ update msg model =
             
         TriggerReload ->
             -- Reload players from Supabase
-            ( { model | votesSinceLastSync = 0 }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
+            ( { model | votesSinceLastSync = 0, isSyncing = True }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
 
 
 
@@ -699,7 +710,19 @@ update msg model =
                             Nothing -> "no players"
                         statusMsg = "Loaded " ++ String.fromInt playerCount ++ " players (first rating: " ++ firstPlayerRating ++ ")"
                     in
-                    ( { model | history = History.init 50 league, votesSinceLastSync = 0 }
+                    let
+                        updatedModel = { model | history = History.init 50 league, votesSinceLastSync = 0, isSyncing = False }
+                        -- If we have a pending match from before sync, start it now
+                        modelWithMatch = case model.pendingMatchAfterSync of
+                            Just match ->
+                                { updatedModel 
+                                | history = History.mapInPlace (League.startMatch match) updatedModel.history
+                                , pendingMatchAfterSync = Nothing
+                                }
+                            Nothing ->
+                                updatedModel
+                    in
+                    ( modelWithMatch
                     , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
                         |> startNextMatchIfPossible
@@ -789,6 +812,7 @@ view model =
     , body =
         [ Css.Reset.meyerV2
         , Css.Reset.borderBoxV201408
+        , Html.node "style" [] [ Html.text "@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }" ]
 
         , Html.div [ css [ Css.width (Css.pct 100) ] ]
             [ Html.main_
@@ -803,6 +827,67 @@ view model =
                 ]
             ]
         ]
+        ++ (if model.isSyncing then
+                [ Html.div
+                    [ css
+                        [ Css.position Css.fixed
+                        , Css.top Css.zero
+                        , Css.left Css.zero
+                        , Css.width (Css.pct 100)
+                        , Css.height (Css.pct 100)
+                        , Css.backgroundColor (Css.rgba 0 0 0 0.6)
+                        , Css.displayFlex
+                        , Css.alignItems Css.center
+                        , Css.justifyContent Css.center
+                        , Css.zIndex (Css.int 2000)
+                        ]
+                    ]
+                    [ Html.div
+                        [ css
+                            [ Css.backgroundColor (Css.hex "FFFFFF")
+                            , Css.borderRadius (Css.px 12)
+                            , Css.padding (Css.px 32)
+                            , Css.boxShadow4 (Css.px 0) (Css.px 8) (Css.px 32) (Css.rgba 0 0 0 0.3)
+                            , Css.textAlign Css.center
+                            , modernSansSerif
+                            ]
+                        ]
+                        [ Html.div
+                            [ css
+                                [ Css.width (Css.px 40)
+                                , Css.height (Css.px 40)
+                                , Css.border3 (Css.px 4) Css.solid (Css.hex "E5E7EB")
+                                , Css.borderTopColor (Css.hex "3B82F6")
+                                , Css.borderRadius (Css.pct 50)
+                                , Css.property "animation" "spin 1s linear infinite"
+                                , Css.margin2 (Css.px 0) Css.auto
+                                , Css.marginBottom (Css.px 16)
+                                ]
+                            ] []
+                        , Html.p
+                            [ css
+                                [ Css.fontSize (Css.px 16)
+                                , Css.fontWeight (Css.int 500)
+                                , Css.color (Css.hex "1F2937")
+                                , Css.margin Css.zero
+                                ]
+                            ]
+                            [ Html.text "Syncing with database..." ]
+                        , Html.p
+                            [ css
+                                [ Css.fontSize (Css.px 14)
+                                , Css.color (Css.hex "6B7280")
+                                , Css.margin Css.zero
+                                , Css.marginTop (Css.px 8)
+                                ]
+                            ]
+                            [ Html.text "Your next match will start shortly" ]
+                        ]
+                    ]
+                ]
+            else
+                []
+           )
         ++ (case model.playerDeletionConfirmation of
                 Just (player, step) ->
                     [ Html.div
