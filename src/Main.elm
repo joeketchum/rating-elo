@@ -569,7 +569,10 @@ update msg model =
                     |> maybeAutoSave
         MatchSaved result ->
             case result of
-                Ok _ -> ( { model | status = Just "Match processed successfully!" }, Cmd.none )
+                Ok _ -> 
+                    ( { model | status = Just "Match processed successfully! Refreshing standings..." }
+                    , Supabase.getPlayers Config.supabaseConfig GotPlayers
+                    )
                 Err err -> ( { model | status = Just ("Failed to process match: " ++ httpErrorToString err) }, Cmd.none )
 
         LeagueStateSaved result ->

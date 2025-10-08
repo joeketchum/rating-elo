@@ -8947,9 +8947,9 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								status: $elm$core$Maybe$Just('Match processed successfully!')
+								status: $elm$core$Maybe$Just('Match processed successfully! Refreshing standings...')
 							}),
-						$elm$core$Platform$Cmd$none);
+						A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
 				} else {
 					var err = result.a;
 					return _Utils_Tuple2(
