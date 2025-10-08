@@ -8081,15 +8081,6 @@ var $author$project$Main$handleMatchFinished = F2(
 			}
 		}
 	});
-var $elm$core$List$head = function (list) {
-	if (list.b) {
-		var x = list.a;
-		var xs = list.b;
-		return $elm$core$Maybe$Just(x);
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $author$project$Main$httpErrorToString = function (err) {
 	switch (err.$) {
 		case 'BadUrl':
@@ -9229,19 +9220,23 @@ var $author$project$Main$update = F2(
 				var result = msg.a;
 				if (result.$ === 'Ok') {
 					var supabasePlayers = result.a;
-					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, supabasePlayers);
+					var validSupabasePlayers = A2(
+						$elm$core$List$filter,
+						function (p) {
+							return (p.id >= 1) && (p.id <= 103);
+						},
+						supabasePlayers);
+					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validSupabasePlayers);
 					var playerCount = $elm$core$List$length(players);
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
-					var firstPlayerRating = function () {
-						var _v15 = $elm$core$List$head(supabasePlayers);
-						if (_v15.$ === 'Just') {
-							var p = _v15.a;
-							return $elm$core$String$fromInt(p.rating);
-						} else {
-							return 'no players';
-						}
-					}();
-					var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + (' players (first rating: ' + (firstPlayerRating + ')')));
+					var invalidSupabasePlayers = A2(
+						$elm$core$List$filter,
+						function (p) {
+							return (p.id < 1) || (p.id > 103);
+						},
+						supabasePlayers);
+					var invalidCount = $elm$core$List$length(invalidSupabasePlayers);
+					var statusMsg = (invalidCount > 0) ? ('Loaded ' + ($elm$core$String$fromInt(playerCount) + (' valid players, filtered out ' + ($elm$core$String$fromInt(invalidCount) + ' with invalid IDs')))) : ('Loaded ' + ($elm$core$String$fromInt(playerCount) + ' players successfully'));
 					var updatedModel = _Utils_update(
 						model,
 						{
@@ -9304,7 +9299,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v16) {
+						function (_v15) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9316,18 +9311,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v17 = _Utils_Tuple2(
+				var _v16 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v17$5:
+				_v16$5:
 				while (true) {
-					switch (_v17.a) {
+					switch (_v16.a) {
 						case '1':
-							if (_v17.b.$ === 'Just') {
-								var _v18 = _v17.b.a;
-								var playerA = _v18.a;
-								var playerB = _v18.b;
+							if (_v16.b.$ === 'Just') {
+								var _v17 = _v16.b.a;
+								var playerA = _v17.a;
+								var playerB = _v17.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9349,13 +9344,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v17$5;
+								break _v16$5;
 							}
 						case '2':
-							if (_v17.b.$ === 'Just') {
-								var _v19 = _v17.b.a;
-								var playerA = _v19.a;
-								var playerB = _v19.b;
+							if (_v16.b.$ === 'Just') {
+								var _v18 = _v16.b.a;
+								var playerA = _v18.a;
+								var playerB = _v18.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9377,13 +9372,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v17$5;
+								break _v16$5;
 							}
 						case '0':
-							if (_v17.b.$ === 'Just') {
-								var _v20 = _v17.b.a;
-								var playerA = _v20.a;
-								var playerB = _v20.b;
+							if (_v16.b.$ === 'Just') {
+								var _v19 = _v16.b.a;
+								var playerA = _v19.a;
+								var playerB = _v19.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9405,7 +9400,7 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v17$5;
+								break _v16$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9428,7 +9423,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v17$5;
+							break _v16$5;
 					}
 				}
 				return _Utils_Tuple2(
@@ -9495,6 +9490,15 @@ var $author$project$Main$KeeperUpdatedAddPlayerRating = function (a) {
 var $author$project$Main$KeeperWantsToHideAddPlayerPopup = {$: 'KeeperWantsToHideAddPlayerPopup'};
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
+};
+var $elm$core$List$head = function (list) {
+	if (list.b) {
+		var x = list.a;
+		var xs = list.b;
+		return $elm$core$Maybe$Just(x);
+	} else {
+		return $elm$core$Maybe$Nothing;
+	}
 };
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
 	return {$: 'AppendProperty', a: a};

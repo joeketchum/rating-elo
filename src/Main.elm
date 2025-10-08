@@ -758,14 +758,20 @@ update msg model =
             case result of
                 Ok supabasePlayers ->
                     let
-                        players = List.map supabasePlayerToPlayer supabasePlayers
+                        -- Filter out players with invalid IDs (should be 1-103, anything else is hash-based)
+                        validSupabasePlayers = List.filter (\p -> p.id >= 1 && p.id <= 103) supabasePlayers
+                        invalidSupabasePlayers = List.filter (\p -> p.id < 1 || p.id > 103) supabasePlayers
+                        
+                        players = List.map supabasePlayerToPlayer validSupabasePlayers
                         league = List.foldl League.addPlayer League.init players
                         playerCount = List.length players
-                        -- Debug: check if we're getting actual ratings from Supabase
-                        firstPlayerRating = case List.head supabasePlayers of
-                            Just p -> String.fromInt p.rating
-                            Nothing -> "no players"
-                        statusMsg = "Loaded " ++ String.fromInt playerCount ++ " players (first rating: " ++ firstPlayerRating ++ ")"
+                        invalidCount = List.length invalidSupabasePlayers
+                        
+                        statusMsg = 
+                            if invalidCount > 0 then
+                                "Loaded " ++ String.fromInt playerCount ++ " valid players, filtered out " ++ String.fromInt invalidCount ++ " with invalid IDs"
+                            else
+                                "Loaded " ++ String.fromInt playerCount ++ " players successfully"
                     in
                     let
                         updatedModel = { model | history = History.init 50 league, votesSinceLastSync = 0, isSyncing = False }
