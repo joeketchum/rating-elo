@@ -6935,7 +6935,7 @@ var $author$project$Main$init = function (_v0) {
 				addPlayerAM: true,
 				addPlayerName: '',
 				addPlayerPM: true,
-				addPlayerRating: '1500',
+				addPlayerRating: '500',
 				autoSave: true,
 				autoSaveInProgress: false,
 				customMatchupPlayerA: $elm$core$Maybe$Nothing,
@@ -7907,7 +7907,7 @@ var $author$project$Main$httpErrorToString = function (err) {
 			return 'Bad body: ' + b;
 	}
 };
-var $author$project$Elo$initialRating = 1500;
+var $author$project$Elo$initialRating = 500;
 var $author$project$Player$init = function (name_) {
 	return $author$project$Player$Player(
 		{
@@ -8799,7 +8799,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '1500', showAddPlayerPopup: false}),
+						{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperUpdatedAddPlayerName':
 				var name = msg.a;
@@ -8830,7 +8830,7 @@ var $author$project$Main$update = F2(
 			case 'KeeperConfirmedAddPlayer':
 				var rating = A2(
 					$elm$core$Maybe$withDefault,
-					1500,
+					500,
 					$elm$core$String$toInt(model.addPlayerRating));
 				var player = A4($author$project$Player$create, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM);
 				return $author$project$Main$maybeAutoSave(
@@ -8842,7 +8842,7 @@ var $author$project$Main$update = F2(
 									addPlayerAM: true,
 									addPlayerName: '',
 									addPlayerPM: true,
-									addPlayerRating: '1500',
+									addPlayerRating: '500',
 									history: A2(
 										$author$project$History$mapPush,
 										$author$project$League$addPlayer(player),
@@ -16576,7 +16576,7 @@ var $author$project$Main$view = function (model) {
 														_List_fromArray(
 															[
 																$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
-																$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('1500'),
+																$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('500'),
 																$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerRating),
 																$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerRating),
 																$rtfeldman$elm_css$Html$Styled$Attributes$css(

@@ -10,7 +10,7 @@ psychological space for players to improve and reduces "rating floor" issues.
 -}
 initialRating : Int
 initialRating =
-    1500
+    500
 
 
 {-| A sensitive K-factor for players with few games. Use dynamicKFactor

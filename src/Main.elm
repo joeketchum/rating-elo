@@ -189,7 +189,7 @@ init _ =
         , lastModified = 0
         , showAddPlayerPopup = False
         , addPlayerName = ""
-        , addPlayerRating = "1500"
+        , addPlayerRating = "500"
         , addPlayerAM = True
         , addPlayerPM = True
         }
@@ -493,7 +493,7 @@ update msg model =
             ( { model 
                 | showAddPlayerPopup = False
                 , addPlayerName = ""
-                , addPlayerRating = "1500"
+                , addPlayerRating = "500"
                 , addPlayerAM = True
                 , addPlayerPM = True
               }, Cmd.none )
@@ -512,14 +512,14 @@ update msg model =
 
         KeeperConfirmedAddPlayer ->
             let
-                rating = String.toInt model.addPlayerRating |> Maybe.withDefault 1500
+                rating = String.toInt model.addPlayerRating |> Maybe.withDefault 500
                 player = Player.create model.addPlayerName rating model.addPlayerAM model.addPlayerPM
             in
             ( { model
                 | history = History.mapPush (League.addPlayer player) model.history
                 , showAddPlayerPopup = False
                 , addPlayerName = ""
-                , addPlayerRating = "1500"
+                , addPlayerRating = "500"
                 , addPlayerAM = True
                 , addPlayerPM = True
               }
@@ -1051,7 +1051,7 @@ view model =
                                 [ Html.text "Estimated Rating" ]
                             , Html.input
                                 [ StyledAttributes.type_ "number"
-                                , StyledAttributes.placeholder "1500"
+                                , StyledAttributes.placeholder "500"
                                 , StyledAttributes.value model.addPlayerRating
                                 , Events.onInput KeeperUpdatedAddPlayerRating
                                 , css
