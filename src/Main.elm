@@ -721,9 +721,11 @@ update msg model =
                     let
                         players = List.map supabasePlayerToPlayer supabasePlayers
                         league = List.foldl League.addPlayer League.init players
+                        playerCount = List.length players
+                        statusMsg = "Loaded " ++ String.fromInt playerCount ++ " players from Supabase"
                     in
                     ( { model | history = History.init 50 league }
-                    , Task.succeed (ShowStatus "Standings loaded from Supabase") |> Task.perform identity
+                    , Task.succeed (ShowStatus statusMsg) |> Task.perform identity
                     )
                         |> startNextMatchIfPossible
 

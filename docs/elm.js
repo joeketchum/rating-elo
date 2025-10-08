@@ -9191,6 +9191,8 @@ var $author$project$Main$update = F2(
 				if (result.$ === 'Ok') {
 					var supabasePlayers = result.a;
 					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, supabasePlayers);
+					var playerCount = $elm$core$List$length(players);
+					var statusMsg = 'Loaded ' + ($elm$core$String$fromInt(playerCount) + ' players from Supabase');
 					var league = A3($elm$core$List$foldl, $author$project$League$addPlayer, $author$project$League$init, players);
 					return $author$project$Main$startNextMatchIfPossible(
 						_Utils_Tuple2(
@@ -9203,7 +9205,7 @@ var $author$project$Main$update = F2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
 								$elm$core$Task$succeed(
-									$author$project$Main$ShowStatus('Standings loaded from Supabase')))));
+									$author$project$Main$ShowStatus(statusMsg)))));
 				} else {
 					var httpErr = result.a;
 					return _Utils_Tuple2(
