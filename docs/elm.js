@@ -6089,9 +6089,11 @@ var $author$project$Main$init = function (_v0) {
 				autoSaveInProgress: false,
 				customMatchupPlayerA: $elm$core$Maybe$Nothing,
 				customMatchupPlayerB: $elm$core$Maybe$Nothing,
+				dataVersion: 1,
 				driveLoadInProgress: true,
 				history: A2($author$project$History$init, 50, $author$project$League$init),
 				ignoredPlayers: $elm$core$Set$empty,
+				lastModified: 0,
 				lastSynced: $elm$core$Maybe$Nothing,
 				newPlayerName: '',
 				playerASearch: '',
@@ -6879,6 +6881,9 @@ var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
 var $author$project$Main$LoadedLeague = function (a) {
 	return {$: 'LoadedLeague', a: a};
 };
+var $author$project$Main$ReceivedCurrentTime = function (a) {
+	return {$: 'ReceivedCurrentTime', a: a};
+};
 var $author$project$Main$SelectedStandingsFile = function (a) {
 	return {$: 'SelectedStandingsFile', a: a};
 };
@@ -7085,6 +7090,161 @@ var $elm$core$Basics$composeR = F3(
 		return g(
 			f(x));
 	});
+var $author$project$Player$name = function (_v0) {
+	var player = _v0.a;
+	return player.name;
+};
+var $author$project$League$players = function (_v0) {
+	var league = _v0.a;
+	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
+};
+var $elm$core$List$takeReverse = F3(
+	function (n, list, kept) {
+		takeReverse:
+		while (true) {
+			if (n <= 0) {
+				return kept;
+			} else {
+				if (!list.b) {
+					return kept;
+				} else {
+					var x = list.a;
+					var xs = list.b;
+					var $temp$n = n - 1,
+						$temp$list = xs,
+						$temp$kept = A2($elm$core$List$cons, x, kept);
+					n = $temp$n;
+					list = $temp$list;
+					kept = $temp$kept;
+					continue takeReverse;
+				}
+			}
+		}
+	});
+var $elm$core$List$takeTailRec = F2(
+	function (n, list) {
+		return $elm$core$List$reverse(
+			A3($elm$core$List$takeReverse, n, list, _List_Nil));
+	});
+var $elm$core$List$takeFast = F3(
+	function (ctr, n, list) {
+		if (n <= 0) {
+			return _List_Nil;
+		} else {
+			var _v0 = _Utils_Tuple2(n, list);
+			_v0$1:
+			while (true) {
+				_v0$5:
+				while (true) {
+					if (!_v0.b.b) {
+						return list;
+					} else {
+						if (_v0.b.b.b) {
+							switch (_v0.a) {
+								case 1:
+									break _v0$1;
+								case 2:
+									var _v2 = _v0.b;
+									var x = _v2.a;
+									var _v3 = _v2.b;
+									var y = _v3.a;
+									return _List_fromArray(
+										[x, y]);
+								case 3:
+									if (_v0.b.b.b.b) {
+										var _v4 = _v0.b;
+										var x = _v4.a;
+										var _v5 = _v4.b;
+										var y = _v5.a;
+										var _v6 = _v5.b;
+										var z = _v6.a;
+										return _List_fromArray(
+											[x, y, z]);
+									} else {
+										break _v0$5;
+									}
+								default:
+									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
+										var _v7 = _v0.b;
+										var x = _v7.a;
+										var _v8 = _v7.b;
+										var y = _v8.a;
+										var _v9 = _v8.b;
+										var z = _v9.a;
+										var _v10 = _v9.b;
+										var w = _v10.a;
+										var tl = _v10.b;
+										return (ctr > 1000) ? A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
+											$elm$core$List$cons,
+											x,
+											A2(
+												$elm$core$List$cons,
+												y,
+												A2(
+													$elm$core$List$cons,
+													z,
+													A2(
+														$elm$core$List$cons,
+														w,
+														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
+									} else {
+										break _v0$5;
+									}
+							}
+						} else {
+							if (_v0.a === 1) {
+								break _v0$1;
+							} else {
+								break _v0$5;
+							}
+						}
+					}
+				}
+				return list;
+			}
+			var _v1 = _v0.b;
+			var x = _v1.a;
+			return _List_fromArray(
+				[x]);
+		}
+	});
+var $elm$core$List$take = F2(
+	function (n, list) {
+		return A3($elm$core$List$takeFast, 0, n, list);
+	});
+var $author$project$Main$generateChecksum = function (league) {
+	var playerList = $author$project$League$players(league);
+	var playerCount = $elm$core$List$length(playerList);
+	var firstNames = A2(
+		$elm$core$String$join,
+		',',
+		A2(
+			$elm$core$List$map,
+			$author$project$Player$name,
+			A2($elm$core$List$take, 3, playerList)));
+	return $elm$core$String$fromInt(playerCount) + (':' + firstNames);
+};
+var $author$project$Main$createVersionedLeague = function (model) {
+	var currentLeague = $author$project$History$current(model.history);
+	return {
+		checksum: $author$project$Main$generateChecksum(currentLeague),
+		league: currentLeague,
+		timestamp: model.lastModified,
+		version: model.dataVersion
+	};
+};
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $author$project$Player$PlayerId = function (a) {
 	return {$: 'PlayerId', a: a};
@@ -7763,6 +7923,24 @@ var $author$project$League$encode = function (_v0) {
 						league.ignored)))
 			]));
 };
+var $author$project$Main$encodeVersionedLeague = function (versionedLeague) {
+	return $elm$json$Json$Encode$object(
+		_List_fromArray(
+			[
+				_Utils_Tuple2(
+				'version',
+				$elm$json$Json$Encode$int(versionedLeague.version)),
+				_Utils_Tuple2(
+				'timestamp',
+				$elm$json$Json$Encode$int(versionedLeague.timestamp)),
+				_Utils_Tuple2(
+				'checksum',
+				$elm$json$Json$Encode$string(versionedLeague.checksum)),
+				_Utils_Tuple2(
+				'data',
+				$author$project$League$encode(versionedLeague.league))
+			]));
+};
 var $elm$core$Task$fail = _Scheduler_fail;
 var $elm$file$File$Select$file = F2(
 	function (mimes, toMsg) {
@@ -7809,132 +7987,6 @@ var $elm$core$List$sortBy = _List_sortBy;
 var $elm$core$List$sort = function (xs) {
 	return A2($elm$core$List$sortBy, $elm$core$Basics$identity, xs);
 };
-var $elm$core$List$takeReverse = F3(
-	function (n, list, kept) {
-		takeReverse:
-		while (true) {
-			if (n <= 0) {
-				return kept;
-			} else {
-				if (!list.b) {
-					return kept;
-				} else {
-					var x = list.a;
-					var xs = list.b;
-					var $temp$n = n - 1,
-						$temp$list = xs,
-						$temp$kept = A2($elm$core$List$cons, x, kept);
-					n = $temp$n;
-					list = $temp$list;
-					kept = $temp$kept;
-					continue takeReverse;
-				}
-			}
-		}
-	});
-var $elm$core$List$takeTailRec = F2(
-	function (n, list) {
-		return $elm$core$List$reverse(
-			A3($elm$core$List$takeReverse, n, list, _List_Nil));
-	});
-var $elm$core$List$takeFast = F3(
-	function (ctr, n, list) {
-		if (n <= 0) {
-			return _List_Nil;
-		} else {
-			var _v0 = _Utils_Tuple2(n, list);
-			_v0$1:
-			while (true) {
-				_v0$5:
-				while (true) {
-					if (!_v0.b.b) {
-						return list;
-					} else {
-						if (_v0.b.b.b) {
-							switch (_v0.a) {
-								case 1:
-									break _v0$1;
-								case 2:
-									var _v2 = _v0.b;
-									var x = _v2.a;
-									var _v3 = _v2.b;
-									var y = _v3.a;
-									return _List_fromArray(
-										[x, y]);
-								case 3:
-									if (_v0.b.b.b.b) {
-										var _v4 = _v0.b;
-										var x = _v4.a;
-										var _v5 = _v4.b;
-										var y = _v5.a;
-										var _v6 = _v5.b;
-										var z = _v6.a;
-										return _List_fromArray(
-											[x, y, z]);
-									} else {
-										break _v0$5;
-									}
-								default:
-									if (_v0.b.b.b.b && _v0.b.b.b.b.b) {
-										var _v7 = _v0.b;
-										var x = _v7.a;
-										var _v8 = _v7.b;
-										var y = _v8.a;
-										var _v9 = _v8.b;
-										var z = _v9.a;
-										var _v10 = _v9.b;
-										var w = _v10.a;
-										var tl = _v10.b;
-										return (ctr > 1000) ? A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A2($elm$core$List$takeTailRec, n - 4, tl))))) : A2(
-											$elm$core$List$cons,
-											x,
-											A2(
-												$elm$core$List$cons,
-												y,
-												A2(
-													$elm$core$List$cons,
-													z,
-													A2(
-														$elm$core$List$cons,
-														w,
-														A3($elm$core$List$takeFast, ctr + 1, n - 4, tl)))));
-									} else {
-										break _v0$5;
-									}
-							}
-						} else {
-							if (_v0.a === 1) {
-								break _v0$1;
-							} else {
-								break _v0$5;
-							}
-						}
-					}
-				}
-				return list;
-			}
-			var _v1 = _v0.b;
-			var x = _v1.a;
-			return _List_fromArray(
-				[x]);
-		}
-	});
-var $elm$core$List$take = F2(
-	function (n, list) {
-		return A3($elm$core$List$takeFast, 0, n, list);
-	});
 var $author$project$League$percentile = F2(
 	function (pct, items) {
 		var sorted = $elm$core$List$sort(items);
@@ -8228,19 +8280,27 @@ var $author$project$Main$saveStandings = _Platform_outgoingPort('saveStandings',
 var $author$project$Main$maybeAutoSave = function (_v0) {
 	var model = _v0.a;
 	var cmd = _v0.b;
-	return model.autoSave ? _Utils_Tuple2(
-		model,
-		$elm$core$Platform$Cmd$batch(
-			_List_fromArray(
-				[
-					cmd,
-					$author$project$Main$saveStandings(
-					A2(
-						$elm$json$Json$Encode$encode,
-						2,
-						$author$project$League$encode(
-							$author$project$History$current(model.history))))
-				]))) : _Utils_Tuple2(model, cmd);
+	if (model.autoSave) {
+		var updatedModel = _Utils_update(
+			model,
+			{dataVersion: model.dataVersion + 1});
+		return _Utils_Tuple2(
+			updatedModel,
+			$elm$core$Platform$Cmd$batch(
+				_List_fromArray(
+					[
+						cmd,
+						A2($elm$core$Task$perform, $author$project$Main$ReceivedCurrentTime, $elm$time$Time$now),
+						$author$project$Main$saveStandings(
+						A2(
+							$elm$json$Json$Encode$encode,
+							2,
+							$author$project$Main$encodeVersionedLeague(
+								$author$project$Main$createVersionedLeague(updatedModel))))
+					])));
+	} else {
+		return _Utils_Tuple2(model, cmd);
+	}
 };
 var $author$project$Main$AutoSaveTimeout = {$: 'AutoSaveTimeout'};
 var $author$project$Main$saveToPublicDrive = _Platform_outgoingPort('saveToPublicDrive', $elm$json$Json$Encode$string);
@@ -8290,10 +8350,6 @@ var $author$project$Main$maybeSaveToDriveAfterVote = function (_v0) {
 					$author$project$Main$sendVoteCount(newCount)
 				])));
 };
-var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
-};
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $author$project$Main$AMOnly = {$: 'AMOnly'};
 var $author$project$Main$PMOnly = {$: 'PMOnly'};
@@ -8310,10 +8366,6 @@ var $author$project$Main$parseFilter = function (s) {
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
-};
-var $author$project$League$players = function (_v0) {
-	var league = _v0.a;
-	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
 };
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
@@ -9195,6 +9247,27 @@ var $elm$file$File$Download$string = F3(
 			A3(_File_download, name, mime, content));
 	});
 var $elm$file$File$toString = _File_toString;
+var $author$project$Main$VersionedLeague = F4(
+	function (version, timestamp, checksum, league) {
+		return {checksum: checksum, league: league, timestamp: timestamp, version: version};
+	});
+var $elm$json$Json$Decode$map4 = _Json_map4;
+var $author$project$Main$decodeVersionedLeague = A5(
+	$elm$json$Json$Decode$map4,
+	$author$project$Main$VersionedLeague,
+	A2($elm$json$Json$Decode$field, 'version', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'timestamp', $elm$json$Json$Decode$int),
+	A2($elm$json$Json$Decode$field, 'checksum', $elm$json$Json$Decode$string),
+	A2($elm$json$Json$Decode$field, 'data', $author$project$League$decoder));
+var $author$project$Main$legacyLeagueDecoder = A2(
+	$elm$json$Json$Decode$map,
+	function (league) {
+		return {checksum: 'legacy', league: league, timestamp: 0, version: 1};
+	},
+	$author$project$League$decoder);
+var $author$project$Main$versionedLeagueDecoder = $elm$json$Json$Decode$oneOf(
+	_List_fromArray(
+		[$author$project$Main$decodeVersionedLeague, $author$project$Main$legacyLeagueDecoder]));
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -9403,11 +9476,15 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none))));
 			case 'KeeperWantsToSaveStandings':
-				return _Utils_Tuple2(
+				var updatedModel = _Utils_update(
 					model,
+					{dataVersion: model.dataVersion + 1});
+				return _Utils_Tuple2(
+					updatedModel,
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
+								A2($elm$core$Task$perform, $author$project$Main$ReceivedCurrentTime, $elm$time$Time$now),
 								A3(
 								$elm$file$File$Download$string,
 								'standings.json',
@@ -9415,8 +9492,8 @@ var $author$project$Main$update = F2(
 								A2(
 									$elm$json$Json$Encode$encode,
 									2,
-									$author$project$League$encode(
-										$author$project$History$current(model.history)))),
+									$author$project$Main$encodeVersionedLeague(
+										$author$project$Main$createVersionedLeague(updatedModel)))),
 								A2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
@@ -9424,17 +9501,21 @@ var $author$project$Main$update = F2(
 									$author$project$Main$ShowStatus('Exported rankings')))
 							])));
 			case 'KeeperWantsToSaveToDrive':
-				return _Utils_Tuple2(
+				var updatedModel = _Utils_update(
 					model,
+					{dataVersion: model.dataVersion + 1});
+				return _Utils_Tuple2(
+					updatedModel,
 					$elm$core$Platform$Cmd$batch(
 						_List_fromArray(
 							[
+								A2($elm$core$Task$perform, $author$project$Main$ReceivedCurrentTime, $elm$time$Time$now),
 								$author$project$Main$saveToPublicDrive(
 								A2(
 									$elm$json$Json$Encode$encode,
 									2,
-									$author$project$League$encode(
-										$author$project$History$current(model.history)))),
+									$author$project$Main$encodeVersionedLeague(
+										$author$project$Main$createVersionedLeague(updatedModel)))),
 								A2(
 								$elm$core$Task$perform,
 								$elm$core$Basics$identity,
@@ -9766,24 +9847,28 @@ var $author$project$Main$update = F2(
 				}
 			case 'ReceivedStandings':
 				var jsonString = msg.a;
-				var _v13 = A2($elm$json$Json$Decode$decodeString, $author$project$League$decoder, jsonString);
+				var _v13 = A2($elm$json$Json$Decode$decodeString, $author$project$Main$versionedLeagueDecoder, jsonString);
 				if (_v13.$ === 'Ok') {
-					var league = _v13.a;
+					var versionedLeague = _v13.a;
 					var updatedModel = _Utils_update(
 						model,
 						{
 							autoSaveInProgress: false,
+							dataVersion: A2($elm$core$Basics$max, model.dataVersion, versionedLeague.version),
 							driveLoadInProgress: false,
-							history: A2($author$project$History$init, 50, league),
+							history: A2($author$project$History$init, 50, versionedLeague.league),
+							lastModified: A2($elm$core$Basics$max, model.lastModified, versionedLeague.timestamp),
 							shouldStartNextMatchAfterLoad: false
 						});
+					var isStaleData = (versionedLeague.timestamp > 0) && (_Utils_cmp(model.lastModified, versionedLeague.timestamp) > 0);
+					var statusMsg = isStaleData ? 'Warning: Loaded older data - potential conflicts detected' : 'Standings loaded';
 					var baseResult = _Utils_Tuple2(
 						updatedModel,
 						A2(
 							$elm$core$Task$perform,
 							$elm$core$Basics$identity,
 							$elm$core$Task$succeed(
-								$author$project$Main$ShowStatus('Standings loaded'))));
+								$author$project$Main$ShowStatus(statusMsg))));
 					return $author$project$Main$maybeAutoSave(
 						$author$project$Main$startNextMatchIfPossible(baseResult));
 				} else {
@@ -9798,6 +9883,13 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'ReceivedCurrentTime':
+				var time = msg.a;
+				var timestamp = $elm$time$Time$posixToMillis(time);
+				var updatedModel = _Utils_update(
+					model,
+					{lastModified: timestamp});
+				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
 			case 'ReceivedAutoSave':
 				var value = msg.a;
 				return _Utils_Tuple2(

@@ -81,6 +81,21 @@ try {
   var LS_PUBLIC = "EloTrackerPublic";
   var LS_FILTER = "EloTrackerTimeFilter"; // 'all' | 'am' | 'pm'
   var LS_IGNORED = "EloTrackerIgnoredPlayers"; // comma-separated player IDs
+  var LS_VERSION = "EloTrackerVersion"; // Track data format version
+  var DATA_VERSION = 2; // Increment when changing data structure
+  
+  // Check if we need to clear old format data
+  try {
+    var storedVersion = localStorage.getItem(LS_VERSION);
+    if (!storedVersion || parseInt(storedVersion) < DATA_VERSION) {
+      console.log('🔄 Data format updated, clearing old cache for fresh load');
+      localStorage.removeItem(LS_KEY);
+      localStorage.removeItem(LS_PUBLIC);
+      localStorage.setItem(LS_VERSION, DATA_VERSION.toString());
+    }
+  } catch (e) {
+    console.warn('Version check failed:', e);
+  }
 
   if (app.ports.autoSave && app.ports.autoSave.subscribe) {
     app.ports.autoSave.subscribe(function(json) {
@@ -147,7 +162,12 @@ try {
   if (app.ports.saveToPublicDrive && app.ports.saveToPublicDrive.subscribe) {
     app.ports.saveToPublicDrive.subscribe(function(json) {
       if (!hasFreshDriveData) {
-        console.warn('⏸️ Save requested before fresh Drive data loaded; proceeding but data origin may be stale');
+        console.warn('⚠️ POTENTIAL CONFLICT: Save requested before fresh Drive data loaded; data may be stale!');
+        
+        // Send warning to Elm if possible
+        if (app.ports.receivePublicDriveStatus && app.ports.receivePublicDriveStatus.send) {
+          app.ports.receivePublicDriveStatus.send('⚠️ Conflict Warning: Saving potentially stale data!');
+        }
       }
       try { localStorage.setItem(LS_PUBLIC, json); } catch (_) {}
 
@@ -244,9 +264,17 @@ try {
     console.log('🔄 RELOAD TRIGGERED: Loading data from Google Drive...');
     var APPS_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxzCKLQAWE3VGFskukXEgjw_DBzDv2ENndmgc-HcGK4fZFAGhiwfoUY5yewKQv-_-KAHA/exec';
     
-    // Try to load from Google Drive first (add cache-busting parameter)
-    var cacheBuster = '?_=' + Date.now();
-    fetch(APPS_SCRIPT_URL + cacheBuster, { method: 'GET' })
+    // Try to load from Google Drive first (aggressive cache-busting)
+    var cacheBuster = '?_=' + Date.now() + '&v=' + Math.random();
+    fetch(APPS_SCRIPT_URL + cacheBuster, { 
+      method: 'GET',
+      cache: 'no-cache',
+      headers: {
+        'Cache-Control': 'no-cache, no-store, must-revalidate',
+        'Pragma': 'no-cache',
+        'Expires': '0'
+      }
+    })
       .then(function(response) {
         if (response.ok) {
           return response.text();
