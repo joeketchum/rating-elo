@@ -266,7 +266,7 @@ deletePlayer config playerId toMsg =
 
 recordMatch : Config -> Match -> (Result Http.Error Match -> msg) -> Cmd msg
 recordMatch config match toMsg =
-    supabaseRequest config "POST" "/matches" (Http.jsonBody (encodeMatch match)) matchDecoder toMsg
+    supabaseRequest config "POST" "/matches" (Http.jsonBody (encodeMatch match)) (Decode.index 0 matchDecoder) toMsg
 
 
 getLeagueState : Config -> (Result Http.Error LeagueState -> msg) -> Cmd msg
@@ -291,7 +291,7 @@ updateLeagueState config state toMsg =
             , ( "votes_until_sync", Encode.int state.votesUntilSync )
             ]
     in
-    supabaseRequest config "PATCH" "/league_state?id=eq.1" (Http.jsonBody body) leagueStateDecoder toMsg
+    supabaseRequest config "PATCH" "/league_state?id=eq.1" (Http.jsonBody body) (Decode.index 0 leagueStateDecoder) toMsg
 
 
 -- REAL-TIME SUBSCRIPTIONS (WebSocket-based)

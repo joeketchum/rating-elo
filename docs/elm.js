@@ -8155,6 +8155,7 @@ var $author$project$Supabase$encodeMatch = function (match) {
 					$author$project$Supabase$encodeIsoTime(match.playedAt)))
 			]));
 };
+var $elm$json$Json$Decode$index = _Json_decodeIndex;
 var $elm$http$Http$jsonBody = function (value) {
 	return A2(
 		_Http_pair,
@@ -8207,7 +8208,7 @@ var $author$project$Supabase$recordMatch = F3(
 			'/matches',
 			$elm$http$Http$jsonBody(
 				$author$project$Supabase$encodeMatch(match)),
-			$author$project$Supabase$matchDecoder,
+			A2($elm$json$Json$Decode$index, 0, $author$project$Supabase$matchDecoder),
 			toMsg);
 	});
 var $elm$core$Set$remove = F2(
@@ -8921,7 +8922,7 @@ var $author$project$Supabase$updateLeagueState = F3(
 			'PATCH',
 			'/league_state?id=eq.1',
 			$elm$http$Http$jsonBody(body),
-			$author$project$Supabase$leagueStateDecoder,
+			A2($elm$json$Json$Decode$index, 0, $author$project$Supabase$leagueStateDecoder),
 			toMsg);
 	});
 var $author$project$Main$update = F2(
