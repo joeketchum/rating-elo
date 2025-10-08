@@ -569,7 +569,7 @@ update msg model =
             
         TriggerReload ->
             -- Reload players from Supabase
-            ( { model | votesSinceLastSync = 0 }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
+            ( { model | votesSinceLastSync = 0, isSyncing = True }, Supabase.getPlayers Config.supabaseConfig GotPlayers )
 
 
 

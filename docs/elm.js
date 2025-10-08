@@ -8650,7 +8650,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{votesSinceLastSync: 0}),
+						{isSyncing: true, votesSinceLastSync: 0}),
 					A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
 			case 'KeeperWantsToUndo':
 				return _Utils_Tuple2(
