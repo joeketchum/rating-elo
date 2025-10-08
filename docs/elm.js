@@ -7277,6 +7277,9 @@ var $author$project$League$Draw = function (a) {
 var $author$project$Main$NewPlayerCreated = function (a) {
 	return {$: 'NewPlayerCreated', a: a};
 };
+var $author$project$Main$PlayerDeleted = function (a) {
+	return {$: 'PlayerDeleted', a: a};
+};
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
@@ -7565,6 +7568,40 @@ var $author$project$Supabase$createNewPlayer = F6(
 				timeout: $elm$core$Maybe$Nothing,
 				tracker: $elm$core$Maybe$Nothing,
 				url: config.url + '/rest/v1/players'
+			});
+	});
+var $elm$http$Http$expectBytesResponse = F2(
+	function (toMsg, toResult) {
+		return A3(
+			_Http_expect,
+			'arraybuffer',
+			_Http_toDataView,
+			A2($elm$core$Basics$composeR, toResult, toMsg));
+	});
+var $elm$http$Http$expectWhatever = function (toMsg) {
+	return A2(
+		$elm$http$Http$expectBytesResponse,
+		toMsg,
+		$elm$http$Http$resolve(
+			function (_v0) {
+				return $elm$core$Result$Ok(_Utils_Tuple0);
+			}));
+};
+var $author$project$Supabase$deletePlayer = F3(
+	function (config, playerId, toMsg) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$emptyBody,
+				expect: $elm$http$Http$expectWhatever(toMsg),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey)
+					]),
+				method: 'DELETE',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
 			});
 	});
 var $elm$core$Set$insert = F2(
@@ -7964,23 +8001,6 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 	return model.autoSave ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(model, cmd);
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$http$Http$expectBytesResponse = F2(
-	function (toMsg, toResult) {
-		return A3(
-			_Http_expect,
-			'arraybuffer',
-			_Http_toDataView,
-			A2($elm$core$Basics$composeR, toResult, toMsg));
-	});
-var $elm$http$Http$expectWhatever = function (toMsg) {
-	return A2(
-		$elm$http$Http$expectBytesResponse,
-		toMsg,
-		$elm$http$Http$resolve(
-			function (_v0) {
-				return $elm$core$Result$Ok(_Utils_Tuple0);
-			}));
-};
 var $author$project$Supabase$voteEdgeFunction = F5(
 	function (config, aId, bId, winnerId, toMsg) {
 		return $elm$http$Http$request(
@@ -8779,26 +8799,32 @@ var $author$project$Main$update = F2(
 			case 'ConfirmPlayerDeletion':
 				var player = msg.a;
 				var step = msg.b;
-				return (step === 2) ? $author$project$Main$maybeAutoSave(
-					$author$project$Main$startNextMatchIfPossible(
-						_Utils_Tuple2(
-							_Utils_update(
-								model,
-								{
-									history: A2(
-										$author$project$History$mapPush,
-										$author$project$League$retirePlayer(player),
-										model.history),
-									playerDeletionConfirmation: $elm$core$Maybe$Nothing
-								}),
-							$elm$core$Platform$Cmd$none))) : _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							playerDeletionConfirmation: $elm$core$Maybe$Just(
-								_Utils_Tuple2(player, 2))
-						}),
-					$elm$core$Platform$Cmd$none);
+				if (step === 2) {
+					var _v3 = $author$project$Player$id(player);
+					var playerId = _v3.a;
+					return $author$project$Main$maybeAutoSave(
+						$author$project$Main$startNextMatchIfPossible(
+							_Utils_Tuple2(
+								_Utils_update(
+									model,
+									{
+										history: A2(
+											$author$project$History$mapPush,
+											$author$project$League$retirePlayer(player),
+											model.history),
+										playerDeletionConfirmation: $elm$core$Maybe$Nothing
+									}),
+								A3($author$project$Supabase$deletePlayer, $author$project$Config$supabaseConfig, playerId, $author$project$Main$PlayerDeleted))));
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								playerDeletionConfirmation: $elm$core$Maybe$Just(
+									_Utils_Tuple2(player, 2))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'CancelPlayerDeletion':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -8807,8 +8833,8 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToIgnorePlayer':
 				var player = msg.a;
-				var _v3 = $author$project$Player$id(player);
-				var idInt = _v3.a;
+				var _v4 = $author$project$Player$id(player);
+				var idInt = _v4.a;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$insert,
 					$elm$core$String$fromInt(idInt),
@@ -8825,8 +8851,8 @@ var $author$project$Main$update = F2(
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
 			case 'KeeperWantsToUnignorePlayer':
 				var player = msg.a;
-				var _v4 = $author$project$Player$id(player);
-				var idInt = _v4.a;
+				var _v5 = $author$project$Player$id(player);
+				var idInt = _v5.a;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$remove,
 					$elm$core$String$fromInt(idInt),
@@ -8864,7 +8890,7 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var _v5 = msg.a;
+					var _v6 = msg.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'MatchFinished':
@@ -8884,7 +8910,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v7) {
+							function (_v8) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
@@ -8895,9 +8921,9 @@ var $author$project$Main$update = F2(
 				} else {
 					var err = result.a;
 					var debugInfo = function () {
-						var _v9 = model.status;
-						if (_v9.$ === 'Just') {
-							var s = _v9.a;
+						var _v10 = model.status;
+						if (_v10.$ === 'Just') {
+							var s = _v10.a;
 							return s;
 						} else {
 							return '';
@@ -8912,7 +8938,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v8) {
+							function (_v9) {
 								return $author$project$Main$ClearStatus;
 							},
 							$elm$core$Process$sleep(10000)));
@@ -8988,6 +9014,21 @@ var $author$project$Main$update = F2(
 							{
 								status: $elm$core$Maybe$Just(
 									'Failed to create player: ' + $author$project$Main$httpErrorToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'PlayerDeleted':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								status: $elm$core$Maybe$Just(
+									'Failed to delete player from database: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -9116,10 +9157,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v13 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v13.a.$ === 'Just') && (_v13.b.$ === 'Just')) {
-					var playerA = _v13.a.a;
-					var playerB = _v13.b.a;
+				var _v15 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v15.a.$ === 'Just') && (_v15.b.$ === 'Just')) {
+					var playerA = _v15.a.a;
+					var playerB = _v15.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9261,7 +9302,7 @@ var $author$project$Main$update = F2(
 						}),
 					A2(
 						$elm$core$Task$perform,
-						function (_v16) {
+						function (_v18) {
 							return $author$project$Main$ClearStatus;
 						},
 						$elm$core$Process$sleep(2000)));
@@ -9273,18 +9314,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v17 = _Utils_Tuple2(
+				var _v19 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v17$5:
+				_v19$5:
 				while (true) {
-					switch (_v17.a) {
+					switch (_v19.a) {
 						case '1':
-							if (_v17.b.$ === 'Just') {
-								var _v18 = _v17.b.a;
-								var playerA = _v18.a;
-								var playerB = _v18.b;
+							if (_v19.b.$ === 'Just') {
+								var _v20 = _v19.b.a;
+								var playerA = _v20.a;
+								var playerB = _v20.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9306,13 +9347,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v17$5;
+								break _v19$5;
 							}
 						case '2':
-							if (_v17.b.$ === 'Just') {
-								var _v19 = _v17.b.a;
-								var playerA = _v19.a;
-								var playerB = _v19.b;
+							if (_v19.b.$ === 'Just') {
+								var _v21 = _v19.b.a;
+								var playerA = _v21.a;
+								var playerB = _v21.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9334,13 +9375,13 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v17$5;
+								break _v19$5;
 							}
 						case '0':
-							if (_v17.b.$ === 'Just') {
-								var _v20 = _v17.b.a;
-								var playerA = _v20.a;
-								var playerB = _v20.b;
+							if (_v19.b.$ === 'Just') {
+								var _v22 = _v19.b.a;
+								var playerA = _v22.a;
+								var playerB = _v22.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return _Utils_Tuple2(
 										_Utils_update(
@@ -9362,7 +9403,7 @@ var $author$project$Main$update = F2(
 											}));
 								}
 							} else {
-								break _v17$5;
+								break _v19$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9385,7 +9426,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v17$5;
+							break _v19$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);

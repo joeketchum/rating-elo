@@ -69,6 +69,7 @@ type Msg
     | PlayerACreated League.Outcome (Result Http.Error Supabase.Player)
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
     | NewPlayerCreated (Result Http.Error Supabase.Player)
+    | PlayerDeleted (Result Http.Error ())
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
     | KeeperWantsToShowAddPlayerPopup
@@ -494,9 +495,12 @@ update msg model =
 
         ConfirmPlayerDeletion player step ->
             if step == 2 then
-                -- Final confirmation - actually delete the player
+                -- Final confirmation - delete the player from both Elm and Supabase
+                let
+                    (Player.PlayerId playerId) = Player.id player
+                in
                 ( { model | playerDeletionConfirmation = Nothing, history = History.mapPush (League.retirePlayer player) model.history }
-                , Cmd.none
+                , Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
                 )
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
@@ -616,6 +620,16 @@ update msg model =
                         |> maybeAutoSave
                 Err err ->
                     ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err) }
+                    , Cmd.none
+                    )
+
+        PlayerDeleted result ->
+            case result of
+                Ok _ ->
+                    -- Player successfully deleted from Supabase
+                    ( model, Cmd.none )
+                Err err ->
+                    ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err) }
                     , Cmd.none
                     )
 
