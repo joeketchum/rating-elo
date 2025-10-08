@@ -7610,6 +7610,9 @@ var $author$project$Supabase$encodePlayer = function (player) {
 		_List_fromArray(
 			[
 				_Utils_Tuple2(
+				'id',
+				$elm$json$Json$Encode$int(player.id)),
+				_Utils_Tuple2(
 				'name',
 				$elm$json$Json$Encode$string(player.name)),
 				_Utils_Tuple2(
@@ -7623,10 +7626,7 @@ var $author$project$Supabase$encodePlayer = function (player) {
 				$elm$json$Json$Encode$bool(player.playsAM)),
 				_Utils_Tuple2(
 				'plays_pm',
-				$elm$json$Json$Encode$bool(player.playsPM)),
-				_Utils_Tuple2(
-				'is_ignored',
-				$elm$json$Json$Encode$bool(player.isIgnored))
+				$elm$json$Json$Encode$bool(player.playsPM))
 			]));
 };
 var $elm$http$Http$jsonBody = function (value) {
@@ -8932,41 +8932,14 @@ var $author$project$Supabase$leagueStateDecoder = A7(
 		$elm$json$Json$Decode$field,
 		'updated_at',
 		A2($elm$json$Json$Decode$andThen, $author$project$Supabase$decodeIsoTime, $elm$json$Json$Decode$string)));
-var $elm$json$Json$Encode$null = _Json_encodeNull;
 var $author$project$Supabase$updateLeagueState = F3(
 	function (config, state, toMsg) {
 		var body = $elm$json$Json$Encode$object(
 			_List_fromArray(
 				[
 					_Utils_Tuple2(
-					'current_match_player_a',
-					function () {
-						var _v0 = state.currentMatchPlayerA;
-						if (_v0.$ === 'Just') {
-							var id = _v0.a;
-							return $elm$json$Json$Encode$int(id);
-						} else {
-							return $elm$json$Json$Encode$null;
-						}
-					}()),
-					_Utils_Tuple2(
-					'current_match_player_b',
-					function () {
-						var _v1 = state.currentMatchPlayerB;
-						if (_v1.$ === 'Just') {
-							var id = _v1.a;
-							return $elm$json$Json$Encode$int(id);
-						} else {
-							return $elm$json$Json$Encode$null;
-						}
-					}()),
-					_Utils_Tuple2(
 					'votes_until_sync',
 					$elm$json$Json$Encode$int(state.votesUntilSync)),
-					_Utils_Tuple2(
-					'last_sync_at',
-					$elm$json$Json$Encode$string(
-						$author$project$Supabase$encodeIsoTime(state.lastSyncAt))),
 					_Utils_Tuple2(
 					'updated_at',
 					$elm$json$Json$Encode$string(

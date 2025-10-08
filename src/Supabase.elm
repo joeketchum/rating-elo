@@ -164,12 +164,12 @@ decodeIsoTime isoString =
 encodePlayer : Player -> Value
 encodePlayer player =
     Encode.object
-        [ ( "name", Encode.string player.name )
+        [ ( "id", Encode.int player.id )
+        , ( "name", Encode.string player.name )
         , ( "rating", Encode.int player.rating )
         , ( "matches_played", Encode.int player.matchesPlayed )
         , ( "plays_am", Encode.bool player.playsAM )
         , ( "plays_pm", Encode.bool player.playsPM )
-        , ( "is_ignored", Encode.bool player.isIgnored )
         ]
 
 
@@ -287,18 +287,7 @@ updateLeagueState : Config -> LeagueState -> (Result Http.Error LeagueState -> m
 updateLeagueState config state toMsg =
     let
         body = Encode.object
-            [ ( "current_match_player_a", 
-                case state.currentMatchPlayerA of
-                    Just id -> Encode.int id
-                    Nothing -> Encode.null
-              )
-            , ( "current_match_player_b", 
-                case state.currentMatchPlayerB of
-                    Just id -> Encode.int id
-                    Nothing -> Encode.null
-              )
-            , ( "votes_until_sync", Encode.int state.votesUntilSync )
-            , ( "last_sync_at", Encode.string (encodeIsoTime state.lastSyncAt) )
+            [ ( "votes_until_sync", Encode.int state.votesUntilSync )
             , ( "updated_at", Encode.string (encodeIsoTime state.updatedAt) )
             ]
     in
