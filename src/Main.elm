@@ -233,7 +233,7 @@ toSupabasePlayer player =
     , matchesPlayed = Player.matchesPlayed player
     , playsAM = True -- Default values - adjust as needed
     , playsPM = True
-    , isIgnored = False
+    , isDeleted = False
     , createdAt = now
     , updatedAt = now
     }

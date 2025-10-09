@@ -44,7 +44,7 @@ type alias Player =
     , matchesPlayed : Int
     , playsAM : Bool
     , playsPM : Bool
-    , isIgnored : Bool
+    , isDeleted : Bool
     , createdAt : Time.Posix
     , updatedAt : Time.Posix
     }
@@ -79,9 +79,9 @@ type alias LeagueState =
 
 playerDecoder : Decoder Player
 playerDecoder =
-    -- Decode all core fields, including is_ignored, then created_at and updated_at
+    -- Decode all core fields, including is_deleted, then created_at and updated_at
     Decode.map7
-        (\id name rating matchesPlayed playsAM playsPM isIgnored ->
+        (\id name rating matchesPlayed playsAM playsPM isDeleted ->
             \createdAt ->
                 \updatedAt ->
                     { id = id
@@ -90,7 +90,7 @@ playerDecoder =
                     , matchesPlayed = matchesPlayed
                     , playsAM = playsAM
                     , playsPM = playsPM
-                    , isIgnored = isIgnored
+                    , isDeleted = isDeleted
                     , createdAt = createdAt
                     , updatedAt = updatedAt
                     }
@@ -101,7 +101,7 @@ playerDecoder =
         (Decode.field "matches_played" Decode.int)
         (Decode.field "plays_am" Decode.bool)
         (Decode.field "plays_pm" Decode.bool)
-        (Decode.field "is_ignored" Decode.bool)
+        (Decode.field "is_deleted" Decode.bool)
     |> Decode.andThen (\partial ->
         Decode.field "created_at" (Decode.string |> Decode.andThen decodeIsoTime)
             |> Decode.map partial
@@ -180,7 +180,7 @@ encodePlayer player =
         , ( "matches_played", Encode.int player.matchesPlayed )
         , ( "plays_am", Encode.bool player.playsAM )
         , ( "plays_pm", Encode.bool player.playsPM )
-        , ( "is_ignored", Encode.bool player.isIgnored )
+        , ( "is_deleted", Encode.bool player.isDeleted )
         ]
 
 
@@ -242,7 +242,8 @@ supabaseRequest config method endpoint body decoder toMsg =
 
 getPlayers : Config -> (Result Http.Error (List Player) -> msg) -> Cmd msg
 getPlayers config toMsg =
-    supabaseRequest config "GET" "/players?order=rating.desc" Http.emptyBody (Decode.list playerDecoder) toMsg
+    -- Only fetch players not marked as deleted
+    supabaseRequest config "GET" "/players?is_deleted=eq.false&order=rating.desc" Http.emptyBody (Decode.list playerDecoder) toMsg
 
 
 -- Create a new player (without ID, Supabase will assign one)
@@ -256,7 +257,7 @@ createNewPlayer config name rating playsAM playsPM toMsg =
             , ("matches_played", Encode.int 0)
             , ("plays_am", Encode.bool playsAM)
             , ("plays_pm", Encode.bool playsPM)
-            , ("is_ignored", Encode.bool False)
+            , ("is_deleted", Encode.bool False)
             , ("created_at", Encode.string (encodeIsoTime now))
             , ("updated_at", Encode.string (encodeIsoTime now))
             ]
@@ -400,7 +401,7 @@ retirePlayer config playerId toMsg =
     let
         body =
             Encode.object
-                [ ( "is_ignored", Encode.bool True )
+                [ ( "is_deleted", Encode.bool True )
                 , ( "plays_am", Encode.bool False )
                 , ( "plays_pm", Encode.bool False )
                 ]

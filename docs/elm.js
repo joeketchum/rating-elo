@@ -6035,10 +6035,10 @@ var $author$project$Supabase$playerDecoder = A2(
 		A8(
 			$elm$json$Json$Decode$map7,
 			F7(
-				function (id, name, rating, matchesPlayed, playsAM, playsPM, isIgnored) {
+				function (id, name, rating, matchesPlayed, playsAM, playsPM, isDeleted) {
 					return function (createdAt) {
 						return function (updatedAt) {
-							return {createdAt: createdAt, id: id, isIgnored: isIgnored, matchesPlayed: matchesPlayed, name: name, playsAM: playsAM, playsPM: playsPM, rating: rating, updatedAt: updatedAt};
+							return {createdAt: createdAt, id: id, isDeleted: isDeleted, matchesPlayed: matchesPlayed, name: name, playsAM: playsAM, playsPM: playsPM, rating: rating, updatedAt: updatedAt};
 						};
 					};
 				}),
@@ -6048,7 +6048,7 @@ var $author$project$Supabase$playerDecoder = A2(
 			A2($elm$json$Json$Decode$field, 'matches_played', $elm$json$Json$Decode$int),
 			A2($elm$json$Json$Decode$field, 'plays_am', $elm$json$Json$Decode$bool),
 			A2($elm$json$Json$Decode$field, 'plays_pm', $elm$json$Json$Decode$bool),
-			A2($elm$json$Json$Decode$field, 'is_ignored', $elm$json$Json$Decode$bool))));
+			A2($elm$json$Json$Decode$field, 'is_deleted', $elm$json$Json$Decode$bool))));
 var $elm$json$Json$Decode$decodeString = _Json_runOnString;
 var $elm$core$Basics$composeR = F3(
 	function (f, g, x) {
@@ -6319,7 +6319,7 @@ var $author$project$Supabase$getPlayers = F2(
 			$author$project$Supabase$supabaseRequest,
 			config,
 			'GET',
-			'/players?order=rating.desc',
+			'/players?is_deleted=eq.false&order=rating.desc',
 			$elm$http$Http$emptyBody,
 			$elm$json$Json$Decode$list($author$project$Supabase$playerDecoder),
 			toMsg);
@@ -7629,7 +7629,7 @@ var $author$project$Supabase$createNewPlayer = F6(
 					'plays_pm',
 					$elm$json$Json$Encode$bool(playsPM)),
 					_Utils_Tuple2(
-					'is_ignored',
+					'is_deleted',
 					$elm$json$Json$Encode$bool(false)),
 					_Utils_Tuple2(
 					'created_at',
@@ -8655,7 +8655,7 @@ var $author$project$Supabase$retirePlayer = F3(
 			_List_fromArray(
 				[
 					_Utils_Tuple2(
-					'is_ignored',
+					'is_deleted',
 					$elm$json$Json$Encode$bool(true)),
 					_Utils_Tuple2(
 					'plays_am',
