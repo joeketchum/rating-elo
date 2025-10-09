@@ -255,7 +255,8 @@ getPlayerByName config name toMsg =
     let
         encoded = Url.percentEncode name
     in
-    supabaseRequest config "GET" ("/players?name=eq." ++ encoded) Http.emptyBody (Decode.list playerDecoder) toMsg
+    -- Use ilike without wildcards for case-insensitive exact match
+    supabaseRequest config "GET" ("/players?name=ilike." ++ encoded) Http.emptyBody (Decode.list playerDecoder) toMsg
 
 
 -- Create a new player (without ID, Supabase will assign one)

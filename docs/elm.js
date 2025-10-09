@@ -7739,7 +7739,7 @@ var $author$project$Supabase$getPlayerByName = F3(
 			$author$project$Supabase$supabaseRequest,
 			config,
 			'GET',
-			'/players?name=eq.' + encoded,
+			'/players?name=ilike.' + encoded,
 			$elm$http$Http$emptyBody,
 			$elm$json$Json$Decode$list($author$project$Supabase$playerDecoder),
 			toMsg);
@@ -17587,8 +17587,16 @@ var $author$project$Main$view = function (model) {
 																						$rtfeldman$elm_css$Css$hex('059669'))
 																					])),
 																				$author$project$Main$modernSansSerif,
-																				$elm$core$String$isEmpty(
-																				$elm$core$String$trim(model.addPlayerName)) ? $rtfeldman$elm_css$Css$batch(
+																				($elm$core$String$isEmpty(
+																				$elm$core$String$trim(model.addPlayerName)) || A2(
+																				$elm$core$Maybe$withDefault,
+																				false,
+																				A2(
+																					$elm$core$Maybe$map,
+																					function (_v4) {
+																						return true;
+																					},
+																					model.addPlayerNotice))) ? $rtfeldman$elm_css$Css$batch(
 																				_List_fromArray(
 																					[
 																						$rtfeldman$elm_css$Css$opacity(
@@ -17596,8 +17604,16 @@ var $author$project$Main$view = function (model) {
 																						$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$notAllowed)
 																					])) : $rtfeldman$elm_css$Css$batch(_List_Nil)
 																			])),
-																		$elm$core$String$isEmpty(
-																		$elm$core$String$trim(model.addPlayerName)) ? $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true) : $rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperConfirmedAddPlayer)
+																		($elm$core$String$isEmpty(
+																		$elm$core$String$trim(model.addPlayerName)) || A2(
+																		$elm$core$Maybe$withDefault,
+																		false,
+																		A2(
+																			$elm$core$Maybe$map,
+																			function (_v5) {
+																				return true;
+																			},
+																			model.addPlayerNotice))) ? $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true) : $rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperConfirmedAddPlayer)
 																	]),
 																_List_fromArray(
 																	[
@@ -17605,9 +17621,9 @@ var $author$project$Main$view = function (model) {
 																	]))
 															])),
 														function () {
-														var _v4 = model.addPlayerNotice;
-														if (_v4.$ === 'Just') {
-															var note = _v4.a;
+														var _v6 = model.addPlayerNotice;
+														if (_v6.$ === 'Just') {
+															var note = _v6.a;
 															return A2(
 																$rtfeldman$elm_css$Html$Styled$div,
 																_List_fromArray(
@@ -17652,9 +17668,9 @@ var $author$project$Main$view = function (model) {
 																				]))
 																		]),
 																	function () {
-																		var _v5 = note.restoreId;
-																		if (_v5.$ === 'Just') {
-																			var pid = _v5.a;
+																		var _v7 = note.restoreId;
+																		if (_v7.$ === 'Just') {
+																			var pid = _v7.a;
 																			return _List_fromArray(
 																				[
 																					A2(
@@ -17721,9 +17737,9 @@ var $author$project$Main$view = function (model) {
 											]))
 									]) : _List_Nil,
 								function () {
-									var _v6 = model.status;
-									if (_v6.$ === 'Just') {
-										var message = _v6.a;
+									var _v8 = model.status;
+									if (_v8.$ === 'Just') {
+										var message = _v8.a;
 										return _List_fromArray(
 											[
 												A2(

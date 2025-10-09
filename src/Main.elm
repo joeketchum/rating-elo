@@ -1437,12 +1437,12 @@ view model =
                                     , Css.fontWeight (Css.int 500)
                                     , Css.hover [ Css.backgroundColor (Css.hex "059669") ]
                                     , modernSansSerif
-                                    , if String.isEmpty (String.trim model.addPlayerName) then
+                                    , if String.isEmpty (String.trim model.addPlayerName) || Maybe.withDefault False (Maybe.map (\_ -> True) model.addPlayerNotice) then
                                         Css.batch [ Css.opacity (Css.num 0.5), Css.cursor Css.notAllowed ]
                                       else
                                         Css.batch []
                                     ]
-                                , if String.isEmpty (String.trim model.addPlayerName) then
+                                , if String.isEmpty (String.trim model.addPlayerName) || Maybe.withDefault False (Maybe.map (\_ -> True) model.addPlayerNotice) then
                                     StyledAttributes.disabled True
                                   else
                                     Events.onClick KeeperConfirmedAddPlayer
