@@ -346,10 +346,22 @@ voteEdgeFunction config aId bId winnerId toMsg =
         }
 
 
--- Skip match deletion for now - just return success to proceed to player deletion
+-- Delete all matches involving this player
 deletePlayerMatches : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
 deletePlayerMatches config playerId toMsg =
-    Task.perform (\_ -> toMsg (Ok ())) (Task.succeed ())
+    Http.request
+        { method = "DELETE"
+        , headers = 
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Prefer" "return=minimal"
+            ]
+        , url = config.url ++ "/rest/v1/matches?or=(player_a_id.eq." ++ String.fromInt playerId ++ ",player_b_id.eq." ++ String.fromInt playerId ++ ")"
+        , body = Http.emptyBody
+        , expect = Http.expectWhatever toMsg
+        , timeout = Nothing
+        , tracker = Nothing
+        }
 
 -- Delete just the player record with detailed error reporting
 deletePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
