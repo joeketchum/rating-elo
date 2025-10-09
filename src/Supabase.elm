@@ -8,6 +8,7 @@ module Supabase exposing
     , createPlayer
     , updatePlayer
     , deletePlayer
+    , deletePlayerMatches
 
     , recordMatch
     , getLeagueState
@@ -347,7 +348,23 @@ voteEdgeFunction config aId bId winnerId toMsg =
         }
 
 
--- Simple hard delete from database
+-- Try to delete matches first, then delete player
+deletePlayerMatches : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
+deletePlayerMatches config playerId toMsg =
+    Http.request
+        { method = "DELETE"
+        , headers = 
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            ]
+        , url = config.url ++ "/rest/v1/matches?or=(a_id.eq." ++ String.fromInt playerId ++ ",b_id.eq." ++ String.fromInt playerId ++ ")"
+        , body = Http.emptyBody
+        , expect = Http.expectWhatever toMsg
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+-- Delete just the player record
 deletePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
 deletePlayer config playerId toMsg =
     Http.request

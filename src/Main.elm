@@ -70,6 +70,7 @@ type Msg
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
     | NewPlayerCreated (Result Http.Error Supabase.Player)
     | PlayerDeleted (Result Http.Error ())
+    | PlayerMatchesDeleted Int (Result Http.Error ())
 
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
@@ -517,9 +518,10 @@ update msg model =
                     | playerDeletionConfirmation = Nothing
                     , history = History.mapPush (League.retirePlayer player) model.history
                     , ignoredPlayers = newIgnoredPlayers
+                    , status = Just "Deleting player matches...", isStatusTemporary = False
                   }
                 , Cmd.batch
-                    [ Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
+                    [ Supabase.deletePlayerMatches Config.supabaseConfig playerId (PlayerMatchesDeleted playerId)
                     , saveIgnoredPlayers serializedIgnored
                     ]
                 )
@@ -647,6 +649,19 @@ update msg model =
                 Err err ->
                     ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
+                    )
+
+        PlayerMatchesDeleted playerId result ->
+            case result of
+                Ok _ ->
+                    -- Matches deleted successfully, now delete the player
+                    ( { model | status = Just "Deleting player record...", isStatusTemporary = False }
+                    , Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
+                    )
+                Err err ->
+                    -- Failed to delete matches, but continue with player deletion anyway
+                    ( { model | status = Just "Warning: Could not delete matches, trying player deletion...", isStatusTemporary = False }
+                    , Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
                     )
 
         PlayerDeleted result ->
