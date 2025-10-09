@@ -7358,6 +7358,9 @@ var $author$project$League$Draw = function (a) {
 var $author$project$Main$NewPlayerCreated = function (a) {
 	return {$: 'NewPlayerCreated', a: a};
 };
+var $author$project$Main$PlayerDeleted = function (a) {
+	return {$: 'PlayerDeleted', a: a};
+};
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
 };
@@ -7646,6 +7649,40 @@ var $author$project$Supabase$createNewPlayer = F6(
 				timeout: $elm$core$Maybe$Nothing,
 				tracker: $elm$core$Maybe$Nothing,
 				url: config.url + '/rest/v1/players'
+			});
+	});
+var $elm$http$Http$expectBytesResponse = F2(
+	function (toMsg, toResult) {
+		return A3(
+			_Http_expect,
+			'arraybuffer',
+			_Http_toDataView,
+			A2($elm$core$Basics$composeR, toResult, toMsg));
+	});
+var $elm$http$Http$expectWhatever = function (toMsg) {
+	return A2(
+		$elm$http$Http$expectBytesResponse,
+		toMsg,
+		$elm$http$Http$resolve(
+			function (_v0) {
+				return $elm$core$Result$Ok(_Utils_Tuple0);
+			}));
+};
+var $author$project$Supabase$deletePlayer = F3(
+	function (config, playerId, toMsg) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$emptyBody,
+				expect: $elm$http$Http$expectWhatever(toMsg),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey)
+					]),
+				method: 'DELETE',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
 			});
 	});
 var $elm$core$Set$insert = F2(
@@ -8045,23 +8082,6 @@ var $author$project$Main$maybeAutoSave = function (_v0) {
 	return model.autoSave ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(model, cmd);
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
-var $elm$http$Http$expectBytesResponse = F2(
-	function (toMsg, toResult) {
-		return A3(
-			_Http_expect,
-			'arraybuffer',
-			_Http_toDataView,
-			A2($elm$core$Basics$composeR, toResult, toMsg));
-	});
-var $elm$http$Http$expectWhatever = function (toMsg) {
-	return A2(
-		$elm$http$Http$expectBytesResponse,
-		toMsg,
-		$elm$http$Http$resolve(
-			function (_v0) {
-				return $elm$core$Result$Ok(_Utils_Tuple0);
-			}));
-};
 var $author$project$Supabase$voteEdgeFunction = F5(
 	function (config, aId, bId, winnerId, toMsg) {
 		return $elm$http$Http$request(
@@ -8900,7 +8920,12 @@ var $author$project$Main$update = F2(
 										ignoredPlayers: newIgnoredPlayers,
 										playerDeletionConfirmation: $elm$core$Maybe$Nothing
 									}),
-								$author$project$Main$saveIgnoredPlayers(serializedIgnored))));
+								$elm$core$Platform$Cmd$batch(
+									_List_fromArray(
+										[
+											A3($author$project$Supabase$deletePlayer, $author$project$Config$supabaseConfig, playerId, $author$project$Main$PlayerDeleted),
+											$author$project$Main$saveIgnoredPlayers(serializedIgnored)
+										])))));
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
@@ -9109,6 +9134,34 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
+			case 'PlayerDeleted':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								isStatusTemporary: true,
+								status: $elm$core$Maybe$Just('Player successfully deleted from database')
+							}),
+						A2(
+							$elm$core$Task$perform,
+							function (_v14) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(500)));
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								isStatusTemporary: false,
+								status: $elm$core$Maybe$Just(
+									'Failed to delete player from database: ' + $author$project$Main$httpErrorToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'PeriodicSync':
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 'TriggerReload':
@@ -9234,10 +9287,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v13 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v13.a.$ === 'Just') && (_v13.b.$ === 'Just')) {
-					var playerA = _v13.a.a;
-					var playerB = _v13.b.a;
+				var _v15 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v15.a.$ === 'Just') && (_v15.b.$ === 'Just')) {
+					var playerA = _v15.a.a;
+					var playerB = _v15.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9371,18 +9424,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v16 = _Utils_Tuple2(
+				var _v18 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v16$5:
+				_v18$5:
 				while (true) {
-					switch (_v16.a) {
+					switch (_v18.a) {
 						case '1':
-							if (_v16.b.$ === 'Just') {
-								var _v17 = _v16.b.a;
-								var playerA = _v17.a;
-								var playerB = _v17.b;
+							if (_v18.b.$ === 'Just') {
+								var _v19 = _v18.b.a;
+								var playerA = _v19.a;
+								var playerB = _v19.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9391,13 +9444,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v16$5;
+								break _v18$5;
 							}
 						case '2':
-							if (_v16.b.$ === 'Just') {
-								var _v18 = _v16.b.a;
-								var playerA = _v18.a;
-								var playerB = _v18.b;
+							if (_v18.b.$ === 'Just') {
+								var _v20 = _v18.b.a;
+								var playerA = _v20.a;
+								var playerB = _v20.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9406,13 +9459,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v16$5;
+								break _v18$5;
 							}
 						case '0':
-							if (_v16.b.$ === 'Just') {
-								var _v19 = _v16.b.a;
-								var playerA = _v19.a;
-								var playerB = _v19.b;
+							if (_v18.b.$ === 'Just') {
+								var _v21 = _v18.b.a;
+								var playerA = _v21.a;
+								var playerB = _v21.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9421,7 +9474,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v16$5;
+								break _v18$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9444,7 +9497,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v16$5;
+							break _v18$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);

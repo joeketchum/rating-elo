@@ -69,6 +69,7 @@ type Msg
     | PlayerACreated League.Outcome (Result Http.Error Supabase.Player)
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
     | NewPlayerCreated (Result Http.Error Supabase.Player)
+    | PlayerDeleted (Result Http.Error ())
 
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
@@ -517,7 +518,10 @@ update msg model =
                     , history = History.mapPush (League.retirePlayer player) model.history
                     , ignoredPlayers = newIgnoredPlayers
                   }
-                , saveIgnoredPlayers serializedIgnored
+                , Cmd.batch
+                    [ Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
+                    , saveIgnoredPlayers serializedIgnored
+                    ]
                 )
                     |> startNextMatchIfPossible
                     |> maybeAutoSave
@@ -642,6 +646,18 @@ update msg model =
                         |> maybeAutoSave
                 Err err ->
                     ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err), isStatusTemporary = False }
+                    , Cmd.none
+                    )
+
+        PlayerDeleted result ->
+            case result of
+                Ok _ ->
+                    -- Player successfully deleted from Supabase - trigger reload to sync
+                    ( { model | status = Just "Player successfully deleted from database", isStatusTemporary = True }
+                    , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
+                    )
+                Err err ->
+                    ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
                     )
 
