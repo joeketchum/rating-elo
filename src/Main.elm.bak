@@ -1,3 +1,4 @@
+-- Trivial change to trigger GitHub Actions workflow
 port module Main exposing (..)
 
 import Html.Styled exposing (Html, toUnstyled)
@@ -70,6 +71,7 @@ type Msg
     | PlayerBCreated League.Outcome (Result Http.Error Supabase.Player)
     | NewPlayerCreated (Result Http.Error Supabase.Player)
     | PlayerDeleted (Result Http.Error ())
+
     | KeeperUpdatedNewPlayerName String
     | KeeperWantsToAddNewPlayer
     | KeeperWantsToShowAddPlayerPopup
@@ -516,8 +518,9 @@ update msg model =
                     | playerDeletionConfirmation = Nothing
                     , history = History.mapPush (League.retirePlayer player) model.history
                     , ignoredPlayers = newIgnoredPlayers
+                    , status = Just "Attempting to delete player...", isStatusTemporary = False
                   }
-                , Cmd.batch 
+                , Cmd.batch
                     [ Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
                     , saveIgnoredPlayers serializedIgnored
                     ]
@@ -652,15 +655,13 @@ update msg model =
             case result of
                 Ok _ ->
                     -- Player successfully deleted from Supabase - trigger reload to sync
-                    ( { model | status = Nothing }
+                    ( { model | status = Just "Player successfully deleted from database", isStatusTemporary = True }
                     , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
                     )
                 Err err ->
                     ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
                     )
-
-
 
         PeriodicSync ->
             -- With Supabase, periodic sync is automatic - no action needed
