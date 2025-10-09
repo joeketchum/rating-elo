@@ -4628,7 +4628,24 @@ function _Time_getZoneName()
 		callback(_Scheduler_succeed(name));
 	});
 }
-var $elm$core$Basics$EQ = {$: 'EQ'};
+
+
+function _Url_percentEncode(string)
+{
+	return encodeURIComponent(string);
+}
+
+function _Url_percentDecode(string)
+{
+	try
+	{
+		return $elm$core$Maybe$Just(decodeURIComponent(string));
+	}
+	catch (e)
+	{
+		return $elm$core$Maybe$Nothing;
+	}
+}var $elm$core$Basics$EQ = {$: 'EQ'};
 var $elm$core$Basics$GT = {$: 'GT'};
 var $elm$core$Basics$LT = {$: 'LT'};
 var $elm$core$List$cons = _List_cons;
@@ -7024,6 +7041,7 @@ var $author$project$Main$init = function (_v0) {
 			{
 				addPlayerAM: true,
 				addPlayerName: '',
+				addPlayerNotice: $elm$core$Maybe$Nothing,
 				addPlayerPM: true,
 				addPlayerRating: '500',
 				autoSave: true,
@@ -7361,6 +7379,9 @@ var $author$project$Main$subscriptions = function (model) {
 				$elm$browser$Browser$Events$onKeyDown($author$project$Main$keyDecoder)
 			]));
 };
+var $author$project$Main$CheckedExistingByName = function (a) {
+	return {$: 'CheckedExistingByName', a: a};
+};
 var $author$project$League$Draw = function (a) {
 	return {$: 'Draw', a: a};
 };
@@ -7369,6 +7390,9 @@ var $author$project$Main$NewPlayerCreated = function (a) {
 };
 var $author$project$Main$PlayerDeleted = function (a) {
 	return {$: 'PlayerDeleted', a: a};
+};
+var $author$project$Main$PlayerRestored = function (a) {
+	return {$: 'PlayerRestored', a: a};
 };
 var $author$project$Main$ShowStatus = function (a) {
 	return {$: 'ShowStatus', a: a};
@@ -7706,6 +7730,19 @@ var $author$project$League$getPlayer = F2(
 	function (id, _v0) {
 		var league = _v0.a;
 		return A2($rtfeldman$elm_sorter_experiment$Sort$Dict$get, id, league.players);
+	});
+var $elm$url$Url$percentEncode = _Url_percentEncode;
+var $author$project$Supabase$getPlayerByName = F3(
+	function (config, name, toMsg) {
+		var encoded = $elm$url$Url$percentEncode(name);
+		return A6(
+			$author$project$Supabase$supabaseRequest,
+			config,
+			'GET',
+			'/players?name=eq.' + encoded,
+			$elm$http$Http$emptyBody,
+			$elm$json$Json$Decode$list($author$project$Supabase$playerDecoder),
+			toMsg);
 	});
 var $elm$core$Basics$composeL = F3(
 	function (g, f, x) {
@@ -8216,6 +8253,32 @@ var $elm$core$Set$remove = F2(
 		var dict = _v0.a;
 		return $elm$core$Set$Set_elm_builtin(
 			A2($elm$core$Dict$remove, key, dict));
+	});
+var $author$project$Supabase$restorePlayer = F3(
+	function (config, playerId, toMsg) {
+		var body = $elm$json$Json$Encode$object(
+			_List_fromArray(
+				[
+					_Utils_Tuple2(
+					'is_deleted',
+					$elm$json$Json$Encode$bool(false))
+				]));
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$jsonBody(body),
+				expect: $elm$http$Http$expectWhatever(toMsg),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
+						A2($elm$http$Http$header, 'Prefer', 'return=minimal')
+					]),
+				method: 'PATCH',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
+			});
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
 	getMin:
@@ -8784,6 +8847,7 @@ var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
 			rating: supabasePlayer.rating
 		});
 };
+var $elm$core$String$trim = _String_trim;
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -8873,11 +8937,16 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperUpdatedAddPlayerName':
 				var name = msg.a;
-				return _Utils_Tuple2(
+				var trimmed = $elm$core$String$trim(name);
+				return ($elm$core$String$length(trimmed) < 1) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerName: name}),
-					$elm$core$Platform$Cmd$none);
+						{addPlayerName: name, addPlayerNotice: $elm$core$Maybe$Nothing}),
+					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
+					_Utils_update(
+						model,
+						{addPlayerName: name, addPlayerNotice: $elm$core$Maybe$Nothing}),
+					A3($author$project$Supabase$getPlayerByName, $author$project$Config$supabaseConfig, trimmed, $author$project$Main$CheckedExistingByName));
 			case 'KeeperUpdatedAddPlayerRating':
 				var rating = msg.a;
 				return _Utils_Tuple2(
@@ -8905,8 +8974,69 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
+						{addPlayerAM: true, addPlayerName: '', addPlayerNotice: $elm$core$Maybe$Nothing, addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
 					A6($author$project$Supabase$createNewPlayer, $author$project$Config$supabaseConfig, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM, $author$project$Main$NewPlayerCreated));
+			case 'CheckedExistingByName':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					var players = result.a;
+					if (players.b) {
+						var p = players.a;
+						var noticeRec = p.isDeleted ? {
+							message: 'This player already exists, but was deleted. Would you like to restore this player?',
+							restoreId: $elm$core$Maybe$Just(p.id)
+						} : {message: 'This player already exists as an active player.', restoreId: $elm$core$Maybe$Nothing};
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{
+									addPlayerNotice: $elm$core$Maybe$Just(noticeRec)
+								}),
+							$elm$core$Platform$Cmd$none);
+					} else {
+						return _Utils_Tuple2(
+							_Utils_update(
+								model,
+								{addPlayerNotice: $elm$core$Maybe$Nothing}),
+							$elm$core$Platform$Cmd$none);
+					}
+				} else {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerNotice: $elm$core$Maybe$Nothing}),
+						$elm$core$Platform$Cmd$none);
+				}
+			case 'KeeperWantsToRestorePlayer':
+				var playerId = msg.a;
+				return _Utils_Tuple2(
+					model,
+					A3($author$project$Supabase$restorePlayer, $author$project$Config$supabaseConfig, playerId, $author$project$Main$PlayerRestored));
+			case 'PlayerRestored':
+				var result = msg.a;
+				if (result.$ === 'Ok') {
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{addPlayerNotice: $elm$core$Maybe$Nothing, showAddPlayerPopup: false}),
+						A2(
+							$elm$core$Task$perform,
+							function (_v6) {
+								return $author$project$Main$TriggerReload;
+							},
+							$elm$core$Process$sleep(300)));
+				} else {
+					var err = result.a;
+					return _Utils_Tuple2(
+						_Utils_update(
+							model,
+							{
+								isStatusTemporary: false,
+								status: $elm$core$Maybe$Just(
+									'Failed to restore player: ' + $author$project$Main$httpErrorToString(err))
+							}),
+						$elm$core$Platform$Cmd$none);
+				}
 			case 'KeeperWantsToRetirePlayer':
 				var player = msg.a;
 				return _Utils_Tuple2(
@@ -8921,8 +9051,8 @@ var $author$project$Main$update = F2(
 				var player = msg.a;
 				var step = msg.b;
 				if (step === 2) {
-					var _v3 = $author$project$Player$id(player);
-					var playerId = _v3.a;
+					var _v7 = $author$project$Player$id(player);
+					var playerId = _v7.a;
 					var newIgnoredPlayers = A2(
 						$elm$core$Set$insert,
 						$elm$core$String$fromInt(playerId),
@@ -8968,8 +9098,8 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToIgnorePlayer':
 				var player = msg.a;
-				var _v4 = $author$project$Player$id(player);
-				var idInt = _v4.a;
+				var _v8 = $author$project$Player$id(player);
+				var idInt = _v8.a;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$insert,
 					$elm$core$String$fromInt(idInt),
@@ -8986,8 +9116,8 @@ var $author$project$Main$update = F2(
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
 			case 'KeeperWantsToUnignorePlayer':
 				var player = msg.a;
-				var _v5 = $author$project$Player$id(player);
-				var idInt = _v5.a;
+				var _v9 = $author$project$Player$id(player);
+				var idInt = _v9.a;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$remove,
 					$elm$core$String$fromInt(idInt),
@@ -9031,7 +9161,7 @@ var $author$project$Main$update = F2(
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
-					var _v6 = msg.a;
+					var _v10 = msg.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
 			case 'MatchFinished':
@@ -9052,7 +9182,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v8) {
+							function (_v12) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
@@ -9063,9 +9193,9 @@ var $author$project$Main$update = F2(
 				} else {
 					var err = result.a;
 					var debugInfo = function () {
-						var _v9 = model.status;
-						if (_v9.$ === 'Just') {
-							var s = _v9.a;
+						var _v13 = model.status;
+						if (_v13.$ === 'Just') {
+							var s = _v13.a;
 							return s;
 						} else {
 							return '';
@@ -9170,7 +9300,7 @@ var $author$project$Main$update = F2(
 							}),
 						A2(
 							$elm$core$Task$perform,
-							function (_v14) {
+							function (_v18) {
 								return $author$project$Main$TriggerReload;
 							},
 							$elm$core$Process$sleep(500)));
@@ -9311,10 +9441,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v15 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v15.a.$ === 'Just') && (_v15.b.$ === 'Just')) {
-					var playerA = _v15.a.a;
-					var playerB = _v15.b.a;
+				var _v19 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v19.a.$ === 'Just') && (_v19.b.$ === 'Just')) {
+					var playerA = _v19.a.a;
+					var playerB = _v19.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9448,18 +9578,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v18 = _Utils_Tuple2(
+				var _v22 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v18$5:
+				_v22$5:
 				while (true) {
-					switch (_v18.a) {
+					switch (_v22.a) {
 						case '1':
-							if (_v18.b.$ === 'Just') {
-								var _v19 = _v18.b.a;
-								var playerA = _v19.a;
-								var playerB = _v19.b;
+							if (_v22.b.$ === 'Just') {
+								var _v23 = _v22.b.a;
+								var playerA = _v23.a;
+								var playerB = _v23.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9468,13 +9598,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v18$5;
+								break _v22$5;
 							}
 						case '2':
-							if (_v18.b.$ === 'Just') {
-								var _v20 = _v18.b.a;
-								var playerA = _v20.a;
-								var playerB = _v20.b;
+							if (_v22.b.$ === 'Just') {
+								var _v24 = _v22.b.a;
+								var playerA = _v24.a;
+								var playerB = _v24.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9483,13 +9613,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v18$5;
+								break _v22$5;
 							}
 						case '0':
-							if (_v18.b.$ === 'Just') {
-								var _v21 = _v18.b.a;
-								var playerA = _v21.a;
-								var playerB = _v21.b;
+							if (_v22.b.$ === 'Just') {
+								var _v25 = _v22.b.a;
+								var playerA = _v25.a;
+								var playerB = _v25.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9498,7 +9628,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v18$5;
+								break _v22$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9521,7 +9651,7 @@ var $author$project$Main$update = F2(
 									}),
 								$elm$core$Platform$Cmd$none);
 						default:
-							break _v18$5;
+							break _v22$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -9580,6 +9710,9 @@ var $author$project$Main$KeeperUpdatedAddPlayerRating = function (a) {
 	return {$: 'KeeperUpdatedAddPlayerRating', a: a};
 };
 var $author$project$Main$KeeperWantsToHideAddPlayerPopup = {$: 'KeeperWantsToHideAddPlayerPopup'};
+var $author$project$Main$KeeperWantsToRestorePlayer = function (a) {
+	return {$: 'KeeperWantsToRestorePlayer', a: a};
+};
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
 	return {$: 'ApplyStyles', a: a};
 };
@@ -16430,7 +16563,6 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 	}
 };
 var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled;
-var $elm$core$String$trim = _String_trim;
 var $rtfeldman$elm_css$Html$Styled$Attributes$type_ = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('type');
 var $author$project$Main$view = function (model) {
 	return {
@@ -17471,14 +17603,127 @@ var $author$project$Main$view = function (model) {
 																	[
 																		$rtfeldman$elm_css$Html$Styled$text('Add Player')
 																	]))
-															]))
+															])),
+														function () {
+														var _v4 = model.addPlayerNotice;
+														if (_v4.$ === 'Just') {
+															var note = _v4.a;
+															return A2(
+																$rtfeldman$elm_css$Html$Styled$div,
+																_List_fromArray(
+																	[
+																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																		_List_fromArray(
+																			[
+																				$rtfeldman$elm_css$Css$marginTop(
+																				$rtfeldman$elm_css$Css$px(16)),
+																				$rtfeldman$elm_css$Css$padding(
+																				$rtfeldman$elm_css$Css$px(12)),
+																				A3(
+																				$rtfeldman$elm_css$Css$border3,
+																				$rtfeldman$elm_css$Css$px(1),
+																				$rtfeldman$elm_css$Css$solid,
+																				$rtfeldman$elm_css$Css$hex('FCD34D')),
+																				$rtfeldman$elm_css$Css$backgroundColor(
+																				$rtfeldman$elm_css$Css$hex('FEF9C3')),
+																				$rtfeldman$elm_css$Css$borderRadius(
+																				$rtfeldman$elm_css$Css$px(8)),
+																				$author$project$Main$modernSansSerif
+																			]))
+																	]),
+																_Utils_ap(
+																	_List_fromArray(
+																		[
+																			A2(
+																			$rtfeldman$elm_css$Html$Styled$p,
+																			_List_fromArray(
+																				[
+																					$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																					_List_fromArray(
+																						[
+																							$rtfeldman$elm_css$Css$margin($rtfeldman$elm_css$Css$zero),
+																							$rtfeldman$elm_css$Css$color(
+																							$rtfeldman$elm_css$Css$hex('92400E'))
+																						]))
+																				]),
+																			_List_fromArray(
+																				[
+																					$rtfeldman$elm_css$Html$Styled$text(note.message)
+																				]))
+																		]),
+																	function () {
+																		var _v5 = note.restoreId;
+																		if (_v5.$ === 'Just') {
+																			var pid = _v5.a;
+																			return _List_fromArray(
+																				[
+																					A2(
+																					$rtfeldman$elm_css$Html$Styled$div,
+																					_List_fromArray(
+																						[
+																							$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																							_List_fromArray(
+																								[
+																									$rtfeldman$elm_css$Css$marginTop(
+																									$rtfeldman$elm_css$Css$px(8))
+																								]))
+																						]),
+																					_List_fromArray(
+																						[
+																							A2(
+																							$rtfeldman$elm_css$Html$Styled$button,
+																							_List_fromArray(
+																								[
+																									$rtfeldman$elm_css$Html$Styled$Attributes$css(
+																									_List_fromArray(
+																										[
+																											$rtfeldman$elm_css$Css$backgroundColor(
+																											$rtfeldman$elm_css$Css$hex('10B981')),
+																											$rtfeldman$elm_css$Css$color(
+																											$rtfeldman$elm_css$Css$hex('FFFFFF')),
+																											$rtfeldman$elm_css$Css$border($rtfeldman$elm_css$Css$zero),
+																											$rtfeldman$elm_css$Css$borderRadius(
+																											$rtfeldman$elm_css$Css$px(6)),
+																											A2(
+																											$rtfeldman$elm_css$Css$padding2,
+																											$rtfeldman$elm_css$Css$px(8),
+																											$rtfeldman$elm_css$Css$px(16)),
+																											$rtfeldman$elm_css$Css$cursor($rtfeldman$elm_css$Css$pointer),
+																											$rtfeldman$elm_css$Css$fontSize(
+																											$rtfeldman$elm_css$Css$px(14)),
+																											$rtfeldman$elm_css$Css$fontWeight(
+																											$rtfeldman$elm_css$Css$int(600)),
+																											$rtfeldman$elm_css$Css$hover(
+																											_List_fromArray(
+																												[
+																													$rtfeldman$elm_css$Css$backgroundColor(
+																													$rtfeldman$elm_css$Css$hex('059669'))
+																												]))
+																										])),
+																									$rtfeldman$elm_css$Html$Styled$Events$onClick(
+																									$author$project$Main$KeeperWantsToRestorePlayer(pid))
+																								]),
+																							_List_fromArray(
+																								[
+																									$rtfeldman$elm_css$Html$Styled$text('Restore Player')
+																								]))
+																						]))
+																				]);
+																		} else {
+																			return _List_Nil;
+																		}
+																	}()));
+														} else {
+															return $rtfeldman$elm_css$Html$Styled$text('');
+														}
+													}()
 													]))
 											]))
 									]) : _List_Nil,
 								function () {
-									var _v4 = model.status;
-									if (_v4.$ === 'Just') {
-										var message = _v4.a;
+									var _v6 = model.status;
+									if (_v6.$ === 'Just') {
+										var message = _v6.a;
 										return _List_fromArray(
 											[
 												A2(

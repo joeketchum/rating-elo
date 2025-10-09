@@ -79,6 +79,9 @@ type Msg
     | KeeperToggledAddPlayerAM
     | KeeperToggledAddPlayerPM
     | KeeperConfirmedAddPlayer
+    | CheckedExistingByName (Result Http.Error (List Supabase.Player))
+    | KeeperWantsToRestorePlayer Int
+    | PlayerRestored (Result Http.Error ())
     | KeeperWantsToRetirePlayer Player
     | ConfirmPlayerDeletion Player Int
     | CancelPlayerDeletion
@@ -156,6 +159,7 @@ type alias Model =
     , addPlayerRating : String
     , addPlayerAM : Bool
     , addPlayerPM : Bool
+    , addPlayerNotice : Maybe { message : String, restoreId : Maybe Int }
     , votesSinceLastSync : Int
     , isSyncing : Bool
     }
@@ -200,6 +204,7 @@ init _ =
         , addPlayerRating = "500"
         , addPlayerAM = True
         , addPlayerPM = True
+    , addPlayerNotice = Nothing
         , votesSinceLastSync = 0
         , isSyncing = False
         }
@@ -472,7 +477,15 @@ update msg model =
               }, Cmd.none )
 
         KeeperUpdatedAddPlayerName name ->
-            ( { model | addPlayerName = name }, Cmd.none )
+            let
+                trimmed = String.trim name
+            in
+            if String.length trimmed < 1 then
+                ( { model | addPlayerName = name, addPlayerNotice = Nothing }, Cmd.none )
+            else
+                ( { model | addPlayerName = name, addPlayerNotice = Nothing }
+                , Supabase.getPlayerByName Config.supabaseConfig trimmed CheckedExistingByName
+                )
 
         KeeperUpdatedAddPlayerRating rating ->
             ( { model | addPlayerRating = rating }, Cmd.none )
@@ -484,7 +497,7 @@ update msg model =
             ( { model | addPlayerPM = not model.addPlayerPM }, Cmd.none )
 
         KeeperConfirmedAddPlayer ->
-                        -- Player creation now requires a Supabase integer ID. Instead of creating locally, send a request to Supabase to create the player, then add to Elm after receiving the ID.
+                        -- Before creating, ensure no active/deleted duplicate exists; creation path proceeds only when no exact name match exists.
                         let
                                 rating = String.toInt model.addPlayerRating |> Maybe.withDefault 500
                         in
@@ -494,9 +507,46 @@ update msg model =
                                 , addPlayerRating = "500"
                                 , addPlayerAM = True
                                 , addPlayerPM = True
+                                , addPlayerNotice = Nothing
                             }
                         , Supabase.createNewPlayer Config.supabaseConfig model.addPlayerName rating model.addPlayerAM model.addPlayerPM NewPlayerCreated
                         )
+        CheckedExistingByName result ->
+            case result of
+                Ok players ->
+                    case players of
+                        p :: _ ->
+                            let
+                                noticeRec =
+                                    if p.isDeleted then
+                                        { message = "This player already exists, but was deleted. Would you like to restore this player?"
+                                        , restoreId = Just p.id
+                                        }
+                                    else
+                                        { message = "This player already exists as an active player."
+                                        , restoreId = Nothing
+                                        }
+                            in
+                            ( { model | addPlayerNotice = Just noticeRec }, Cmd.none )
+                        [] ->
+                            ( { model | addPlayerNotice = Nothing }, Cmd.none )
+                Err _ ->
+                    -- On error, do not block; just clear notice
+                    ( { model | addPlayerNotice = Nothing }, Cmd.none )
+
+        KeeperWantsToRestorePlayer playerId ->
+            ( model, Supabase.restorePlayer Config.supabaseConfig playerId PlayerRestored )
+
+        PlayerRestored result ->
+            case result of
+                Ok _ ->
+                    ( { model | addPlayerNotice = Nothing, showAddPlayerPopup = False }
+                    , Task.perform (\_ -> TriggerReload) (Process.sleep 300)
+                    )
+                Err err ->
+                    ( { model | status = Just ("Failed to restore player: " ++ httpErrorToString err), isStatusTemporary = False }
+                    , Cmd.none
+                    )
 
         KeeperWantsToRetirePlayer player ->
             ( { model | playerDeletionConfirmation = Just (player, 1) }
@@ -1399,6 +1449,45 @@ view model =
                                 ]
                                 [ Html.text "Add Player" ]
                             ]
+                                , case model.addPlayerNotice of
+                                    Just note ->
+                                        Html.div
+                                            [ css
+                                                [ Css.marginTop (Css.px 16)
+                                                , Css.padding (Css.px 12)
+                                                , Css.border3 (Css.px 1) Css.solid (Css.hex "FCD34D")
+                                                , Css.backgroundColor (Css.hex "FEF9C3")
+                                                , Css.borderRadius (Css.px 8)
+                                                , modernSansSerif
+                                                ]
+                                            ]
+                                            ([ Html.p [ css [ Css.margin Css.zero, Css.color (Css.hex "92400E") ] ] [ Html.text note.message ] ]
+                                                ++ (case note.restoreId of
+                                                        Just pid ->
+                                                            [ Html.div [ css [ Css.marginTop (Css.px 8) ] ]
+                                                                [ Html.button
+                                                                    [ css
+                                                                        [ Css.backgroundColor (Css.hex "10B981")
+                                                                        , Css.color (Css.hex "FFFFFF")
+                                                                        , Css.border Css.zero
+                                                                        , Css.borderRadius (Css.px 6)
+                                                                        , Css.padding2 (Css.px 8) (Css.px 16)
+                                                                        , Css.cursor Css.pointer
+                                                                        , Css.fontSize (Css.px 14)
+                                                                        , Css.fontWeight (Css.int 600)
+                                                                        , Css.hover [ Css.backgroundColor (Css.hex "059669") ]
+                                                                        ]
+                                                                    , Events.onClick (KeeperWantsToRestorePlayer pid)
+                                                                    ]
+                                                                    [ Html.text "Restore Player" ]
+                                                                ]
+                                                            ]
+                                                        Nothing ->
+                                                            []
+                                                   )
+                                            )
+                                    Nothing ->
+                                        Html.text ""
                         ]
                     ]
                 ]

@@ -4,6 +4,7 @@ module Supabase exposing
     , Match
     , LeagueState
     , getPlayers
+    , getPlayerByName
     , createNewPlayer
     , createPlayer
     , updatePlayer
@@ -16,6 +17,7 @@ module Supabase exposing
     , updateLeagueState
     , subscribeToPlayers
     , voteEdgeFunction
+    , restorePlayer
     )
 
 import Http
@@ -23,6 +25,7 @@ import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
 import Task
 import Time
+import Url
 
 
 -- CONFIGURATION
@@ -246,6 +249,15 @@ getPlayers config toMsg =
     supabaseRequest config "GET" "/players?is_deleted=eq.false&order=rating.desc" Http.emptyBody (Decode.list playerDecoder) toMsg
 
 
+-- Fetch players by exact name match (including deleted ones)
+getPlayerByName : Config -> String -> (Result Http.Error (List Player) -> msg) -> Cmd msg
+getPlayerByName config name toMsg =
+    let
+        encoded = Url.percentEncode name
+    in
+    supabaseRequest config "GET" ("/players?name=eq." ++ encoded) Http.emptyBody (Decode.list playerDecoder) toMsg
+
+
 -- Create a new player (without ID, Supabase will assign one)
 createNewPlayer : Config -> String -> Int -> Bool -> Bool -> (Result Http.Error Player -> msg) -> Cmd msg
 createNewPlayer config name rating playsAM playsPM toMsg =
@@ -404,6 +416,31 @@ retirePlayer config playerId toMsg =
                 [ ( "is_deleted", Encode.bool True )
                 , ( "plays_am", Encode.bool False )
                 , ( "plays_pm", Encode.bool False )
+                ]
+    in
+    Http.request
+        { method = "PATCH"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            , Http.header "Prefer" "return=minimal"
+            ]
+        , url = config.url ++ "/rest/v1/players?id=eq." ++ String.fromInt playerId
+        , body = Http.jsonBody body
+        , expect = Http.expectWhatever toMsg
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+-- Restore a previously deleted player (set is_deleted=false)
+restorePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
+restorePlayer config playerId toMsg =
+    let
+        body =
+            Encode.object
+                [ ( "is_deleted", Encode.bool False )
                 ]
     in
     Http.request
