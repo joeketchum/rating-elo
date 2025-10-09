@@ -7767,24 +7767,6 @@ var $author$project$History$goBack = function (_v0) {
 		return $elm$core$Maybe$Nothing;
 	}
 };
-var $author$project$History$goForward = function (_v0) {
-	var guts = _v0.a;
-	var _v1 = guts.future;
-	if (_v1.b) {
-		var nextRecent = _v1.a;
-		var rest = _v1.b;
-		return A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, $author$project$History$History)(
-			_Utils_update(
-				guts,
-				{
-					current: nextRecent,
-					future: rest,
-					past: A2($elm$core$List$cons, guts.current, guts.past)
-				}));
-	} else {
-		return $elm$core$Maybe$Nothing;
-	}
-};
 var $author$project$Main$MatchSaved = function (a) {
 	return {$: 'MatchSaved', a: a};
 };
@@ -9333,17 +9315,6 @@ var $author$project$Main$update = F2(
 								$elm$core$Maybe$withDefault,
 								model.history,
 								$author$project$History$goBack(model.history))
-						}),
-					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToRedo':
-				return _Utils_Tuple2(
-					_Utils_update(
-						model,
-						{
-							history: A2(
-								$elm$core$Maybe$withDefault,
-								model.history,
-								$author$project$History$goForward(model.history))
 						}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToShowCustomMatchup':
@@ -11499,7 +11470,6 @@ var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPla
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
 	return {$: 'KeeperWantsToIgnorePlayer', a: a};
 };
-var $author$project$Main$KeeperWantsToRedo = {$: 'KeeperWantsToRedo'};
 var $author$project$Main$KeeperWantsToShowCustomMatchup = {$: 'KeeperWantsToShowCustomMatchup'};
 var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
 var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
@@ -13105,10 +13075,6 @@ var $author$project$History$peekBack = function (_v0) {
 	var guts = _v0.a;
 	return $elm$core$List$head(guts.past);
 };
-var $author$project$History$peekForward = function (_v0) {
-	var guts = _v0.a;
-	return $elm$core$List$head(guts.future);
-};
 var $author$project$Main$redButton = $author$project$Main$button(
 	$rtfeldman$elm_css$Css$hex('EF4444'));
 var $author$project$Main$redButtonLarge = $author$project$Main$buttonLarge(
@@ -14239,15 +14205,6 @@ var $author$project$Main$currentMatch = function (model) {
 											return $author$project$Main$KeeperWantsToUndo;
 										},
 										$author$project$History$peekBack(model.history))),
-									A2(
-									$author$project$Main$blueButton,
-									'REDO',
-									A2(
-										$elm$core$Maybe$map,
-										function (_v3) {
-											return $author$project$Main$KeeperWantsToRedo;
-										},
-										$author$project$History$peekForward(model.history))),
 									A3(
 									$author$project$Main$button,
 									$rtfeldman$elm_css$Css$hex('999'),

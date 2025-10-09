@@ -40,7 +40,6 @@ type Msg
     | PeriodicSync
     | TriggerReload
     | KeeperWantsToUndo
-    | KeeperWantsToRedo
     | KeeperWantsToShowCustomMatchup
     | KeeperWantsToHideCustomMatchup
     | KeeperSelectedPlayerA Player
@@ -727,10 +726,6 @@ update msg model =
             , Cmd.none
             )
 
-        KeeperWantsToRedo ->
-            ( { model | history = History.goForward model.history |> Maybe.withDefault model.history }
-            , Cmd.none
-            )
 
         KeeperWantsToShowCustomMatchup ->
             ( { model | showCustomMatchup = True, customMatchupPlayerA = Nothing, customMatchupPlayerB = Nothing, playerASearch = "", playerBSearch = "", playerASearchResults = [], playerBSearchResults = [] }
@@ -1990,7 +1985,7 @@ currentMatch model =
                                                                                     Html.div
                                                                                         [ css [ Css.displayFlex, Css.justifyContent Css.center, Css.marginBottom (Css.px 12) ] ]
                                             [ blueButton "UNDO" (Maybe.map (\_ -> KeeperWantsToUndo) (History.peekBack model.history))
-                                            , blueButton "REDO" (Maybe.map (\_ -> KeeperWantsToRedo) (History.peekForward model.history))
+                                            
                                             , button (Css.hex "999") "SKIP" (Just KeeperWantsToSkipMatch)
                                             ]
                                                                                 , Html.div
