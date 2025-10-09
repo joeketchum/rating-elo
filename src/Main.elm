@@ -518,7 +518,7 @@ update msg model =
                     , ignoredPlayers = newIgnoredPlayers
                   }
                 , Cmd.batch 
-                    [ Supabase.deletePlayer Config.supabaseConfig playerId PlayerDeleted
+                    [ Supabase.retirePlayer Config.supabaseConfig playerId PlayerDeleted
                     , saveIgnoredPlayers serializedIgnored
                     ]
                 )
@@ -651,16 +651,14 @@ update msg model =
         PlayerDeleted result ->
             case result of
                 Ok _ ->
-                    -- Player successfully deleted from Supabase - trigger reload to sync
-                    ( { model | status = Nothing }
+                    -- Player successfully retired in Supabase - trigger reload to sync
+                    ( { model | status = Just "Player retired", isStatusTemporary = True }
                     , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
                     )
                 Err err ->
-                    ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err), isStatusTemporary = False }
+                    ( { model | status = Just ("Failed to retire player in database: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
                     )
-
-
 
         PeriodicSync ->
             -- With Supabase, periodic sync is automatic - no action needed

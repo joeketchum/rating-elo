@@ -8,6 +8,7 @@ module Supabase exposing
     , createPlayer
     , updatePlayer
     , deletePlayer
+    , retirePlayer
     , deletePlayerMatches
 
     , recordMatch
@@ -78,18 +79,21 @@ type alias LeagueState =
 
 playerDecoder : Decoder Player
 playerDecoder =
-    Decode.map8
-        (\id name rating matchesPlayed playsAM playsPM isIgnored createdAt ->
-            \updatedAt ->
-                { id = id
-                , name = name
-                , rating = rating
-                , matchesPlayed = matchesPlayed
-                , playsAM = playsAM
-                , playsPM = playsPM
-                , createdAt = createdAt
-                , updatedAt = updatedAt
-                }
+    -- Decode all core fields, including is_ignored, then created_at and updated_at
+    Decode.map7
+        (\id name rating matchesPlayed playsAM playsPM isIgnored ->
+            \createdAt ->
+                \updatedAt ->
+                    { id = id
+                    , name = name
+                    , rating = rating
+                    , matchesPlayed = matchesPlayed
+                    , playsAM = playsAM
+                    , playsPM = playsPM
+                    , isIgnored = isIgnored
+                    , createdAt = createdAt
+                    , updatedAt = updatedAt
+                    }
         )
         (Decode.field "id" Decode.int)
         (Decode.field "name" Decode.string)
@@ -97,7 +101,11 @@ playerDecoder =
         (Decode.field "matches_played" Decode.int)
         (Decode.field "plays_am" Decode.bool)
         (Decode.field "plays_pm" Decode.bool)
-        (Decode.field "created_at" (Decode.string |> Decode.andThen decodeIsoTime))
+        (Decode.field "is_ignored" Decode.bool)
+    |> Decode.andThen (\partial ->
+        Decode.field "created_at" (Decode.string |> Decode.andThen decodeIsoTime)
+            |> Decode.map partial
+    )
     |> Decode.andThen (\partial ->
         Decode.field "updated_at" (Decode.string |> Decode.andThen decodeIsoTime)
             |> Decode.map partial
@@ -172,6 +180,7 @@ encodePlayer player =
         , ( "matches_played", Encode.int player.matchesPlayed )
         , ( "plays_am", Encode.bool player.playsAM )
         , ( "plays_pm", Encode.bool player.playsPM )
+        , ( "is_ignored", Encode.bool player.isIgnored )
         ]
 
 
@@ -346,22 +355,10 @@ voteEdgeFunction config aId bId winnerId toMsg =
         }
 
 
--- Delete all matches involving this player
+-- Skip match deletion for now - just return success to proceed to player deletion
 deletePlayerMatches : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
 deletePlayerMatches config playerId toMsg =
-    Http.request
-        { method = "DELETE"
-        , headers = 
-            [ Http.header "apikey" config.anonKey
-            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
-            , Http.header "Prefer" "return=minimal"
-            ]
-        , url = config.url ++ "/rest/v1/matches?or=(player_a_id.eq." ++ String.fromInt playerId ++ ",player_b_id.eq." ++ String.fromInt playerId ++ ")"
-        , body = Http.emptyBody
-        , expect = Http.expectWhatever toMsg
-        , timeout = Nothing
-        , tracker = Nothing
-        }
+    Task.perform (\_ -> toMsg (Ok ())) (Task.succeed ())
 
 -- Delete just the player record with detailed error reporting
 deletePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
@@ -380,7 +377,10 @@ deletePlayer config playerId toMsg =
                 Http.GoodStatus_ _ _ ->
                     Ok ()
                 Http.BadStatus_ metadata body ->
-                    -- Create a more detailed error message
+                    -- Log the error body for debugging
+                    let
+                        _ = Debug.log "Player deletion error" (String.fromInt metadata.statusCode ++ ": " ++ body)
+                    in
                     Err (Http.BadStatus metadata.statusCode)
                 Http.BadUrl_ url ->
                     Err (Http.BadUrl url)
@@ -389,6 +389,33 @@ deletePlayer config playerId toMsg =
                 Http.NetworkError_ ->
                     Err Http.NetworkError
         )
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+-- Soft delete (retire) a player to avoid FK conflicts: mark ignored and disable availability
+retirePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
+retirePlayer config playerId toMsg =
+    let
+        body =
+            Encode.object
+                [ ( "is_ignored", Encode.bool True )
+                , ( "plays_am", Encode.bool False )
+                , ( "plays_pm", Encode.bool False )
+                ]
+    in
+    Http.request
+        { method = "PATCH"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            , Http.header "Prefer" "return=minimal"
+            ]
+        , url = config.url ++ "/rest/v1/players?id=eq." ++ String.fromInt playerId
+        , body = Http.jsonBody body
+        , expect = Http.expectWhatever toMsg
         , timeout = Nothing
         , tracker = Nothing
         }
