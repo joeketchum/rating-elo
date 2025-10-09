@@ -17,6 +17,7 @@ module Supabase exposing
     , updateLeagueState
     , subscribeToPlayers
     , voteEdgeFunction
+    , undoEdgeFunction
     , restorePlayer
     )
 
@@ -454,6 +455,24 @@ restorePlayer config playerId toMsg =
             ]
         , url = config.url ++ "/rest/v1/players?id=eq." ++ String.fromInt playerId
         , body = Http.jsonBody body
+        , expect = Http.expectWhatever toMsg
+        , timeout = Nothing
+        , tracker = Nothing
+        }
+
+
+-- Call Supabase Edge Function to undo the most recent match (global last vote)
+undoEdgeFunction : Config -> (Result Http.Error () -> msg) -> Cmd msg
+undoEdgeFunction config toMsg =
+    Http.request
+        { method = "POST"
+        , headers =
+            [ Http.header "apikey" config.anonKey
+            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Content-Type" "application/json"
+            ]
+        , url = config.url ++ "/functions/v1/undo"
+        , body = Http.jsonBody (Encode.object [])
         , expect = Http.expectWhatever toMsg
         , timeout = Nothing
         , tracker = Nothing

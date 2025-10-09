@@ -8830,6 +8830,25 @@ var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
 		});
 };
 var $elm$core$String$trim = _String_trim;
+var $author$project$Supabase$undoEdgeFunction = F2(
+	function (config, toMsg) {
+		return $elm$http$Http$request(
+			{
+				body: $elm$http$Http$jsonBody(
+					$elm$json$Json$Encode$object(_List_Nil)),
+				expect: $elm$http$Http$expectWhatever(toMsg),
+				headers: _List_fromArray(
+					[
+						A2($elm$http$Http$header, 'apikey', config.anonKey),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'Content-Type', 'application/json')
+					]),
+				method: 'POST',
+				timeout: $elm$core$Maybe$Nothing,
+				tracker: $elm$core$Maybe$Nothing,
+				url: config.url + '/functions/v1/undo'
+			});
+	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
@@ -8997,10 +9016,16 @@ var $author$project$Main$update = F2(
 			case 'PlayerRestored':
 				var result = msg.a;
 				if (result.$ === 'Ok') {
+					var statusMsg = model.showAddPlayerPopup ? 'Player restored' : 'Undid last vote';
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{addPlayerNotice: $elm$core$Maybe$Nothing, showAddPlayerPopup: false}),
+							{
+								addPlayerNotice: $elm$core$Maybe$Nothing,
+								isStatusTemporary: true,
+								showAddPlayerPopup: false,
+								status: $elm$core$Maybe$Just(statusMsg)
+							}),
 						A2(
 							$elm$core$Task$perform,
 							function (_v6) {
@@ -9015,7 +9040,7 @@ var $author$project$Main$update = F2(
 							{
 								isStatusTemporary: false,
 								status: $elm$core$Maybe$Just(
-									'Failed to restore player: ' + $author$project$Main$httpErrorToString(err))
+									model.showAddPlayerPopup ? ('Failed to restore player: ' + $author$project$Main$httpErrorToString(err)) : ('Failed to undo last vote: ' + $author$project$Main$httpErrorToString(err)))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -9307,16 +9332,27 @@ var $author$project$Main$update = F2(
 						{isSyncing: true, votesSinceLastSync: 0}),
 					A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
 			case 'KeeperWantsToUndo':
+				var newHistory = A2(
+					$elm$core$Maybe$withDefault,
+					model.history,
+					$author$project$History$goBack(model.history));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{
-							history: A2(
-								$elm$core$Maybe$withDefault,
-								model.history,
-								$author$project$History$goBack(model.history))
-						}),
-					$elm$core$Platform$Cmd$none);
+						{history: newHistory}),
+					A2(
+						$author$project$Supabase$undoEdgeFunction,
+						$author$project$Config$supabaseConfig,
+						function (res) {
+							if (res.$ === 'Ok') {
+								return $author$project$Main$PlayerRestored(
+									$elm$core$Result$Ok(_Utils_Tuple0));
+							} else {
+								var e = res.a;
+								return $author$project$Main$PlayerRestored(
+									$elm$core$Result$Err(e));
+							}
+						}));
 			case 'KeeperWantsToShowCustomMatchup':
 				return _Utils_Tuple2(
 					_Utils_update(
@@ -9412,10 +9448,10 @@ var $author$project$Main$update = F2(
 						{playerBSearch: searchText, playerBSearchResults: searchResults}),
 					$elm$core$Platform$Cmd$none);
 			case 'KeeperWantsToStartCustomMatch':
-				var _v19 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v19.a.$ === 'Just') && (_v19.b.$ === 'Just')) {
-					var playerA = _v19.a.a;
-					var playerB = _v19.b.a;
+				var _v20 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
+				if ((_v20.a.$ === 'Just') && (_v20.b.$ === 'Just')) {
+					var playerA = _v20.a.a;
+					var playerB = _v20.b.a;
 					if (_Utils_eq(
 						$author$project$Player$id(playerA),
 						$author$project$Player$id(playerB))) {
@@ -9549,18 +9585,18 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 'KeyPressed':
 				var key = msg.a;
-				var _v22 = _Utils_Tuple2(
+				var _v23 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.history)));
-				_v22$5:
+				_v23$5:
 				while (true) {
-					switch (_v22.a) {
+					switch (_v23.a) {
 						case '1':
-							if (_v22.b.$ === 'Just') {
-								var _v23 = _v22.b.a;
-								var playerA = _v23.a;
-								var playerB = _v23.b;
+							if (_v23.b.$ === 'Just') {
+								var _v24 = _v23.b.a;
+								var playerA = _v24.a;
+								var playerB = _v24.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9569,13 +9605,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v22$5;
+								break _v23$5;
 							}
 						case '2':
-							if (_v22.b.$ === 'Just') {
-								var _v24 = _v22.b.a;
-								var playerA = _v24.a;
-								var playerB = _v24.b;
+							if (_v23.b.$ === 'Just') {
+								var _v25 = _v23.b.a;
+								var playerA = _v25.a;
+								var playerB = _v25.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9584,13 +9620,13 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v22$5;
+								break _v23$5;
 							}
 						case '0':
-							if (_v22.b.$ === 'Just') {
-								var _v25 = _v22.b.a;
-								var playerA = _v25.a;
-								var playerB = _v25.b;
+							if (_v23.b.$ === 'Just') {
+								var _v26 = _v23.b.a;
+								var playerA = _v26.a;
+								var playerB = _v26.b;
 								if ($author$project$Main$isVotingDisabled(model)) {
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
@@ -9599,7 +9635,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v22$5;
+								break _v23$5;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9611,18 +9647,29 @@ var $author$project$Main$update = F2(
 										}),
 									$elm$core$Platform$Cmd$none));
 						case 'Backspace':
+							var newHistory = A2(
+								$elm$core$Maybe$withDefault,
+								model.history,
+								$author$project$History$goBack(model.history));
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
-									{
-										history: A2(
-											$elm$core$Maybe$withDefault,
-											model.history,
-											$author$project$History$goBack(model.history))
-									}),
-								$elm$core$Platform$Cmd$none);
+									{history: newHistory}),
+								A2(
+									$author$project$Supabase$undoEdgeFunction,
+									$author$project$Config$supabaseConfig,
+									function (res) {
+										if (res.$ === 'Ok') {
+											return $author$project$Main$PlayerRestored(
+												$elm$core$Result$Ok(_Utils_Tuple0));
+										} else {
+											var e = res.a;
+											return $author$project$Main$PlayerRestored(
+												$elm$core$Result$Err(e));
+										}
+									}));
 						default:
-							break _v22$5;
+							break _v23$5;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);

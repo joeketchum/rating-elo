@@ -539,11 +539,24 @@ update msg model =
         PlayerRestored result ->
             case result of
                 Ok _ ->
-                    ( { model | addPlayerNotice = Nothing, showAddPlayerPopup = False }
+                    -- This branch is used for both "restore player" and undo completion
+                    let
+                        statusMsg =
+                            if model.showAddPlayerPopup then
+                                "Player restored"
+                            else
+                                "Undid last vote"
+                    in
+                    ( { model | addPlayerNotice = Nothing, showAddPlayerPopup = False, status = Just statusMsg, isStatusTemporary = True }
                     , Task.perform (\_ -> TriggerReload) (Process.sleep 300)
                     )
                 Err err ->
-                    ( { model | status = Just ("Failed to restore player: " ++ httpErrorToString err), isStatusTemporary = False }
+                    ( { model | status = Just (if model.showAddPlayerPopup then
+                                                    "Failed to restore player: " ++ httpErrorToString err
+                                                else
+                                                    "Failed to undo last vote: " ++ httpErrorToString err
+                                            )
+                      , isStatusTemporary = False }
                     , Cmd.none
                     )
 
@@ -722,8 +735,15 @@ update msg model =
 
 
         KeeperWantsToUndo ->
-            ( { model | history = History.goBack model.history |> Maybe.withDefault model.history }
-            , Cmd.none
+            let
+                newHistory = History.goBack model.history |> Maybe.withDefault model.history
+            in
+            ( { model | history = newHistory }
+            , Supabase.undoEdgeFunction Config.supabaseConfig (\res ->
+                case res of
+                    Ok _ -> PlayerRestored (Ok ()) -- reuse a success branch to trigger reload below
+                    Err e -> PlayerRestored (Err e)
+              )
             )
 
 
@@ -944,9 +964,15 @@ update msg model =
                         |> startNextMatchIfPossible
 
                 ( "Backspace", _ ) ->
-                    -- Undo
-                    ( { model | history = History.goBack model.history |> Maybe.withDefault model.history }
-                    , Cmd.none
+                    let
+                        newHistory = History.goBack model.history |> Maybe.withDefault model.history
+                    in
+                    ( { model | history = newHistory }
+                    , Supabase.undoEdgeFunction Config.supabaseConfig (\res ->
+                        case res of
+                            Ok _ -> PlayerRestored (Ok ())
+                            Err e -> PlayerRestored (Err e)
+                      )
                     )
 
                 _ ->
