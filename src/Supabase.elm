@@ -7,7 +7,7 @@ module Supabase exposing
     , createNewPlayer
     , createPlayer
     , updatePlayer
-    , deletePlayer
+
     , recordMatch
     , getLeagueState
     , updateLeagueState
@@ -289,20 +289,7 @@ updatePlayer config playerId player toMsg =
     supabaseRequest config "PATCH" ("/players?id=eq." ++ String.fromInt playerId) (Http.jsonBody (encodePlayer player)) playerDecoder toMsg
 
 
-deletePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
-deletePlayer config playerId toMsg =
-    Http.request
-        { method = "DELETE"
-        , headers = 
-            [ Http.header "apikey" config.anonKey
-            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
-            ]
-        , url = config.url ++ "/rest/v1/players?id=eq." ++ String.fromInt playerId
-        , body = Http.emptyBody
-        , expect = Http.expectWhatever toMsg
-        , timeout = Nothing
-        , tracker = Nothing
-        }
+
 
 
 recordMatch : Config -> Match -> (Result Http.Error Match -> msg) -> Cmd msg
