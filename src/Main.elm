@@ -1,3 +1,4 @@
+-- Trivial change to trigger GitHub Actions workflow
 port module Main exposing (..)
 
 import Html.Styled exposing (Html, toUnstyled)
