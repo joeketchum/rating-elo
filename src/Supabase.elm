@@ -43,7 +43,6 @@ type alias Player =
     , matchesPlayed : Int
     , playsAM : Bool
     , playsPM : Bool
-    , isIgnored : Bool
     , createdAt : Time.Posix
     , updatedAt : Time.Posix
     }
@@ -165,31 +164,30 @@ decodeIsoTime isoString =
 
 encodePlayer : Player -> Value
 encodePlayer player =
-    Encode.object
-        [ ( "id", Encode.int player.id )
-        , ( "name", Encode.string player.name )
-        , ( "rating", Encode.int player.rating )
-        , ( "matches_played", Encode.int player.matchesPlayed )
-        , ( "plays_am", Encode.bool player.playsAM )
-        , ( "plays_pm", Encode.bool player.playsPM )
-        ]
-
-
-encodeIsoTime : Time.Posix -> String
-encodeIsoTime time =
-    let
-        millis = Time.posixToMillis time
-        totalSeconds = millis // 1000
-        second = Basics.modBy 60 totalSeconds
-        minute = Basics.modBy 60 (totalSeconds // 60)
-        hour = Basics.modBy 24 (totalSeconds // 3600)
-        days = totalSeconds // 86400
-        year = 2025 -- Hardcoded for now, can be improved
-        month = 10  -- Hardcoded for now
-        day = 8     -- Hardcoded for now
-    in
-        String.fromInt year ++ "-" ++ String.padLeft 2 '0' (String.fromInt month) ++ "-" ++ String.padLeft 2 '0' (String.fromInt day)
-            ++ "T" ++ String.padLeft 2 '0' (String.fromInt hour) ++ ":" ++ String.padLeft 2 '0' (String.fromInt minute) ++ ":" ++ String.padLeft 2 '0' (String.fromInt second) ++ "Z"
+    Decode.map7
+        (\id name rating matchesPlayed playsAM playsPM createdAt ->
+            \updatedAt ->
+                { id = id
+                , name = name
+                , rating = rating
+                , matchesPlayed = matchesPlayed
+                , playsAM = playsAM
+                , playsPM = playsPM
+                , createdAt = createdAt
+                , updatedAt = updatedAt
+                }
+        )
+        (Decode.field "id" Decode.int)
+        (Decode.field "name" Decode.string)
+        (Decode.field "rating" Decode.int)
+        (Decode.field "matches_played" Decode.int)
+        (Decode.field "plays_am" Decode.bool)
+        (Decode.field "plays_pm" Decode.bool)
+        (Decode.field "created_at" (Decode.string |> Decode.andThen decodeIsoTime))
+    |> Decode.andThen (\partial ->
+        Decode.field "updated_at" (Decode.string |> Decode.andThen decodeIsoTime)
+            |> Decode.map partial
+    )
 
 
 encodeMatch : Match -> Value
@@ -247,7 +245,6 @@ createNewPlayer config name rating playsAM playsPM toMsg =
             , ("matches_played", Encode.int 0)
             , ("plays_am", Encode.bool playsAM)
             , ("plays_pm", Encode.bool playsPM)
-            , ("is_ignored", Encode.bool False)
             , ("created_at", Encode.string (encodeIsoTime now))
             , ("updated_at", Encode.string (encodeIsoTime now))
             ]
