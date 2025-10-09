@@ -235,6 +235,7 @@ toSupabasePlayer player =
     , matchesPlayed = Player.matchesPlayed player
     , playsAM = True -- Default values - adjust as needed
     , playsPM = True
+    , isIgnored = False
     , createdAt = now
     , updatedAt = now
     }
@@ -2008,6 +2009,8 @@ rankings model =
                     [ css [ Css.height (Css.px 40)
                           , Css.borderBottom3 (Css.px 1) Css.solid (Css.hex "E5E7EB")
                           , if isIgnored then 
+                                Css.batch [ Css.opacity (Css.num 0.5), Css.backgroundColor (Css.hex "F9F9F9") ]
+                            else 
                                 Css.batch []
                           ] ]
                     [ Html.td
@@ -2022,7 +2025,14 @@ rankings model =
 
                          else if rank < previousRank then
                             [ upArrow (Css.hex "6DD400")
-                                Html.text ""
+                            , Html.span
+                                [ css [ modernSansSerif, Css.color (Css.hex "6DD400"), Css.fontSize (Css.px 14) ] ]
+                                [ Html.text (String.fromInt (previousRank - rank)) ]
+                            ]
+
+                         else if rank > previousRank then
+                            [ downArrow (Css.hex "E02020")
+                            , Html.span
                                 [ css [ modernSansSerif, Css.color (Css.hex "E02020"), Css.fontSize (Css.px 14) ] ]
                                 [ Html.text (String.fromInt (abs (previousRank - rank))) ]
                             ]
