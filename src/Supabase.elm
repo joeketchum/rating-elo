@@ -87,7 +87,6 @@ playerDecoder =
                 , matchesPlayed = matchesPlayed
                 , playsAM = playsAM
                 , playsPM = playsPM
-                , isIgnored = isIgnored
                 , createdAt = createdAt
                 , updatedAt = updatedAt
                 }
@@ -98,7 +97,6 @@ playerDecoder =
         (Decode.field "matches_played" Decode.int)
         (Decode.field "plays_am" Decode.bool)
         (Decode.field "plays_pm" Decode.bool)
-        (Decode.field "is_ignored" Decode.bool)
         (Decode.field "created_at" (Decode.string |> Decode.andThen decodeIsoTime))
     |> Decode.andThen (\partial ->
         Decode.field "updated_at" (Decode.string |> Decode.andThen decodeIsoTime)
@@ -285,7 +283,6 @@ createPlayer config player toMsg =
         , timeout = Nothing
         , tracker = Nothing
         }
-
 
 updatePlayer : Config -> Int -> Player -> (Result Http.Error Player -> msg) -> Cmd msg
 updatePlayer config playerId player toMsg =
