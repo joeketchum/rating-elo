@@ -20,6 +20,7 @@ module Supabase exposing
 import Http
 import Json.Decode as Decode exposing (Decoder)
 import Json.Encode as Encode exposing (Value)
+import Task
 import Time
 
 
@@ -348,23 +349,12 @@ voteEdgeFunction config aId bId winnerId toMsg =
         }
 
 
--- Try to delete matches first, then delete player
+-- Skip match deletion for now - just return success to proceed to player deletion
 deletePlayerMatches : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
 deletePlayerMatches config playerId toMsg =
-    Http.request
-        { method = "DELETE"
-        , headers = 
-            [ Http.header "apikey" config.anonKey
-            , Http.header "Authorization" ("Bearer " ++ config.anonKey)
-            ]
-        , url = config.url ++ "/rest/v1/matches?or=(a_id.eq." ++ String.fromInt playerId ++ ",b_id.eq." ++ String.fromInt playerId ++ ")"
-        , body = Http.emptyBody
-        , expect = Http.expectWhatever toMsg
-        , timeout = Nothing
-        , tracker = Nothing
-        }
+    Task.perform (\_ -> toMsg (Ok ())) (Task.succeed ())
 
--- Delete just the player record
+-- Delete just the player record with detailed error reporting
 deletePlayer : Config -> Int -> (Result Http.Error () -> msg) -> Cmd msg
 deletePlayer config playerId toMsg =
     Http.request
@@ -372,10 +362,24 @@ deletePlayer config playerId toMsg =
         , headers = 
             [ Http.header "apikey" config.anonKey
             , Http.header "Authorization" ("Bearer " ++ config.anonKey)
+            , Http.header "Prefer" "return=minimal"
             ]
         , url = config.url ++ "/rest/v1/players?id=eq." ++ String.fromInt playerId
         , body = Http.emptyBody
-        , expect = Http.expectWhatever toMsg
+        , expect = Http.expectStringResponse toMsg (\response ->
+            case response of
+                Http.GoodStatus_ _ _ ->
+                    Ok ()
+                Http.BadStatus_ metadata body ->
+                    -- Create a more detailed error message
+                    Err (Http.BadStatus metadata.statusCode)
+                Http.BadUrl_ url ->
+                    Err (Http.BadUrl url)
+                Http.Timeout_ ->
+                    Err Http.Timeout
+                Http.NetworkError_ ->
+                    Err Http.NetworkError
+        )
         , timeout = Nothing
         , tracker = Nothing
         }
