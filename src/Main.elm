@@ -951,9 +951,9 @@ view : Model -> Browser.Document Msg
 view model =
     { title = "Hockey Rater 🏒"
     , body =
-        [ Css.Reset.meyerV2
-        , Css.Reset.borderBoxV201408
-        , Html.node "style" [] [ Html.text "@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }" ]
+    [ Css.Reset.meyerV2
+    , Css.Reset.borderBoxV201408
+    , Html.node "style" [] [ Html.text "@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } } .fade-overlay { animation: fadeIn 0.5s; } @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }" ]
 
         , Html.div [ css [ Css.width (Css.pct 100) ] ]
             [ Html.main_
@@ -982,6 +982,7 @@ view model =
                         , Css.justifyContent Css.center
                         , Css.zIndex (Css.int 2000)
                         ]
+                    , StyledAttributes.class "fade-overlay"
                     ]
                     [ Html.div
                         [ css
