@@ -133,6 +133,7 @@ type alias Model =
     , newPlayerName : String
     , autoSave : Bool
     , status : Maybe String
+    , isStatusTemporary : Bool
     , lastSynced : Maybe Time.Posix
     , shouldStartNextMatchAfterLoad : Bool
     , autoSaveInProgress : Bool
@@ -176,6 +177,7 @@ init _ =
         , newPlayerName = ""
         , autoSave = True
         , status = Nothing
+        , isStatusTemporary = False
         , lastSynced = Nothing
         , shouldStartNextMatchAfterLoad = False
         , autoSaveInProgress = False
@@ -338,6 +340,14 @@ timePlayerFilter model =
             All -> True
             AMOnly -> Player.playsAM player
             PMOnly -> Player.playsPM player
+
+
+-- Helper function to set a temporary status message that auto-fades after 2 seconds
+setTemporaryStatus : String -> Model -> ( Model, Cmd Msg )
+setTemporaryStatus message model =
+    ( { model | status = Just message, isStatusTemporary = True }
+    , Task.perform (\_ -> ClearStatus) (Process.sleep 2000)
+    )
 
 
 startNextMatchIfPossible : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
@@ -553,6 +563,11 @@ update msg model =
             )
                 |> startNextMatchIfPossible
 
+        ClearStatus ->
+            ( { model | status = Nothing, isStatusTemporary = False }
+            , Cmd.none
+            )
+
         GotNextMatch (Just match) ->
             ( { model | history = History.mapInPlace (League.startMatch match) model.history }
             , Cmd.none
@@ -572,7 +587,7 @@ update msg model =
                     in
                     if shouldSync then
                         -- Sync every 25 votes to keep data fresh but not disruptive
-                        ( { model | status = Just "Syncing data...", votesSinceLastSync = 0 }
+                        ( { model | status = Just "Syncing data...", isStatusTemporary = False, votesSinceLastSync = 0 }
                         , Task.perform (\_ -> TriggerReload) (Process.sleep 200)
                         )
                     else
@@ -588,14 +603,14 @@ update msg model =
                             Nothing -> ""
                         errorMsg = "Failed to save match: " ++ httpErrorToString err ++ "\n" ++ debugInfo ++ " (Try voting again)"
                     in
-                    ( { model | status = Just errorMsg }
-                    , Task.perform (\_ -> ClearStatus) (Process.sleep 10000)
+                    ( { model | status = Just errorMsg, isStatusTemporary = False }
+                    , Cmd.none
                     )
 
         LeagueStateSaved result ->
             case result of
                 Ok _ -> ( model, Cmd.none )
-                Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err) }, Cmd.none )
+                Err err -> ( { model | status = Just ("Failed to update league state: " ++ httpErrorToString err), isStatusTemporary = False }, Cmd.none )
 
         PlayerACreated _ result ->
             case result of
@@ -609,7 +624,7 @@ update msg model =
                         |> startNextMatchIfPossible
                         |> maybeAutoSave
                 Err err ->
-                    ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err) }
+                    ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
                     )
 
@@ -629,7 +644,7 @@ update msg model =
                         |> startNextMatchIfPossible
                         |> maybeAutoSave
                 Err err ->
-                    ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err) }
+                    ( { model | status = Just ("Failed to create player: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
                     )
 
@@ -641,7 +656,7 @@ update msg model =
                     , Task.perform (\_ -> TriggerReload) (Process.sleep 500)
                     )
                 Err err ->
-                    ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err) }
+                    ( { model | status = Just ("Failed to delete player from database: " ++ httpErrorToString err), isStatusTemporary = False }
                     , Cmd.none
                     )
 
@@ -733,9 +748,7 @@ update msg model =
             case (model.customMatchupPlayerA, model.customMatchupPlayerB) of
                 (Just playerA, Just playerB) ->
                     if Player.id playerA == Player.id playerB then
-                        ( { model | status = Just "Cannot match a player against themselves" }
-                        , Cmd.none
-                        )
+                        setTemporaryStatus "Cannot match a player against themselves" model
                     else
                         let
                             -- Clear any existing match first, then start the custom match
@@ -755,16 +768,14 @@ update msg model =
                         )
                         
                 _ ->
-                    ( { model | status = Just "Please select both players for the custom match" }
-                    , Cmd.none
-                    )
+                    setTemporaryStatus "Please select both players for the custom match" model
 
         LoadedLeague (Ok league) ->
             -- Ignore local league data - always use Supabase data instead
             ( model, Cmd.none )
 
         LoadedLeague (Err problem) ->
-            ( { model | status = Just ("Failed to load standings: " ++ problem) }
+            ( { model | status = Just ("Failed to load standings: " ++ problem), isStatusTemporary = False }
             , Cmd.none
             )
 
@@ -813,7 +824,7 @@ update msg model =
                         |> (if activeMatch == Nothing then startNextMatchIfPossible else identity)
 
                 Err httpErr ->
-                    ( { model | status = Just ("Failed to fetch players from Supabase: " ++ httpErrorToString httpErr) }
+                    ( { model | status = Just ("Failed to fetch players from Supabase: " ++ httpErrorToString httpErr), isStatusTemporary = False }
                     , Cmd.none
                     )
 
@@ -846,19 +857,16 @@ update msg model =
             )
 
         ShowStatus message ->
-            ( { model | status = Just message }
-            , Process.sleep 2000 |> Task.perform (\_ -> ClearStatus)
+            ( { model | status = Just message, isStatusTemporary = False }
+            , Cmd.none
             )
-
-        ClearStatus ->
-            ( { model | status = Nothing }, Cmd.none )
 
         KeyPressed key ->
             case ( key, League.currentMatch (History.current model.history) ) of
                 ( "1", Just (League.Match playerA playerB) ) ->
                     -- Left player wins
                     if isVotingDisabled model then
-                        ( { model | status = Just "Voting disabled during sync" }, Cmd.none )
+                        setTemporaryStatus "Voting disabled during sync" model
                     else
                         let
                             outcome = League.Win { won = playerA, lost = playerB }
@@ -868,7 +876,7 @@ update msg model =
                 ( "2", Just (League.Match playerA playerB) ) ->
                     -- Right player wins  
                     if isVotingDisabled model then
-                        ( { model | status = Just "Voting disabled during sync" }, Cmd.none )
+                        setTemporaryStatus "Voting disabled during sync" model
                     else
                         let
                             outcome = League.Win { won = playerB, lost = playerA }
@@ -878,7 +886,7 @@ update msg model =
                 ( "0", Just (League.Match playerA playerB) ) ->
                     -- Tie/Draw
                     if isVotingDisabled model then
-                        ( { model | status = Just "Voting disabled during sync" }, Cmd.none )
+                        setTemporaryStatus "Voting disabled during sync" model
                     else
                         let
                             outcome = League.Draw { playerA = playerA, playerB = playerB }
