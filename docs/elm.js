@@ -77,7 +77,7 @@ function A9(fun, a, b, c, d, e, f, g, h, i) {
   return fun.a === 9 ? fun.f(a, b, c, d, e, f, g, h, i) : fun(a)(b)(c)(d)(e)(f)(g)(h)(i);
 }
 
-console.warn('Compiled in DEV mode. Follow the advice at https://elm-lang.org/0.19.1/optimize for better performance and smaller assets.');
+
 
 
 // EQUALITY
@@ -113,7 +113,7 @@ function _Utils_eqHelp(x, y, depth, stack)
 		return true;
 	}
 
-	/**/
+	/**_UNUSED/
 	if (x.$ === 'Set_elm_builtin')
 	{
 		x = $elm$core$Set$toList(x);
@@ -126,7 +126,7 @@ function _Utils_eqHelp(x, y, depth, stack)
 	}
 	//*/
 
-	/**_UNUSED/
+	/**/
 	if (x.$ < 0)
 	{
 		x = $elm$core$Dict$toList(x);
@@ -161,7 +161,7 @@ function _Utils_cmp(x, y, ord)
 		return x === y ? /*EQ*/ 0 : x < y ? /*LT*/ -1 : /*GT*/ 1;
 	}
 
-	/**/
+	/**_UNUSED/
 	if (x instanceof String)
 	{
 		var a = x.valueOf();
@@ -170,10 +170,10 @@ function _Utils_cmp(x, y, ord)
 	}
 	//*/
 
-	/**_UNUSED/
+	/**/
 	if (typeof x.$ === 'undefined')
 	//*/
-	/**/
+	/**_UNUSED/
 	if (x.$[0] === '#')
 	//*/
 	{
@@ -203,17 +203,17 @@ var _Utils_compare = F2(function(x, y)
 
 // COMMON VALUES
 
-var _Utils_Tuple0_UNUSED = 0;
-var _Utils_Tuple0 = { $: '#0' };
+var _Utils_Tuple0 = 0;
+var _Utils_Tuple0_UNUSED = { $: '#0' };
 
-function _Utils_Tuple2_UNUSED(a, b) { return { a: a, b: b }; }
-function _Utils_Tuple2(a, b) { return { $: '#2', a: a, b: b }; }
+function _Utils_Tuple2(a, b) { return { a: a, b: b }; }
+function _Utils_Tuple2_UNUSED(a, b) { return { $: '#2', a: a, b: b }; }
 
-function _Utils_Tuple3_UNUSED(a, b, c) { return { a: a, b: b, c: c }; }
-function _Utils_Tuple3(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
+function _Utils_Tuple3(a, b, c) { return { a: a, b: b, c: c }; }
+function _Utils_Tuple3_UNUSED(a, b, c) { return { $: '#3', a: a, b: b, c: c }; }
 
-function _Utils_chr_UNUSED(c) { return c; }
-function _Utils_chr(c) { return new String(c); }
+function _Utils_chr(c) { return c; }
+function _Utils_chr_UNUSED(c) { return new String(c); }
 
 
 // RECORDS
@@ -264,11 +264,11 @@ function _Utils_ap(xs, ys)
 
 
 
-var _List_Nil_UNUSED = { $: 0 };
-var _List_Nil = { $: '[]' };
+var _List_Nil = { $: 0 };
+var _List_Nil_UNUSED = { $: '[]' };
 
-function _List_Cons_UNUSED(hd, tl) { return { $: 1, a: hd, b: tl }; }
-function _List_Cons(hd, tl) { return { $: '::', a: hd, b: tl }; }
+function _List_Cons(hd, tl) { return { $: 1, a: hd, b: tl }; }
+function _List_Cons_UNUSED(hd, tl) { return { $: '::', a: hd, b: tl }; }
 
 
 var _List_cons = F2(_List_Cons);
@@ -499,12 +499,12 @@ var _JsArray_appendN = F3(function(n, dest, source)
 
 // LOG
 
-var _Debug_log_UNUSED = F2(function(tag, value)
+var _Debug_log = F2(function(tag, value)
 {
 	return value;
 });
 
-var _Debug_log = F2(function(tag, value)
+var _Debug_log_UNUSED = F2(function(tag, value)
 {
 	console.log(tag + ': ' + _Debug_toString(value));
 	return value;
@@ -530,12 +530,12 @@ function _Debug_todoCase(moduleName, region, value)
 
 // TO STRING
 
-function _Debug_toString_UNUSED(value)
+function _Debug_toString(value)
 {
 	return '<internals>';
 }
 
-function _Debug_toString(value)
+function _Debug_toString_UNUSED(value)
 {
 	return _Debug_toAnsiString(false, value);
 }
@@ -720,13 +720,13 @@ function _Debug_toHexDigit(n)
 // CRASH
 
 
-function _Debug_crash_UNUSED(identifier)
+function _Debug_crash(identifier)
 {
 	throw new Error('https://github.com/elm/core/blob/1.0.0/hints/' + identifier + '.md');
 }
 
 
-function _Debug_crash(identifier, fact1, fact2, fact3, fact4)
+function _Debug_crash_UNUSED(identifier, fact1, fact2, fact3, fact4)
 {
 	switch(identifier)
 	{
@@ -784,11 +784,11 @@ function _Debug_crash(identifier, fact1, fact2, fact3, fact4)
 
 function _Debug_regionToString(region)
 {
-	if (region.start.line === region.end.line)
+	if (region.cp.bs === region.cO.bs)
 	{
-		return 'on line ' + region.start.line;
+		return 'on line ' + region.cp.bs;
 	}
-	return 'on lines ' + region.start.line + ' through ' + region.end.line;
+	return 'on lines ' + region.cp.bs + ' through ' + region.cO.bs;
 }
 
 
@@ -1212,7 +1212,7 @@ function _Char_toLocaleLower(char)
 
 
 
-/**/
+/**_UNUSED/
 function _Json_errorToString(error)
 {
 	return $elm$json$Json$Decode$errorToString(error);
@@ -1616,11 +1616,11 @@ var _Json_encode = F2(function(indentLevel, value)
 	return JSON.stringify(_Json_unwrap(value), null, indentLevel) + '';
 });
 
-function _Json_wrap(value) { return { $: 0, a: value }; }
-function _Json_unwrap(value) { return value.a; }
+function _Json_wrap_UNUSED(value) { return { $: 0, a: value }; }
+function _Json_unwrap_UNUSED(value) { return value.a; }
 
-function _Json_wrap_UNUSED(value) { return value; }
-function _Json_unwrap_UNUSED(value) { return value; }
+function _Json_wrap(value) { return value; }
+function _Json_unwrap(value) { return value; }
 
 function _Json_emptyArray() { return []; }
 function _Json_emptyObject() { return {}; }
@@ -1857,9 +1857,9 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.ep,
+		impl.e1,
+		impl.eY,
 		function() { return function() {} }
 	);
 });
@@ -1872,7 +1872,7 @@ var _Platform_worker = F4(function(impl, flagDecoder, debugMetadata, args)
 function _Platform_initialize(flagDecoder, args, init, update, subscriptions, stepperBuilder)
 {
 	var result = A2(_Json_run, flagDecoder, _Json_wrap(args ? args['flags'] : undefined));
-	$elm$core$Result$isOk(result) || _Debug_crash(2 /**/, _Json_errorToString(result.a) /**/);
+	$elm$core$Result$isOk(result) || _Debug_crash(2 /**_UNUSED/, _Json_errorToString(result.a) /**/);
 	var managers = {};
 	var initPair = init(result.a);
 	var model = initPair.a;
@@ -2316,7 +2316,7 @@ function _Platform_setupIncomingPort(name, sendToApp)
 //
 
 
-function _Platform_export_UNUSED(exports)
+function _Platform_export(exports)
 {
 	scope['Elm']
 		? _Platform_mergeExportsProd(scope['Elm'], exports)
@@ -2337,7 +2337,7 @@ function _Platform_mergeExportsProd(obj, exports)
 }
 
 
-function _Platform_export(exports)
+function _Platform_export_UNUSED(exports)
 {
 	scope['Elm']
 		? _Platform_mergeExportsDebug('Elm', scope['Elm'], exports)
@@ -2377,10 +2377,10 @@ var _VirtualDom_init = F4(function(virtualNode, flagDecoder, debugMetadata, args
 {
 	// NOTE: this function needs _Platform_export available to work
 
-	/**_UNUSED/
+	/**/
 	var node = args['node'];
 	//*/
-	/**/
+	/**_UNUSED/
 	var node = args && args['node'] ? args['node'] : _Debug_crash(0);
 	//*/
 
@@ -2655,14 +2655,14 @@ function _VirtualDom_noInnerHtmlOrFormAction(key)
 function _VirtualDom_noJavaScriptUri(value)
 {
 	return _VirtualDom_RE_js.test(value)
-		? /**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+		? /**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		: value;
 }
 
 function _VirtualDom_noJavaScriptOrHtmlUri(value)
 {
 	return _VirtualDom_RE_js_html.test(value)
-		? /**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+		? /**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		: value;
 }
 
@@ -2670,7 +2670,7 @@ function _VirtualDom_noJavaScriptOrHtmlJson(value)
 {
 	return (typeof _Json_unwrap(value) === 'string' && _VirtualDom_RE_js_html.test(_Json_unwrap(value)))
 		? _Json_wrap(
-			/**_UNUSED/''//*//**/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
+			/**/''//*//**_UNUSED/'javascript:alert("This is an XSS vector. Please use ports or web components instead.")'//*/
 		) : value;
 }
 
@@ -2719,9 +2719,9 @@ var _VirtualDom_mapEventTuple = F2(function(func, tuple)
 var _VirtualDom_mapEventRecord = F2(function(func, record)
 {
 	return {
-		message: func(record.message),
-		stopPropagation: record.stopPropagation,
-		preventDefault: record.preventDefault
+		b6: func(record.b6),
+		cq: record.cq,
+		cl: record.cl
 	}
 });
 
@@ -2989,11 +2989,11 @@ function _VirtualDom_makeCallback(eventNode, initialHandler)
 		// 3 = Custom
 
 		var value = result.a;
-		var message = !tag ? value : tag < 3 ? value.a : value.message;
-		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.stopPropagation;
+		var message = !tag ? value : tag < 3 ? value.a : value.b6;
+		var stopPropagation = tag == 1 ? value.b : tag == 3 && value.cq;
 		var currentEventNode = (
 			stopPropagation && event.stopPropagation(),
-			(tag == 2 ? value.b : tag == 3 && value.preventDefault) && event.preventDefault(),
+			(tag == 2 ? value.b : tag == 3 && value.cl) && event.preventDefault(),
 			eventNode
 		);
 		var tagger;
@@ -3943,15 +3943,15 @@ var _Browser_element = _Debugger_element || F4(function(impl, flagDecoder, debug
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.ep,
+		impl.e1,
+		impl.eY,
 		function(sendToApp, initialModel) {
-			var view = impl.view;
-			/**_UNUSED/
+			var view = impl.e4;
+			/**/
 			var domNode = args['node'];
 			//*/
-			/**/
+			/**_UNUSED/
 			var domNode = args && args['node'] ? args['node'] : _Debug_crash(0);
 			//*/
 			var currNode = _VirtualDom_virtualize(domNode);
@@ -3979,12 +3979,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 	return _Platform_initialize(
 		flagDecoder,
 		args,
-		impl.init,
-		impl.update,
-		impl.subscriptions,
+		impl.ep,
+		impl.e1,
+		impl.eY,
 		function(sendToApp, initialModel) {
-			var divertHrefToApp = impl.setup && impl.setup(sendToApp)
-			var view = impl.view;
+			var divertHrefToApp = impl.co && impl.co(sendToApp)
+			var view = impl.e4;
 			var title = _VirtualDom_doc.title;
 			var bodyNode = _VirtualDom_doc.body;
 			var currNode = _VirtualDom_virtualize(bodyNode);
@@ -3992,12 +3992,12 @@ var _Browser_document = _Debugger_document || F4(function(impl, flagDecoder, deb
 			{
 				_VirtualDom_divertHrefToApp = divertHrefToApp;
 				var doc = view(model);
-				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.body);
+				var nextNode = _VirtualDom_node('body')(_List_Nil)(doc.d2);
 				var patches = _VirtualDom_diff(currNode, nextNode);
 				bodyNode = _VirtualDom_applyPatches(bodyNode, currNode, patches, sendToApp);
 				currNode = nextNode;
 				_VirtualDom_divertHrefToApp = 0;
-				(title !== doc.title) && (_VirtualDom_doc.title = title = doc.title);
+				(title !== doc.e$) && (_VirtualDom_doc.title = title = doc.e$);
 			});
 		}
 	);
@@ -4053,12 +4053,12 @@ function _Browser_makeAnimator(model, draw)
 
 function _Browser_application(impl)
 {
-	var onUrlChange = impl.onUrlChange;
-	var onUrlRequest = impl.onUrlRequest;
+	var onUrlChange = impl.eH;
+	var onUrlRequest = impl.eI;
 	var key = function() { key.a(onUrlChange(_Browser_getUrl())); };
 
 	return _Browser_document({
-		setup: function(sendToApp)
+		co: function(sendToApp)
 		{
 			key.a = sendToApp;
 			_Browser_window.addEventListener('popstate', key);
@@ -4074,9 +4074,9 @@ function _Browser_application(impl)
 					var next = $elm$url$Url$fromString(href).a;
 					sendToApp(onUrlRequest(
 						(next
-							&& curr.protocol === next.protocol
-							&& curr.host === next.host
-							&& curr.port_.a === next.port_.a
+							&& curr.$7 === next.$7
+							&& curr.cW === next.cW
+							&& curr.dl.a === next.dl.a
 						)
 							? $elm$browser$Browser$Internal(next)
 							: $elm$browser$Browser$External(href)
@@ -4084,13 +4084,13 @@ function _Browser_application(impl)
 				}
 			});
 		},
-		init: function(flags)
+		ep: function(flags)
 		{
-			return A3(impl.init, flags, _Browser_getUrl(), key);
+			return A3(impl.ep, flags, _Browser_getUrl(), key);
 		},
-		view: impl.view,
-		update: impl.update,
-		subscriptions: impl.subscriptions
+		e4: impl.e4,
+		e1: impl.e1,
+		eY: impl.eY
 	});
 }
 
@@ -4156,17 +4156,17 @@ var _Browser_decodeEvent = F2(function(decoder, event)
 function _Browser_visibilityInfo()
 {
 	return (typeof _VirtualDom_doc.hidden !== 'undefined')
-		? { hidden: 'hidden', change: 'visibilitychange' }
+		? { el: 'hidden', d5: 'visibilitychange' }
 		:
 	(typeof _VirtualDom_doc.mozHidden !== 'undefined')
-		? { hidden: 'mozHidden', change: 'mozvisibilitychange' }
+		? { el: 'mozHidden', d5: 'mozvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.msHidden !== 'undefined')
-		? { hidden: 'msHidden', change: 'msvisibilitychange' }
+		? { el: 'msHidden', d5: 'msvisibilitychange' }
 		:
 	(typeof _VirtualDom_doc.webkitHidden !== 'undefined')
-		? { hidden: 'webkitHidden', change: 'webkitvisibilitychange' }
-		: { hidden: 'hidden', change: 'visibilitychange' };
+		? { el: 'webkitHidden', d5: 'webkitvisibilitychange' }
+		: { el: 'hidden', d5: 'visibilitychange' };
 }
 
 
@@ -4247,12 +4247,12 @@ var _Browser_call = F2(function(functionName, id)
 function _Browser_getViewport()
 {
 	return {
-		scene: _Browser_getScene(),
-		viewport: {
-			x: _Browser_window.pageXOffset,
-			y: _Browser_window.pageYOffset,
-			width: _Browser_doc.documentElement.clientWidth,
-			height: _Browser_doc.documentElement.clientHeight
+		dx: _Browser_getScene(),
+		dO: {
+			dS: _Browser_window.pageXOffset,
+			dT: _Browser_window.pageYOffset,
+			dQ: _Browser_doc.documentElement.clientWidth,
+			cV: _Browser_doc.documentElement.clientHeight
 		}
 	};
 }
@@ -4262,8 +4262,8 @@ function _Browser_getScene()
 	var body = _Browser_doc.body;
 	var elem = _Browser_doc.documentElement;
 	return {
-		width: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
-		height: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
+		dQ: Math.max(body.scrollWidth, body.offsetWidth, elem.scrollWidth, elem.offsetWidth, elem.clientWidth),
+		cV: Math.max(body.scrollHeight, body.offsetHeight, elem.scrollHeight, elem.offsetHeight, elem.clientHeight)
 	};
 }
 
@@ -4286,15 +4286,15 @@ function _Browser_getViewportOf(id)
 	return _Browser_withNode(id, function(node)
 	{
 		return {
-			scene: {
-				width: node.scrollWidth,
-				height: node.scrollHeight
+			dx: {
+				dQ: node.scrollWidth,
+				cV: node.scrollHeight
 			},
-			viewport: {
-				x: node.scrollLeft,
-				y: node.scrollTop,
-				width: node.clientWidth,
-				height: node.clientHeight
+			dO: {
+				dS: node.scrollLeft,
+				dT: node.scrollTop,
+				dQ: node.clientWidth,
+				cV: node.clientHeight
 			}
 		};
 	});
@@ -4324,18 +4324,18 @@ function _Browser_getElement(id)
 		var x = _Browser_window.pageXOffset;
 		var y = _Browser_window.pageYOffset;
 		return {
-			scene: _Browser_getScene(),
-			viewport: {
-				x: x,
-				y: y,
-				width: _Browser_doc.documentElement.clientWidth,
-				height: _Browser_doc.documentElement.clientHeight
+			dx: _Browser_getScene(),
+			dO: {
+				dS: x,
+				dT: y,
+				dQ: _Browser_doc.documentElement.clientWidth,
+				cV: _Browser_doc.documentElement.clientHeight
 			},
-			element: {
-				x: x + rect.left,
-				y: y + rect.top,
-				width: rect.width,
-				height: rect.height
+			ef: {
+				dS: x + rect.left,
+				dT: y + rect.top,
+				dQ: rect.width,
+				cV: rect.height
 			}
 		};
 	});
@@ -4380,25 +4380,25 @@ var _Http_toTask = F3(function(router, toTask, request)
 	return _Scheduler_binding(function(callback)
 	{
 		function done(response) {
-			callback(toTask(request.expect.a(response)));
+			callback(toTask(request.aj.a(response)));
 		}
 
 		var xhr = new XMLHttpRequest();
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
-		xhr.addEventListener('load', function() { done(_Http_toResponse(request.expect.b, xhr)); });
-		$elm$core$Maybe$isJust(request.tracker) && _Http_track(router, xhr, request.tracker.a);
+		xhr.addEventListener('load', function() { done(_Http_toResponse(request.aj.b, xhr)); });
+		$elm$core$Maybe$isJust(request.aB) && _Http_track(router, xhr, request.aB.a);
 
 		try {
-			xhr.open(request.method, request.url, true);
+			xhr.open(request.ar, request.e3, true);
 		} catch (e) {
-			return done($elm$http$Http$BadUrl_(request.url));
+			return done($elm$http$Http$BadUrl_(request.e3));
 		}
 
 		_Http_configureRequest(xhr, request);
 
-		request.body.a && xhr.setRequestHeader('Content-Type', request.body.a);
-		xhr.send(request.body.b);
+		request.d2.a && xhr.setRequestHeader('Content-Type', request.d2.a);
+		xhr.send(request.d2.b);
 
 		return function() { xhr.c = true; xhr.abort(); };
 	});
@@ -4409,13 +4409,13 @@ var _Http_toTask = F3(function(router, toTask, request)
 
 function _Http_configureRequest(xhr, request)
 {
-	for (var headers = request.headers; headers.b; headers = headers.b) // WHILE_CONS
+	for (var headers = request.an; headers.b; headers = headers.b) // WHILE_CONS
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.timeout.a || 0;
-	xhr.responseType = request.expect.d;
-	xhr.withCredentials = request.allowCookiesFromOtherDomains;
+	xhr.timeout = request.aA.a || 0;
+	xhr.responseType = request.aj.d;
+	xhr.withCredentials = request.dX;
 }
 
 
@@ -4436,10 +4436,10 @@ function _Http_toResponse(toBody, xhr)
 function _Http_toMetadata(xhr)
 {
 	return {
-		url: xhr.responseURL,
-		statusCode: xhr.status,
-		statusText: xhr.statusText,
-		headers: _Http_parseHeaders(xhr.getAllResponseHeaders())
+		e3: xhr.responseURL,
+		eW: xhr.status,
+		eX: xhr.statusText,
+		an: _Http_parseHeaders(xhr.getAllResponseHeaders())
 	};
 }
 
@@ -4534,15 +4534,15 @@ function _Http_track(router, xhr, tracker)
 	xhr.upload.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Sending({
-			sent: event.loaded,
-			size: event.total
+			eV: event.loaded,
+			dA: event.total
 		}))));
 	});
 	xhr.addEventListener('progress', function(event) {
 		if (xhr.c) { return; }
 		_Scheduler_rawSpawn(A2($elm$core$Platform$sendToSelf, router, _Utils_Tuple2(tracker, $elm$http$Http$Receiving({
-			received: event.loaded,
-			size: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
+			eN: event.loaded,
+			dA: event.lengthComputable ? $elm$core$Maybe$Just(event.total) : $elm$core$Maybe$Nothing
 		}))));
 	});
 }
@@ -4645,15 +4645,15 @@ function _Url_percentDecode(string)
 	{
 		return $elm$core$Maybe$Nothing;
 	}
-}var $elm$core$Basics$EQ = {$: 'EQ'};
-var $elm$core$Basics$GT = {$: 'GT'};
-var $elm$core$Basics$LT = {$: 'LT'};
+}var $elm$core$Basics$EQ = 1;
+var $elm$core$Basics$GT = 2;
+var $elm$core$Basics$LT = 0;
 var $elm$core$List$cons = _List_cons;
 var $elm$core$Dict$foldr = F3(
 	function (func, acc, t) {
 		foldr:
 		while (true) {
-			if (t.$ === 'RBEmpty_elm_builtin') {
+			if (t.$ === -2) {
 				return acc;
 			} else {
 				var key = t.b;
@@ -4698,7 +4698,7 @@ var $elm$core$Dict$keys = function (dict) {
 		dict);
 };
 var $elm$core$Set$toList = function (_v0) {
-	var dict = _v0.a;
+	var dict = _v0;
 	return $elm$core$Dict$keys(dict);
 };
 var $elm$core$Elm$JsArray$foldr = _JsArray_foldr;
@@ -4708,7 +4708,7 @@ var $elm$core$Array$foldr = F3(
 		var tail = _v0.d;
 		var helper = F2(
 			function (node, acc) {
-				if (node.$ === 'SubTree') {
+				if (!node.$) {
 					var subTree = node.a;
 					return A3($elm$core$Elm$JsArray$foldr, helper, acc, subTree);
 				} else {
@@ -4726,32 +4726,32 @@ var $elm$core$Array$toList = function (array) {
 	return A3($elm$core$Array$foldr, $elm$core$List$cons, _List_Nil, array);
 };
 var $elm$core$Result$Err = function (a) {
-	return {$: 'Err', a: a};
+	return {$: 1, a: a};
 };
 var $elm$json$Json$Decode$Failure = F2(
 	function (a, b) {
-		return {$: 'Failure', a: a, b: b};
+		return {$: 3, a: a, b: b};
 	});
 var $elm$json$Json$Decode$Field = F2(
 	function (a, b) {
-		return {$: 'Field', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$json$Json$Decode$Index = F2(
 	function (a, b) {
-		return {$: 'Index', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $elm$core$Result$Ok = function (a) {
-	return {$: 'Ok', a: a};
+	return {$: 0, a: a};
 };
 var $elm$json$Json$Decode$OneOf = function (a) {
-	return {$: 'OneOf', a: a};
+	return {$: 2, a: a};
 };
-var $elm$core$Basics$False = {$: 'False'};
+var $elm$core$Basics$False = 1;
 var $elm$core$Basics$add = _Basics_add;
 var $elm$core$Maybe$Just = function (a) {
-	return {$: 'Just', a: a};
+	return {$: 0, a: a};
 };
-var $elm$core$Maybe$Nothing = {$: 'Nothing'};
+var $elm$core$Maybe$Nothing = {$: 1};
 var $elm$core$String$all = _String_all;
 var $elm$core$Basics$and = _Basics_and;
 var $elm$core$Basics$append = _Utils_append;
@@ -4876,12 +4876,12 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 		errorToStringHelp:
 		while (true) {
 			switch (error.$) {
-				case 'Field':
+				case 0:
 					var f = error.a;
 					var err = error.b;
 					var isSimple = function () {
 						var _v1 = $elm$core$String$uncons(f);
-						if (_v1.$ === 'Nothing') {
+						if (_v1.$ === 1) {
 							return false;
 						} else {
 							var _v2 = _v1.a;
@@ -4896,7 +4896,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'Index':
+				case 1:
 					var i = error.a;
 					var err = error.b;
 					var indexName = '[' + ($elm$core$String$fromInt(i) + ']');
@@ -4905,7 +4905,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 					error = $temp$error;
 					context = $temp$context;
 					continue errorToStringHelp;
-				case 'OneOf':
+				case 2:
 					var errors = error.a;
 					if (!errors.b) {
 						return 'Ran into a Json.Decode.oneOf with no possibilities' + function () {
@@ -4969,7 +4969,7 @@ var $elm$json$Json$Decode$errorToStringHelp = F2(
 var $elm$core$Array$branchFactor = 32;
 var $elm$core$Array$Array_elm_builtin = F4(
 	function (a, b, c, d) {
-		return {$: 'Array_elm_builtin', a: a, b: b, c: c, d: d};
+		return {$: 0, a: a, b: b, c: c, d: d};
 	});
 var $elm$core$Elm$JsArray$empty = _JsArray_empty;
 var $elm$core$Basics$ceiling = _Basics_ceiling;
@@ -4984,7 +4984,7 @@ var $elm$core$Array$shiftStep = $elm$core$Basics$ceiling(
 var $elm$core$Array$empty = A4($elm$core$Array$Array_elm_builtin, 0, $elm$core$Array$shiftStep, $elm$core$Elm$JsArray$empty, $elm$core$Elm$JsArray$empty);
 var $elm$core$Elm$JsArray$initialize = _JsArray_initialize;
 var $elm$core$Array$Leaf = function (a) {
-	return {$: 'Leaf', a: a};
+	return {$: 1, a: a};
 };
 var $elm$core$Basics$apL = F2(
 	function (f, x) {
@@ -5004,7 +5004,7 @@ var $elm$core$Basics$max = F2(
 	});
 var $elm$core$Basics$mul = _Basics_mul;
 var $elm$core$Array$SubTree = function (a) {
-	return {$: 'SubTree', a: a};
+	return {$: 0, a: a};
 };
 var $elm$core$Elm$JsArray$initializeFromList = _JsArray_initializeFromList;
 var $elm$core$Array$compressNodes = F2(
@@ -5051,25 +5051,25 @@ var $elm$core$Array$treeFromBuilder = F2(
 	});
 var $elm$core$Array$builderToArray = F2(
 	function (reverseNodeList, builder) {
-		if (!builder.nodeListSize) {
+		if (!builder.m) {
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.tail),
+				$elm$core$Elm$JsArray$length(builder.q),
 				$elm$core$Array$shiftStep,
 				$elm$core$Elm$JsArray$empty,
-				builder.tail);
+				builder.q);
 		} else {
-			var treeLen = builder.nodeListSize * $elm$core$Array$branchFactor;
+			var treeLen = builder.m * $elm$core$Array$branchFactor;
 			var depth = $elm$core$Basics$floor(
 				A2($elm$core$Basics$logBase, $elm$core$Array$branchFactor, treeLen - 1));
-			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.nodeList) : builder.nodeList;
-			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.nodeListSize);
+			var correctNodeList = reverseNodeList ? $elm$core$List$reverse(builder.r) : builder.r;
+			var tree = A2($elm$core$Array$treeFromBuilder, correctNodeList, builder.m);
 			return A4(
 				$elm$core$Array$Array_elm_builtin,
-				$elm$core$Elm$JsArray$length(builder.tail) + treeLen,
+				$elm$core$Elm$JsArray$length(builder.q) + treeLen,
 				A2($elm$core$Basics$max, 5, depth * $elm$core$Array$shiftStep),
 				tree,
-				builder.tail);
+				builder.q);
 		}
 	});
 var $elm$core$Basics$idiv = _Basics_idiv;
@@ -5082,7 +5082,7 @@ var $elm$core$Array$initializeHelp = F5(
 				return A2(
 					$elm$core$Array$builderToArray,
 					false,
-					{nodeList: nodeList, nodeListSize: (len / $elm$core$Array$branchFactor) | 0, tail: tail});
+					{r: nodeList, m: (len / $elm$core$Array$branchFactor) | 0, q: tail});
 			} else {
 				var leaf = $elm$core$Array$Leaf(
 					A3($elm$core$Elm$JsArray$initialize, $elm$core$Array$branchFactor, fromIndex, fn));
@@ -5112,9 +5112,9 @@ var $elm$core$Array$initialize = F2(
 			return A5($elm$core$Array$initializeHelp, fn, initialFromIndex, len, _List_Nil, tail);
 		}
 	});
-var $elm$core$Basics$True = {$: 'True'};
+var $elm$core$Basics$True = 0;
 var $elm$core$Result$isOk = function (result) {
-	if (result.$ === 'Ok') {
+	if (!result.$) {
 		return true;
 	} else {
 		return false;
@@ -5125,33 +5125,31 @@ var $elm$json$Json$Decode$map2 = _Json_map2;
 var $elm$json$Json$Decode$succeed = _Json_succeed;
 var $elm$virtual_dom$VirtualDom$toHandlerInt = function (handler) {
 	switch (handler.$) {
-		case 'Normal':
+		case 0:
 			return 0;
-		case 'MayStopPropagation':
+		case 1:
 			return 1;
-		case 'MayPreventDefault':
+		case 2:
 			return 2;
 		default:
 			return 3;
 	}
 };
 var $elm$browser$Browser$External = function (a) {
-	return {$: 'External', a: a};
+	return {$: 1, a: a};
 };
 var $elm$browser$Browser$Internal = function (a) {
-	return {$: 'Internal', a: a};
+	return {$: 0, a: a};
 };
 var $elm$core$Basics$identity = function (x) {
 	return x;
 };
-var $elm$browser$Browser$Dom$NotFound = function (a) {
-	return {$: 'NotFound', a: a};
-};
-var $elm$url$Url$Http = {$: 'Http'};
-var $elm$url$Url$Https = {$: 'Https'};
+var $elm$browser$Browser$Dom$NotFound = $elm$core$Basics$identity;
+var $elm$url$Url$Http = 0;
+var $elm$url$Url$Https = 1;
 var $elm$url$Url$Url = F6(
 	function (protocol, host, port_, path, query, fragment) {
-		return {fragment: fragment, host: host, path: path, port_: port_, protocol: protocol, query: query};
+		return {cR: fragment, cW: host, de: path, dl: port_, $7: protocol, dp: query};
 	});
 var $elm$core$String$contains = _String_contains;
 var $elm$core$String$length = _String_length;
@@ -5187,7 +5185,7 @@ var $elm$url$Url$chompBeforePath = F5(
 					var i = _v0.a;
 					var _v1 = $elm$core$String$toInt(
 						A2($elm$core$String$dropLeft, i + 1, str));
-					if (_v1.$ === 'Nothing') {
+					if (_v1.$ === 1) {
 						return $elm$core$Maybe$Nothing;
 					} else {
 						var port_ = _v1;
@@ -5270,26 +5268,24 @@ var $elm$core$String$startsWith = _String_startsWith;
 var $elm$url$Url$fromString = function (str) {
 	return A2($elm$core$String$startsWith, 'http://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Http,
+		0,
 		A2($elm$core$String$dropLeft, 7, str)) : (A2($elm$core$String$startsWith, 'https://', str) ? A2(
 		$elm$url$Url$chompAfterProtocol,
-		$elm$url$Url$Https,
+		1,
 		A2($elm$core$String$dropLeft, 8, str)) : $elm$core$Maybe$Nothing);
 };
 var $elm$core$Basics$never = function (_v0) {
 	never:
 	while (true) {
-		var nvr = _v0.a;
+		var nvr = _v0;
 		var $temp$_v0 = nvr;
 		_v0 = $temp$_v0;
 		continue never;
 	}
 };
-var $elm$core$Task$Perform = function (a) {
-	return {$: 'Perform', a: a};
-};
+var $elm$core$Task$Perform = $elm$core$Basics$identity;
 var $elm$core$Task$succeed = _Scheduler_succeed;
-var $elm$core$Task$init = $elm$core$Task$succeed(_Utils_Tuple0);
+var $elm$core$Task$init = $elm$core$Task$succeed(0);
 var $elm$core$List$foldrHelper = F4(
 	function (fn, acc, ctr, ls) {
 		if (!ls.b) {
@@ -5395,7 +5391,7 @@ var $elm$core$Task$sequence = function (tasks) {
 var $elm$core$Platform$sendToApp = _Platform_sendToApp;
 var $elm$core$Task$spawnCmd = F2(
 	function (router, _v0) {
-		var task = _v0.a;
+		var task = _v0;
 		return _Scheduler_spawn(
 			A2(
 				$elm$core$Task$andThen,
@@ -5407,7 +5403,7 @@ var $elm$core$Task$onEffects = F3(
 		return A2(
 			$elm$core$Task$map,
 			function (_v0) {
-				return _Utils_Tuple0;
+				return 0;
 			},
 			$elm$core$Task$sequence(
 				A2(
@@ -5417,59 +5413,55 @@ var $elm$core$Task$onEffects = F3(
 	});
 var $elm$core$Task$onSelfMsg = F3(
 	function (_v0, _v1, _v2) {
-		return $elm$core$Task$succeed(_Utils_Tuple0);
+		return $elm$core$Task$succeed(0);
 	});
 var $elm$core$Task$cmdMap = F2(
 	function (tagger, _v0) {
-		var task = _v0.a;
-		return $elm$core$Task$Perform(
-			A2($elm$core$Task$map, tagger, task));
+		var task = _v0;
+		return A2($elm$core$Task$map, tagger, task);
 	});
 _Platform_effectManagers['Task'] = _Platform_createManager($elm$core$Task$init, $elm$core$Task$onEffects, $elm$core$Task$onSelfMsg, $elm$core$Task$cmdMap);
 var $elm$core$Task$command = _Platform_leaf('Task');
 var $elm$core$Task$perform = F2(
 	function (toMessage, task) {
 		return $elm$core$Task$command(
-			$elm$core$Task$Perform(
-				A2($elm$core$Task$map, toMessage, task)));
+			A2($elm$core$Task$map, toMessage, task));
 	});
 var $elm$browser$Browser$document = _Browser_document;
-var $author$project$Main$All = {$: 'All'};
+var $author$project$Main$All = 0;
 var $author$project$Main$GotPlayers = function (a) {
-	return {$: 'GotPlayers', a: a};
+	return {$: 13, a: a};
 };
 var $elm$json$Json$Encode$string = _Json_wrap;
 var $author$project$Main$askForAutoSave = _Platform_outgoingPort('askForAutoSave', $elm$json$Json$Encode$string);
 var $author$project$Main$askForIgnoredPlayers = _Platform_outgoingPort('askForIgnoredPlayers', $elm$json$Json$Encode$string);
 var $author$project$Main$askForTimeFilter = _Platform_outgoingPort('askForTimeFilter', $elm$json$Json$Encode$string);
 var $elm$core$Platform$Cmd$batch = _Platform_batch;
-var $elm$core$Set$Set_elm_builtin = function (a) {
-	return {$: 'Set_elm_builtin', a: a};
-};
-var $elm$core$Dict$RBEmpty_elm_builtin = {$: 'RBEmpty_elm_builtin'};
+var $elm$core$Set$Set_elm_builtin = $elm$core$Basics$identity;
+var $elm$core$Dict$RBEmpty_elm_builtin = {$: -2};
 var $elm$core$Dict$empty = $elm$core$Dict$RBEmpty_elm_builtin;
-var $elm$core$Set$empty = $elm$core$Set$Set_elm_builtin($elm$core$Dict$empty);
+var $elm$core$Set$empty = $elm$core$Dict$empty;
 var $elm$http$Http$BadStatus_ = F2(
 	function (a, b) {
-		return {$: 'BadStatus_', a: a, b: b};
+		return {$: 3, a: a, b: b};
 	});
 var $elm$http$Http$BadUrl_ = function (a) {
-	return {$: 'BadUrl_', a: a};
+	return {$: 0, a: a};
 };
 var $elm$http$Http$GoodStatus_ = F2(
 	function (a, b) {
-		return {$: 'GoodStatus_', a: a, b: b};
+		return {$: 4, a: a, b: b};
 	});
-var $elm$http$Http$NetworkError_ = {$: 'NetworkError_'};
+var $elm$http$Http$NetworkError_ = {$: 2};
 var $elm$http$Http$Receiving = function (a) {
-	return {$: 'Receiving', a: a};
+	return {$: 1, a: a};
 };
 var $elm$http$Http$Sending = function (a) {
-	return {$: 'Sending', a: a};
+	return {$: 0, a: a};
 };
-var $elm$http$Http$Timeout_ = {$: 'Timeout_'};
+var $elm$http$Http$Timeout_ = {$: 1};
 var $elm$core$Maybe$isJust = function (maybe) {
-	if (maybe.$ === 'Just') {
+	if (!maybe.$) {
 		return true;
 	} else {
 		return false;
@@ -5481,7 +5473,7 @@ var $elm$core$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
 		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
+			if (dict.$ === -2) {
 				return $elm$core$Maybe$Nothing;
 			} else {
 				var key = dict.b;
@@ -5489,14 +5481,14 @@ var $elm$core$Dict$get = F2(
 				var left = dict.d;
 				var right = dict.e;
 				var _v1 = A2($elm$core$Basics$compare, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
+				switch (_v1) {
+					case 0:
 						var $temp$targetKey = targetKey,
 							$temp$dict = left;
 						targetKey = $temp$targetKey;
 						dict = $temp$dict;
 						continue get;
-					case 'EQ':
+					case 1:
 						return $elm$core$Maybe$Just(value);
 					default:
 						var $temp$targetKey = targetKey,
@@ -5508,21 +5500,21 @@ var $elm$core$Dict$get = F2(
 			}
 		}
 	});
-var $elm$core$Dict$Black = {$: 'Black'};
+var $elm$core$Dict$Black = 1;
 var $elm$core$Dict$RBNode_elm_builtin = F5(
 	function (a, b, c, d, e) {
-		return {$: 'RBNode_elm_builtin', a: a, b: b, c: c, d: d, e: e};
+		return {$: -1, a: a, b: b, c: c, d: d, e: e};
 	});
-var $elm$core$Dict$Red = {$: 'Red'};
+var $elm$core$Dict$Red = 0;
 var $elm$core$Dict$balance = F5(
 	function (color, key, value, left, right) {
-		if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Red')) {
+		if ((right.$ === -1) && (!right.a)) {
 			var _v1 = right.a;
 			var rK = right.b;
 			var rV = right.c;
 			var rLeft = right.d;
 			var rRight = right.e;
-			if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+			if ((left.$ === -1) && (!left.a)) {
 				var _v3 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -5530,22 +5522,22 @@ var $elm$core$Dict$balance = F5(
 				var lRight = left.e;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
+					0,
 					key,
 					value,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
 					color,
 					rK,
 					rV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, left, rLeft),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, left, rLeft),
 					rRight);
 			}
 		} else {
-			if ((((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) && (left.d.$ === 'RBNode_elm_builtin')) && (left.d.a.$ === 'Red')) {
+			if ((((left.$ === -1) && (!left.a)) && (left.d.$ === -1)) && (!left.d.a)) {
 				var _v5 = left.a;
 				var lK = left.b;
 				var lV = left.c;
@@ -5558,11 +5550,11 @@ var $elm$core$Dict$balance = F5(
 				var lRight = left.e;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Red,
+					0,
 					lK,
 					lV,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, key, value, lRight, right));
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 1, key, value, lRight, right));
 			} else {
 				return A5($elm$core$Dict$RBNode_elm_builtin, color, key, value, left, right);
 			}
@@ -5570,8 +5562,8 @@ var $elm$core$Dict$balance = F5(
 	});
 var $elm$core$Dict$insertHelp = F3(
 	function (key, value, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
+		if (dict.$ === -2) {
+			return A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, $elm$core$Dict$RBEmpty_elm_builtin, $elm$core$Dict$RBEmpty_elm_builtin);
 		} else {
 			var nColor = dict.a;
 			var nKey = dict.b;
@@ -5579,8 +5571,8 @@ var $elm$core$Dict$insertHelp = F3(
 			var nLeft = dict.d;
 			var nRight = dict.e;
 			var _v1 = A2($elm$core$Basics$compare, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
+			switch (_v1) {
+				case 0:
 					return A5(
 						$elm$core$Dict$balance,
 						nColor,
@@ -5588,7 +5580,7 @@ var $elm$core$Dict$insertHelp = F3(
 						nValue,
 						A3($elm$core$Dict$insertHelp, key, value, nLeft),
 						nRight);
-				case 'EQ':
+				case 1:
 					return A5($elm$core$Dict$RBNode_elm_builtin, nColor, nKey, value, nLeft, nRight);
 				default:
 					return A5(
@@ -5604,13 +5596,13 @@ var $elm$core$Dict$insertHelp = F3(
 var $elm$core$Dict$insert = F3(
 	function (key, value, dict) {
 		var _v0 = A3($elm$core$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -5619,7 +5611,7 @@ var $elm$core$Dict$insert = F3(
 var $elm$core$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
-		if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+		if ((dict.$ === -1) && (dict.d.$ === -1)) {
 			var left = dict.d;
 			var $temp$dict = left;
 			dict = $temp$dict;
@@ -5630,8 +5622,8 @@ var $elm$core$Dict$getMin = function (dict) {
 	}
 };
 var $elm$core$Dict$moveRedLeft = function (dict) {
-	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
-		if ((dict.e.d.$ === 'RBNode_elm_builtin') && (dict.e.d.a.$ === 'Red')) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.e.d.$ === -1) && (!dict.e.d.a)) {
 			var clr = dict.a;
 			var k = dict.b;
 			var v = dict.c;
@@ -5654,17 +5646,17 @@ var $elm$core$Dict$moveRedLeft = function (dict) {
 			var rRight = _v2.e;
 			return A5(
 				$elm$core$Dict$RBNode_elm_builtin,
-				$elm$core$Dict$Red,
+				0,
 				rlK,
 				rlV,
 				A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
 					rlL),
-				A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, rK, rV, rlR, rRight));
+				A5($elm$core$Dict$RBNode_elm_builtin, 1, rK, rV, rlR, rRight));
 		} else {
 			var clr = dict.a;
 			var k = dict.b;
@@ -5681,22 +5673,22 @@ var $elm$core$Dict$moveRedLeft = function (dict) {
 			var rV = _v5.c;
 			var rLeft = _v5.d;
 			var rRight = _v5.e;
-			if (clr.$ === 'Black') {
+			if (clr === 1) {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -5704,8 +5696,8 @@ var $elm$core$Dict$moveRedLeft = function (dict) {
 	}
 };
 var $elm$core$Dict$moveRedRight = function (dict) {
-	if (((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) && (dict.e.$ === 'RBNode_elm_builtin')) {
-		if ((dict.d.d.$ === 'RBNode_elm_builtin') && (dict.d.d.a.$ === 'Red')) {
+	if (((dict.$ === -1) && (dict.d.$ === -1)) && (dict.e.$ === -1)) {
+		if ((dict.d.d.$ === -1) && (!dict.d.d.a)) {
 			var clr = dict.a;
 			var k = dict.b;
 			var v = dict.c;
@@ -5728,17 +5720,17 @@ var $elm$core$Dict$moveRedRight = function (dict) {
 			var rRight = _v4.e;
 			return A5(
 				$elm$core$Dict$RBNode_elm_builtin,
-				$elm$core$Dict$Red,
+				0,
 				lK,
 				lV,
-				A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, llK, llV, llLeft, llRight),
+				A5($elm$core$Dict$RBNode_elm_builtin, 1, llK, llV, llLeft, llRight),
 				A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
 					lRight,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight)));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight)));
 		} else {
 			var clr = dict.a;
 			var k = dict.b;
@@ -5755,22 +5747,22 @@ var $elm$core$Dict$moveRedRight = function (dict) {
 			var rV = _v6.c;
 			var rLeft = _v6.d;
 			var rRight = _v6.e;
-			if (clr.$ === 'Black') {
+			if (clr === 1) {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			} else {
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
-					$elm$core$Dict$Black,
+					1,
 					k,
 					v,
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, lK, lV, lLeft, lRight),
-					A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, rK, rV, rLeft, rRight));
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, lK, lV, lLeft, lRight),
+					A5($elm$core$Dict$RBNode_elm_builtin, 0, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -5779,7 +5771,7 @@ var $elm$core$Dict$moveRedRight = function (dict) {
 };
 var $elm$core$Dict$removeHelpPrepEQGT = F7(
 	function (targetKey, dict, color, key, value, left, right) {
-		if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Red')) {
+		if ((left.$ === -1) && (!left.a)) {
 			var _v1 = left.a;
 			var lK = left.b;
 			var lV = left.c;
@@ -5791,13 +5783,13 @@ var $elm$core$Dict$removeHelpPrepEQGT = F7(
 				lK,
 				lV,
 				lLeft,
-				A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Red, key, value, lRight, right));
+				A5($elm$core$Dict$RBNode_elm_builtin, 0, key, value, lRight, right));
 		} else {
 			_v2$2:
 			while (true) {
-				if ((right.$ === 'RBNode_elm_builtin') && (right.a.$ === 'Black')) {
-					if (right.d.$ === 'RBNode_elm_builtin') {
-						if (right.d.a.$ === 'Black') {
+				if ((right.$ === -1) && (right.a === 1)) {
+					if (right.d.$ === -1) {
+						if (right.d.a === 1) {
 							var _v3 = right.a;
 							var _v4 = right.d;
 							var _v5 = _v4.a;
@@ -5818,7 +5810,7 @@ var $elm$core$Dict$removeHelpPrepEQGT = F7(
 		}
 	});
 var $elm$core$Dict$removeMin = function (dict) {
-	if ((dict.$ === 'RBNode_elm_builtin') && (dict.d.$ === 'RBNode_elm_builtin')) {
+	if ((dict.$ === -1) && (dict.d.$ === -1)) {
 		var color = dict.a;
 		var key = dict.b;
 		var value = dict.c;
@@ -5826,8 +5818,8 @@ var $elm$core$Dict$removeMin = function (dict) {
 		var lColor = left.a;
 		var lLeft = left.d;
 		var right = dict.e;
-		if (lColor.$ === 'Black') {
-			if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+		if (lColor === 1) {
+			if ((lLeft.$ === -1) && (!lLeft.a)) {
 				var _v3 = lLeft.a;
 				return A5(
 					$elm$core$Dict$RBNode_elm_builtin,
@@ -5838,7 +5830,7 @@ var $elm$core$Dict$removeMin = function (dict) {
 					right);
 			} else {
 				var _v4 = $elm$core$Dict$moveRedLeft(dict);
-				if (_v4.$ === 'RBNode_elm_builtin') {
+				if (_v4.$ === -1) {
 					var nColor = _v4.a;
 					var nKey = _v4.b;
 					var nValue = _v4.c;
@@ -5870,7 +5862,7 @@ var $elm$core$Dict$removeMin = function (dict) {
 };
 var $elm$core$Dict$removeHelp = F2(
 	function (targetKey, dict) {
-		if (dict.$ === 'RBEmpty_elm_builtin') {
+		if (dict.$ === -2) {
 			return $elm$core$Dict$RBEmpty_elm_builtin;
 		} else {
 			var color = dict.a;
@@ -5879,10 +5871,10 @@ var $elm$core$Dict$removeHelp = F2(
 			var left = dict.d;
 			var right = dict.e;
 			if (_Utils_cmp(targetKey, key) < 0) {
-				if ((left.$ === 'RBNode_elm_builtin') && (left.a.$ === 'Black')) {
+				if ((left.$ === -1) && (left.a === 1)) {
 					var _v4 = left.a;
 					var lLeft = left.d;
-					if ((lLeft.$ === 'RBNode_elm_builtin') && (lLeft.a.$ === 'Red')) {
+					if ((lLeft.$ === -1) && (!lLeft.a)) {
 						var _v6 = lLeft.a;
 						return A5(
 							$elm$core$Dict$RBNode_elm_builtin,
@@ -5893,7 +5885,7 @@ var $elm$core$Dict$removeHelp = F2(
 							right);
 					} else {
 						var _v7 = $elm$core$Dict$moveRedLeft(dict);
-						if (_v7.$ === 'RBNode_elm_builtin') {
+						if (_v7.$ === -1) {
 							var nColor = _v7.a;
 							var nKey = _v7.b;
 							var nValue = _v7.c;
@@ -5929,7 +5921,7 @@ var $elm$core$Dict$removeHelp = F2(
 	});
 var $elm$core$Dict$removeHelpEQGT = F2(
 	function (targetKey, dict) {
-		if (dict.$ === 'RBNode_elm_builtin') {
+		if (dict.$ === -1) {
 			var color = dict.a;
 			var key = dict.b;
 			var value = dict.c;
@@ -5937,7 +5929,7 @@ var $elm$core$Dict$removeHelpEQGT = F2(
 			var right = dict.e;
 			if (_Utils_eq(targetKey, key)) {
 				var _v1 = $elm$core$Dict$getMin(right);
-				if (_v1.$ === 'RBNode_elm_builtin') {
+				if (_v1.$ === -1) {
 					var minKey = _v1.b;
 					var minValue = _v1.c;
 					return A5(
@@ -5966,13 +5958,13 @@ var $elm$core$Dict$removeHelpEQGT = F2(
 var $elm$core$Dict$remove = F2(
 	function (key, dict) {
 		var _v0 = A2($elm$core$Dict$removeHelp, key, dict);
-		if ((_v0.$ === 'RBNode_elm_builtin') && (_v0.a.$ === 'Red')) {
+		if ((_v0.$ === -1) && (!_v0.a)) {
 			var _v1 = _v0.a;
 			var k = _v0.b;
 			var v = _v0.c;
 			var l = _v0.d;
 			var r = _v0.e;
-			return A5($elm$core$Dict$RBNode_elm_builtin, $elm$core$Dict$Black, k, v, l, r);
+			return A5($elm$core$Dict$RBNode_elm_builtin, 1, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -5982,7 +5974,7 @@ var $elm$core$Dict$update = F3(
 	function (targetKey, alter, dictionary) {
 		var _v0 = alter(
 			A2($elm$core$Dict$get, targetKey, dictionary));
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			var value = _v0.a;
 			return A3($elm$core$Dict$insert, targetKey, value, dictionary);
 		} else {
@@ -5994,10 +5986,8 @@ var $elm$json$Json$Decode$list = _Json_decodeList;
 var $elm$json$Json$Decode$andThen = _Json_andThen;
 var $elm$json$Json$Decode$bool = _Json_decodeBool;
 var $elm$json$Json$Decode$fail = _Json_fail;
-var $elm$time$Time$Posix = function (a) {
-	return {$: 'Posix', a: a};
-};
-var $elm$time$Time$millisToPosix = $elm$time$Time$Posix;
+var $elm$time$Time$Posix = $elm$core$Basics$identity;
+var $elm$time$Time$millisToPosix = $elm$core$Basics$identity;
 var $elm$core$String$replace = F3(
 	function (before, after, string) {
 		return A2(
@@ -6015,7 +6005,7 @@ var $author$project$Supabase$decodeIsoTime = function (isoString) {
 				'-',
 				'',
 				A3($elm$core$String$replace, 'T', '', isoString))));
-	if (_v0.$ === 'Just') {
+	if (!_v0.$) {
 		var timestamp = _v0.a;
 		return $elm$json$Json$Decode$succeed(
 			$elm$time$Time$millisToPosix(timestamp * 1000));
@@ -6055,7 +6045,7 @@ var $author$project$Supabase$playerDecoder = A2(
 				function (id, name, rating, matchesPlayed, playsAM, playsPM, isDeleted) {
 					return function (createdAt) {
 						return function (updatedAt) {
-							return {createdAt: createdAt, id: id, isDeleted: isDeleted, matchesPlayed: matchesPlayed, name: name, playsAM: playsAM, playsPM: playsPM, rating: rating, updatedAt: updatedAt};
+							return {d7: createdAt, ab: id, c_: isDeleted, c6: matchesPlayed, b8: name, dj: playsAM, dk: playsPM, cm: rating, dM: updatedAt};
 						};
 					};
 				}),
@@ -6082,7 +6072,7 @@ var $elm$http$Http$expectStringResponse = F2(
 	});
 var $elm$core$Result$mapError = F2(
 	function (f, result) {
-		if (result.$ === 'Ok') {
+		if (!result.$) {
 			var v = result.a;
 			return $elm$core$Result$Ok(v);
 		} else {
@@ -6092,31 +6082,31 @@ var $elm$core$Result$mapError = F2(
 		}
 	});
 var $elm$http$Http$BadBody = function (a) {
-	return {$: 'BadBody', a: a};
+	return {$: 4, a: a};
 };
 var $elm$http$Http$BadStatus = function (a) {
-	return {$: 'BadStatus', a: a};
+	return {$: 3, a: a};
 };
 var $elm$http$Http$BadUrl = function (a) {
-	return {$: 'BadUrl', a: a};
+	return {$: 0, a: a};
 };
-var $elm$http$Http$NetworkError = {$: 'NetworkError'};
-var $elm$http$Http$Timeout = {$: 'Timeout'};
+var $elm$http$Http$NetworkError = {$: 2};
+var $elm$http$Http$Timeout = {$: 1};
 var $elm$http$Http$resolve = F2(
 	function (toResult, response) {
 		switch (response.$) {
-			case 'BadUrl_':
+			case 0:
 				var url = response.a;
 				return $elm$core$Result$Err(
 					$elm$http$Http$BadUrl(url));
-			case 'Timeout_':
+			case 1:
 				return $elm$core$Result$Err($elm$http$Http$Timeout);
-			case 'NetworkError_':
+			case 2:
 				return $elm$core$Result$Err($elm$http$Http$NetworkError);
-			case 'BadStatus_':
+			case 3:
 				var metadata = response.a;
 				return $elm$core$Result$Err(
-					$elm$http$Http$BadStatus(metadata.statusCode));
+					$elm$http$Http$BadStatus(metadata.eW));
 			default:
 				var body = response.b;
 				return A2(
@@ -6140,15 +6130,15 @@ var $elm$http$Http$expectJson = F2(
 	});
 var $elm$http$Http$Header = F2(
 	function (a, b) {
-		return {$: 'Header', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$http$Http$header = $elm$http$Http$Header;
 var $elm$http$Http$Request = function (a) {
-	return {$: 'Request', a: a};
+	return {$: 1, a: a};
 };
 var $elm$http$Http$State = F2(
 	function (reqs, subs) {
-		return {reqs: reqs, subs: subs};
+		return {ds: reqs, dF: subs};
 	});
 var $elm$http$Http$init = $elm$core$Task$succeed(
 	A2($elm$http$Http$State, $elm$core$Dict$empty, _List_Nil));
@@ -6163,10 +6153,10 @@ var $elm$http$Http$updateReqs = F3(
 			} else {
 				var cmd = cmds.a;
 				var otherCmds = cmds.b;
-				if (cmd.$ === 'Cancel') {
+				if (!cmd.$) {
 					var tracker = cmd.a;
 					var _v2 = A2($elm$core$Dict$get, tracker, reqs);
-					if (_v2.$ === 'Nothing') {
+					if (_v2.$ === 1) {
 						var $temp$router = router,
 							$temp$cmds = otherCmds,
 							$temp$reqs = reqs;
@@ -6192,8 +6182,8 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.tracker;
-							if (_v4.$ === 'Nothing') {
+							var _v4 = req.aB;
+							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
 								var tracker = _v4.a;
@@ -6222,12 +6212,12 @@ var $elm$http$Http$onEffects = F4(
 				return $elm$core$Task$succeed(
 					A2($elm$http$Http$State, reqs, subs));
 			},
-			A3($elm$http$Http$updateReqs, router, cmds, state.reqs));
+			A3($elm$http$Http$updateReqs, router, cmds, state.ds));
 	});
 var $elm$core$List$maybeCons = F3(
 	function (f, mx, xs) {
 		var _v0 = f(mx);
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			var x = _v0.a;
 			return A2($elm$core$List$cons, x, xs);
 		} else {
@@ -6265,34 +6255,34 @@ var $elm$http$Http$onSelfMsg = F3(
 				A2(
 					$elm$core$List$filterMap,
 					A3($elm$http$Http$maybeSend, router, tracker, progress),
-					state.subs)));
+					state.dF)));
 	});
 var $elm$http$Http$Cancel = function (a) {
-	return {$: 'Cancel', a: a};
+	return {$: 0, a: a};
 };
 var $elm$http$Http$cmdMap = F2(
 	function (func, cmd) {
-		if (cmd.$ === 'Cancel') {
+		if (!cmd.$) {
 			var tracker = cmd.a;
 			return $elm$http$Http$Cancel(tracker);
 		} else {
 			var r = cmd.a;
 			return $elm$http$Http$Request(
 				{
-					allowCookiesFromOtherDomains: r.allowCookiesFromOtherDomains,
-					body: r.body,
-					expect: A2(_Http_mapExpect, func, r.expect),
-					headers: r.headers,
-					method: r.method,
-					timeout: r.timeout,
-					tracker: r.tracker,
-					url: r.url
+					dX: r.dX,
+					d2: r.d2,
+					aj: A2(_Http_mapExpect, func, r.aj),
+					an: r.an,
+					ar: r.ar,
+					aA: r.aA,
+					aB: r.aB,
+					e3: r.e3
 				});
 		}
 	});
 var $elm$http$Http$MySub = F2(
 	function (a, b) {
-		return {$: 'MySub', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$http$Http$subMap = F2(
 	function (func, _v0) {
@@ -6309,25 +6299,25 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{allowCookiesFromOtherDomains: false, body: r.body, expect: r.expect, headers: r.headers, method: r.method, timeout: r.timeout, tracker: r.tracker, url: r.url}));
+			{dX: false, d2: r.d2, aj: r.aj, an: r.an, ar: r.ar, aA: r.aA, aB: r.aB, e3: r.e3}));
 };
 var $author$project$Supabase$supabaseRequest = F6(
 	function (config, method, endpoint, body, decoder, toMsg) {
 		return $elm$http$Http$request(
 			{
-				body: body,
-				expect: A2($elm$http$Http$expectJson, toMsg, decoder),
-				headers: _List_fromArray(
+				d2: body,
+				aj: A2($elm$http$Http$expectJson, toMsg, decoder),
+				an: _List_fromArray(
 					[
-						A2($elm$http$Http$header, 'apikey', config.anonKey),
-						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'apikey', config.d_),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.d_),
 						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
 						A2($elm$http$Http$header, 'Prefer', 'return=representation')
 					]),
-				method: method,
-				timeout: $elm$core$Maybe$Nothing,
-				tracker: $elm$core$Maybe$Nothing,
-				url: config.url + ('/rest/v1' + endpoint)
+				ar: method,
+				aA: $elm$core$Maybe$Nothing,
+				aB: $elm$core$Maybe$Nothing,
+				e3: config.e3 + ('/rest/v1' + endpoint)
 			});
 	});
 var $author$project$Supabase$getPlayers = F2(
@@ -6341,73 +6331,62 @@ var $author$project$Supabase$getPlayers = F2(
 			$elm$json$Json$Decode$list($author$project$Supabase$playerDecoder),
 			toMsg);
 	});
-var $author$project$History$History = function (a) {
-	return {$: 'History', a: a};
-};
+var $author$project$History$History = $elm$core$Basics$identity;
 var $author$project$History$init = F2(
 	function (retention, initial) {
-		return $author$project$History$History(
-			{current: initial, future: _List_Nil, past: _List_Nil, retention: retention});
+		return {P: initial, aI: _List_Nil, at: _List_Nil, dv: retention};
 	});
-var $author$project$League$League = function (a) {
-	return {$: 'League', a: a};
-};
+var $author$project$League$League = $elm$core$Basics$identity;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Leaf = function (a) {
-	return {$: 'Leaf', a: a};
+	return {$: 0, a: a};
 };
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$empty = function (sorter) {
 	return $rtfeldman$elm_sorter_experiment$Internal$Dict$Leaf(sorter);
 };
-var $rtfeldman$elm_sorter_experiment$Sort$Sorter = function (a) {
-	return {$: 'Sorter', a: a};
-};
+var $rtfeldman$elm_sorter_experiment$Sort$Sorter = $elm$core$Basics$identity;
 var $rtfeldman$elm_sorter_experiment$Sort$by = F2(
 	function (transform, _v0) {
-		var sort = _v0.a;
-		return $rtfeldman$elm_sorter_experiment$Sort$Sorter(
-			F2(
-				function (first, second) {
-					return A2(
-						sort,
-						transform(first),
-						transform(second));
-				}));
+		var sort = _v0;
+		return F2(
+			function (first, second) {
+				return A2(
+					sort,
+					transform(first),
+					transform(second));
+			});
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$compareNumbers = F2(
 	function (first, second) {
 		return A2($elm$core$Basics$compare, first + 0, second);
 	});
-var $rtfeldman$elm_sorter_experiment$Sort$increasing = $rtfeldman$elm_sorter_experiment$Sort$Sorter($rtfeldman$elm_sorter_experiment$Sort$compareNumbers);
+var $rtfeldman$elm_sorter_experiment$Sort$increasing = $rtfeldman$elm_sorter_experiment$Sort$compareNumbers;
 var $author$project$Player$idSorter = A2(
 	$rtfeldman$elm_sorter_experiment$Sort$by,
 	function (_v0) {
-		var id_ = _v0.a;
+		var id_ = _v0;
 		return id_;
 	},
 	$rtfeldman$elm_sorter_experiment$Sort$increasing);
-var $author$project$League$init = $author$project$League$League(
-	{
-		currentMatch: $elm$core$Maybe$Nothing,
-		ignored: _List_Nil,
-		players: $rtfeldman$elm_sorter_experiment$Sort$Dict$empty($author$project$Player$idSorter)
-	});
+var $author$project$League$init = {
+	Z: $elm$core$Maybe$Nothing,
+	E: _List_Nil,
+	w: $rtfeldman$elm_sorter_experiment$Sort$Dict$empty($author$project$Player$idSorter)
+};
 var $author$project$Main$GotNextMatch = function (a) {
-	return {$: 'GotNextMatch', a: a};
+	return {$: 0, a: a};
 };
 var $author$project$History$current = function (_v0) {
-	var guts = _v0.a;
-	return guts.current;
+	var guts = _v0;
+	return guts.P;
 };
 var $author$project$League$currentMatch = function (_v0) {
-	var league = _v0.a;
-	return league.currentMatch;
+	var league = _v0;
+	return league.Z;
 };
-var $elm$random$Random$Generate = function (a) {
-	return {$: 'Generate', a: a};
-};
+var $elm$random$Random$Generate = $elm$core$Basics$identity;
 var $elm$random$Random$Seed = F2(
 	function (a, b) {
-		return {$: 'Seed', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$core$Bitwise$shiftRightZfBy = _Bitwise_shiftRightZfBy;
 var $elm$random$Random$next = function (_v0) {
@@ -6425,19 +6404,19 @@ var $elm$random$Random$initialSeed = function (x) {
 		A2($elm$random$Random$Seed, state2, incr));
 };
 var $elm$time$Time$Name = function (a) {
-	return {$: 'Name', a: a};
+	return {$: 0, a: a};
 };
 var $elm$time$Time$Offset = function (a) {
-	return {$: 'Offset', a: a};
+	return {$: 1, a: a};
 };
 var $elm$time$Time$Zone = F2(
 	function (a, b) {
-		return {$: 'Zone', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$time$Time$customZone = $elm$time$Time$Zone;
 var $elm$time$Time$now = _Time_now($elm$time$Time$millisToPosix);
 var $elm$time$Time$posixToMillis = function (_v0) {
-	var millis = _v0.a;
+	var millis = _v0;
 	return millis;
 };
 var $elm$random$Random$init = A2(
@@ -6450,7 +6429,7 @@ var $elm$random$Random$init = A2(
 	$elm$time$Time$now);
 var $elm$random$Random$step = F2(
 	function (_v0, seed) {
-		var generator = _v0.a;
+		var generator = _v0;
 		return generator(seed);
 	});
 var $elm$random$Random$onEffects = F3(
@@ -6458,7 +6437,7 @@ var $elm$random$Random$onEffects = F3(
 		if (!commands.b) {
 			return $elm$core$Task$succeed(seed);
 		} else {
-			var generator = commands.a.a;
+			var generator = commands.a;
 			var rest = commands.b;
 			var _v1 = A2($elm$random$Random$step, generator, seed);
 			var value = _v1.a;
@@ -6475,44 +6454,39 @@ var $elm$random$Random$onSelfMsg = F3(
 	function (_v0, _v1, seed) {
 		return $elm$core$Task$succeed(seed);
 	});
-var $elm$random$Random$Generator = function (a) {
-	return {$: 'Generator', a: a};
-};
+var $elm$random$Random$Generator = $elm$core$Basics$identity;
 var $elm$random$Random$map = F2(
 	function (func, _v0) {
-		var genA = _v0.a;
-		return $elm$random$Random$Generator(
-			function (seed0) {
-				var _v1 = genA(seed0);
-				var a = _v1.a;
-				var seed1 = _v1.b;
-				return _Utils_Tuple2(
-					func(a),
-					seed1);
-			});
+		var genA = _v0;
+		return function (seed0) {
+			var _v1 = genA(seed0);
+			var a = _v1.a;
+			var seed1 = _v1.b;
+			return _Utils_Tuple2(
+				func(a),
+				seed1);
+		};
 	});
 var $elm$random$Random$cmdMap = F2(
 	function (func, _v0) {
-		var generator = _v0.a;
-		return $elm$random$Random$Generate(
-			A2($elm$random$Random$map, func, generator));
+		var generator = _v0;
+		return A2($elm$random$Random$map, func, generator);
 	});
 _Platform_effectManagers['Random'] = _Platform_createManager($elm$random$Random$init, $elm$random$Random$onEffects, $elm$random$Random$onSelfMsg, $elm$random$Random$cmdMap);
 var $elm$random$Random$command = _Platform_leaf('Random');
 var $elm$random$Random$generate = F2(
 	function (tagger, generator) {
 		return $elm$random$Random$command(
-			$elm$random$Random$Generate(
-				A2($elm$random$Random$map, tagger, generator)));
+			A2($elm$random$Random$map, tagger, generator));
 	});
 var $author$project$Player$id = function (_v0) {
-	var player = _v0.a;
-	return player.id;
+	var player = _v0;
+	return player.ab;
 };
 var $elm$core$Dict$member = F2(
 	function (key, dict) {
 		var _v0 = A2($elm$core$Dict$get, key, dict);
-		if (_v0.$ === 'Just') {
+		if (!_v0.$) {
 			return true;
 		} else {
 			return false;
@@ -6520,22 +6494,22 @@ var $elm$core$Dict$member = F2(
 	});
 var $elm$core$Set$member = F2(
 	function (key, _v0) {
-		var dict = _v0.a;
+		var dict = _v0;
 		return A2($elm$core$Dict$member, key, dict);
 	});
 var $author$project$Main$isPlayerLocallyIgnored = F2(
 	function (player, model) {
 		var _v0 = $author$project$Player$id(player);
-		var idInt = _v0.a;
+		var idInt = _v0;
 		return A2(
 			$elm$core$Set$member,
 			$elm$core$String$fromInt(idInt),
-			model.ignoredPlayers);
+			model.Q);
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$League$Match = F2(
 	function (a, b) {
-		return {$: 'Match', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $elm$core$Basics$negate = function (n) {
 	return -n;
@@ -6545,22 +6519,20 @@ var $elm$core$Basics$abs = function (n) {
 };
 var $elm$random$Random$andThen = F2(
 	function (callback, _v0) {
-		var genA = _v0.a;
-		return $elm$random$Random$Generator(
-			function (seed) {
-				var _v1 = genA(seed);
-				var result = _v1.a;
-				var newSeed = _v1.b;
-				var _v2 = callback(result);
-				var genB = _v2.a;
-				return genB(newSeed);
-			});
+		var genA = _v0;
+		return function (seed) {
+			var _v1 = genA(seed);
+			var result = _v1.a;
+			var newSeed = _v1.b;
+			var _v2 = callback(result);
+			var genB = _v2;
+			return genB(newSeed);
+		};
 	});
 var $elm$random$Random$constant = function (value) {
-	return $elm$random$Random$Generator(
-		function (seed) {
-			return _Utils_Tuple2(value, seed);
-		});
+	return function (seed) {
+		return _Utils_Tuple2(value, seed);
+	};
 };
 var $elm$core$List$filter = F2(
 	function (isGood, list) {
@@ -6584,7 +6556,7 @@ var $elm$core$List$head = function (list) {
 };
 var $elm$core$Maybe$map = F2(
 	function (f, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return $elm$core$Maybe$Just(
 				f(value));
@@ -6593,15 +6565,15 @@ var $elm$core$Maybe$map = F2(
 		}
 	});
 var $author$project$Player$rating = function (_v0) {
-	var player = _v0.a;
-	return player.rating;
+	var player = _v0;
+	return player.cm;
 };
 var $elm$core$List$sortBy = _List_sortBy;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$foldr = F3(
 	function (f, acc, dict) {
 		foldr:
 		while (true) {
-			if (dict.$ === 'Leaf') {
+			if (!dict.$) {
 				return acc;
 			} else {
 				var key = dict.c;
@@ -6638,7 +6610,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$values = function (dict) {
 };
 var $elm$core$Maybe$withDefault = F2(
 	function (_default, maybe) {
-		if (maybe.$ === 'Just') {
+		if (!maybe.$) {
 			var value = maybe.a;
 			return value;
 		} else {
@@ -6647,7 +6619,7 @@ var $elm$core$Maybe$withDefault = F2(
 	});
 var $author$project$League$getPlayerRanking = F2(
 	function (player, _v0) {
-		var league = _v0.a;
+		var league = _v0;
 		return A2(
 			$elm$core$Maybe$withDefault,
 			999,
@@ -6674,11 +6646,11 @@ var $author$project$League$getPlayerRanking = F2(
 								function (p) {
 									return -$author$project$Player$rating(p);
 								},
-								$rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players)))))));
+								$rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.w)))))));
 	});
 var $author$project$Player$matchesPlayed = function (_v0) {
-	var player = _v0.a;
-	return player.matches;
+	var player = _v0;
+	return player.ev;
 };
 var $elm$core$List$maximum = function (list) {
 	if (list.b) {
@@ -6753,20 +6725,19 @@ var $elm$random$Random$peel = function (_v0) {
 };
 var $elm$random$Random$float = F2(
 	function (a, b) {
-		return $elm$random$Random$Generator(
-			function (seed0) {
-				var seed1 = $elm$random$Random$next(seed0);
-				var range = $elm$core$Basics$abs(b - a);
-				var n1 = $elm$random$Random$peel(seed1);
-				var n0 = $elm$random$Random$peel(seed0);
-				var lo = (134217727 & n1) * 1.0;
-				var hi = (67108863 & n0) * 1.0;
-				var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
-				var scaled = (val * range) + a;
-				return _Utils_Tuple2(
-					scaled,
-					$elm$random$Random$next(seed1));
-			});
+		return function (seed0) {
+			var seed1 = $elm$random$Random$next(seed0);
+			var range = $elm$core$Basics$abs(b - a);
+			var n1 = $elm$random$Random$peel(seed1);
+			var n0 = $elm$random$Random$peel(seed0);
+			var lo = (134217727 & n1) * 1.0;
+			var hi = (67108863 & n0) * 1.0;
+			var val = ((hi * 134217728.0) + lo) / 9007199254740992.0;
+			var scaled = (val * range) + a;
+			return _Utils_Tuple2(
+				scaled,
+				$elm$random$Random$next(seed1));
+		};
 	});
 var $elm$random$Random$getByWeight = F3(
 	function (_v0, others, countdown) {
@@ -6820,15 +6791,15 @@ var $elm$random$Random$uniform = F2(
 	});
 var $author$project$League$nextMatchFiltered = F2(
 	function (allow, _v0) {
-		var league = _v0.a;
-		var allPlayersRaw = $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
+		var league = _v0;
+		var allPlayersRaw = $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.w);
 		var allPlayers = A2(
 			$elm$core$List$filter,
 			function (p) {
 				return allow(p) && (!A2(
 					$elm$core$List$member,
 					$author$project$Player$id(p),
-					league.ignored));
+					league.E));
 			},
 			allPlayersRaw);
 		if (allPlayers.b && allPlayers.b.b) {
@@ -6887,10 +6858,7 @@ var $author$project$League$nextMatchFiltered = F2(
 					A2(
 						$elm$random$Random$andThen,
 						function (firstPlayer) {
-							var firstPlayerRanking = A2(
-								$author$project$League$getPlayerRanking,
-								firstPlayer,
-								$author$project$League$League(league));
+							var firstPlayerRanking = A2($author$project$League$getPlayerRanking, firstPlayer, league);
 							var baseWeight = 10.0;
 							var allOpponents = _Utils_eq(firstPlayer, a) ? A2($elm$core$List$cons, b, rest) : (_Utils_eq(firstPlayer, b) ? A2($elm$core$List$cons, a, rest) : A2(
 								$elm$core$List$cons,
@@ -6907,10 +6875,7 @@ var $author$project$League$nextMatchFiltered = F2(
 							var eligibleOpponents = A2(
 								$elm$core$List$filter,
 								function (opponent) {
-									var opponentRanking = A2(
-										$author$project$League$getPlayerRanking,
-										opponent,
-										$author$project$League$League(league));
+									var opponentRanking = A2($author$project$League$getPlayerRanking, opponent, league);
 									return $elm$core$Basics$abs(firstPlayerRanking - opponentRanking) <= 10;
 								},
 								allOpponents);
@@ -6991,20 +6956,20 @@ var $author$project$League$nextMatchFiltered = F2(
 		}
 	});
 var $author$project$Player$playsAM = function (_v0) {
-	var player = _v0.a;
-	return player.am;
+	var player = _v0;
+	return player.dY;
 };
 var $author$project$Player$playsPM = function (_v0) {
-	var player = _v0.a;
-	return player.pm;
+	var player = _v0;
+	return player.eL;
 };
 var $author$project$Main$timePlayerFilter = function (model) {
 	return function (player) {
-		var _v0 = model.timeFilter;
-		switch (_v0.$) {
-			case 'All':
+		var _v0 = model.az;
+		switch (_v0) {
+			case 0:
 				return true;
-			case 'AMOnly':
+			case 1:
 				return $author$project$Player$playsAM(player);
 			default:
 				return $author$project$Player$playsPM(player);
@@ -7016,7 +6981,7 @@ var $author$project$Main$startNextMatchIfPossible = function (_v0) {
 	var cmd = _v0.b;
 	return (!_Utils_eq(
 		$author$project$League$currentMatch(
-			$author$project$History$current(model.history)),
+			$author$project$History$current(model.b)),
 		$elm$core$Maybe$Nothing)) ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(
 		model,
 		$elm$core$Platform$Cmd$batch(
@@ -7031,44 +6996,44 @@ var $author$project$Main$startNextMatchIfPossible = function (_v0) {
 						function (player) {
 							return (!A2($author$project$Main$isPlayerLocallyIgnored, player, model)) && A2($author$project$Main$timePlayerFilter, model, player);
 						},
-						$author$project$History$current(model.history)))
+						$author$project$History$current(model.b)))
 				])));
 };
-var $author$project$Config$supabaseConfig = {anonKey: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6dnFibmFpeHBldnVpc3FheGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjU2NTMsImV4cCI6MjA3NTQ0MTY1M30.ZSX2dCWhTQQCG2v6aCI7gojUUOXaLrobP_VVQ-HDZjM', url: 'https://qzvqbnaixpevuisqaxky.supabase.co'};
+var $author$project$Config$supabaseConfig = {d_: 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InF6dnFibmFpeHBldnVpc3FheGt5Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTk4NjU2NTMsImV4cCI6MjA3NTQ0MTY1M30.ZSX2dCWhTQQCG2v6aCI7gojUUOXaLrobP_VVQ-HDZjM', e3: 'https://qzvqbnaixpevuisqaxky.supabase.co'};
 var $author$project$Main$init = function (_v0) {
 	return $author$project$Main$startNextMatchIfPossible(
 		_Utils_Tuple2(
 			{
-				addPlayerAM: true,
-				addPlayerName: '',
-				addPlayerNotice: $elm$core$Maybe$Nothing,
-				addPlayerPM: true,
-				addPlayerRating: '500',
-				autoSave: true,
-				autoSaveInProgress: false,
-				customMatchupPlayerA: $elm$core$Maybe$Nothing,
-				customMatchupPlayerB: $elm$core$Maybe$Nothing,
-				dataVersion: 1,
-				history: A2($author$project$History$init, 50, $author$project$League$init),
-				ignoredPlayers: $elm$core$Set$empty,
-				isStatusTemporary: false,
-				isSyncing: false,
-				lastModified: 0,
-				lastSynced: $elm$core$Maybe$Nothing,
-				newPlayerName: '',
-				pendingMatch: $elm$core$Maybe$Nothing,
-				playerASearch: '',
-				playerASearchResults: _List_Nil,
-				playerBSearch: '',
-				playerBSearchResults: _List_Nil,
-				playerDeletionConfirmation: $elm$core$Maybe$Nothing,
-				shouldStartNextMatchAfterLoad: false,
-				showAddPlayerPopup: false,
-				showCustomMatchup: false,
-				status: $elm$core$Maybe$Nothing,
-				timeFilter: $author$project$Main$All,
-				timeToggleConfirmation: $elm$core$Maybe$Nothing,
-				votesSinceLastSync: 0
+				af: true,
+				O: '',
+				H: $elm$core$Maybe$Nothing,
+				ag: true,
+				aE: '500',
+				aW: true,
+				bl: false,
+				_: $elm$core$Maybe$Nothing,
+				aa: $elm$core$Maybe$Nothing,
+				b_: 1,
+				b: A2($author$project$History$init, 50, $author$project$League$init),
+				Q: $elm$core$Set$empty,
+				t: false,
+				ao: false,
+				bJ: 0,
+				c3: $elm$core$Maybe$Nothing,
+				ca: '',
+				df: $elm$core$Maybe$Nothing,
+				au: '',
+				av: _List_Nil,
+				aw: '',
+				ax: _List_Nil,
+				aN: $elm$core$Maybe$Nothing,
+				dz: false,
+				V: false,
+				aP: false,
+				o: $elm$core$Maybe$Nothing,
+				az: 0,
+				aS: $elm$core$Maybe$Nothing,
+				aV: 0
 			},
 			$elm$core$Platform$Cmd$batch(
 				_List_fromArray(
@@ -7080,35 +7045,35 @@ var $author$project$Main$init = function (_v0) {
 					]))));
 };
 var $author$project$Main$ReceivedAutoSave = function (a) {
-	return {$: 'ReceivedAutoSave', a: a};
+	return {$: 14, a: a};
 };
 var $author$project$Main$ReceivedIgnoredPlayers = function (a) {
-	return {$: 'ReceivedIgnoredPlayers', a: a};
+	return {$: 26, a: a};
 };
 var $author$project$Main$ReceivedTimeFilter = function (a) {
-	return {$: 'ReceivedTimeFilter', a: a};
+	return {$: 25, a: a};
 };
 var $elm$core$Platform$Sub$batch = _Platform_batch;
 var $author$project$Main$KeyPressed = function (a) {
-	return {$: 'KeyPressed', a: a};
+	return {$: 18, a: a};
 };
 var $author$project$Main$keyDecoder = A2(
 	$elm$json$Json$Decode$map,
 	$author$project$Main$KeyPressed,
 	A2($elm$json$Json$Decode$field, 'key', $elm$json$Json$Decode$string));
-var $elm$browser$Browser$Events$Document = {$: 'Document'};
+var $elm$browser$Browser$Events$Document = 0;
 var $elm$browser$Browser$Events$MySub = F3(
 	function (a, b, c) {
-		return {$: 'MySub', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $elm$browser$Browser$Events$State = F2(
 	function (subs, pids) {
-		return {pids: pids, subs: subs};
+		return {dg: pids, dF: subs};
 	});
 var $elm$browser$Browser$Events$init = $elm$core$Task$succeed(
 	A2($elm$browser$Browser$Events$State, _List_Nil, $elm$core$Dict$empty));
 var $elm$browser$Browser$Events$nodeToKey = function (node) {
-	if (node.$ === 'Document') {
+	if (!node) {
 		return 'd_';
 	} else {
 		return 'w_';
@@ -7139,7 +7104,7 @@ var $elm$core$Dict$foldl = F3(
 	function (func, acc, dict) {
 		foldl:
 		while (true) {
-			if (dict.$ === 'RBEmpty_elm_builtin') {
+			if (dict.$ === -2) {
 				return acc;
 			} else {
 				var key = dict.b;
@@ -7223,14 +7188,14 @@ var $elm$core$Dict$merge = F6(
 	});
 var $elm$browser$Browser$Events$Event = F2(
 	function (key, event) {
-		return {event: event, key: key};
+		return {cP: event, c0: key};
 	});
 var $elm$browser$Browser$Events$spawn = F3(
 	function (router, key, _v0) {
 		var node = _v0.a;
 		var name = _v0.b;
 		var actualNode = function () {
-			if (node.$ === 'Document') {
+			if (!node) {
 				return _Browser_doc;
 			} else {
 				return _Browser_window;
@@ -7297,7 +7262,7 @@ var $elm$browser$Browser$Events$onEffects = F3(
 			stepLeft,
 			stepBoth,
 			stepRight,
-			state.pids,
+			state.dg,
 			$elm$core$Dict$fromList(newSubs),
 			_Utils_Tuple3(_List_Nil, $elm$core$Dict$empty, _List_Nil));
 		var deadPids = _v0.a;
@@ -7325,8 +7290,8 @@ var $elm$browser$Browser$Events$onEffects = F3(
 	});
 var $elm$browser$Browser$Events$onSelfMsg = F3(
 	function (router, _v0, state) {
-		var key = _v0.key;
-		var event = _v0.event;
+		var key = _v0.c0;
+		var event = _v0.cP;
 		var toMessage = function (_v2) {
 			var subKey = _v2.a;
 			var _v3 = _v2.b;
@@ -7335,7 +7300,7 @@ var $elm$browser$Browser$Events$onSelfMsg = F3(
 			var decoder = _v3.c;
 			return _Utils_eq(subKey, key) ? A2(_Browser_decodeEvent, decoder, event) : $elm$core$Maybe$Nothing;
 		};
-		var messages = A2($elm$core$List$filterMap, toMessage, state.subs);
+		var messages = A2($elm$core$List$filterMap, toMessage, state.dF);
 		return A2(
 			$elm$core$Task$andThen,
 			function (_v1) {
@@ -7365,7 +7330,7 @@ var $elm$browser$Browser$Events$on = F3(
 		return $elm$browser$Browser$Events$subscription(
 			A3($elm$browser$Browser$Events$MySub, node, name, decoder));
 	});
-var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, $elm$browser$Browser$Events$Document, 'keydown');
+var $elm$browser$Browser$Events$onKeyDown = A2($elm$browser$Browser$Events$on, 0, 'keydown');
 var $author$project$Main$receiveAutoSave = _Platform_incomingPort('receiveAutoSave', $elm$json$Json$Decode$bool);
 var $author$project$Main$receiveIgnoredPlayers = _Platform_incomingPort('receiveIgnoredPlayers', $elm$json$Json$Decode$string);
 var $author$project$Main$receiveTimeFilter = _Platform_incomingPort('receiveTimeFilter', $elm$json$Json$Decode$string);
@@ -7380,42 +7345,42 @@ var $author$project$Main$subscriptions = function (model) {
 			]));
 };
 var $author$project$Main$CheckedExistingByName = function (a) {
-	return {$: 'CheckedExistingByName', a: a};
+	return {$: 43, a: a};
 };
 var $author$project$League$Draw = function (a) {
-	return {$: 'Draw', a: a};
+	return {$: 1, a: a};
 };
 var $author$project$Main$NewPlayerCreated = function (a) {
-	return {$: 'NewPlayerCreated', a: a};
+	return {$: 32, a: a};
 };
 var $author$project$Main$PlayerDeleted = function (a) {
-	return {$: 'PlayerDeleted', a: a};
+	return {$: 33, a: a};
 };
 var $author$project$Main$PlayerRestored = function (a) {
-	return {$: 'PlayerRestored', a: a};
+	return {$: 45, a: a};
 };
 var $author$project$Main$ShowStatus = function (a) {
-	return {$: 'ShowStatus', a: a};
+	return {$: 16, a: a};
 };
-var $author$project$Main$TriggerReload = {$: 'TriggerReload'};
+var $author$project$Main$TriggerReload = {$: 3};
 var $author$project$League$Win = function (a) {
-	return {$: 'Win', a: a};
+	return {$: 0, a: a};
 };
-var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = {$: 'Black'};
+var $rtfeldman$elm_sorter_experiment$Internal$Dict$Black = 0;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Node = F6(
 	function (a, b, c, d, e, f) {
-		return {$: 'Node', a: a, b: b, c: c, d: d, e: e, f: f};
+		return {$: 1, a: a, b: b, c: c, d: d, e: e, f: f};
 	});
-var $rtfeldman$elm_sorter_experiment$Internal$Dict$Red = {$: 'Red'};
+var $rtfeldman$elm_sorter_experiment$Internal$Dict$Red = 1;
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$balance = F6(
 	function (sorter, color, key, value, left, right) {
-		if ((right.$ === 'Node') && (right.b.$ === 'Red')) {
+		if ((right.$ === 1) && (right.b === 1)) {
 			var _v1 = right.b;
 			var rK = right.c;
 			var rV = right.d;
 			var rLeft = right.e;
 			var rRight = right.f;
-			if ((left.$ === 'Node') && (left.b.$ === 'Red')) {
+			if ((left.$ === 1) && (left.b === 1)) {
 				var _v3 = left.b;
 				var lK = left.c;
 				var lV = left.d;
@@ -7424,11 +7389,11 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$balance = F6(
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Red,
+					1,
 					key,
 					value,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, lK, lV, lLeft, lRight),
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, rK, rV, rLeft, rRight));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, lK, lV, lLeft, lRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, rK, rV, rLeft, rRight));
 			} else {
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
@@ -7436,11 +7401,11 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$balance = F6(
 					color,
 					rK,
 					rV,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, key, value, left, rLeft),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, key, value, left, rLeft),
 					rRight);
 			}
 		} else {
-			if ((((left.$ === 'Node') && (left.b.$ === 'Red')) && (left.e.$ === 'Node')) && (left.e.b.$ === 'Red')) {
+			if ((((left.$ === 1) && (left.b === 1)) && (left.e.$ === 1)) && (left.e.b === 1)) {
 				var _v5 = left.b;
 				var lK = left.c;
 				var lV = left.d;
@@ -7454,11 +7419,11 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$balance = F6(
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Red,
+					1,
 					lK,
 					lV,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, llK, llV, llLeft, llRight),
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, key, value, lRight, right));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, llK, llV, llLeft, llRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, key, value, lRight, right));
 			} else {
 				return A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, color, key, value, left, right);
 			}
@@ -7466,17 +7431,17 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$balance = F6(
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$toOrder = F3(
 	function (_v0, first, second) {
-		var sort = _v0.a;
+		var sort = _v0;
 		return A2(sort, first, second);
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$insertHelp = F3(
 	function (key, value, dict) {
-		if (dict.$ === 'Leaf') {
+		if (!dict.$) {
 			var sorter = dict.a;
 			return A6(
 				$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 				sorter,
-				$rtfeldman$elm_sorter_experiment$Internal$Dict$Red,
+				1,
 				key,
 				value,
 				$rtfeldman$elm_sorter_experiment$Internal$Dict$Leaf(sorter),
@@ -7489,8 +7454,8 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$insertHelp = F3(
 			var nLeft = dict.e;
 			var nRight = dict.f;
 			var _v1 = A3($rtfeldman$elm_sorter_experiment$Sort$toOrder, sorter, key, nKey);
-			switch (_v1.$) {
-				case 'LT':
+			switch (_v1) {
+				case 0:
 					return A6(
 						$rtfeldman$elm_sorter_experiment$Sort$Dict$balance,
 						sorter,
@@ -7499,7 +7464,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$insertHelp = F3(
 						nValue,
 						A3($rtfeldman$elm_sorter_experiment$Sort$Dict$insertHelp, key, value, nLeft),
 						nRight);
-				case 'GT':
+				case 2:
 					return A6(
 						$rtfeldman$elm_sorter_experiment$Sort$Dict$balance,
 						sorter,
@@ -7516,14 +7481,14 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$insertHelp = F3(
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$insert = F3(
 	function (key, value, dict) {
 		var _v0 = A3($rtfeldman$elm_sorter_experiment$Sort$Dict$insertHelp, key, value, dict);
-		if ((_v0.$ === 'Node') && (_v0.b.$ === 'Red')) {
+		if ((_v0.$ === 1) && (_v0.b === 1)) {
 			var sorter = _v0.a;
 			var _v1 = _v0.b;
 			var k = _v0.c;
 			var v = _v0.d;
 			var l = _v0.e;
 			var r = _v0.f;
-			return A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, k, v, l, r);
+			return A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -7531,24 +7496,22 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$insert = F3(
 	});
 var $author$project$League$addPlayer = F2(
 	function (player, _v0) {
-		var league = _v0.a;
-		return $author$project$League$League(
-			_Utils_update(
-				league,
-				{
-					players: A3(
-						$rtfeldman$elm_sorter_experiment$Sort$Dict$insert,
-						$author$project$Player$id(player),
-						player,
-						league.players)
-				}));
+		var league = _v0;
+		return _Utils_update(
+			league,
+			{
+				w: A3(
+					$rtfeldman$elm_sorter_experiment$Sort$Dict$insert,
+					$author$project$Player$id(player),
+					player,
+					league.w)
+			});
 	});
 var $author$project$League$clearMatch = function (_v0) {
-	var league = _v0.a;
-	return $author$project$League$League(
-		_Utils_update(
-			league,
-			{currentMatch: $elm$core$Maybe$Nothing}));
+	var league = _v0;
+	return _Utils_update(
+		league,
+		{Z: $elm$core$Maybe$Nothing});
 };
 var $elm$json$Json$Encode$bool = _Json_wrap;
 var $elm$core$Basics$modBy = _Basics_modBy;
@@ -7591,23 +7554,23 @@ var $author$project$Supabase$encodeIsoTime = function (time) {
 	return $elm$core$String$fromInt(year) + ('-' + (A3(
 		$elm$core$String$padLeft,
 		2,
-		_Utils_chr('0'),
+		'0',
 		$elm$core$String$fromInt(month)) + ('-' + (A3(
 		$elm$core$String$padLeft,
 		2,
-		_Utils_chr('0'),
+		'0',
 		$elm$core$String$fromInt(day)) + ('T' + (A3(
 		$elm$core$String$padLeft,
 		2,
-		_Utils_chr('0'),
+		'0',
 		$elm$core$String$fromInt(hour)) + (':' + (A3(
 		$elm$core$String$padLeft,
 		2,
-		_Utils_chr('0'),
+		'0',
 		$elm$core$String$fromInt(minute)) + (':' + (A3(
 		$elm$core$String$padLeft,
 		2,
-		_Utils_chr('0'),
+		'0',
 		$elm$core$String$fromInt(second)) + 'Z'))))))))));
 };
 var $elm$json$Json$Decode$index = _Json_decodeIndex;
@@ -7628,7 +7591,7 @@ var $elm$json$Json$Encode$object = function (pairs) {
 					var v = _v0.b;
 					return A3(_Json_addField, k, v, obj);
 				}),
-			_Json_emptyObject(_Utils_Tuple0),
+			_Json_emptyObject(0),
 			pairs));
 };
 var $author$project$Supabase$createNewPlayer = F6(
@@ -7666,29 +7629,28 @@ var $author$project$Supabase$createNewPlayer = F6(
 				]));
 		return $elm$http$Http$request(
 			{
-				body: $elm$http$Http$jsonBody(playerData),
-				expect: A2(
+				d2: $elm$http$Http$jsonBody(playerData),
+				aj: A2(
 					$elm$http$Http$expectJson,
 					toMsg,
 					A2($elm$json$Json$Decode$index, 0, $author$project$Supabase$playerDecoder)),
-				headers: _List_fromArray(
+				an: _List_fromArray(
 					[
-						A2($elm$http$Http$header, 'apikey', config.anonKey),
-						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'apikey', config.d_),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.d_),
 						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
 						A2($elm$http$Http$header, 'Prefer', 'return=representation')
 					]),
-				method: 'POST',
-				timeout: $elm$core$Maybe$Nothing,
-				tracker: $elm$core$Maybe$Nothing,
-				url: config.url + '/rest/v1/players'
+				ar: 'POST',
+				aA: $elm$core$Maybe$Nothing,
+				aB: $elm$core$Maybe$Nothing,
+				e3: config.e3 + '/rest/v1/players'
 			});
 	});
 var $elm$core$Set$insert = F2(
 	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A3($elm$core$Dict$insert, key, _Utils_Tuple0, dict));
+		var dict = _v0;
+		return A3($elm$core$Dict$insert, key, 0, dict);
 	});
 var $elm$core$Set$fromList = function (list) {
 	return A3($elm$core$List$foldl, $elm$core$Set$insert, $elm$core$Set$empty, list);
@@ -7698,7 +7660,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$get = F2(
 	function (targetKey, dict) {
 		get:
 		while (true) {
-			if (dict.$ === 'Leaf') {
+			if (!dict.$) {
 				return $elm$core$Maybe$Nothing;
 			} else {
 				var sorter = dict.a;
@@ -7707,14 +7669,14 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$get = F2(
 				var left = dict.e;
 				var right = dict.f;
 				var _v1 = A3($rtfeldman$elm_sorter_experiment$Sort$toOrder, sorter, targetKey, key);
-				switch (_v1.$) {
-					case 'LT':
+				switch (_v1) {
+					case 0:
 						var $temp$targetKey = targetKey,
 							$temp$dict = left;
 						targetKey = $temp$targetKey;
 						dict = $temp$dict;
 						continue get;
-					case 'GT':
+					case 2:
 						var $temp$targetKey = targetKey,
 							$temp$dict = right;
 						targetKey = $temp$targetKey;
@@ -7728,8 +7690,8 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$get = F2(
 	});
 var $author$project$League$getPlayer = F2(
 	function (id, _v0) {
-		var league = _v0.a;
-		return A2($rtfeldman$elm_sorter_experiment$Sort$Dict$get, id, league.players);
+		var league = _v0;
+		return A2($rtfeldman$elm_sorter_experiment$Sort$Dict$get, id, league.w);
 	});
 var $elm$url$Url$percentEncode = _Url_percentEncode;
 var $author$project$Supabase$getPlayerByName = F3(
@@ -7750,25 +7712,25 @@ var $elm$core$Basics$composeL = F3(
 			f(x));
 	});
 var $author$project$History$goBack = function (_v0) {
-	var guts = _v0.a;
-	var _v1 = guts.past;
+	var guts = _v0;
+	var _v1 = guts.at;
 	if (_v1.b) {
 		var mostRecent = _v1.a;
 		var rest = _v1.b;
-		return A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, $author$project$History$History)(
+		return A2($elm$core$Basics$composeL, $elm$core$Maybe$Just, $elm$core$Basics$identity)(
 			_Utils_update(
 				guts,
 				{
-					current: mostRecent,
-					future: A2($elm$core$List$cons, guts.current, guts.future),
-					past: rest
+					P: mostRecent,
+					aI: A2($elm$core$List$cons, guts.P, guts.aI),
+					at: rest
 				}));
 	} else {
 		return $elm$core$Maybe$Nothing;
 	}
 };
 var $author$project$Main$MatchSaved = function (a) {
-	return {$: 'MatchSaved', a: a};
+	return {$: 28, a: a};
 };
 var $author$project$Elo$odds = F2(
 	function (a, b) {
@@ -7782,12 +7744,12 @@ var $author$project$Elo$odds = F2(
 var $elm$core$Basics$round = _Basics_round;
 var $author$project$Elo$draw = F2(
 	function (kFactor, _v0) {
-		var playerA = _v0.playerA;
-		var playerB = _v0.playerB;
+		var playerA = _v0.dh;
+		var playerB = _v0.di;
 		return {
-			playerA: $elm$core$Basics$round(
+			dh: $elm$core$Basics$round(
 				playerA + (kFactor * (0.5 - A2($author$project$Elo$odds, playerA, playerB)))),
-			playerB: $elm$core$Basics$round(
+			di: $elm$core$Basics$round(
 				playerB + (kFactor * (0.5 - A2($author$project$Elo$odds, playerB, playerA))))
 		};
 	});
@@ -7807,7 +7769,7 @@ var $author$project$Elo$getKFactor = F2(
 	});
 var $author$project$League$kFactor = F2(
 	function (_v0, player) {
-		var league = _v0.a;
+		var league = _v0;
 		return A2(
 			$author$project$Elo$getKFactor,
 			$author$project$Player$matchesPlayed(player),
@@ -7815,88 +7777,83 @@ var $author$project$League$kFactor = F2(
 	});
 var $author$project$League$updatePlayer = F2(
 	function (player, _v0) {
-		var league = _v0.a;
-		return $author$project$League$League(
-			_Utils_update(
-				league,
-				{
-					players: A3(
-						$rtfeldman$elm_sorter_experiment$Sort$Dict$insert,
-						$author$project$Player$id(player),
-						player,
-						league.players)
-				}));
+		var league = _v0;
+		return _Utils_update(
+			league,
+			{
+				w: A3(
+					$rtfeldman$elm_sorter_experiment$Sort$Dict$insert,
+					$author$project$Player$id(player),
+					player,
+					league.w)
+			});
 	});
-var $author$project$Player$Player = function (a) {
-	return {$: 'Player', a: a};
-};
+var $author$project$Player$Player = $elm$core$Basics$identity;
 var $author$project$Player$incrementMatchesPlayed = function (_v0) {
-	var player = _v0.a;
-	return $author$project$Player$Player(
-		_Utils_update(
-			player,
-			{matches: player.matches + 1}));
+	var player = _v0;
+	return _Utils_update(
+		player,
+		{ev: player.ev + 1});
 };
 var $author$project$Player$setRating = F2(
 	function (rating_, _v0) {
-		var player = _v0.a;
-		return $author$project$Player$Player(
-			_Utils_update(
-				player,
-				{
-					rating: A2($elm$core$Basics$max, 0, rating_)
-				}));
+		var player = _v0;
+		return _Utils_update(
+			player,
+			{
+				cm: A2($elm$core$Basics$max, 0, rating_)
+			});
 	});
 var $author$project$League$updateRatingsIncludingPlayInPeriod = F2(
 	function (ratings, players_) {
 		var playerBInPlayInPeriod = _Utils_cmp(
-			$author$project$Player$matchesPlayed(players_.playerB),
+			$author$project$Player$matchesPlayed(players_.di),
 			$author$project$League$playInMatches) < 0;
 		var playerAInPlayInPeriod = _Utils_cmp(
-			$author$project$Player$matchesPlayed(players_.playerA),
+			$author$project$Player$matchesPlayed(players_.dh),
 			$author$project$League$playInMatches) < 0;
 		return {
-			playerA: ((!playerAInPlayInPeriod) && playerBInPlayInPeriod) ? players_.playerA : $author$project$Player$incrementMatchesPlayed(
-				A2($author$project$Player$setRating, ratings.playerA, players_.playerA)),
-			playerB: ((!playerBInPlayInPeriod) && playerAInPlayInPeriod) ? players_.playerB : $author$project$Player$incrementMatchesPlayed(
-				A2($author$project$Player$setRating, ratings.playerB, players_.playerB))
+			dh: ((!playerAInPlayInPeriod) && playerBInPlayInPeriod) ? players_.dh : $author$project$Player$incrementMatchesPlayed(
+				A2($author$project$Player$setRating, ratings.dh, players_.dh)),
+			di: ((!playerBInPlayInPeriod) && playerAInPlayInPeriod) ? players_.di : $author$project$Player$incrementMatchesPlayed(
+				A2($author$project$Player$setRating, ratings.di, players_.di))
 		};
 	});
 var $author$project$Elo$win = F2(
 	function (kFactor, _v0) {
-		var won = _v0.won;
-		var lost = _v0.lost;
+		var won = _v0.dR;
+		var lost = _v0.c5;
 		return {
-			lost: $elm$core$Basics$round(
+			c5: $elm$core$Basics$round(
 				lost + (kFactor * (0 - A2($author$project$Elo$odds, lost, won)))),
-			won: $elm$core$Basics$round(
+			dR: $elm$core$Basics$round(
 				won + (kFactor * (1 - A2($author$project$Elo$odds, won, lost))))
 		};
 	});
 var $author$project$League$finishMatch = F2(
 	function (outcome, league) {
-		if (outcome.$ === 'Win') {
-			var won = outcome.a.won;
-			var lost = outcome.a.lost;
+		if (!outcome.$) {
+			var won = outcome.a.dR;
+			var lost = outcome.a.c5;
 			var newRatings = A2(
 				$author$project$Elo$win,
 				A2($author$project$League$kFactor, league, won),
 				{
-					lost: $author$project$Player$rating(lost),
-					won: $author$project$Player$rating(won)
+					c5: $author$project$Player$rating(lost),
+					dR: $author$project$Player$rating(won)
 				});
 			var newPlayers = A2(
 				$author$project$League$updateRatingsIncludingPlayInPeriod,
-				{playerA: newRatings.won, playerB: newRatings.lost},
-				{playerA: won, playerB: lost});
+				{dh: newRatings.dR, di: newRatings.c5},
+				{dh: won, di: lost});
 			return $author$project$League$clearMatch(
 				A2(
 					$author$project$League$updatePlayer,
-					newPlayers.playerB,
-					A2($author$project$League$updatePlayer, newPlayers.playerA, league)));
+					newPlayers.di,
+					A2($author$project$League$updatePlayer, newPlayers.dh, league)));
 		} else {
-			var playerA = outcome.a.playerA;
-			var playerB = outcome.a.playerB;
+			var playerA = outcome.a.dh;
+			var playerB = outcome.a.di;
 			var newRatings = A2(
 				$author$project$Elo$draw,
 				A2(
@@ -7904,22 +7861,22 @@ var $author$project$League$finishMatch = F2(
 					league,
 					A2($author$project$League$higherRankedPlayer, playerA, playerB)),
 				{
-					playerA: $author$project$Player$rating(playerA),
-					playerB: $author$project$Player$rating(playerB)
+					dh: $author$project$Player$rating(playerA),
+					di: $author$project$Player$rating(playerB)
 				});
 			var newPlayers = A2(
 				$author$project$League$updateRatingsIncludingPlayInPeriod,
 				newRatings,
-				{playerA: playerA, playerB: playerB});
+				{dh: playerA, di: playerB});
 			return $author$project$League$clearMatch(
 				A2(
 					$author$project$League$updatePlayer,
-					newPlayers.playerB,
-					A2($author$project$League$updatePlayer, newPlayers.playerA, league)));
+					newPlayers.di,
+					A2($author$project$League$updatePlayer, newPlayers.dh, league)));
 		}
 	});
 var $author$project$Main$isVotingDisabled = function (model) {
-	return model.autoSaveInProgress || model.isSyncing;
+	return model.bl || model.ao;
 };
 var $elm$core$List$takeReverse = F3(
 	function (n, list, kept) {
@@ -8049,18 +8006,17 @@ var $elm$core$List$take = F2(
 	});
 var $author$project$History$push = F2(
 	function (a, _v0) {
-		var guts = _v0.a;
-		return $author$project$History$History(
-			_Utils_update(
-				guts,
-				{
-					current: a,
-					future: _List_Nil,
-					past: A2(
-						$elm$core$List$take,
-						guts.retention,
-						A2($elm$core$List$cons, guts.current, guts.past))
-				}));
+		var guts = _v0;
+		return _Utils_update(
+			guts,
+			{
+				P: a,
+				aI: _List_Nil,
+				at: A2(
+					$elm$core$List$take,
+					guts.dv,
+					A2($elm$core$List$cons, guts.P, guts.at))
+			});
 	});
 var $author$project$History$mapPush = F2(
 	function (fn, history) {
@@ -8073,7 +8029,7 @@ var $author$project$History$mapPush = F2(
 var $author$project$Main$maybeAutoSave = function (_v0) {
 	var model = _v0.a;
 	var cmd = _v0.b;
-	return model.autoSave ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(model, cmd);
+	return model.aW ? _Utils_Tuple2(model, cmd) : _Utils_Tuple2(model, cmd);
 };
 var $elm$core$Platform$Cmd$none = $elm$core$Platform$Cmd$batch(_List_Nil);
 var $elm$http$Http$expectBytesResponse = F2(
@@ -8090,14 +8046,14 @@ var $elm$http$Http$expectWhatever = function (toMsg) {
 		toMsg,
 		$elm$http$Http$resolve(
 			function (_v0) {
-				return $elm$core$Result$Ok(_Utils_Tuple0);
+				return $elm$core$Result$Ok(0);
 			}));
 };
 var $author$project$Supabase$voteEdgeFunction = F5(
 	function (config, aId, bId, winnerId, toMsg) {
 		return $elm$http$Http$request(
 			{
-				body: $elm$http$Http$jsonBody(
+				d2: $elm$http$Http$jsonBody(
 					$elm$json$Json$Encode$object(
 						_List_fromArray(
 							[
@@ -8111,17 +8067,17 @@ var $author$project$Supabase$voteEdgeFunction = F5(
 								'winner',
 								$elm$json$Json$Encode$int(winnerId))
 							]))),
-				expect: $elm$http$Http$expectWhatever(toMsg),
-				headers: _List_fromArray(
+				aj: $elm$http$Http$expectWhatever(toMsg),
+				an: _List_fromArray(
 					[
-						A2($elm$http$Http$header, 'apikey', config.anonKey),
-						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'apikey', config.d_),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.d_),
 						A2($elm$http$Http$header, 'Content-Type', 'application/json')
 					]),
-				method: 'POST',
-				timeout: $elm$core$Maybe$Nothing,
-				tracker: $elm$core$Maybe$Nothing,
-				url: config.url + '/functions/v1/vote'
+				ar: 'POST',
+				aA: $elm$core$Maybe$Nothing,
+				aB: $elm$core$Maybe$Nothing,
+				e3: config.e3 + '/functions/v1/vote'
 			});
 	});
 var $author$project$Main$handleMatchFinished = F2(
@@ -8129,34 +8085,34 @@ var $author$project$Main$handleMatchFinished = F2(
 		if ($author$project$Main$isVotingDisabled(model)) {
 			return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 		} else {
-			var currentLeague = $author$project$History$current(model.history);
+			var currentLeague = $author$project$History$current(model.b);
 			var _v0 = $author$project$League$currentMatch(currentLeague);
-			if (_v0.$ === 'Just') {
+			if (!_v0.$) {
 				var _v1 = _v0.a;
 				var playerA = _v1.a;
 				var playerB = _v1.b;
 				var updatedHistory = A2(
 					$author$project$History$mapPush,
 					$author$project$League$finishMatch(outcome),
-					model.history);
+					model.b);
 				var updatedModel = _Utils_update(
 					model,
-					{history: updatedHistory});
+					{b: updatedHistory});
 				var playerBId = function () {
 					var _v5 = $author$project$Player$id(playerB);
-					var id = _v5.a;
+					var id = _v5;
 					return id;
 				}();
 				var playerAId = function () {
 					var _v4 = $author$project$Player$id(playerA);
-					var id = _v4.a;
+					var id = _v4;
 					return id;
 				}();
 				var winnerId = function () {
-					if (outcome.$ === 'Win') {
-						var won = outcome.a.won;
+					if (!outcome.$) {
+						var won = outcome.a.dR;
 						var _v3 = $author$project$Player$id(won);
-						var id = _v3.a;
+						var id = _v3;
 						return id;
 					} else {
 						return playerAId;
@@ -8173,14 +8129,14 @@ var $author$project$Main$handleMatchFinished = F2(
 	});
 var $author$project$Main$httpErrorToString = function (err) {
 	switch (err.$) {
-		case 'BadUrl':
+		case 0:
 			var u = err.a;
 			return 'Bad URL: ' + u;
-		case 'Timeout':
+		case 1:
 			return 'Request timed out';
-		case 'NetworkError':
+		case 2:
 			return 'Network error';
-		case 'BadStatus':
+		case 3:
 			var s = err.a;
 			return 'Bad status: ' + $elm$core$String$fromInt(s);
 		default:
@@ -8190,51 +8146,49 @@ var $author$project$Main$httpErrorToString = function (err) {
 };
 var $author$project$League$isPlayerIgnored = F2(
 	function (player, _v0) {
-		var league = _v0.a;
+		var league = _v0;
 		return A2(
 			$elm$core$List$member,
 			$author$project$Player$id(player),
-			league.ignored);
+			league.E);
 	});
 var $author$project$History$mapInPlace = F2(
 	function (fn, _v0) {
-		var guts = _v0.a;
-		return $author$project$History$History(
-			_Utils_update(
-				guts,
-				{
-					current: fn(guts.current)
-				}));
+		var guts = _v0;
+		return _Utils_update(
+			guts,
+			{
+				P: fn(guts.P)
+			});
 	});
 var $author$project$Player$name = function (_v0) {
-	var player = _v0.a;
-	return player.name;
+	var player = _v0;
+	return player.b8;
 };
-var $author$project$Main$AMOnly = {$: 'AMOnly'};
-var $author$project$Main$PMOnly = {$: 'PMOnly'};
+var $author$project$Main$AMOnly = 1;
+var $author$project$Main$PMOnly = 2;
 var $elm$core$String$toLower = _String_toLower;
 var $author$project$Main$parseFilter = function (s) {
 	var _v0 = $elm$core$String$toLower(s);
 	switch (_v0) {
 		case 'all':
-			return $elm$core$Maybe$Just($author$project$Main$All);
+			return $elm$core$Maybe$Just(0);
 		case 'am':
-			return $elm$core$Maybe$Just($author$project$Main$AMOnly);
+			return $elm$core$Maybe$Just(1);
 		case 'pm':
-			return $elm$core$Maybe$Just($author$project$Main$PMOnly);
+			return $elm$core$Maybe$Just(2);
 		default:
 			return $elm$core$Maybe$Nothing;
 	}
 };
 var $author$project$League$players = function (_v0) {
-	var league = _v0.a;
-	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.players);
+	var league = _v0;
+	return $rtfeldman$elm_sorter_experiment$Sort$Dict$values(league.w);
 };
 var $elm$core$Set$remove = F2(
 	function (key, _v0) {
-		var dict = _v0.a;
-		return $elm$core$Set$Set_elm_builtin(
-			A2($elm$core$Dict$remove, key, dict));
+		var dict = _v0;
+		return A2($elm$core$Dict$remove, key, dict);
 	});
 var $author$project$Supabase$restorePlayer = F3(
 	function (config, playerId, toMsg) {
@@ -8247,25 +8201,25 @@ var $author$project$Supabase$restorePlayer = F3(
 				]));
 		return $elm$http$Http$request(
 			{
-				body: $elm$http$Http$jsonBody(body),
-				expect: $elm$http$Http$expectWhatever(toMsg),
-				headers: _List_fromArray(
+				d2: $elm$http$Http$jsonBody(body),
+				aj: $elm$http$Http$expectWhatever(toMsg),
+				an: _List_fromArray(
 					[
-						A2($elm$http$Http$header, 'apikey', config.anonKey),
-						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'apikey', config.d_),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.d_),
 						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
 						A2($elm$http$Http$header, 'Prefer', 'return=minimal')
 					]),
-				method: 'PATCH',
-				timeout: $elm$core$Maybe$Nothing,
-				tracker: $elm$core$Maybe$Nothing,
-				url: config.url + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
+				ar: 'PATCH',
+				aA: $elm$core$Maybe$Nothing,
+				aB: $elm$core$Maybe$Nothing,
+				e3: config.e3 + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
 			});
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
 	getMin:
 	while (true) {
-		if ((dict.$ === 'Node') && (dict.e.$ === 'Node')) {
+		if ((dict.$ === 1) && (dict.e.$ === 1)) {
 			var left = dict.e;
 			var $temp$dict = left;
 			dict = $temp$dict;
@@ -8276,8 +8230,8 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin = function (dict) {
 	}
 };
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedLeft = function (dict) {
-	if (((dict.$ === 'Node') && (dict.e.$ === 'Node')) && (dict.f.$ === 'Node')) {
-		if ((dict.f.e.$ === 'Node') && (dict.f.e.b.$ === 'Red')) {
+	if (((dict.$ === 1) && (dict.e.$ === 1)) && (dict.f.$ === 1)) {
+		if ((dict.f.e.$ === 1) && (dict.f.e.b === 1)) {
 			var sorter = dict.a;
 			var clr = dict.b;
 			var k = dict.c;
@@ -8302,18 +8256,18 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedLeft = function (dict) {
 			return A6(
 				$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 				sorter,
-				$rtfeldman$elm_sorter_experiment$Internal$Dict$Red,
+				1,
 				rlK,
 				rlV,
 				A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Black,
+					0,
 					k,
 					v,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, lK, lV, lLeft, lRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, lK, lV, lLeft, lRight),
 					rlL),
-				A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, rK, rV, rlR, rRight));
+				A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, rK, rV, rlR, rRight));
 		} else {
 			var sorter = dict.a;
 			var clr = dict.b;
@@ -8331,24 +8285,24 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedLeft = function (dict) {
 			var rV = _v5.d;
 			var rLeft = _v5.e;
 			var rRight = _v5.f;
-			if (clr.$ === 'Black') {
+			if (!clr) {
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Black,
+					0,
 					k,
 					v,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, lK, lV, lLeft, lRight),
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, rK, rV, rLeft, rRight));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, lK, lV, lLeft, lRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, rK, rV, rLeft, rRight));
 			} else {
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Black,
+					0,
 					k,
 					v,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, lK, lV, lLeft, lRight),
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, rK, rV, rLeft, rRight));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, lK, lV, lLeft, lRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -8356,8 +8310,8 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedLeft = function (dict) {
 	}
 };
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedRight = function (dict) {
-	if (((dict.$ === 'Node') && (dict.e.$ === 'Node')) && (dict.f.$ === 'Node')) {
-		if ((dict.e.e.$ === 'Node') && (dict.e.e.b.$ === 'Red')) {
+	if (((dict.$ === 1) && (dict.e.$ === 1)) && (dict.f.$ === 1)) {
+		if ((dict.e.e.$ === 1) && (dict.e.e.b === 1)) {
 			var sorter = dict.a;
 			var clr = dict.b;
 			var k = dict.c;
@@ -8382,18 +8336,18 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedRight = function (dict) {
 			return A6(
 				$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 				sorter,
-				$rtfeldman$elm_sorter_experiment$Internal$Dict$Red,
+				1,
 				lK,
 				lV,
-				A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, llK, llV, llLeft, llRight),
+				A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, llK, llV, llLeft, llRight),
 				A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Black,
+					0,
 					k,
 					v,
 					lRight,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, rK, rV, rLeft, rRight)));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, rK, rV, rLeft, rRight)));
 		} else {
 			var sorter = dict.a;
 			var clr = dict.b;
@@ -8411,24 +8365,24 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedRight = function (dict) {
 			var rV = _v6.d;
 			var rLeft = _v6.e;
 			var rRight = _v6.f;
-			if (clr.$ === 'Black') {
+			if (!clr) {
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Black,
+					0,
 					k,
 					v,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, lK, lV, lLeft, lRight),
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, rK, rV, rLeft, rRight));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, lK, lV, lLeft, lRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, rK, rV, rLeft, rRight));
 			} else {
 				return A6(
 					$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
 					sorter,
-					$rtfeldman$elm_sorter_experiment$Internal$Dict$Black,
+					0,
 					k,
 					v,
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, lK, lV, lLeft, lRight),
-					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, rK, rV, rLeft, rRight));
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, lK, lV, lLeft, lRight),
+					A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, rK, rV, rLeft, rRight));
 			}
 		}
 	} else {
@@ -8437,7 +8391,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedRight = function (dict) {
 };
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelpPrepEQGT = F7(
 	function (targetKey, dict, color, key, value, left, right) {
-		if ((left.$ === 'Node') && (left.b.$ === 'Red')) {
+		if ((left.$ === 1) && (left.b === 1)) {
 			var sorter = left.a;
 			var _v1 = left.b;
 			var lK = left.c;
@@ -8451,13 +8405,13 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelpPrepEQGT = F7(
 				lK,
 				lV,
 				lLeft,
-				A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Red, key, value, lRight, right));
+				A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 1, key, value, lRight, right));
 		} else {
 			_v2$2:
 			while (true) {
-				if ((right.$ === 'Node') && (right.b.$ === 'Black')) {
-					if (right.e.$ === 'Node') {
-						if (right.e.b.$ === 'Black') {
+				if ((right.$ === 1) && (!right.b)) {
+					if (right.e.$ === 1) {
+						if (!right.e.b) {
 							var _v3 = right.b;
 							var _v4 = right.e;
 							var _v5 = _v4.b;
@@ -8477,8 +8431,8 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelpPrepEQGT = F7(
 		}
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeMin = function (dict) {
-	if (dict.$ === 'Node') {
-		if (dict.e.$ === 'Node') {
+	if (dict.$ === 1) {
+		if (dict.e.$ === 1) {
 			var sorter = dict.a;
 			var color = dict.b;
 			var key = dict.c;
@@ -8487,8 +8441,8 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeMin = function (dict) {
 			var lColor = left.b;
 			var lLeft = left.e;
 			var right = dict.f;
-			if (lColor.$ === 'Black') {
-				if ((lLeft.$ === 'Node') && (lLeft.b.$ === 'Red')) {
+			if (!lColor) {
+				if ((lLeft.$ === 1) && (lLeft.b === 1)) {
 					var _v3 = lLeft.b;
 					return A6(
 						$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
@@ -8500,7 +8454,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeMin = function (dict) {
 						right);
 				} else {
 					var _v4 = $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedLeft(dict);
-					if (_v4.$ === 'Node') {
+					if (_v4.$ === 1) {
 						var movedColor = _v4.b;
 						var movedKey = _v4.c;
 						var movedValue = _v4.d;
@@ -8540,7 +8494,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeMin = function (dict) {
 };
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelp = F2(
 	function (targetKey, dict) {
-		if (dict.$ === 'Leaf') {
+		if (!dict.$) {
 			var leaf = dict;
 			return leaf;
 		} else {
@@ -8551,11 +8505,11 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelp = F2(
 			var left = dict.e;
 			var right = dict.f;
 			var _v3 = A3($rtfeldman$elm_sorter_experiment$Sort$toOrder, sorter, targetKey, key);
-			if (_v3.$ === 'LT') {
-				if ((left.$ === 'Node') && (left.b.$ === 'Black')) {
+			if (!_v3) {
+				if ((left.$ === 1) && (!left.b)) {
 					var _v5 = left.b;
 					var lLeft = left.e;
-					if ((lLeft.$ === 'Node') && (lLeft.b.$ === 'Red')) {
+					if ((lLeft.$ === 1) && (lLeft.b === 1)) {
 						var _v7 = lLeft.b;
 						return A6(
 							$rtfeldman$elm_sorter_experiment$Internal$Dict$Node,
@@ -8567,7 +8521,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelp = F2(
 							right);
 					} else {
 						var _v8 = $rtfeldman$elm_sorter_experiment$Sort$Dict$moveRedLeft(dict);
-						if (_v8.$ === 'Node') {
+						if (_v8.$ === 1) {
 							var movedColor = _v8.b;
 							var movedKey = _v8.c;
 							var movedValue = _v8.d;
@@ -8606,7 +8560,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelp = F2(
 	});
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelpEQGT = F2(
 	function (targetKey, dict) {
-		if (dict.$ === 'Node') {
+		if (dict.$ === 1) {
 			var sorter = dict.a;
 			var color = dict.b;
 			var key = dict.c;
@@ -8615,7 +8569,7 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelpEQGT = F2(
 			var right = dict.f;
 			if (_Utils_eq(targetKey, key)) {
 				var _v1 = $rtfeldman$elm_sorter_experiment$Sort$Dict$getMin(right);
-				if (_v1.$ === 'Node') {
+				if (_v1.$ === 1) {
 					var minKey = _v1.c;
 					var minValue = _v1.d;
 					return A6(
@@ -8648,14 +8602,14 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelpEQGT = F2(
 var $rtfeldman$elm_sorter_experiment$Sort$Dict$remove = F2(
 	function (targetKey, dict) {
 		var _v0 = A2($rtfeldman$elm_sorter_experiment$Sort$Dict$removeHelp, targetKey, dict);
-		if ((_v0.$ === 'Node') && (_v0.b.$ === 'Red')) {
+		if ((_v0.$ === 1) && (_v0.b === 1)) {
 			var sorter = _v0.a;
 			var _v1 = _v0.b;
 			var k = _v0.c;
 			var v = _v0.d;
 			var l = _v0.e;
 			var r = _v0.f;
-			return A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, $rtfeldman$elm_sorter_experiment$Internal$Dict$Black, k, v, l, r);
+			return A6($rtfeldman$elm_sorter_experiment$Internal$Dict$Node, sorter, 0, k, v, l, r);
 		} else {
 			var x = _v0;
 			return x;
@@ -8663,36 +8617,35 @@ var $rtfeldman$elm_sorter_experiment$Sort$Dict$remove = F2(
 	});
 var $author$project$League$retirePlayer = F2(
 	function (player, _v0) {
-		var league = _v0.a;
-		return $author$project$League$League(
-			_Utils_update(
-				league,
-				{
-					currentMatch: function () {
-						var _v1 = league.currentMatch;
-						if (_v1.$ === 'Nothing') {
-							return $elm$core$Maybe$Nothing;
-						} else {
-							var _v2 = _v1.a;
-							var a = _v2.a;
-							var b = _v2.b;
-							return (_Utils_eq(
-								$author$project$Player$id(player),
-								$author$project$Player$id(a)) || _Utils_eq(
-								$author$project$Player$id(player),
-								$author$project$Player$id(b))) ? $elm$core$Maybe$Nothing : league.currentMatch;
-						}
-					}(),
-					ignored: A2(
-						$elm$core$List$filter,
-						$elm$core$Basics$neq(
-							$author$project$Player$id(player)),
-						league.ignored),
-					players: A2(
-						$rtfeldman$elm_sorter_experiment$Sort$Dict$remove,
-						$author$project$Player$id(player),
-						league.players)
-				}));
+		var league = _v0;
+		return _Utils_update(
+			league,
+			{
+				Z: function () {
+					var _v1 = league.Z;
+					if (_v1.$ === 1) {
+						return $elm$core$Maybe$Nothing;
+					} else {
+						var _v2 = _v1.a;
+						var a = _v2.a;
+						var b = _v2.b;
+						return (_Utils_eq(
+							$author$project$Player$id(player),
+							$author$project$Player$id(a)) || _Utils_eq(
+							$author$project$Player$id(player),
+							$author$project$Player$id(b))) ? $elm$core$Maybe$Nothing : league.Z;
+					}
+				}(),
+				E: A2(
+					$elm$core$List$filter,
+					$elm$core$Basics$neq(
+						$author$project$Player$id(player)),
+					league.E),
+				w: A2(
+					$rtfeldman$elm_sorter_experiment$Sort$Dict$remove,
+					$author$project$Player$id(player),
+					league.w)
+			});
 	});
 var $author$project$Supabase$retirePlayer = F3(
 	function (config, playerId, toMsg) {
@@ -8711,39 +8664,37 @@ var $author$project$Supabase$retirePlayer = F3(
 				]));
 		return $elm$http$Http$request(
 			{
-				body: $elm$http$Http$jsonBody(body),
-				expect: $elm$http$Http$expectWhatever(toMsg),
-				headers: _List_fromArray(
+				d2: $elm$http$Http$jsonBody(body),
+				aj: $elm$http$Http$expectWhatever(toMsg),
+				an: _List_fromArray(
 					[
-						A2($elm$http$Http$header, 'apikey', config.anonKey),
-						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'apikey', config.d_),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.d_),
 						A2($elm$http$Http$header, 'Content-Type', 'application/json'),
 						A2($elm$http$Http$header, 'Prefer', 'return=minimal')
 					]),
-				method: 'PATCH',
-				timeout: $elm$core$Maybe$Nothing,
-				tracker: $elm$core$Maybe$Nothing,
-				url: config.url + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
+				ar: 'PATCH',
+				aA: $elm$core$Maybe$Nothing,
+				aB: $elm$core$Maybe$Nothing,
+				e3: config.e3 + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
 			});
 	});
 var $author$project$Main$saveIgnoredPlayers = _Platform_outgoingPort('saveIgnoredPlayers', $elm$json$Json$Encode$string);
 var $author$project$Player$setAM = F2(
 	function (val, _v0) {
-		var player = _v0.a;
-		return $author$project$Player$Player(
-			_Utils_update(
-				player,
-				{am: val}));
+		var player = _v0;
+		return _Utils_update(
+			player,
+			{dY: val});
 	});
 var $author$project$Player$setPM = F2(
 	function (val, _v0) {
-		var player = _v0.a;
-		return $author$project$Player$Player(
-			_Utils_update(
-				player,
-				{pm: val}));
+		var player = _v0;
+		return _Utils_update(
+			player,
+			{eL: val});
 	});
-var $author$project$Main$ClearStatus = {$: 'ClearStatus'};
+var $author$project$Main$ClearStatus = {$: 17};
 var $elm$core$Process$sleep = _Process_sleep;
 var $author$project$Main$setTemporaryStatus = F2(
 	function (message, model) {
@@ -8751,19 +8702,19 @@ var $author$project$Main$setTemporaryStatus = F2(
 			_Utils_update(
 				model,
 				{
-					isStatusTemporary: true,
-					status: $elm$core$Maybe$Just(message)
+					t: true,
+					o: $elm$core$Maybe$Just(message)
 				}),
 			A2(
 				$elm$core$Task$perform,
 				function (_v0) {
 					return $author$project$Main$ClearStatus;
 				},
-				$elm$core$Process$sleep(2000)));
+				$elm$core$Process$sleep(3000)));
 	});
 var $elm$core$Maybe$andThen = F2(
 	function (callback, maybeValue) {
-		if (maybeValue.$ === 'Just') {
+		if (!maybeValue.$) {
 			var value = maybeValue.a;
 			return callback(value);
 		} else {
@@ -8772,11 +8723,11 @@ var $elm$core$Maybe$andThen = F2(
 	});
 var $elm$core$Maybe$map2 = F3(
 	function (func, ma, mb) {
-		if (ma.$ === 'Nothing') {
+		if (ma.$ === 1) {
 			return $elm$core$Maybe$Nothing;
 		} else {
 			var a = ma.a;
-			if (mb.$ === 'Nothing') {
+			if (mb.$ === 1) {
 				return $elm$core$Maybe$Nothing;
 			} else {
 				var b = mb.a;
@@ -8789,90 +8740,79 @@ var $author$project$League$startMatch = F2(
 	function (_v0, _v1) {
 		var playerA = _v0.a;
 		var playerB = _v0.b;
-		var league = _v1.a;
-		return $author$project$League$League(
-			_Utils_update(
-				league,
-				{
-					currentMatch: A2(
-						$elm$core$Maybe$andThen,
-						function (_v2) {
-							var gotA = _v2.a;
-							var gotB = _v2.b;
-							return (!_Utils_eq(gotA, gotB)) ? $elm$core$Maybe$Just(
-								A2($author$project$League$Match, gotA, gotB)) : $elm$core$Maybe$Nothing;
-						},
-						A3(
-							$elm$core$Maybe$map2,
-							$elm$core$Tuple$pair,
-							A2(
-								$rtfeldman$elm_sorter_experiment$Sort$Dict$get,
-								$author$project$Player$id(playerA),
-								league.players),
-							A2(
-								$rtfeldman$elm_sorter_experiment$Sort$Dict$get,
-								$author$project$Player$id(playerB),
-								league.players)))
-				}));
+		var league = _v1;
+		return _Utils_update(
+			league,
+			{
+				Z: A2(
+					$elm$core$Maybe$andThen,
+					function (_v2) {
+						var gotA = _v2.a;
+						var gotB = _v2.b;
+						return (!_Utils_eq(gotA, gotB)) ? $elm$core$Maybe$Just(
+							A2($author$project$League$Match, gotA, gotB)) : $elm$core$Maybe$Nothing;
+					},
+					A3(
+						$elm$core$Maybe$map2,
+						$elm$core$Tuple$pair,
+						A2(
+							$rtfeldman$elm_sorter_experiment$Sort$Dict$get,
+							$author$project$Player$id(playerA),
+							league.w),
+						A2(
+							$rtfeldman$elm_sorter_experiment$Sort$Dict$get,
+							$author$project$Player$id(playerB),
+							league.w)))
+			});
 	});
-var $author$project$Player$PlayerId = function (a) {
-	return {$: 'PlayerId', a: a};
-};
+var $author$project$Player$PlayerId = $elm$core$Basics$identity;
 var $author$project$Main$supabasePlayerToPlayer = function (supabasePlayer) {
-	return $author$project$Player$Player(
-		{
-			am: supabasePlayer.playsAM,
-			id: $author$project$Player$PlayerId(supabasePlayer.id),
-			matches: supabasePlayer.matchesPlayed,
-			name: supabasePlayer.name,
-			pm: supabasePlayer.playsPM,
-			rating: supabasePlayer.rating
-		});
+	return {dY: supabasePlayer.dj, ab: supabasePlayer.ab, ev: supabasePlayer.c6, b8: supabasePlayer.b8, eL: supabasePlayer.dk, cm: supabasePlayer.cm};
 };
 var $elm$core$String$trim = _String_trim;
 var $author$project$Supabase$undoEdgeFunction = F2(
 	function (config, toMsg) {
 		return $elm$http$Http$request(
 			{
-				body: $elm$http$Http$jsonBody(
+				d2: $elm$http$Http$jsonBody(
 					$elm$json$Json$Encode$object(_List_Nil)),
-				expect: $elm$http$Http$expectWhatever(toMsg),
-				headers: _List_fromArray(
+				aj: $elm$http$Http$expectWhatever(toMsg),
+				an: _List_fromArray(
 					[
-						A2($elm$http$Http$header, 'apikey', config.anonKey),
-						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.anonKey),
+						A2($elm$http$Http$header, 'apikey', config.d_),
+						A2($elm$http$Http$header, 'Authorization', 'Bearer ' + config.d_),
 						A2($elm$http$Http$header, 'Content-Type', 'application/json')
 					]),
-				method: 'POST',
-				timeout: $elm$core$Maybe$Nothing,
-				tracker: $elm$core$Maybe$Nothing,
-				url: config.url + '/functions/v1/undo'
+				ar: 'POST',
+				aA: $elm$core$Maybe$Nothing,
+				aB: $elm$core$Maybe$Nothing,
+				e3: config.e3 + '/functions/v1/undo'
 			});
 	});
 var $author$project$Main$update = F2(
 	function (msg, model) {
 		switch (msg.$) {
-			case 'TogglePlayerAM':
+			case 20:
 				var player = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							timeToggleConfirmation: $elm$core$Maybe$Just(
+							aS: $elm$core$Maybe$Just(
 								_Utils_Tuple2(player, 'AM'))
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'TogglePlayerPM':
+			case 21:
 				var player = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							timeToggleConfirmation: $elm$core$Maybe$Just(
+							aS: $elm$core$Maybe$Just(
 								_Utils_Tuple2(player, 'PM'))
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'ConfirmTogglePlayerTime':
+			case 22:
 				var player = msg.a;
 				var timeType = msg.b;
 				var newState = msg.c;
@@ -8881,7 +8821,7 @@ var $author$project$Main$update = F2(
 						$author$project$League$getPlayer,
 						$author$project$Player$id(player),
 						league);
-					if (_v2.$ === 'Just') {
+					if (!_v2.$) {
 						var p = _v2.a;
 						var newP = (timeType === 'AM') ? A2($author$project$Player$setAM, newState, p) : A2($author$project$Player$setPM, newState, p);
 						return A2($author$project$League$updatePlayer, newP, league);
@@ -8889,142 +8829,142 @@ var $author$project$Main$update = F2(
 						return league;
 					}
 				}(
-					$author$project$History$current(model.history));
+					$author$project$History$current(model.b));
 				return $author$project$Main$maybeAutoSave(
 					$author$project$Main$startNextMatchIfPossible(
 						_Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									history: A2(
+									b: A2(
 										$author$project$History$mapPush,
 										function (_v1) {
 											return updatedLeague;
 										},
-										model.history),
-									timeToggleConfirmation: $elm$core$Maybe$Nothing
+										model.b),
+									aS: $elm$core$Maybe$Nothing
 								}),
 							$elm$core$Platform$Cmd$none)));
-			case 'CancelTogglePlayerTime':
+			case 23:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{timeToggleConfirmation: $elm$core$Maybe$Nothing}),
+						{aS: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedNewPlayerName':
+			case 34:
 				var newPlayerName = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{newPlayerName: newPlayerName}),
+						{ca: newPlayerName}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToAddNewPlayer':
+			case 35:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{showAddPlayerPopup: true}),
+						{V: true}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToShowAddPlayerPopup':
+			case 36:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{showAddPlayerPopup: true}),
+						{V: true}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToHideAddPlayerPopup':
+			case 37:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerAM: true, addPlayerName: '', addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
+						{af: true, O: '', ag: true, aE: '500', V: false}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedAddPlayerName':
+			case 38:
 				var name = msg.a;
 				var trimmed = $elm$core$String$trim(name);
 				return ($elm$core$String$length(trimmed) < 1) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerName: name, addPlayerNotice: $elm$core$Maybe$Nothing}),
+						{O: name, H: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerName: name, addPlayerNotice: $elm$core$Maybe$Nothing}),
+						{O: name, H: $elm$core$Maybe$Nothing}),
 					A3($author$project$Supabase$getPlayerByName, $author$project$Config$supabaseConfig, trimmed, $author$project$Main$CheckedExistingByName));
-			case 'KeeperUpdatedAddPlayerRating':
+			case 39:
 				var rating = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerRating: rating}),
+						{aE: rating}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperToggledAddPlayerAM':
+			case 40:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerAM: !model.addPlayerAM}),
+						{af: !model.af}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperToggledAddPlayerPM':
+			case 41:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerPM: !model.addPlayerPM}),
+						{ag: !model.ag}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperConfirmedAddPlayer':
+			case 42:
 				var rating = A2(
 					$elm$core$Maybe$withDefault,
 					500,
-					$elm$core$String$toInt(model.addPlayerRating));
+					$elm$core$String$toInt(model.aE));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{addPlayerAM: true, addPlayerName: '', addPlayerNotice: $elm$core$Maybe$Nothing, addPlayerPM: true, addPlayerRating: '500', showAddPlayerPopup: false}),
-					A6($author$project$Supabase$createNewPlayer, $author$project$Config$supabaseConfig, model.addPlayerName, rating, model.addPlayerAM, model.addPlayerPM, $author$project$Main$NewPlayerCreated));
-			case 'CheckedExistingByName':
+						{af: true, O: '', H: $elm$core$Maybe$Nothing, ag: true, aE: '500', V: false}),
+					A6($author$project$Supabase$createNewPlayer, $author$project$Config$supabaseConfig, model.O, rating, model.af, model.ag, $author$project$Main$NewPlayerCreated));
+			case 43:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
+				if (!result.$) {
 					var players = result.a;
 					if (players.b) {
 						var p = players.a;
-						var noticeRec = p.isDeleted ? {
-							message: 'This player already exists, but was deleted. Would you like to restore this player?',
-							restoreId: $elm$core$Maybe$Just(p.id)
-						} : {message: 'This player already exists as an active player.', restoreId: $elm$core$Maybe$Nothing};
+						var noticeRec = p.c_ ? {
+							b6: 'This player already exists, but was deleted. Would you like to restore this player?',
+							cn: $elm$core$Maybe$Just(p.ab)
+						} : {b6: 'This player already exists as an active player.', cn: $elm$core$Maybe$Nothing};
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
 								{
-									addPlayerNotice: $elm$core$Maybe$Just(noticeRec)
+									H: $elm$core$Maybe$Just(noticeRec)
 								}),
 							$elm$core$Platform$Cmd$none);
 					} else {
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{addPlayerNotice: $elm$core$Maybe$Nothing}),
+								{H: $elm$core$Maybe$Nothing}),
 							$elm$core$Platform$Cmd$none);
 					}
 				} else {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{addPlayerNotice: $elm$core$Maybe$Nothing}),
+							{H: $elm$core$Maybe$Nothing}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'KeeperWantsToRestorePlayer':
+			case 44:
 				var playerId = msg.a;
 				return _Utils_Tuple2(
 					model,
 					A3($author$project$Supabase$restorePlayer, $author$project$Config$supabaseConfig, playerId, $author$project$Main$PlayerRestored));
-			case 'PlayerRestored':
+			case 45:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var statusMsg = model.showAddPlayerPopup ? 'Player restored' : 'Undid last vote';
+				if (!result.$) {
+					var statusMsg = model.V ? 'Player restored' : 'Undid last vote';
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								addPlayerNotice: $elm$core$Maybe$Nothing,
-								isStatusTemporary: true,
-								showAddPlayerPopup: false,
-								status: $elm$core$Maybe$Just(statusMsg)
+								H: $elm$core$Maybe$Nothing,
+								t: true,
+								V: false,
+								o: $elm$core$Maybe$Just(statusMsg)
 							}),
 						A2(
 							$elm$core$Task$perform,
@@ -9038,32 +8978,32 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(
-									model.showAddPlayerPopup ? ('Failed to restore player: ' + $author$project$Main$httpErrorToString(err)) : ('Failed to undo last vote: ' + $author$project$Main$httpErrorToString(err)))
+								t: false,
+								o: $elm$core$Maybe$Just(
+									model.V ? ('Failed to restore player: ' + $author$project$Main$httpErrorToString(err)) : ('Failed to undo last vote: ' + $author$project$Main$httpErrorToString(err)))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'KeeperWantsToRetirePlayer':
+			case 46:
 				var player = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							playerDeletionConfirmation: $elm$core$Maybe$Just(
+							aN: $elm$core$Maybe$Just(
 								_Utils_Tuple2(player, 1))
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'ConfirmPlayerDeletion':
+			case 47:
 				var player = msg.a;
 				var step = msg.b;
 				if (step === 2) {
 					var _v7 = $author$project$Player$id(player);
-					var playerId = _v7.a;
+					var playerId = _v7;
 					var newIgnoredPlayers = A2(
 						$elm$core$Set$insert,
 						$elm$core$String$fromInt(playerId),
-						model.ignoredPlayers);
+						model.Q);
 					var serializedIgnored = A2(
 						$elm$core$String$join,
 						',',
@@ -9074,12 +9014,12 @@ var $author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										history: A2(
+										b: A2(
 											$author$project$History$mapPush,
 											$author$project$League$retirePlayer(player),
-											model.history),
-										ignoredPlayers: newIgnoredPlayers,
-										playerDeletionConfirmation: $elm$core$Maybe$Nothing
+											model.b),
+										Q: newIgnoredPlayers,
+										aN: $elm$core$Maybe$Nothing
 									}),
 								$elm$core$Platform$Cmd$batch(
 									_List_fromArray(
@@ -9092,25 +9032,25 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								playerDeletionConfirmation: $elm$core$Maybe$Just(
+								aN: $elm$core$Maybe$Just(
 									_Utils_Tuple2(player, 2))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'CancelPlayerDeletion':
+			case 48:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{playerDeletionConfirmation: $elm$core$Maybe$Nothing}),
+						{aN: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToIgnorePlayer':
+			case 49:
 				var player = msg.a;
 				var _v8 = $author$project$Player$id(player);
-				var idInt = _v8.a;
+				var idInt = _v8;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$insert,
 					$elm$core$String$fromInt(idInt),
-					model.ignoredPlayers);
+					model.Q);
 				var serializedIgnored = A2(
 					$elm$core$String$join,
 					',',
@@ -9119,16 +9059,16 @@ var $author$project$Main$update = F2(
 					_Utils_Tuple2(
 						_Utils_update(
 							model,
-							{ignoredPlayers: newIgnoredPlayers}),
+							{Q: newIgnoredPlayers}),
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
-			case 'KeeperWantsToUnignorePlayer':
+			case 50:
 				var player = msg.a;
 				var _v9 = $author$project$Player$id(player);
-				var idInt = _v9.a;
+				var idInt = _v9;
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$remove,
 					$elm$core$String$fromInt(idInt),
-					model.ignoredPlayers);
+					model.Q);
 				var serializedIgnored = A2(
 					$elm$core$String$join,
 					',',
@@ -9137,55 +9077,55 @@ var $author$project$Main$update = F2(
 					_Utils_Tuple2(
 						_Utils_update(
 							model,
-							{ignoredPlayers: newIgnoredPlayers}),
+							{Q: newIgnoredPlayers}),
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
-			case 'KeeperWantsToSkipMatch':
+			case 51:
 				return $author$project$Main$startNextMatchIfPossible(
 					_Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								history: A2($author$project$History$mapPush, $author$project$League$clearMatch, model.history)
+								b: A2($author$project$History$mapPush, $author$project$League$clearMatch, model.b)
 							}),
 						$elm$core$Platform$Cmd$none));
-			case 'ClearStatus':
+			case 17:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{isStatusTemporary: false, status: $elm$core$Maybe$Nothing}),
+						{t: false, o: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
-			case 'GotNextMatch':
-				if (msg.a.$ === 'Just') {
+			case 0:
+				if (!msg.a.$) {
 					var match = msg.a.a;
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								history: A2(
+								b: A2(
 									$author$project$History$mapInPlace,
 									$author$project$League$startMatch(match),
-									model.history)
+									model.b)
 							}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var _v10 = msg.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-			case 'MatchFinished':
+			case 1:
 				var outcome = msg.a;
 				return A2($author$project$Main$handleMatchFinished, outcome, model);
-			case 'MatchSaved':
+			case 28:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
-					var newVoteCount = model.votesSinceLastSync + 1;
+				if (!result.$) {
+					var newVoteCount = model.aV + 1;
 					var shouldSync = newVoteCount >= 25;
 					return shouldSync ? _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just('Syncing data...'),
-								votesSinceLastSync: 0
+								t: false,
+								o: $elm$core$Maybe$Just('Syncing data...'),
+								aV: 0
 							}),
 						A2(
 							$elm$core$Task$perform,
@@ -9195,13 +9135,13 @@ var $author$project$Main$update = F2(
 							$elm$core$Process$sleep(200))) : _Utils_Tuple2(
 						_Utils_update(
 							model,
-							{status: $elm$core$Maybe$Nothing, votesSinceLastSync: newVoteCount}),
+							{o: $elm$core$Maybe$Nothing, aV: newVoteCount}),
 						$elm$core$Platform$Cmd$none);
 				} else {
 					var err = result.a;
 					var debugInfo = function () {
-						var _v13 = model.status;
-						if (_v13.$ === 'Just') {
+						var _v13 = model.o;
+						if (!_v13.$) {
 							var s = _v13.a;
 							return s;
 						} else {
@@ -9213,14 +9153,14 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(errorMsg)
+								t: false,
+								o: $elm$core$Maybe$Just(errorMsg)
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'LeagueStateSaved':
+			case 29:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
+				if (!result.$) {
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
 					var err = result.a;
@@ -9228,15 +9168,15 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(
+								t: false,
+								o: $elm$core$Maybe$Just(
 									'Failed to update league state: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'PlayerACreated':
+			case 30:
 				var result = msg.b;
-				if (result.$ === 'Ok') {
+				if (!result.$) {
 					var supabasePlayer = result.a;
 					var player = $author$project$Main$supabasePlayerToPlayer(supabasePlayer);
 					return $author$project$Main$maybeAutoSave(
@@ -9245,10 +9185,10 @@ var $author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										history: A2(
+										b: A2(
 											$author$project$History$mapPush,
 											$author$project$League$addPlayer(player),
-											model.history)
+											model.b)
 									}),
 								$elm$core$Platform$Cmd$none)));
 				} else {
@@ -9257,18 +9197,18 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(
+								t: false,
+								o: $elm$core$Maybe$Just(
 									'Failed to create player: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'PlayerBCreated':
+			case 31:
 				var result = msg.b;
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'NewPlayerCreated':
+			case 32:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
+				if (!result.$) {
 					var supabasePlayer = result.a;
 					var player = $author$project$Main$supabasePlayerToPlayer(supabasePlayer);
 					return $author$project$Main$maybeAutoSave(
@@ -9277,10 +9217,10 @@ var $author$project$Main$update = F2(
 								_Utils_update(
 									model,
 									{
-										history: A2(
+										b: A2(
 											$author$project$History$mapPush,
 											$author$project$League$addPlayer(player),
-											model.history)
+											model.b)
 									}),
 								$elm$core$Platform$Cmd$none)));
 				} else {
@@ -9289,21 +9229,21 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(
+								t: false,
+								o: $elm$core$Maybe$Just(
 									'Failed to create player: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'PlayerDeleted':
+			case 33:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
+				if (!result.$) {
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: true,
-								status: $elm$core$Maybe$Just('Player retired')
+								t: true,
+								o: $elm$core$Maybe$Just('Player retired')
 							}),
 						A2(
 							$elm$core$Task$perform,
@@ -9317,79 +9257,79 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(
+								t: false,
+								o: $elm$core$Maybe$Just(
 									'Failed to retire player in database: ' + $author$project$Main$httpErrorToString(err))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'PeriodicSync':
+			case 2:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'TriggerReload':
+			case 3:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{isSyncing: true, votesSinceLastSync: 0}),
+						{ao: true, aV: 0}),
 					A2($author$project$Supabase$getPlayers, $author$project$Config$supabaseConfig, $author$project$Main$GotPlayers));
-			case 'KeeperWantsToUndo':
+			case 4:
 				var newHistory = A2(
 					$elm$core$Maybe$withDefault,
-					model.history,
-					$author$project$History$goBack(model.history));
+					model.b,
+					$author$project$History$goBack(model.b));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{history: newHistory}),
+						{b: newHistory}),
 					A2(
 						$author$project$Supabase$undoEdgeFunction,
 						$author$project$Config$supabaseConfig,
 						function (res) {
-							if (res.$ === 'Ok') {
+							if (!res.$) {
 								return $author$project$Main$PlayerRestored(
-									$elm$core$Result$Ok(_Utils_Tuple0));
+									$elm$core$Result$Ok(0));
 							} else {
 								var e = res.a;
 								return $author$project$Main$PlayerRestored(
 									$elm$core$Result$Err(e));
 							}
 						}));
-			case 'KeeperWantsToShowCustomMatchup':
+			case 5:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: true}),
+						{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, au: '', av: _List_Nil, aw: '', ax: _List_Nil, aP: true}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToHideCustomMatchup':
+			case 6:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: false}),
+						{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, au: '', av: _List_Nil, aw: '', ax: _List_Nil, aP: false}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperSelectedPlayerA':
+			case 7:
 				var player = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							customMatchupPlayerA: $elm$core$Maybe$Just(player),
-							playerASearch: $author$project$Player$name(player),
-							playerASearchResults: _List_Nil
+							_: $elm$core$Maybe$Just(player),
+							au: $author$project$Player$name(player),
+							av: _List_Nil
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperSelectedPlayerB':
+			case 8:
 				var player = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							customMatchupPlayerB: $elm$core$Maybe$Just(player),
-							playerBSearch: $author$project$Player$name(player),
-							playerBSearchResults: _List_Nil
+							aa: $elm$core$Maybe$Just(player),
+							aw: $author$project$Player$name(player),
+							ax: _List_Nil
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedPlayerASearch':
+			case 10:
 				var searchText = msg.a;
-				var currentLeague = $author$project$History$current(model.history);
+				var currentLeague = $author$project$History$current(model.b);
 				var allPlayers = A2(
 					$elm$core$List$sortBy,
 					$author$project$Player$name,
@@ -9415,11 +9355,11 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{playerASearch: searchText, playerASearchResults: searchResults}),
+						{au: searchText, av: searchResults}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperUpdatedPlayerBSearch':
+			case 11:
 				var searchText = msg.a;
-				var currentLeague = $author$project$History$current(model.history);
+				var currentLeague = $author$project$History$current(model.b);
 				var allPlayers = A2(
 					$elm$core$List$sortBy,
 					$author$project$Player$name,
@@ -9445,11 +9385,11 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{playerBSearch: searchText, playerBSearchResults: searchResults}),
+						{aw: searchText, ax: searchResults}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeeperWantsToStartCustomMatch':
-				var _v20 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-				if ((_v20.a.$ === 'Just') && (_v20.b.$ === 'Just')) {
+			case 9:
+				var _v20 = _Utils_Tuple2(model._, model.aa);
+				if ((!_v20.a.$) && (!_v20.b.$)) {
 					var playerA = _v20.a.a;
 					var playerB = _v20.b.a;
 					if (_Utils_eq(
@@ -9464,18 +9404,18 @@ var $author$project$Main$update = F2(
 								$author$project$League$clearMatch,
 								$author$project$League$startMatch(
 									A2($author$project$League$Match, playerA, playerB))),
-							model.history);
+							model.b);
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{customMatchupPlayerA: $elm$core$Maybe$Nothing, customMatchupPlayerB: $elm$core$Maybe$Nothing, history: updatedHistory, playerASearch: '', playerASearchResults: _List_Nil, playerBSearch: '', playerBSearchResults: _List_Nil, showCustomMatchup: false}),
+								{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, b: updatedHistory, au: '', av: _List_Nil, aw: '', ax: _List_Nil, aP: false}),
 							$elm$core$Platform$Cmd$none);
 					}
 				} else {
 					return A2($author$project$Main$setTemporaryStatus, 'Please select both players for the custom match', model);
 				}
-			case 'LoadedLeague':
-				if (msg.a.$ === 'Ok') {
+			case 12:
+				if (!msg.a.$) {
 					var league = msg.a.a;
 					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				} else {
@@ -9484,19 +9424,19 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
+								t: false,
+								o: $elm$core$Maybe$Just('Failed to load standings: ' + problem)
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'GotPlayers':
+			case 13:
 				var result = msg.a;
-				if (result.$ === 'Ok') {
+				if (!result.$) {
 					var supabasePlayers = result.a;
 					var validIdPlayers = A2(
 						$elm$core$List$filter,
 						function (p) {
-							return (p.id >= 1) && (p.id < 1000000);
+							return (p.ab >= 1) && (p.ab < 1000000);
 						},
 						supabasePlayers);
 					var players = A2($elm$core$List$map, $author$project$Main$supabasePlayerToPlayer, validIdPlayers);
@@ -9505,17 +9445,17 @@ var $author$project$Main$update = F2(
 					var invalidSupabasePlayers = A2(
 						$elm$core$List$filter,
 						function (p) {
-							return (p.id < 1) || (p.id >= 1000000);
+							return (p.ab < 1) || (p.ab >= 1000000);
 						},
 						supabasePlayers);
 					var invalidCount = $elm$core$List$length(invalidSupabasePlayers);
 					var statusMsg = (invalidCount > 0) ? ('Filtered out ' + ($elm$core$String$fromInt(invalidCount) + ' players with invalid IDs')) : '';
-					var currentLeague = $author$project$History$current(model.history);
+					var currentLeague = $author$project$History$current(model.b);
 					var activeMatch = $author$project$League$currentMatch(currentLeague);
 					var finalLeague = function () {
-						if (activeMatch.$ === 'Just') {
+						if (!activeMatch.$) {
 							var match = activeMatch.a;
-							return model.isSyncing ? A2($author$project$League$startMatch, match, newLeague) : newLeague;
+							return model.ao ? A2($author$project$League$startMatch, match, newLeague) : newLeague;
 						} else {
 							return newLeague;
 						}
@@ -9523,9 +9463,9 @@ var $author$project$Main$update = F2(
 					var updatedModel = _Utils_update(
 						model,
 						{
-							history: A2($author$project$History$init, 50, finalLeague),
-							isSyncing: false,
-							votesSinceLastSync: 0
+							b: A2($author$project$History$init, 50, finalLeague),
+							ao: false,
+							aV: 0
 						});
 					return (_Utils_eq(activeMatch, $elm$core$Maybe$Nothing) ? $author$project$Main$startNextMatchIfPossible : $elm$core$Basics$identity)(
 						_Utils_Tuple2(
@@ -9541,59 +9481,59 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								isStatusTemporary: false,
-								status: $elm$core$Maybe$Just(
+								t: false,
+								o: $elm$core$Maybe$Just(
 									'Failed to fetch players from Supabase: ' + $author$project$Main$httpErrorToString(httpErr))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
-			case 'ReceivedCurrentTime':
+			case 27:
 				var time = msg.a;
 				var timestamp = $elm$time$Time$posixToMillis(time);
 				var updatedModel = _Utils_update(
 					model,
-					{lastModified: timestamp});
+					{bJ: timestamp});
 				return _Utils_Tuple2(updatedModel, $elm$core$Platform$Cmd$none);
-			case 'ReceivedAutoSave':
+			case 14:
 				var value = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{autoSave: value}),
+						{aW: value}),
 					$elm$core$Platform$Cmd$none);
-			case 'ToggleAutoSave':
-				var newVal = !model.autoSave;
+			case 15:
+				var newVal = !model.aW;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{autoSave: newVal}),
+						{aW: newVal}),
 					A2(
 						$elm$core$Task$perform,
 						$elm$core$Basics$identity,
 						$elm$core$Task$succeed(
 							$author$project$Main$ShowStatus(
 								newVal ? 'Auto-save enabled' : 'Auto-save disabled'))));
-			case 'ShowStatus':
+			case 16:
 				var message = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
 						{
-							isStatusTemporary: false,
-							status: $elm$core$Maybe$Just(message)
+							t: false,
+							o: $elm$core$Maybe$Just(message)
 						}),
 					$elm$core$Platform$Cmd$none);
-			case 'KeyPressed':
+			case 18:
 				var key = msg.a;
 				var _v23 = _Utils_Tuple2(
 					key,
 					$author$project$League$currentMatch(
-						$author$project$History$current(model.history)));
+						$author$project$History$current(model.b)));
 				_v23$5:
 				while (true) {
 					switch (_v23.a) {
 						case '1':
-							if (_v23.b.$ === 'Just') {
+							if (!_v23.b.$) {
 								var _v24 = _v23.b.a;
 								var playerA = _v24.a;
 								var playerB = _v24.b;
@@ -9601,14 +9541,14 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
 									var outcome = $author$project$League$Win(
-										{lost: playerB, won: playerA});
+										{c5: playerB, dR: playerA});
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
 								break _v23$5;
 							}
 						case '2':
-							if (_v23.b.$ === 'Just') {
+							if (!_v23.b.$) {
 								var _v25 = _v23.b.a;
 								var playerA = _v25.a;
 								var playerB = _v25.b;
@@ -9616,14 +9556,14 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
 									var outcome = $author$project$League$Win(
-										{lost: playerA, won: playerB});
+										{c5: playerA, dR: playerB});
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
 								break _v23$5;
 							}
 						case '0':
-							if (_v23.b.$ === 'Just') {
+							if (!_v23.b.$) {
 								var _v26 = _v23.b.a;
 								var playerA = _v26.a;
 								var playerB = _v26.b;
@@ -9631,7 +9571,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
 								} else {
 									var outcome = $author$project$League$Draw(
-										{playerA: playerA, playerB: playerB});
+										{dh: playerA, di: playerB});
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
@@ -9643,25 +9583,25 @@ var $author$project$Main$update = F2(
 									_Utils_update(
 										model,
 										{
-											history: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.history)
+											b: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.b)
 										}),
 									$elm$core$Platform$Cmd$none));
 						case 'Backspace':
 							var newHistory = A2(
 								$elm$core$Maybe$withDefault,
-								model.history,
-								$author$project$History$goBack(model.history));
+								model.b,
+								$author$project$History$goBack(model.b));
 							return _Utils_Tuple2(
 								_Utils_update(
 									model,
-									{history: newHistory}),
+									{b: newHistory}),
 								A2(
 									$author$project$Supabase$undoEdgeFunction,
 									$author$project$Config$supabaseConfig,
 									function (res) {
-										if (res.$ === 'Ok') {
+										if (!res.$) {
 											return $author$project$Main$PlayerRestored(
-												$elm$core$Result$Ok(_Utils_Tuple0));
+												$elm$core$Result$Ok(0));
 										} else {
 											var e = res.a;
 											return $author$project$Main$PlayerRestored(
@@ -9673,29 +9613,29 @@ var $author$project$Main$update = F2(
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'IgnoredKey':
+			case 19:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
-			case 'SetTimeFilter':
+			case 24:
 				var tf = msg.a;
 				return $author$project$Main$startNextMatchIfPossible(
 					_Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
-								history: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.history),
-								timeFilter: tf
+								b: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.b),
+								az: tf
 							}),
 						$elm$core$Platform$Cmd$none));
-			case 'ReceivedTimeFilter':
+			case 25:
 				var raw = msg.a;
 				var tf = A2(
 					$elm$core$Maybe$withDefault,
-					$author$project$Main$All,
+					0,
 					$author$project$Main$parseFilter(raw));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{timeFilter: tf}),
+						{az: tf}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				var raw = msg.a;
@@ -9704,72 +9644,69 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{ignoredPlayers: ignoredIds}),
+						{Q: ignoredIds}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
-var $author$project$Main$CancelPlayerDeletion = {$: 'CancelPlayerDeletion'};
-var $author$project$Main$CancelTogglePlayerTime = {$: 'CancelTogglePlayerTime'};
+var $author$project$Main$CancelPlayerDeletion = {$: 48};
+var $author$project$Main$CancelTogglePlayerTime = {$: 23};
 var $author$project$Main$ConfirmPlayerDeletion = F2(
 	function (a, b) {
-		return {$: 'ConfirmPlayerDeletion', a: a, b: b};
+		return {$: 47, a: a, b: b};
 	});
 var $author$project$Main$ConfirmTogglePlayerTime = F3(
 	function (a, b, c) {
-		return {$: 'ConfirmTogglePlayerTime', a: a, b: b, c: c};
+		return {$: 22, a: a, b: b, c: c};
 	});
-var $author$project$Main$KeeperConfirmedAddPlayer = {$: 'KeeperConfirmedAddPlayer'};
-var $author$project$Main$KeeperToggledAddPlayerAM = {$: 'KeeperToggledAddPlayerAM'};
-var $author$project$Main$KeeperToggledAddPlayerPM = {$: 'KeeperToggledAddPlayerPM'};
+var $author$project$Main$KeeperConfirmedAddPlayer = {$: 42};
+var $author$project$Main$KeeperToggledAddPlayerAM = {$: 40};
+var $author$project$Main$KeeperToggledAddPlayerPM = {$: 41};
 var $author$project$Main$KeeperUpdatedAddPlayerName = function (a) {
-	return {$: 'KeeperUpdatedAddPlayerName', a: a};
+	return {$: 38, a: a};
 };
 var $author$project$Main$KeeperUpdatedAddPlayerRating = function (a) {
-	return {$: 'KeeperUpdatedAddPlayerRating', a: a};
+	return {$: 39, a: a};
 };
-var $author$project$Main$KeeperWantsToHideAddPlayerPopup = {$: 'KeeperWantsToHideAddPlayerPopup'};
+var $author$project$Main$KeeperWantsToHideAddPlayerPopup = {$: 37};
 var $author$project$Main$KeeperWantsToRestorePlayer = function (a) {
-	return {$: 'KeeperWantsToRestorePlayer', a: a};
+	return {$: 44, a: a};
 };
 var $rtfeldman$elm_css$Css$Preprocess$ApplyStyles = function (a) {
-	return {$: 'ApplyStyles', a: a};
+	return {$: 6, a: a};
 };
 var $rtfeldman$elm_css$Css$Preprocess$AppendProperty = function (a) {
-	return {$: 'AppendProperty', a: a};
+	return {$: 0, a: a};
 };
-var $rtfeldman$elm_css$Css$Structure$Property = function (a) {
-	return {$: 'Property', a: a};
-};
+var $rtfeldman$elm_css$Css$Structure$Property = $elm$core$Basics$identity;
 var $rtfeldman$elm_css$Css$Internal$property = F2(
 	function (key, value) {
-		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(
-			$rtfeldman$elm_css$Css$Structure$Property(key + (':' + value)));
+		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
 	});
 var $rtfeldman$elm_css$Css$Internal$getOverloadedProperty = F3(
 	function (functionName, desiredKey, style) {
 		getOverloadedProperty:
 		while (true) {
 			switch (style.$) {
-				case 'AppendProperty':
-					var str = style.a.a;
+				case 0:
+					var str = style.a;
 					var key = A2(
 						$elm$core$Maybe$withDefault,
 						'',
 						$elm$core$List$head(
 							A2($elm$core$String$split, ':', str)));
 					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, key);
-				case 'ExtendSelector':
+				case 1:
 					var selector = style.a;
 					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-selector'));
-				case 'NestSnippet':
+				case 2:
 					var combinator = style.a;
 					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-combinator'));
-				case 'WithPseudoElement':
+				case 3:
 					var pseudoElement = style.a;
 					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-pseudo-element setter'));
-				case 'WithMedia':
+				case 4:
 					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-media-query'));
-				case 'WithKeyframes':
+				case 5:
 					return A2($rtfeldman$elm_css$Css$Internal$property, desiredKey, 'elm-css-error-cannot-apply-' + (functionName + '-with-inapplicable-Style-for-keyframes'));
 				default:
 					if (!style.a.b) {
@@ -9801,34 +9738,34 @@ var $rtfeldman$elm_css$Css$Internal$getOverloadedProperty = F3(
 			}
 		}
 	});
-var $rtfeldman$elm_css$Css$Internal$IncompatibleUnits = {$: 'IncompatibleUnits'};
-var $rtfeldman$elm_css$Css$Structure$Compatible = {$: 'Compatible'};
+var $rtfeldman$elm_css$Css$Internal$IncompatibleUnits = 0;
+var $rtfeldman$elm_css$Css$Structure$Compatible = 0;
 var $elm$core$String$fromFloat = _String_fromNumber;
 var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 	function (units, unitLabel, numericValue) {
 		return {
-			absoluteLength: $rtfeldman$elm_css$Css$Structure$Compatible,
-			calc: $rtfeldman$elm_css$Css$Structure$Compatible,
-			flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible,
-			fontSize: $rtfeldman$elm_css$Css$Structure$Compatible,
-			length: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
-			lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
-			numericValue: numericValue,
-			textIndent: $rtfeldman$elm_css$Css$Structure$Compatible,
-			unitLabel: unitLabel,
-			units: units,
-			value: _Utils_ap(
+			cv: 0,
+			cF: 0,
+			a1: 0,
+			D: 0,
+			p: 0,
+			a5: 0,
+			ap: 0,
+			a6: 0,
+			a7: 0,
+			aK: 0,
+			aL: 0,
+			ac: 0,
+			as: numericValue,
+			bc: 0,
+			be: unitLabel,
+			bB: units,
+			ae: _Utils_ap(
 				$elm$core$String$fromFloat(numericValue),
 				unitLabel)
 		};
 	});
-var $rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty = A3($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$Internal$IncompatibleUnits, '', 0);
+var $rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty = A3($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, '', 0);
 var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -9836,68 +9773,61 @@ var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 		'align-items',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
-var $rtfeldman$elm_css$Css$auto = {alignItemsOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContentOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'auto'};
+var $rtfeldman$elm_css$Css$auto = {dW: 0, c: 0, a1: 0, bI: 0, er: 0, a5: 0, ap: 0, ac: 0, a8: 0, U: 0, bV: 0, bd: 0, L: 0, ae: 'auto'};
 var $rtfeldman$elm_css$Css$property = F2(
 	function (key, value) {
-		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(
-			$rtfeldman$elm_css$Css$Structure$Property(key + (':' + value)));
+		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
 	});
 var $rtfeldman$elm_css$Css$backgroundColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.value);
+	return A2($rtfeldman$elm_css$Css$property, 'background-color', c.ae);
 };
 var $rtfeldman$elm_css$Css$batch = $rtfeldman$elm_css$Css$Preprocess$ApplyStyles;
-var $rtfeldman$elm_css$Css$block = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'block'};
+var $rtfeldman$elm_css$Css$block = {l: 0, ae: 'block'};
 var $rtfeldman$elm_css$Css$prop1 = F2(
 	function (key, arg) {
-		return A2($rtfeldman$elm_css$Css$property, key, arg.value);
+		return A2($rtfeldman$elm_css$Css$property, key, arg.ae);
 	});
 var $rtfeldman$elm_css$Css$border = $rtfeldman$elm_css$Css$prop1('border');
 var $rtfeldman$elm_css$Css$prop3 = F4(
 	function (key, argA, argB, argC) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + argC.value))));
+		return A2($rtfeldman$elm_css$Css$property, key, argA.ae + (' ' + (argB.ae + (' ' + argC.ae))));
 	});
 var $rtfeldman$elm_css$Css$border3 = $rtfeldman$elm_css$Css$prop3('border');
-var $rtfeldman$elm_css$Css$borderBox = {backgroundClip: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'border-box'};
-var $rtfeldman$elm_css$Css$Structure$PseudoElement = function (a) {
-	return {$: 'PseudoElement', a: a};
-};
+var $rtfeldman$elm_css$Css$borderBox = {bZ: 0, bE: 0, ae: 'border-box'};
+var $rtfeldman$elm_css$Css$Structure$PseudoElement = $elm$core$Basics$identity;
 var $rtfeldman$elm_css$Css$Preprocess$WithPseudoElement = F2(
 	function (a, b) {
-		return {$: 'WithPseudoElement', a: a, b: b};
+		return {$: 3, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$pseudoElement = function (element) {
-	return $rtfeldman$elm_css$Css$Preprocess$WithPseudoElement(
-		$rtfeldman$elm_css$Css$Structure$PseudoElement(element));
+	return $rtfeldman$elm_css$Css$Preprocess$WithPseudoElement(element);
 };
 var $rtfeldman$elm_css$Css$after = $rtfeldman$elm_css$Css$pseudoElement('after');
 var $rtfeldman$elm_css$Css$before = $rtfeldman$elm_css$Css$pseudoElement('before');
 var $rtfeldman$elm_css$Css$boxSizing = $rtfeldman$elm_css$Css$prop1('box-sizing');
 var $rtfeldman$elm_css$Css$Structure$UniversalSelectorSequence = function (a) {
-	return {$: 'UniversalSelectorSequence', a: a};
+	return {$: 1, a: a};
 };
 var $rtfeldman$elm_css$Css$Structure$Selector = F3(
 	function (a, b, c) {
-		return {$: 'Selector', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
-var $rtfeldman$elm_css$Css$Preprocess$Snippet = function (a) {
-	return {$: 'Snippet', a: a};
-};
+var $rtfeldman$elm_css$Css$Preprocess$Snippet = $elm$core$Basics$identity;
 var $rtfeldman$elm_css$Css$Preprocess$StyleBlock = F3(
 	function (a, b, c) {
-		return {$: 'StyleBlock', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration = function (a) {
-	return {$: 'StyleBlockDeclaration', a: a};
+	return {$: 0, a: a};
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$makeSnippet = F2(
 	function (styles, sequence) {
 		var selector = A3($rtfeldman$elm_css$Css$Structure$Selector, sequence, _List_Nil, $elm$core$Maybe$Nothing);
-		return $rtfeldman$elm_css$Css$Preprocess$Snippet(
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration(
-					A3($rtfeldman$elm_css$Css$Preprocess$StyleBlock, selector, _List_Nil, styles))
-				]));
+		return _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration(
+				A3($rtfeldman$elm_css$Css$Preprocess$StyleBlock, selector, _List_Nil, styles))
+			]);
 	});
 var $rtfeldman$elm_css$Css$Global$everything = function (styles) {
 	return A2(
@@ -9931,13 +9861,13 @@ var $rtfeldman$elm_css$Css$Structure$compactHelp = F2(
 		var keyframesByName = _v0.a;
 		var declarations = _v0.b;
 		switch (declaration.$) {
-			case 'StyleBlockDeclaration':
+			case 0:
 				var _v2 = declaration.a;
 				var properties = _v2.c;
 				return $elm$core$List$isEmpty(properties) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'MediaRule':
+			case 1:
 				var styleBlocks = declaration.b;
 				return A2(
 					$elm$core$List$all,
@@ -9948,36 +9878,36 @@ var $rtfeldman$elm_css$Css$Structure$compactHelp = F2(
 					styleBlocks) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'SupportsRule':
+			case 2:
 				var otherDeclarations = declaration.b;
 				return $elm$core$List$isEmpty(otherDeclarations) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'DocumentRule':
+			case 3:
 				return _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'PageRule':
+			case 4:
 				var properties = declaration.a;
 				return $elm$core$List$isEmpty(properties) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'FontFace':
+			case 5:
 				var properties = declaration.a;
 				return $elm$core$List$isEmpty(properties) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'Keyframes':
+			case 6:
 				var record = declaration.a;
-				return $elm$core$String$isEmpty(record.declaration) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
-					A3($elm$core$Dict$insert, record.name, record.declaration, keyframesByName),
+				return $elm$core$String$isEmpty(record.ea) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
+					A3($elm$core$Dict$insert, record.b8, record.ea, keyframesByName),
 					declarations);
-			case 'Viewport':
+			case 7:
 				var properties = declaration.a;
 				return $elm$core$List$isEmpty(properties) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
 					A2($elm$core$List$cons, declaration, declarations));
-			case 'CounterStyle':
+			case 8:
 				var properties = declaration.a;
 				return $elm$core$List$isEmpty(properties) ? _Utils_Tuple2(keyframesByName, declarations) : _Utils_Tuple2(
 					keyframesByName,
@@ -9996,7 +9926,7 @@ var $rtfeldman$elm_css$Css$Structure$compactHelp = F2(
 		}
 	});
 var $rtfeldman$elm_css$Css$Structure$Keyframes = function (a) {
-	return {$: 'Keyframes', a: a};
+	return {$: 6, a: a};
 };
 var $elm$core$List$append = F2(
 	function (xs, ys) {
@@ -10016,7 +9946,7 @@ var $rtfeldman$elm_css$Css$Structure$withKeyframeDeclarations = F2(
 					var name = _v0.a;
 					var decl = _v0.b;
 					return $rtfeldman$elm_css$Css$Structure$Keyframes(
-						{declaration: decl, name: name});
+						{ea: decl, b8: name});
 				},
 				$elm$core$Dict$toList(keyframesByName)),
 			compactedDeclarations);
@@ -10032,15 +9962,15 @@ var $rtfeldman$elm_css$Css$Structure$compactDeclarations = function (declaration
 	return A2($rtfeldman$elm_css$Css$Structure$withKeyframeDeclarations, keyframesByName, compactedDeclarations);
 };
 var $rtfeldman$elm_css$Css$Structure$compactStylesheet = function (_v0) {
-	var charset = _v0.charset;
-	var imports = _v0.imports;
-	var namespaces = _v0.namespaces;
-	var declarations = _v0.declarations;
+	var charset = _v0.cH;
+	var imports = _v0.cX;
+	var namespaces = _v0.c8;
+	var declarations = _v0.eb;
 	return {
-		charset: charset,
-		declarations: $rtfeldman$elm_css$Css$Structure$compactDeclarations(declarations),
-		imports: imports,
-		namespaces: namespaces
+		cH: charset,
+		eb: $rtfeldman$elm_css$Css$Structure$compactDeclarations(declarations),
+		cX: imports,
+		c8: namespaces
 	};
 };
 var $rtfeldman$elm_css$Css$Structure$Output$charsetToString = function (charset) {
@@ -10085,19 +10015,19 @@ var $rtfeldman$elm_css$Css$String$mapJoin = F3(
 		return A4($rtfeldman$elm_css$Css$String$mapJoinHelp, map, sep, strs, '');
 	});
 var $rtfeldman$elm_css$Css$Structure$Output$mediaExpressionToString = function (expression) {
-	return '(' + (expression.feature + (A2(
+	return '(' + (expression.cQ + (A2(
 		$elm$core$Maybe$withDefault,
 		'',
 		A2(
 			$elm$core$Maybe$map,
 			$elm$core$Basics$append(': '),
-			expression.value)) + ')'));
+			expression.ae)) + ')'));
 };
 var $rtfeldman$elm_css$Css$Structure$Output$mediaTypeToString = function (mediaType) {
-	switch (mediaType.$) {
-		case 'Print':
+	switch (mediaType) {
+		case 0:
 			return 'print';
-		case 'Screen':
+		case 1:
 			return 'screen';
 		default:
 			return 'speech';
@@ -10115,14 +10045,14 @@ var $rtfeldman$elm_css$Css$Structure$Output$mediaQueryToString = function (media
 					A2($elm$core$List$map, $rtfeldman$elm_css$Css$Structure$Output$mediaExpressionToString, expressions))));
 		});
 	switch (mediaQuery.$) {
-		case 'AllQuery':
+		case 0:
 			var expressions = mediaQuery.a;
 			return A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$mediaExpressionToString, ' and ', expressions);
-		case 'OnlyQuery':
+		case 1:
 			var mediaType = mediaQuery.a;
 			var expressions = mediaQuery.b;
 			return A3(prefixWith, 'only', mediaType, expressions);
-		case 'NotQuery':
+		case 2:
 			var mediaType = mediaQuery.a;
 			var expressions = mediaQuery.b;
 			return A3(prefixWith, 'not', mediaType, expressions);
@@ -10153,7 +10083,7 @@ var $rtfeldman$elm_css$Css$Structure$Output$emitProperties = function (propertie
 	return A3(
 		$rtfeldman$elm_css$Css$String$mapJoin,
 		function (_v0) {
-			var prop = _v0.a;
+			var prop = _v0;
 			return prop + ';';
 		},
 		'',
@@ -10161,16 +10091,16 @@ var $rtfeldman$elm_css$Css$Structure$Output$emitProperties = function (propertie
 };
 var $elm$core$String$append = _String_append;
 var $rtfeldman$elm_css$Css$Structure$Output$pseudoElementToString = function (_v0) {
-	var str = _v0.a;
+	var str = _v0;
 	return '::' + str;
 };
 var $rtfeldman$elm_css$Css$Structure$Output$combinatorToString = function (combinator) {
-	switch (combinator.$) {
-		case 'AdjacentSibling':
+	switch (combinator) {
+		case 0:
 			return '+';
-		case 'GeneralSibling':
+		case 1:
 			return '~';
-		case 'Child':
+		case 2:
 			return '>';
 		default:
 			return '';
@@ -10178,13 +10108,13 @@ var $rtfeldman$elm_css$Css$Structure$Output$combinatorToString = function (combi
 };
 var $rtfeldman$elm_css$Css$Structure$Output$repeatableSimpleSelectorToString = function (repeatableSimpleSelector) {
 	switch (repeatableSimpleSelector.$) {
-		case 'ClassSelector':
+		case 0:
 			var str = repeatableSimpleSelector.a;
 			return '.' + str;
-		case 'IdSelector':
+		case 1:
 			var str = repeatableSimpleSelector.a;
 			return '#' + str;
-		case 'PseudoClassSelector':
+		case 2:
 			var str = repeatableSimpleSelector.a;
 			return ':' + str;
 		default:
@@ -10194,13 +10124,13 @@ var $rtfeldman$elm_css$Css$Structure$Output$repeatableSimpleSelectorToString = f
 };
 var $rtfeldman$elm_css$Css$Structure$Output$simpleSelectorSequenceToString = function (simpleSelectorSequence) {
 	switch (simpleSelectorSequence.$) {
-		case 'TypeSelectorSequence':
-			var str = simpleSelectorSequence.a.a;
+		case 0:
+			var str = simpleSelectorSequence.a;
 			var repeatableSimpleSelectors = simpleSelectorSequence.b;
 			return _Utils_ap(
 				str,
 				A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$repeatableSimpleSelectorToString, '', repeatableSimpleSelectors));
-		case 'UniversalSelectorSequence':
+		case 1:
 			var repeatableSimpleSelectors = simpleSelectorSequence.a;
 			return $elm$core$List$isEmpty(repeatableSimpleSelectors) ? '*' : A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$repeatableSimpleSelectorToString, '', repeatableSimpleSelectors);
 		default:
@@ -10246,40 +10176,40 @@ var $rtfeldman$elm_css$Css$Structure$Output$prettyPrintStyleBlock = function (_v
 };
 var $rtfeldman$elm_css$Css$Structure$Output$prettyPrintDeclaration = function (decl) {
 	switch (decl.$) {
-		case 'StyleBlockDeclaration':
+		case 0:
 			var styleBlock = decl.a;
 			return $rtfeldman$elm_css$Css$Structure$Output$prettyPrintStyleBlock(styleBlock);
-		case 'MediaRule':
+		case 1:
 			var mediaQueries = decl.a;
 			var styleBlocks = decl.b;
 			var query = A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$mediaQueryToString, ', ', mediaQueries);
 			var blocks = A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$prettyPrintStyleBlock, '\n', styleBlocks);
 			return '@media ' + (query + ('{' + (blocks + '}')));
-		case 'SupportsRule':
+		case 2:
 			return 'TODO';
-		case 'DocumentRule':
+		case 3:
 			return 'TODO';
-		case 'PageRule':
+		case 4:
 			return 'TODO';
-		case 'FontFace':
+		case 5:
 			return 'TODO';
-		case 'Keyframes':
-			var name = decl.a.name;
-			var declaration = decl.a.declaration;
+		case 6:
+			var name = decl.a.b8;
+			var declaration = decl.a.ea;
 			return '@keyframes ' + (name + ('{' + (declaration + '}')));
-		case 'Viewport':
+		case 7:
 			return 'TODO';
-		case 'CounterStyle':
+		case 8:
 			return 'TODO';
 		default:
 			return 'TODO';
 	}
 };
 var $rtfeldman$elm_css$Css$Structure$Output$prettyPrint = function (_v0) {
-	var charset = _v0.charset;
-	var imports = _v0.imports;
-	var namespaces = _v0.namespaces;
-	var declarations = _v0.declarations;
+	var charset = _v0.cH;
+	var imports = _v0.cX;
+	var namespaces = _v0.c8;
+	var declarations = _v0.eb;
 	return $rtfeldman$elm_css$Css$Structure$Output$charsetToString(charset) + (A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$importToString, '\n', imports) + (A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$namespaceToString, '\n', namespaces) + (A3($rtfeldman$elm_css$Css$String$mapJoin, $rtfeldman$elm_css$Css$Structure$Output$prettyPrintDeclaration, '\n', declarations) + '')));
 };
 var $elm$core$List$concat = function (lists) {
@@ -10291,31 +10221,31 @@ var $elm$core$List$concatMap = F2(
 			A2($elm$core$List$map, f, list));
 	});
 var $rtfeldman$elm_css$Css$Structure$CounterStyle = function (a) {
-	return {$: 'CounterStyle', a: a};
+	return {$: 8, a: a};
 };
 var $rtfeldman$elm_css$Css$Structure$FontFace = function (a) {
-	return {$: 'FontFace', a: a};
+	return {$: 5, a: a};
 };
 var $rtfeldman$elm_css$Css$Structure$PageRule = function (a) {
-	return {$: 'PageRule', a: a};
+	return {$: 4, a: a};
 };
 var $rtfeldman$elm_css$Css$Structure$StyleBlock = F3(
 	function (a, b, c) {
-		return {$: 'StyleBlock', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $rtfeldman$elm_css$Css$Structure$StyleBlockDeclaration = function (a) {
-	return {$: 'StyleBlockDeclaration', a: a};
+	return {$: 0, a: a};
 };
 var $rtfeldman$elm_css$Css$Structure$SupportsRule = F2(
 	function (a, b) {
-		return {$: 'SupportsRule', a: a, b: b};
+		return {$: 2, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Structure$Viewport = function (a) {
-	return {$: 'Viewport', a: a};
+	return {$: 7, a: a};
 };
 var $rtfeldman$elm_css$Css$Structure$MediaRule = F2(
 	function (a, b) {
-		return {$: 'MediaRule', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Structure$mapLast = F2(
 	function (update, list) {
@@ -10359,14 +10289,14 @@ var $rtfeldman$elm_css$Css$Structure$appendProperty = F2(
 		} else {
 			if (!declarations.b.b) {
 				switch (declarations.a.$) {
-					case 'StyleBlockDeclaration':
+					case 0:
 						var styleBlock = declarations.a.a;
 						return _List_fromArray(
 							[
 								$rtfeldman$elm_css$Css$Structure$StyleBlockDeclaration(
 								A2($rtfeldman$elm_css$Css$Structure$withPropertyAppended, property, styleBlock))
 							]);
-					case 'MediaRule':
+					case 1:
 						var _v1 = declarations.a;
 						var mediaQueries = _v1.a;
 						var styleBlocks = _v1.b;
@@ -10439,16 +10369,16 @@ var $rtfeldman$elm_css$Css$Structure$appendPseudoElementToLastSelector = F2(
 	});
 var $rtfeldman$elm_css$Css$Structure$CustomSelector = F2(
 	function (a, b) {
-		return {$: 'CustomSelector', a: a, b: b};
+		return {$: 2, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Structure$TypeSelectorSequence = F2(
 	function (a, b) {
-		return {$: 'TypeSelectorSequence', a: a, b: b};
+		return {$: 0, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Structure$appendRepeatable = F2(
 	function (selector, sequence) {
 		switch (sequence.$) {
-			case 'TypeSelectorSequence':
+			case 0:
 				var typeSelector = sequence.a;
 				var list = sequence.b;
 				return A2(
@@ -10458,7 +10388,7 @@ var $rtfeldman$elm_css$Css$Structure$appendRepeatable = F2(
 						list,
 						_List_fromArray(
 							[selector])));
-			case 'UniversalSelectorSequence':
+			case 1:
 				var list = sequence.a;
 				return $rtfeldman$elm_css$Css$Structure$UniversalSelectorSequence(
 					_Utils_ap(
@@ -10536,7 +10466,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$collectSelectors = function (decla
 		if (!declarations.b) {
 			return _List_Nil;
 		} else {
-			if (declarations.a.$ === 'StyleBlockDeclaration') {
+			if (!declarations.a.$) {
 				var _v1 = declarations.a.a;
 				var firstSelector = _v1.a;
 				var otherSelectors = _v1.b;
@@ -10555,7 +10485,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$collectSelectors = function (decla
 };
 var $rtfeldman$elm_css$Css$Structure$DocumentRule = F5(
 	function (a, b, c, d, e) {
-		return {$: 'DocumentRule', a: a, b: b, c: c, d: d, e: e};
+		return {$: 3, a: a, b: b, c: c, d: d, e: e};
 	});
 var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 	function (update, declarations) {
@@ -10566,13 +10496,13 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 			} else {
 				if (!declarations.b.b) {
 					switch (declarations.a.$) {
-						case 'StyleBlockDeclaration':
+						case 0:
 							var styleBlock = declarations.a.a;
 							return A2(
 								$elm$core$List$map,
 								$rtfeldman$elm_css$Css$Structure$StyleBlockDeclaration,
 								update(styleBlock));
-						case 'MediaRule':
+						case 1:
 							if (declarations.a.b.b) {
 								if (!declarations.a.b.b.b) {
 									var _v1 = declarations.a;
@@ -10599,7 +10529,7 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 											[
 												A2($rtfeldman$elm_css$Css$Structure$MediaRule, mediaQueries, rest)
 											]));
-									if ((_v5.b && (_v5.a.$ === 'MediaRule')) && (!_v5.b.b)) {
+									if ((_v5.b && (_v5.a.$ === 1)) && (!_v5.b.b)) {
 										var _v6 = _v5.a;
 										var newMediaQueries = _v6.a;
 										var newStyleBlocks = _v6.b;
@@ -10618,7 +10548,7 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 							} else {
 								break _v0$12;
 							}
-						case 'SupportsRule':
+						case 2:
 							var _v7 = declarations.a;
 							var str = _v7.a;
 							var nestedDeclarations = _v7.b;
@@ -10629,7 +10559,7 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 									str,
 									A2($rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock, update, nestedDeclarations))
 								]);
-						case 'DocumentRule':
+						case 3:
 							var _v8 = declarations.a;
 							var str1 = _v8.a;
 							var str2 = _v8.b;
@@ -10640,15 +10570,15 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 								$elm$core$List$map,
 								A4($rtfeldman$elm_css$Css$Structure$DocumentRule, str1, str2, str3, str4),
 								update(styleBlock));
-						case 'PageRule':
+						case 4:
 							return declarations;
-						case 'FontFace':
+						case 5:
 							return declarations;
-						case 'Keyframes':
+						case 6:
 							return declarations;
-						case 'Viewport':
+						case 7:
 							return declarations;
-						case 'CounterStyle':
+						case 8:
 							return declarations;
 						default:
 							return declarations;
@@ -10667,7 +10597,7 @@ var $rtfeldman$elm_css$Css$Structure$concatMapLastStyleBlock = F2(
 	});
 var $robinheghan$murmur3$Murmur3$HashData = F4(
 	function (shift, seed, hash, charsProcessed) {
-		return {charsProcessed: charsProcessed, hash: hash, seed: seed, shift: shift};
+		return {aZ: charsProcessed, a4: hash, dy: seed, a9: shift};
 	});
 var $robinheghan$murmur3$Murmur3$c1 = 3432918353;
 var $robinheghan$murmur3$Murmur3$c2 = 461845907;
@@ -10682,14 +10612,14 @@ var $robinheghan$murmur3$Murmur3$rotlBy = F2(
 		return (a << b) | (a >>> (32 - b));
 	});
 var $robinheghan$murmur3$Murmur3$finalize = function (data) {
-	var acc = (!(!data.hash)) ? (data.seed ^ A2(
+	var acc = (!(!data.a4)) ? (data.dy ^ A2(
 		$robinheghan$murmur3$Murmur3$multiplyBy,
 		$robinheghan$murmur3$Murmur3$c2,
 		A2(
 			$robinheghan$murmur3$Murmur3$rotlBy,
 			15,
-			A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, data.hash)))) : data.seed;
-	var h0 = acc ^ data.charsProcessed;
+			A2($robinheghan$murmur3$Murmur3$multiplyBy, $robinheghan$murmur3$Murmur3$c1, data.a4)))) : data.dy;
+	var h0 = acc ^ data.aZ;
 	var h1 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 2246822507, h0 ^ (h0 >>> 16));
 	var h2 = A2($robinheghan$murmur3$Murmur3$multiplyBy, 3266489909, h1 ^ (h1 >>> 13));
 	return (h2 ^ (h2 >>> 16)) >>> 0;
@@ -10713,17 +10643,17 @@ var $robinheghan$murmur3$Murmur3$mix = F2(
 	});
 var $robinheghan$murmur3$Murmur3$hashFold = F2(
 	function (c, data) {
-		var res = data.hash | ((255 & $elm$core$Char$toCode(c)) << data.shift);
-		var _v0 = data.shift;
+		var res = data.a4 | ((255 & $elm$core$Char$toCode(c)) << data.a9);
+		var _v0 = data.a9;
 		if (_v0 === 24) {
 			return {
-				charsProcessed: data.charsProcessed + 1,
-				hash: 0,
-				seed: A2($robinheghan$murmur3$Murmur3$mix, data.seed, res),
-				shift: 0
+				aZ: data.aZ + 1,
+				a4: 0,
+				dy: A2($robinheghan$murmur3$Murmur3$mix, data.dy, res),
+				a9: 0
 			};
 		} else {
-			return {charsProcessed: data.charsProcessed + 1, hash: res, seed: data.seed, shift: data.shift + 8};
+			return {aZ: data.aZ + 1, a4: res, dy: data.dy, a9: data.a9 + 8};
 		}
 	});
 var $robinheghan$murmur3$Murmur3$hashString = F2(
@@ -10742,37 +10672,37 @@ var $rtfeldman$elm_hex$Hex$unsafeToDigit = function (num) {
 	while (true) {
 		switch (num) {
 			case 0:
-				return _Utils_chr('0');
+				return '0';
 			case 1:
-				return _Utils_chr('1');
+				return '1';
 			case 2:
-				return _Utils_chr('2');
+				return '2';
 			case 3:
-				return _Utils_chr('3');
+				return '3';
 			case 4:
-				return _Utils_chr('4');
+				return '4';
 			case 5:
-				return _Utils_chr('5');
+				return '5';
 			case 6:
-				return _Utils_chr('6');
+				return '6';
 			case 7:
-				return _Utils_chr('7');
+				return '7';
 			case 8:
-				return _Utils_chr('8');
+				return '8';
 			case 9:
-				return _Utils_chr('9');
+				return '9';
 			case 10:
-				return _Utils_chr('a');
+				return 'a';
 			case 11:
-				return _Utils_chr('b');
+				return 'b';
 			case 12:
-				return _Utils_chr('c');
+				return 'c';
 			case 13:
-				return _Utils_chr('d');
+				return 'd';
 			case 14:
-				return _Utils_chr('e');
+				return 'e';
 			case 15:
-				return _Utils_chr('f');
+				return 'f';
 			default:
 				var $temp$num = num;
 				num = $temp$num;
@@ -10806,13 +10736,13 @@ var $rtfeldman$elm_hex$Hex$toString = function (num) {
 	return $elm$core$String$fromList(
 		(num < 0) ? A2(
 			$elm$core$List$cons,
-			_Utils_chr('-'),
+			'-',
 			A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, -num)) : A2($rtfeldman$elm_hex$Hex$unsafePositiveToDigits, _List_Nil, num));
 };
 var $rtfeldman$elm_css$Hash$fromString = function (str) {
 	return A2(
 		$elm$core$String$cons,
-		_Utils_chr('_'),
+		'_',
 		$rtfeldman$elm_hex$Hex$toString(
 			A2($robinheghan$murmur3$Murmur3$hashString, $rtfeldman$elm_css$Hash$initialSeed, str)));
 };
@@ -10862,7 +10792,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$oneOf = function (maybes) {
 		} else {
 			var maybe = maybes.a;
 			var rest = maybes.b;
-			if (maybe.$ === 'Nothing') {
+			if (maybe.$ === 1) {
 				var $temp$maybes = rest;
 				maybes = $temp$maybes;
 				continue oneOf;
@@ -10873,7 +10803,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$oneOf = function (maybes) {
 	}
 };
 var $rtfeldman$elm_css$Css$Structure$FontFeatureValues = function (a) {
-	return {$: 'FontFeatureValues', a: a};
+	return {$: 9, a: a};
 };
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$resolveFontFeatureValues = function (tuples) {
 	var expandTuples = function (tuplesToExpand) {
@@ -10900,7 +10830,7 @@ var $elm$core$List$singleton = function (value) {
 };
 var $rtfeldman$elm_css$Css$Structure$styleBlockToMediaRule = F2(
 	function (mediaQueries, declaration) {
-		if (declaration.$ === 'StyleBlockDeclaration') {
+		if (!declaration.$) {
 			var styleBlock = declaration.a;
 			return A2(
 				$rtfeldman$elm_css$Css$Structure$MediaRule,
@@ -10922,7 +10852,7 @@ var $elm$core$List$tail = function (list) {
 };
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$toDocumentRule = F5(
 	function (str1, str2, str3, str4, declaration) {
-		if (declaration.$ === 'StyleBlockDeclaration') {
+		if (!declaration.$) {
 			var structureStyleBlock = declaration.a;
 			return A5($rtfeldman$elm_css$Css$Structure$DocumentRule, str1, str2, str3, str4, structureStyleBlock);
 		} else {
@@ -10932,21 +10862,21 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$toDocumentRule = F5(
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$toMediaRule = F2(
 	function (mediaQueries, declaration) {
 		switch (declaration.$) {
-			case 'StyleBlockDeclaration':
+			case 0:
 				var structureStyleBlock = declaration.a;
 				return A2(
 					$rtfeldman$elm_css$Css$Structure$MediaRule,
 					mediaQueries,
 					_List_fromArray(
 						[structureStyleBlock]));
-			case 'MediaRule':
+			case 1:
 				var newMediaQueries = declaration.a;
 				var structureStyleBlocks = declaration.b;
 				return A2(
 					$rtfeldman$elm_css$Css$Structure$MediaRule,
 					_Utils_ap(mediaQueries, newMediaQueries),
 					structureStyleBlocks);
-			case 'SupportsRule':
+			case 2:
 				var str = declaration.a;
 				var declarations = declaration.b;
 				return A2(
@@ -10956,29 +10886,29 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$toMediaRule = F2(
 						$elm$core$List$map,
 						$rtfeldman$elm_css$Css$Preprocess$Resolve$toMediaRule(mediaQueries),
 						declarations));
-			case 'DocumentRule':
+			case 3:
 				var str1 = declaration.a;
 				var str2 = declaration.b;
 				var str3 = declaration.c;
 				var str4 = declaration.d;
 				var structureStyleBlock = declaration.e;
 				return A5($rtfeldman$elm_css$Css$Structure$DocumentRule, str1, str2, str3, str4, structureStyleBlock);
-			case 'PageRule':
+			case 4:
 				return declaration;
-			case 'FontFace':
+			case 5:
 				return declaration;
-			case 'Keyframes':
+			case 6:
 				return declaration;
-			case 'Viewport':
+			case 7:
 				return declaration;
-			case 'CounterStyle':
+			case 8:
 				return declaration;
 			default:
 				return declaration;
 		}
 	});
 var $rtfeldman$elm_css$Css$Preprocess$unwrapSnippet = function (_v0) {
-	var declarations = _v0.a;
+	var declarations = _v0;
 	return declarations;
 };
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyNestedStylesToLast = F4(
@@ -11000,7 +10930,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyNestedStylesToLast = F4(
 			var _v14 = _Utils_Tuple2(
 				$elm$core$List$head(nextResult),
 				$rtfeldman$elm_css$Css$Preprocess$Resolve$last(declarations));
-			if ((_v14.a.$ === 'Just') && (_v14.b.$ === 'Just')) {
+			if ((!_v14.a.$) && (!_v14.b.$)) {
 				var nextResultParent = _v14.a.a;
 				var originalParent = _v14.b.a;
 				return _Utils_ap(
@@ -11045,14 +10975,14 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 			return declarations;
 		} else {
 			switch (styles.a.$) {
-				case 'AppendProperty':
+				case 0:
 					var property = styles.a.a;
 					var rest = styles.b;
 					return A2(
 						$rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles,
 						rest,
 						A2($rtfeldman$elm_css$Css$Structure$appendProperty, property, declarations));
-				case 'ExtendSelector':
+				case 1:
 					var _v4 = styles.a;
 					var selector = _v4.a;
 					var nestedStyles = _v4.b;
@@ -11063,7 +10993,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 						rest,
 						$rtfeldman$elm_css$Css$Structure$appendRepeatableToLastSelector(selector),
 						declarations);
-				case 'NestSnippet':
+				case 2:
 					var _v5 = styles.a;
 					var selectorCombinator = _v5.a;
 					var snippets = _v5.b;
@@ -11091,7 +11021,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 						});
 					var expandDeclaration = function (declaration) {
 						switch (declaration.$) {
-							case 'StyleBlockDeclaration':
+							case 0:
 								var _v7 = declaration.a;
 								var firstSelector = _v7.a;
 								var otherSelectors = _v7.b;
@@ -11119,15 +11049,15 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 									}
 								}();
 								return A2($rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles, nestedStyles, newDeclarations);
-							case 'MediaRule':
+							case 1:
 								var mediaQueries = declaration.a;
 								var styleBlocks = declaration.b;
 								return A2($rtfeldman$elm_css$Css$Preprocess$Resolve$resolveMediaRule, mediaQueries, styleBlocks);
-							case 'SupportsRule':
+							case 2:
 								var str = declaration.a;
 								var otherSnippets = declaration.b;
 								return A2($rtfeldman$elm_css$Css$Preprocess$Resolve$resolveSupportsRule, str, otherSnippets);
-							case 'DocumentRule':
+							case 3:
 								var str1 = declaration.a;
 								var str2 = declaration.b;
 								var str3 = declaration.c;
@@ -11137,25 +11067,25 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 									$elm$core$List$map,
 									A4($rtfeldman$elm_css$Css$Preprocess$Resolve$toDocumentRule, str1, str2, str3, str4),
 									$rtfeldman$elm_css$Css$Preprocess$Resolve$expandStyleBlock(styleBlock));
-							case 'PageRule':
+							case 4:
 								var properties = declaration.a;
 								return _List_fromArray(
 									[
 										$rtfeldman$elm_css$Css$Structure$PageRule(properties)
 									]);
-							case 'FontFace':
+							case 5:
 								var properties = declaration.a;
 								return _List_fromArray(
 									[
 										$rtfeldman$elm_css$Css$Structure$FontFace(properties)
 									]);
-							case 'Viewport':
+							case 6:
 								var properties = declaration.a;
 								return _List_fromArray(
 									[
 										$rtfeldman$elm_css$Css$Structure$Viewport(properties)
 									]);
-							case 'CounterStyle':
+							case 7:
 								var properties = declaration.a;
 								return _List_fromArray(
 									[
@@ -11176,7 +11106,7 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 								$elm$core$List$map,
 								expandDeclaration,
 								A2($elm$core$List$concatMap, $rtfeldman$elm_css$Css$Preprocess$unwrapSnippet, snippets))));
-				case 'WithPseudoElement':
+				case 3:
 					var _v11 = styles.a;
 					var pseudoElement = _v11.a;
 					var nestedStyles = _v11.b;
@@ -11187,11 +11117,11 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 						rest,
 						$rtfeldman$elm_css$Css$Structure$appendPseudoElementToLastSelector(pseudoElement),
 						declarations);
-				case 'WithKeyframes':
+				case 5:
 					var str = styles.a.a;
 					var rest = styles.b;
 					var name = $rtfeldman$elm_css$Hash$fromString(str);
-					var newProperty = $rtfeldman$elm_css$Css$Structure$Property('animation-name:' + name);
+					var newProperty = 'animation-name:' + name;
 					var newDeclarations = A2(
 						$rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles,
 						rest,
@@ -11202,9 +11132,9 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$applyStyles = F2(
 						_List_fromArray(
 							[
 								$rtfeldman$elm_css$Css$Structure$Keyframes(
-								{declaration: str, name: name})
+								{ea: str, b8: name})
 							]));
-				case 'WithMedia':
+				case 4:
 					var _v12 = styles.a;
 					var mediaQueries = _v12.a;
 					var nestedStyles = _v12.b;
@@ -11285,18 +11215,18 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$resolveSupportsRule = F2(
 	});
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$toDeclarations = function (snippetDeclaration) {
 	switch (snippetDeclaration.$) {
-		case 'StyleBlockDeclaration':
+		case 0:
 			var styleBlock = snippetDeclaration.a;
 			return $rtfeldman$elm_css$Css$Preprocess$Resolve$expandStyleBlock(styleBlock);
-		case 'MediaRule':
+		case 1:
 			var mediaQueries = snippetDeclaration.a;
 			var styleBlocks = snippetDeclaration.b;
 			return A2($rtfeldman$elm_css$Css$Preprocess$Resolve$resolveMediaRule, mediaQueries, styleBlocks);
-		case 'SupportsRule':
+		case 2:
 			var str = snippetDeclaration.a;
 			var snippets = snippetDeclaration.b;
 			return A2($rtfeldman$elm_css$Css$Preprocess$Resolve$resolveSupportsRule, str, snippets);
-		case 'DocumentRule':
+		case 3:
 			var str1 = snippetDeclaration.a;
 			var str2 = snippetDeclaration.b;
 			var str3 = snippetDeclaration.c;
@@ -11306,25 +11236,25 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$toDeclarations = function (snippet
 				$elm$core$List$map,
 				A4($rtfeldman$elm_css$Css$Preprocess$Resolve$toDocumentRule, str1, str2, str3, str4),
 				$rtfeldman$elm_css$Css$Preprocess$Resolve$expandStyleBlock(styleBlock));
-		case 'PageRule':
+		case 4:
 			var properties = snippetDeclaration.a;
 			return _List_fromArray(
 				[
 					$rtfeldman$elm_css$Css$Structure$PageRule(properties)
 				]);
-		case 'FontFace':
+		case 5:
 			var properties = snippetDeclaration.a;
 			return _List_fromArray(
 				[
 					$rtfeldman$elm_css$Css$Structure$FontFace(properties)
 				]);
-		case 'Viewport':
+		case 6:
 			var properties = snippetDeclaration.a;
 			return _List_fromArray(
 				[
 					$rtfeldman$elm_css$Css$Structure$Viewport(properties)
 				]);
-		case 'CounterStyle':
+		case 7:
 			var properties = snippetDeclaration.a;
 			return _List_fromArray(
 				[
@@ -11336,13 +11266,13 @@ var $rtfeldman$elm_css$Css$Preprocess$Resolve$toDeclarations = function (snippet
 	}
 };
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$toStructure = function (_v0) {
-	var charset = _v0.charset;
-	var imports = _v0.imports;
-	var namespaces = _v0.namespaces;
-	var snippets = _v0.snippets;
+	var charset = _v0.cH;
+	var imports = _v0.cX;
+	var namespaces = _v0.c8;
+	var snippets = _v0.dC;
 	var declarations = $rtfeldman$elm_css$Css$Preprocess$Resolve$extract(
 		A2($elm$core$List$concatMap, $rtfeldman$elm_css$Css$Preprocess$unwrapSnippet, snippets));
-	return {charset: charset, declarations: declarations, imports: imports, namespaces: namespaces};
+	return {cH: charset, eb: declarations, cX: imports, c8: namespaces};
 };
 var $rtfeldman$elm_css$Css$Preprocess$Resolve$compile = function (sheet) {
 	return $rtfeldman$elm_css$Css$Structure$Output$prettyPrint(
@@ -11354,11 +11284,11 @@ var $elm$virtual_dom$VirtualDom$node = function (tag) {
 		_VirtualDom_noScript(tag));
 };
 var $rtfeldman$elm_css$Css$Preprocess$stylesheet = function (snippets) {
-	return {charset: $elm$core$Maybe$Nothing, imports: _List_Nil, namespaces: _List_Nil, snippets: snippets};
+	return {cH: $elm$core$Maybe$Nothing, cX: _List_Nil, c8: _List_Nil, dC: snippets};
 };
 var $elm$virtual_dom$VirtualDom$text = _VirtualDom_text;
 var $rtfeldman$elm_css$VirtualDom$Styled$Unstyled = function (a) {
-	return {$: 'Unstyled', a: a};
+	return {$: 4, a: a};
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$unstyledNode = $rtfeldman$elm_css$VirtualDom$Styled$Unstyled;
 var $rtfeldman$elm_css$Css$Global$global = function (snippets) {
@@ -11381,28 +11311,22 @@ var $rtfeldman$elm_css$Css$Global$global = function (snippets) {
 							$rtfeldman$elm_css$Css$Preprocess$Resolve$compile(
 								$rtfeldman$elm_css$Css$Preprocess$stylesheet(snippets))))))));
 };
-var $rtfeldman$elm_css$Css$Structure$TypeSelector = function (a) {
-	return {$: 'TypeSelector', a: a};
-};
+var $rtfeldman$elm_css$Css$Structure$TypeSelector = $elm$core$Basics$identity;
 var $rtfeldman$elm_css$Css$Global$typeSelector = F2(
 	function (selectorStr, styles) {
-		var sequence = A2(
-			$rtfeldman$elm_css$Css$Structure$TypeSelectorSequence,
-			$rtfeldman$elm_css$Css$Structure$TypeSelector(selectorStr),
-			_List_Nil);
+		var sequence = A2($rtfeldman$elm_css$Css$Structure$TypeSelectorSequence, selectorStr, _List_Nil);
 		var sel = A3($rtfeldman$elm_css$Css$Structure$Selector, sequence, _List_Nil, $elm$core$Maybe$Nothing);
-		return $rtfeldman$elm_css$Css$Preprocess$Snippet(
-			_List_fromArray(
-				[
-					$rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration(
-					A3($rtfeldman$elm_css$Css$Preprocess$StyleBlock, sel, _List_Nil, styles))
-				]));
+		return _List_fromArray(
+			[
+				$rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration(
+				A3($rtfeldman$elm_css$Css$Preprocess$StyleBlock, sel, _List_Nil, styles))
+			]);
 	});
 var $rtfeldman$elm_css$Css$Global$html = $rtfeldman$elm_css$Css$Global$typeSelector('html');
-var $rtfeldman$elm_css$Css$initial = {alignItems: $rtfeldman$elm_css$Css$Structure$Compatible, all: $rtfeldman$elm_css$Css$Structure$Compatible, backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, backgroundBlendMode: $rtfeldman$elm_css$Css$Structure$Compatible, backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible, backgroundOrigin: $rtfeldman$elm_css$Css$Structure$Compatible, backgroundRepeat: $rtfeldman$elm_css$Css$Structure$Compatible, backgroundRepeatShorthand: $rtfeldman$elm_css$Css$Structure$Compatible, borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, boxSizing: $rtfeldman$elm_css$Css$Structure$Compatible, color: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, display: $rtfeldman$elm_css$Css$Structure$Compatible, flexBasis: $rtfeldman$elm_css$Css$Structure$Compatible, flexDirection: $rtfeldman$elm_css$Css$Structure$Compatible, flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, fontFamily: $rtfeldman$elm_css$Css$Structure$Compatible, fontSize: $rtfeldman$elm_css$Css$Structure$Compatible, fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, fontVariant: $rtfeldman$elm_css$Css$Structure$Compatible, fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, justifyContent: $rtfeldman$elm_css$Css$Structure$Compatible, keyframes: $rtfeldman$elm_css$Css$Structure$Compatible, length: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, listStylePosition: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleType: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible, none: $rtfeldman$elm_css$Css$Structure$Compatible, number: $rtfeldman$elm_css$Css$Structure$Compatible, numericValue: 0, outline: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textIndent: $rtfeldman$elm_css$Css$Structure$Compatible, textRendering: $rtfeldman$elm_css$Css$Structure$Compatible, textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, unitLabel: '', units: $rtfeldman$elm_css$Css$Internal$IncompatibleUnits, value: 'initial', visibility: $rtfeldman$elm_css$Css$Structure$Compatible, whiteSpace: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$initial = {cy: 0, s: 0, bm: 0, cA: 0, aX: 0, cB: 0, aY: 0, ai: 0, I: 0, bE: 0, Y: 0, c: 0, l: 0, a1: 0, b1: 0, bp: 0, bH: 0, aG: 0, D: 0, a2: 0, g: 0, am: 0, bI: 0, c$: 0, b5: 0, p: 0, a5: 0, ap: 0, a6: 0, a7: 0, aK: 0, aL: 0, ac: 0, bK: 0, e: 0, d: 0, cb: 0, bu: 0, as: 0, bO: 0, a8: 0, U: 0, bV: 0, bb: 0, aQ: 0, bc: 0, bd: 0, aR: 0, L: 0, be: '', bB: 0, ae: 'initial', bC: 0, aD: 0};
 var $rtfeldman$elm_css$Css$inherit = _Utils_update(
 	$rtfeldman$elm_css$Css$initial,
-	{value: 'inherit'});
+	{ae: 'inherit'});
 var $BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408 = $rtfeldman$elm_css$Css$Global$global(
 	_List_fromArray(
 		[
@@ -11428,20 +11352,20 @@ var $BrianHicks$elm_css_reset$Css$Reset$borderBoxV201408 = $rtfeldman$elm_css$Cs
 				]))
 		]));
 var $rtfeldman$elm_css$Css$borderColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.value);
+	return A2($rtfeldman$elm_css$Css$property, 'border-color', c.ae);
 };
 var $rtfeldman$elm_css$Css$borderRadius = $rtfeldman$elm_css$Css$prop1('border-radius');
 var $rtfeldman$elm_css$Css$borderTopColor = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'border-top-color', c.value);
+	return A2($rtfeldman$elm_css$Css$property, 'border-top-color', c.ae);
 };
 var $rtfeldman$elm_css$Css$prop4 = F5(
 	function (key, argA, argB, argC, argD) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + argD.value))))));
+		return A2($rtfeldman$elm_css$Css$property, key, argA.ae + (' ' + (argB.ae + (' ' + (argC.ae + (' ' + argD.ae))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow4 = $rtfeldman$elm_css$Css$prop4('box-shadow');
 var $rtfeldman$elm_css$VirtualDom$Styled$Node = F3(
 	function (a, b, c) {
-		return {$: 'Node', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$Node;
 var $rtfeldman$elm_css$Html$Styled$node = $rtfeldman$elm_css$VirtualDom$Styled$node;
@@ -11449,7 +11373,7 @@ var $rtfeldman$elm_css$Html$Styled$button = $rtfeldman$elm_css$Html$Styled$node(
 var $rtfeldman$elm_css$Css$center = $rtfeldman$elm_css$Css$prop1('center');
 var $rtfeldman$elm_css$VirtualDom$Styled$Attribute = F3(
 	function (a, b, c) {
-		return {$: 'Attribute', a: a, b: b, c: c};
+		return {$: 0, a: a, b: b, c: c};
 	});
 var $elm$virtual_dom$VirtualDom$property = F2(
 	function (key, value) {
@@ -11483,10 +11407,10 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty = F2(
 	});
 var $rtfeldman$elm_css$Html$Styled$Attributes$class = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('className');
 var $rtfeldman$elm_css$Css$color = function (c) {
-	return A2($rtfeldman$elm_css$Css$property, 'color', c.value);
+	return A2($rtfeldman$elm_css$Css$property, 'color', c.ae);
 };
 var $rtfeldman$elm_css$Css$Structure$ClassSelector = function (a) {
-	return {$: 'ClassSelector', a: a};
+	return {$: 0, a: a};
 };
 var $rtfeldman$elm_css$VirtualDom$Styled$classnameStandin = '\u0007';
 var $rtfeldman$elm_css$VirtualDom$Styled$templateSelector = $rtfeldman$elm_css$Css$Structure$UniversalSelectorSequence(
@@ -11513,40 +11437,37 @@ var $rtfeldman$elm_css$Html$Styled$Internal$css = function (styles) {
 	return A3($rtfeldman$elm_css$VirtualDom$Styled$Attribute, classProperty, true, cssTemplate);
 };
 var $rtfeldman$elm_css$Html$Styled$Attributes$css = $rtfeldman$elm_css$Html$Styled$Internal$css;
-var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 'KeeperWantsToAddNewPlayer'};
+var $author$project$Main$KeeperWantsToAddNewPlayer = {$: 35};
 var $author$project$Main$KeeperWantsToIgnorePlayer = function (a) {
-	return {$: 'KeeperWantsToIgnorePlayer', a: a};
+	return {$: 49, a: a};
 };
-var $author$project$Main$KeeperWantsToShowCustomMatchup = {$: 'KeeperWantsToShowCustomMatchup'};
-var $author$project$Main$KeeperWantsToSkipMatch = {$: 'KeeperWantsToSkipMatch'};
-var $author$project$Main$KeeperWantsToUndo = {$: 'KeeperWantsToUndo'};
+var $author$project$Main$KeeperWantsToShowCustomMatchup = {$: 5};
+var $author$project$Main$KeeperWantsToSkipMatch = {$: 51};
+var $author$project$Main$KeeperWantsToUndo = {$: 4};
 var $author$project$Main$KeeperWantsToUnignorePlayer = function (a) {
-	return {$: 'KeeperWantsToUnignorePlayer', a: a};
+	return {$: 50, a: a};
 };
 var $author$project$Main$MatchFinished = function (a) {
-	return {$: 'MatchFinished', a: a};
+	return {$: 1, a: a};
 };
-var $rtfeldman$elm_css$Css$absolute = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'absolute'};
+var $rtfeldman$elm_css$Css$absolute = {bv: 0, ae: 'absolute'};
 var $rtfeldman$elm_css$Css$display = $rtfeldman$elm_css$Css$prop1('display');
 var $rtfeldman$elm_css$Css$fontSize = $rtfeldman$elm_css$Css$prop1('font-size');
 var $rtfeldman$elm_css$Css$fontWeight = function (_v0) {
-	var value = _v0.value;
+	var value = _v0.ae;
 	return A2($rtfeldman$elm_css$Css$property, 'font-weight', value);
 };
 var $rtfeldman$elm_css$Css$withPrecedingHash = function (str) {
-	return A2($elm$core$String$startsWith, '#', str) ? str : A2(
-		$elm$core$String$cons,
-		_Utils_chr('#'),
-		str);
+	return A2($elm$core$String$startsWith, '#', str) ? str : A2($elm$core$String$cons, '#', str);
 };
 var $rtfeldman$elm_css$Css$erroneousHex = function (str) {
 	return {
-		alpha: 1,
-		blue: 0,
-		color: $rtfeldman$elm_css$Css$Structure$Compatible,
-		green: 0,
-		red: 0,
-		value: $rtfeldman$elm_css$Css$withPrecedingHash(str)
+		bk: 1,
+		bn: 0,
+		Y: 0,
+		bq: 0,
+		bw: 0,
+		ae: $rtfeldman$elm_css$Css$withPrecedingHash(str)
 	};
 };
 var $elm$core$String$foldr = _String_foldr;
@@ -11562,7 +11483,7 @@ var $rtfeldman$elm_hex$Hex$fromStringHelp = F3(
 			} else {
 				var _char = chars.a;
 				var rest = chars.b;
-				switch (_char.valueOf()) {
+				switch (_char) {
 					case '0':
 						var $temp$position = position - 1,
 							$temp$chars = rest,
@@ -11701,7 +11622,7 @@ var $rtfeldman$elm_hex$Hex$fromStringHelp = F3(
 	});
 var $elm$core$Result$map = F2(
 	function (func, ra) {
-		if (ra.$ === 'Ok') {
+		if (!ra.$) {
 			var a = ra.a;
 			return $elm$core$Result$Ok(
 				func(a));
@@ -11776,7 +11697,7 @@ var $rtfeldman$elm_css$Css$validHex = F5(
 				toResult(
 					_List_fromArray(
 						[a1, a2]))));
-		if ((((results.a.a.$ === 'Ok') && (results.a.b.$ === 'Ok')) && (results.b.a.$ === 'Ok')) && (results.b.b.$ === 'Ok')) {
+		if ((((!results.a.a.$) && (!results.a.b.$)) && (!results.b.a.$)) && (!results.b.b.$)) {
 			var _v5 = results.a;
 			var red = _v5.a.a;
 			var green = _v5.b.a;
@@ -11784,12 +11705,12 @@ var $rtfeldman$elm_css$Css$validHex = F5(
 			var blue = _v6.a.a;
 			var alpha = _v6.b.a;
 			return {
-				alpha: alpha / 255,
-				blue: blue,
-				color: $rtfeldman$elm_css$Css$Structure$Compatible,
-				green: green,
-				red: red,
-				value: $rtfeldman$elm_css$Css$withPrecedingHash(str)
+				bk: alpha / 255,
+				bn: blue,
+				Y: 0,
+				bq: green,
+				bw: red,
+				ae: $rtfeldman$elm_css$Css$withPrecedingHash(str)
 			};
 		} else {
 			return $rtfeldman$elm_css$Css$erroneousHex(str);
@@ -11813,9 +11734,7 @@ var $rtfeldman$elm_css$Css$hex = function (str) {
 					_Utils_Tuple2(r, r),
 					_Utils_Tuple2(g, g),
 					_Utils_Tuple2(b, b),
-					_Utils_Tuple2(
-						_Utils_chr('f'),
-						_Utils_chr('f')));
+					_Utils_Tuple2('f', 'f'));
 			} else {
 				if (!_v0.b.b.b.b.b) {
 					var r = _v0.a;
@@ -11852,9 +11771,7 @@ var $rtfeldman$elm_css$Css$hex = function (str) {
 								_Utils_Tuple2(r1, r2),
 								_Utils_Tuple2(g1, g2),
 								_Utils_Tuple2(b1, b2),
-								_Utils_Tuple2(
-									_Utils_chr('f'),
-									_Utils_chr('f')));
+								_Utils_Tuple2('f', 'f'));
 						} else {
 							if (_v0.b.b.b.b.b.b.b.b && (!_v0.b.b.b.b.b.b.b.b.b)) {
 								var r1 = _v0.a;
@@ -11894,30 +11811,30 @@ var $rtfeldman$elm_css$Css$hex = function (str) {
 	}
 	return $rtfeldman$elm_css$Css$erroneousHex(str);
 };
-var $rtfeldman$elm_css$Css$inlineBlock = {display: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inline-block'};
-var $rtfeldman$elm_css$Css$UnitlessInteger = {$: 'UnitlessInteger'};
+var $rtfeldman$elm_css$Css$inlineBlock = {l: 0, ae: 'inline-block'};
+var $rtfeldman$elm_css$Css$UnitlessInteger = 0;
 var $rtfeldman$elm_css$Css$int = function (val) {
 	return {
-		fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible,
-		intOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible,
-		lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
-		lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
-		number: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numberOrInfinite: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numericValue: val,
-		unitLabel: '',
-		units: $rtfeldman$elm_css$Css$UnitlessInteger,
-		value: $elm$core$String$fromInt(val)
+		am: 0,
+		bI: 0,
+		aL: 0,
+		ac: 0,
+		bu: 0,
+		bM: 0,
+		as: val,
+		be: '',
+		bB: 0,
+		ae: $elm$core$String$fromInt(val)
 	};
 };
 var $rtfeldman$elm_css$Css$letterSpacing = $rtfeldman$elm_css$Css$prop1('letter-spacing');
 var $rtfeldman$elm_css$Css$prop2 = F3(
 	function (key, argA, argB) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + argB.value));
+		return A2($rtfeldman$elm_css$Css$property, key, argA.ae + (' ' + argB.ae));
 	});
 var $rtfeldman$elm_css$Css$padding2 = $rtfeldman$elm_css$Css$prop2('padding');
-var $rtfeldman$elm_css$Css$PxUnits = {$: 'PxUnits'};
-var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PxUnits, 'px');
+var $rtfeldman$elm_css$Css$PxUnits = 0;
+var $rtfeldman$elm_css$Css$px = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, 'px');
 var $rtfeldman$elm_css$Html$Styled$span = $rtfeldman$elm_css$Html$Styled$node('span');
 var $rtfeldman$elm_css$VirtualDom$Styled$text = function (str) {
 	return $rtfeldman$elm_css$VirtualDom$Styled$Unstyled(
@@ -12010,12 +11927,12 @@ var $author$project$Main$availabilityBadges = function (player) {
 };
 var $rtfeldman$elm_css$Css$fontStyle = $rtfeldman$elm_css$Css$prop1('font-style');
 var $rtfeldman$elm_css$Html$Styled$h2 = $rtfeldman$elm_css$Html$Styled$node('h2');
-var $rtfeldman$elm_css$Css$italic = {fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'italic'};
+var $rtfeldman$elm_css$Css$italic = {a2: 0, ae: 'italic'};
 var $rtfeldman$elm_css$Css$marginBottom = $rtfeldman$elm_css$Css$prop1('margin-bottom');
 var $rtfeldman$elm_css$Css$maxWidth = $rtfeldman$elm_css$Css$prop1('max-width');
 var $rtfeldman$elm_css$Css$stringsToValue = function (list) {
-	return $elm$core$List$isEmpty(list) ? {value: 'none'} : {
-		value: A2($elm$core$String$join, ', ', list)
+	return $elm$core$List$isEmpty(list) ? {ae: 'none'} : {
+		ae: A2($elm$core$String$join, ', ', list)
 	};
 };
 var $rtfeldman$elm_css$Css$fontFamilies = A2(
@@ -12025,8 +11942,8 @@ var $rtfeldman$elm_css$Css$fontFamilies = A2(
 var $author$project$Main$modernSansSerif = $rtfeldman$elm_css$Css$fontFamilies(
 	_List_fromArray(
 		['system-ui', '-apple-system', 'BlinkMacSystemFont', '\'Segoe UI\'', '\'Roboto\'', '\'Inter\'', '\'Helvetica Neue\'', 'Arial', 'sans-serif']));
-var $rtfeldman$elm_css$Css$PercentageUnits = {$: 'PercentageUnits'};
-var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, $rtfeldman$elm_css$Css$PercentageUnits, '%');
+var $rtfeldman$elm_css$Css$PercentageUnits = 0;
+var $rtfeldman$elm_css$Css$pct = A2($rtfeldman$elm_css$Css$Internal$lengthConverter, 0, '%');
 var $rtfeldman$elm_css$Css$textAlign = function (fn) {
 	return A3(
 		$rtfeldman$elm_css$Css$Internal$getOverloadedProperty,
@@ -12035,7 +11952,7 @@ var $rtfeldman$elm_css$Css$textAlign = function (fn) {
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
 var $rtfeldman$elm_css$Css$textTransform = $rtfeldman$elm_css$Css$prop1('text-transform');
-var $rtfeldman$elm_css$Css$uppercase = {textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'uppercase'};
+var $rtfeldman$elm_css$Css$uppercase = {aR: 0, ae: 'uppercase'};
 var $rtfeldman$elm_css$Css$width = $rtfeldman$elm_css$Css$prop1('width');
 var $author$project$Main$activePlayer = function (player) {
 	return A2(
@@ -12086,7 +12003,7 @@ var $rtfeldman$elm_css$Html$Styled$Attributes$disabled = $rtfeldman$elm_css$Html
 var $rtfeldman$elm_css$Css$margin2 = $rtfeldman$elm_css$Css$prop2('margin');
 var $rtfeldman$elm_css$Css$minWidth = $rtfeldman$elm_css$Css$prop1('min-width');
 var $elm$virtual_dom$VirtualDom$Normal = function (a) {
-	return {$: 'Normal', a: a};
+	return {$: 0, a: a};
 };
 var $elm$virtual_dom$VirtualDom$on = _VirtualDom_on;
 var $rtfeldman$elm_css$VirtualDom$Styled$on = F2(
@@ -12114,8 +12031,8 @@ var $rtfeldman$elm_css$Css$paddingBottom = $rtfeldman$elm_css$Css$prop1('padding
 var $rtfeldman$elm_css$Css$paddingLeft = $rtfeldman$elm_css$Css$prop1('padding-left');
 var $rtfeldman$elm_css$Css$paddingRight = $rtfeldman$elm_css$Css$prop1('padding-right');
 var $rtfeldman$elm_css$Css$paddingTop = $rtfeldman$elm_css$Css$prop1('padding-top');
-var $rtfeldman$elm_css$Css$pointer = {cursor: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'pointer'};
-var $rtfeldman$elm_css$Css$zero = {length: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAuto: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrAutoOrCoverOrContain: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible, number: $rtfeldman$elm_css$Css$Structure$Compatible, numericValue: 0, outline: $rtfeldman$elm_css$Css$Structure$Compatible, unitLabel: '', units: $rtfeldman$elm_css$Css$UnitlessInteger, value: '0'};
+var $rtfeldman$elm_css$Css$pointer = {c: 0, ae: 'pointer'};
+var $rtfeldman$elm_css$Css$zero = {p: 0, a5: 0, ap: 0, a6: 0, a7: 0, aK: 0, aL: 0, bu: 0, as: 0, bO: 0, be: '', bB: 0, ae: '0'};
 var $author$project$Main$zzzIgnoreButtonTiny = function (maybeMsg) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$button,
@@ -12153,7 +12070,7 @@ var $author$project$Main$zzzIgnoreButtonTiny = function (maybeMsg) {
 						$author$project$Main$modernSansSerif
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -12166,7 +12083,7 @@ var $author$project$Main$zzzIgnoreButtonTiny = function (maybeMsg) {
 				$rtfeldman$elm_css$Html$Styled$text('Zzz')
 			]));
 };
-var $rtfeldman$elm_css$Css$lineThrough = {textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'line-through'};
+var $rtfeldman$elm_css$Css$lineThrough = {bb: 0, ae: 'line-through'};
 var $rtfeldman$elm_css$Css$textDecoration = $rtfeldman$elm_css$Css$prop1('text-decoration');
 var $author$project$Main$zzzUnignoreButtonTiny = function (maybeMsg) {
 	return A2(
@@ -12206,7 +12123,7 @@ var $author$project$Main$zzzUnignoreButtonTiny = function (maybeMsg) {
 						$author$project$Main$modernSansSerif
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -12315,10 +12232,10 @@ var $author$project$Main$activePlayerCompactWithIgnore = F2(
 	});
 var $rtfeldman$elm_css$Css$prop6 = F7(
 	function (key, argA, argB, argC, argD, argE, argF) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + (argD.value + (' ' + (argE.value + (' ' + argF.value))))))))));
+		return A2($rtfeldman$elm_css$Css$property, key, argA.ae + (' ' + (argB.ae + (' ' + (argC.ae + (' ' + (argD.ae + (' ' + (argE.ae + (' ' + argF.ae))))))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow6 = $rtfeldman$elm_css$Css$prop6('box-shadow');
-var $rtfeldman$elm_css$Css$inset = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'inset'};
+var $rtfeldman$elm_css$Css$inset = {I: 0, ae: 'inset'};
 var $rtfeldman$elm_css$Css$cssFunction = F2(
 	function (funcName, args) {
 		return funcName + ('(' + (A2($elm$core$String$join, ',', args) + ')'));
@@ -12326,12 +12243,12 @@ var $rtfeldman$elm_css$Css$cssFunction = F2(
 var $rtfeldman$elm_css$Css$rgba = F4(
 	function (r, g, b, alpha) {
 		return {
-			alpha: alpha,
-			blue: b,
-			color: $rtfeldman$elm_css$Css$Structure$Compatible,
-			green: g,
-			red: r,
-			value: A2(
+			bk: alpha,
+			bn: b,
+			Y: 0,
+			bq: g,
+			bw: r,
+			ae: A2(
 				$rtfeldman$elm_css$Css$cssFunction,
 				'rgba',
 				_Utils_ap(
@@ -12370,7 +12287,7 @@ var $author$project$Main$button = F3(
 							$rtfeldman$elm_css$Css$minWidth(
 							$rtfeldman$elm_css$Css$px(100)),
 							function () {
-							if (maybeMsg.$ === 'Just') {
+							if (!maybeMsg.$) {
 								return $rtfeldman$elm_css$Css$backgroundColor(baseColor);
 							} else {
 								return $rtfeldman$elm_css$Css$backgroundColor(
@@ -12398,7 +12315,7 @@ var $author$project$Main$button = F3(
 							$author$project$Main$modernSansSerif
 						])),
 					function () {
-					if (maybeMsg.$ === 'Just') {
+					if (!maybeMsg.$) {
 						var m = maybeMsg.a;
 						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 					} else {
@@ -12439,7 +12356,7 @@ var $author$project$Main$buttonLarge = F3(
 							$rtfeldman$elm_css$Css$minWidth(
 							$rtfeldman$elm_css$Css$px(140)),
 							function () {
-							if (maybeMsg.$ === 'Just') {
+							if (!maybeMsg.$) {
 								return $rtfeldman$elm_css$Css$backgroundColor(baseColor);
 							} else {
 								return $rtfeldman$elm_css$Css$backgroundColor(
@@ -12467,7 +12384,7 @@ var $author$project$Main$buttonLarge = F3(
 							$author$project$Main$modernSansSerif
 						])),
 					function () {
-					if (maybeMsg.$ === 'Just') {
+					if (!maybeMsg.$) {
 						var m = maybeMsg.a;
 						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 					} else {
@@ -12506,7 +12423,7 @@ var $author$project$Main$buttonCompact = F3(
 							$rtfeldman$elm_css$Css$minWidth(
 							$rtfeldman$elm_css$Css$px(100)),
 							function () {
-							if (maybeMsg.$ === 'Just') {
+							if (!maybeMsg.$) {
 								return $rtfeldman$elm_css$Css$backgroundColor(baseColor);
 							} else {
 								return $rtfeldman$elm_css$Css$backgroundColor(
@@ -12534,7 +12451,7 @@ var $author$project$Main$buttonCompact = F3(
 							$author$project$Main$modernSansSerif
 						])),
 					function () {
-					if (maybeMsg.$ === 'Just') {
+					if (!maybeMsg.$) {
 						var m = maybeMsg.a;
 						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 					} else {
@@ -12548,30 +12465,30 @@ var $author$project$Main$buttonCompact = F3(
 				]));
 	});
 var $author$project$Main$KeeperSelectedPlayerA = function (a) {
-	return {$: 'KeeperSelectedPlayerA', a: a};
+	return {$: 7, a: a};
 };
 var $author$project$Main$KeeperSelectedPlayerB = function (a) {
-	return {$: 'KeeperSelectedPlayerB', a: a};
+	return {$: 8, a: a};
 };
 var $author$project$Main$KeeperUpdatedPlayerASearch = function (a) {
-	return {$: 'KeeperUpdatedPlayerASearch', a: a};
+	return {$: 10, a: a};
 };
 var $author$project$Main$KeeperUpdatedPlayerBSearch = function (a) {
-	return {$: 'KeeperUpdatedPlayerBSearch', a: a};
+	return {$: 11, a: a};
 };
-var $author$project$Main$KeeperWantsToHideCustomMatchup = {$: 'KeeperWantsToHideCustomMatchup'};
-var $author$project$Main$KeeperWantsToStartCustomMatch = {$: 'KeeperWantsToStartCustomMatch'};
+var $author$project$Main$KeeperWantsToHideCustomMatchup = {$: 6};
+var $author$project$Main$KeeperWantsToStartCustomMatch = {$: 9};
 var $rtfeldman$elm_css$Css$prop5 = F6(
 	function (key, argA, argB, argC, argD, argE) {
-		return A2($rtfeldman$elm_css$Css$property, key, argA.value + (' ' + (argB.value + (' ' + (argC.value + (' ' + (argD.value + (' ' + argE.value))))))));
+		return A2($rtfeldman$elm_css$Css$property, key, argA.ae + (' ' + (argB.ae + (' ' + (argC.ae + (' ' + (argD.ae + (' ' + argE.ae))))))));
 	});
 var $rtfeldman$elm_css$Css$boxShadow5 = $rtfeldman$elm_css$Css$prop5('box-shadow');
 var $rtfeldman$elm_css$Css$Preprocess$ExtendSelector = F2(
 	function (a, b) {
-		return {$: 'ExtendSelector', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Structure$PseudoClassSelector = function (a) {
-	return {$: 'PseudoClassSelector', a: a};
+	return {$: 2, a: a};
 };
 var $rtfeldman$elm_css$Css$pseudoClass = function (_class) {
 	return $rtfeldman$elm_css$Css$Preprocess$ExtendSelector(
@@ -12584,12 +12501,12 @@ var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('
 var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$maxHeight = $rtfeldman$elm_css$Css$prop1('max-height');
-var $rtfeldman$elm_css$Css$none = {backgroundImage: $rtfeldman$elm_css$Css$Structure$Compatible, blockAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, cursor: $rtfeldman$elm_css$Css$Structure$Compatible, display: $rtfeldman$elm_css$Css$Structure$Compatible, hoverCapability: $rtfeldman$elm_css$Css$Structure$Compatible, inlineAxisOverflow: $rtfeldman$elm_css$Css$Structure$Compatible, keyframes: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNone: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNoneOrMinMaxDimension: $rtfeldman$elm_css$Css$Structure$Compatible, lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleType: $rtfeldman$elm_css$Css$Structure$Compatible, listStyleTypeOrPositionOrImage: $rtfeldman$elm_css$Css$Structure$Compatible, none: $rtfeldman$elm_css$Css$Structure$Compatible, outline: $rtfeldman$elm_css$Css$Structure$Compatible, pointerDevice: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, resize: $rtfeldman$elm_css$Css$Structure$Compatible, scriptingSupport: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationLine: $rtfeldman$elm_css$Css$Structure$Compatible, textTransform: $rtfeldman$elm_css$Css$Structure$Compatible, touchAction: $rtfeldman$elm_css$Css$Structure$Compatible, transform: $rtfeldman$elm_css$Css$Structure$Compatible, updateFrequency: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'none'};
+var $rtfeldman$elm_css$Css$none = {aX: 0, cC: 0, I: 0, c: 0, l: 0, em: 0, cZ: 0, b5: 0, a7: 0, aK: 0, ac: 0, e: 0, d: 0, cb: 0, bO: 0, eM: 0, U: 0, bP: 0, eT: 0, bb: 0, aR: 0, L: 0, i: 0, e2: 0, ae: 'none'};
 var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
 var $elm$virtual_dom$VirtualDom$MayStopPropagation = function (a) {
-	return {$: 'MayStopPropagation', a: a};
+	return {$: 1, a: a};
 };
 var $rtfeldman$elm_css$Html$Styled$Events$stopPropagationOn = F2(
 	function (event, decoder) {
@@ -12621,12 +12538,12 @@ var $rtfeldman$elm_css$Css$overflowY = $rtfeldman$elm_css$Css$prop1('overflow-y'
 var $rtfeldman$elm_css$Css$padding = $rtfeldman$elm_css$Css$prop1('padding');
 var $rtfeldman$elm_css$Html$Styled$Attributes$placeholder = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('placeholder');
 var $rtfeldman$elm_css$Css$position = $rtfeldman$elm_css$Css$prop1('position');
-var $rtfeldman$elm_css$Css$relative = {position: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'relative'};
+var $rtfeldman$elm_css$Css$relative = {bv: 0, ae: 'relative'};
 var $rtfeldman$elm_css$Css$right = $rtfeldman$elm_css$Css$prop1('right');
-var $rtfeldman$elm_css$Css$solid = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, textDecorationStyle: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'solid'};
+var $rtfeldman$elm_css$Css$solid = {I: 0, aQ: 0, ae: 'solid'};
 var $rtfeldman$elm_css$Css$spaceBetween = $rtfeldman$elm_css$Css$prop1('space-between');
 var $rtfeldman$elm_css$Css$top = $rtfeldman$elm_css$Css$prop1('top');
-var $rtfeldman$elm_css$Css$transparent = {color: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'transparent'};
+var $rtfeldman$elm_css$Css$transparent = {Y: 0, ae: 'transparent'};
 var $rtfeldman$elm_css$Html$Styled$Attributes$value = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('value');
 var $rtfeldman$elm_css$Css$zIndex = $rtfeldman$elm_css$Css$prop1('z-index');
 var $author$project$Main$customMatchupUI = function (model) {
@@ -12662,7 +12579,7 @@ var $author$project$Main$customMatchupUI = function (model) {
 										$rtfeldman$elm_css$Css$px(2),
 										$rtfeldman$elm_css$Css$solid,
 										function () {
-											if (selectedPlayer.$ === 'Just') {
+											if (!selectedPlayer.$) {
 												return $rtfeldman$elm_css$Css$hex('10B981');
 											} else {
 												return $rtfeldman$elm_css$Css$hex('D1D5DB');
@@ -12913,7 +12830,7 @@ var $author$project$Main$customMatchupUI = function (model) {
 							[
 								$rtfeldman$elm_css$Html$Styled$text('Player A')
 							])),
-						A6(searchInput, model.playerASearch, $author$project$Main$KeeperUpdatedPlayerASearch, model.playerASearchResults, $author$project$Main$KeeperSelectedPlayerA, 'Search for first player...', model.customMatchupPlayerA)
+						A6(searchInput, model.au, $author$project$Main$KeeperUpdatedPlayerASearch, model.av, $author$project$Main$KeeperSelectedPlayerA, 'Search for first player...', model._)
 					])),
 				A2(
 				$rtfeldman$elm_css$Html$Styled$div,
@@ -12950,7 +12867,7 @@ var $author$project$Main$customMatchupUI = function (model) {
 							[
 								$rtfeldman$elm_css$Html$Styled$text('Player B')
 							])),
-						A6(searchInput, model.playerBSearch, $author$project$Main$KeeperUpdatedPlayerBSearch, model.playerBSearchResults, $author$project$Main$KeeperSelectedPlayerB, 'Search for second player...', model.customMatchupPlayerB)
+						A6(searchInput, model.aw, $author$project$Main$KeeperUpdatedPlayerBSearch, model.ax, $author$project$Main$KeeperSelectedPlayerB, 'Search for second player...', model.aa)
 					])),
 				A2(
 				$rtfeldman$elm_css$Html$Styled$div,
@@ -12965,8 +12882,8 @@ var $author$project$Main$customMatchupUI = function (model) {
 				_List_fromArray(
 					[
 						function () {
-						var _v0 = _Utils_Tuple2(model.customMatchupPlayerA, model.customMatchupPlayerB);
-						if ((_v0.a.$ === 'Just') && (_v0.b.$ === 'Just')) {
+						var _v0 = _Utils_Tuple2(model._, model.aa);
+						if ((!_v0.a.$) && (!_v0.b.$)) {
 							var playerA = _v0.a.a;
 							var playerB = _v0.b.a;
 							return _Utils_eq(
@@ -13082,57 +12999,57 @@ var $author$project$Main$greenButton = $author$project$Main$button(
 	$rtfeldman$elm_css$Css$hex('6DD400'));
 var $rtfeldman$elm_css$Html$Styled$h1 = $rtfeldman$elm_css$Html$Styled$node('h1');
 var $rtfeldman$elm_css$Css$height = $rtfeldman$elm_css$Css$prop1('height');
-var $rtfeldman$elm_css$Css$hidden = {borderStyle: $rtfeldman$elm_css$Css$Structure$Compatible, overflow: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'hidden', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$hidden = {I: 0, a8: 0, ae: 'hidden', bC: 0};
 var $rtfeldman$elm_css$Css$lineHeight = $rtfeldman$elm_css$Css$prop1('line-height');
 var $rtfeldman$elm_css$Css$marginLeft = $rtfeldman$elm_css$Css$prop1('margin-left');
 var $rtfeldman$elm_css$Css$marginTop = $rtfeldman$elm_css$Css$prop1('margin-top');
 var $rtfeldman$elm_css$Css$Media$feature = F2(
 	function (key, _v0) {
-		var value = _v0.value;
+		var value = _v0.ae;
 		return {
-			feature: key,
-			value: $elm$core$Maybe$Just(value)
+			cQ: key,
+			ae: $elm$core$Maybe$Just(value)
 		};
 	});
 var $rtfeldman$elm_css$Css$Media$maxWidth = function (value) {
 	return A2($rtfeldman$elm_css$Css$Media$feature, 'max-width', value);
 };
-var $rtfeldman$elm_css$Css$UnitlessFloat = {$: 'UnitlessFloat'};
+var $rtfeldman$elm_css$Css$UnitlessFloat = 0;
 var $rtfeldman$elm_css$Css$num = function (val) {
 	return {
-		lengthOrNumber: $rtfeldman$elm_css$Css$Structure$Compatible,
-		lengthOrNumberOrAutoOrNoneOrContent: $rtfeldman$elm_css$Css$Structure$Compatible,
-		number: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numberOrInfinite: $rtfeldman$elm_css$Css$Structure$Compatible,
-		numericValue: val,
-		unitLabel: '',
-		units: $rtfeldman$elm_css$Css$UnitlessFloat,
-		value: $elm$core$String$fromFloat(val)
+		aL: 0,
+		ac: 0,
+		bu: 0,
+		bM: 0,
+		as: val,
+		be: '',
+		bB: 0,
+		ae: $elm$core$String$fromFloat(val)
 	};
 };
 var $rtfeldman$elm_css$Css$Structure$OnlyQuery = F2(
 	function (a, b) {
-		return {$: 'OnlyQuery', a: a, b: b};
+		return {$: 1, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Media$only = $rtfeldman$elm_css$Css$Structure$OnlyQuery;
 var $rtfeldman$elm_css$Css$overflow = $rtfeldman$elm_css$Css$prop1('overflow');
 var $rtfeldman$elm_css$Html$Styled$p = $rtfeldman$elm_css$Html$Styled$node('p');
 var $rtfeldman$elm_css$Css$padding4 = $rtfeldman$elm_css$Css$prop4('padding');
 var $author$project$History$peekBack = function (_v0) {
-	var guts = _v0.a;
-	return $elm$core$List$head(guts.past);
+	var guts = _v0;
+	return $elm$core$List$head(guts.at);
 };
 var $author$project$Main$redButton = $author$project$Main$button(
 	$rtfeldman$elm_css$Css$hex('EF4444'));
 var $author$project$Main$redButtonLarge = $author$project$Main$buttonLarge(
 	$rtfeldman$elm_css$Css$hex('EF4444'));
-var $rtfeldman$elm_css$Css$Structure$Screen = {$: 'Screen'};
-var $rtfeldman$elm_css$Css$Media$screen = $rtfeldman$elm_css$Css$Structure$Screen;
+var $rtfeldman$elm_css$Css$Structure$Screen = 1;
+var $rtfeldman$elm_css$Css$Media$screen = 1;
 var $rtfeldman$elm_css$Html$Styled$section = $rtfeldman$elm_css$Html$Styled$node('section');
 var $rtfeldman$elm_css$Css$textShadow4 = $rtfeldman$elm_css$Css$prop4('text-shadow');
 var $rtfeldman$elm_css$Css$Preprocess$WithMedia = F2(
 	function (a, b) {
-		return {$: 'WithMedia', a: a, b: b};
+		return {$: 4, a: a, b: b};
 	});
 var $rtfeldman$elm_css$Css$Media$withMedia = $rtfeldman$elm_css$Css$Preprocess$WithMedia;
 var $rtfeldman$elm_css$Css$active = $rtfeldman$elm_css$Css$pseudoClass('active');
@@ -13198,7 +13115,7 @@ var $author$project$Main$zzzIgnoreButton = function (maybeMsg) {
 							]))
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -13272,7 +13189,7 @@ var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
 							]))
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -13287,8 +13204,8 @@ var $author$project$Main$zzzUnignoreButton = function (maybeMsg) {
 };
 var $author$project$Main$currentMatch = function (model) {
 	var _v0 = $author$project$League$currentMatch(
-		$author$project$History$current(model.history));
-	if (_v0.$ === 'Nothing') {
+		$author$project$History$current(model.b));
+	if (_v0.$ === 1) {
 		return A2(
 			$rtfeldman$elm_css$Html$Styled$div,
 			_List_fromArray(
@@ -13735,7 +13652,7 @@ var $author$project$Main$currentMatch = function (model) {
 											$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
 													$author$project$League$Win(
-														{lost: playerB, won: playerA}))))
+														{c5: playerB, dR: playerA}))))
 										]))
 								])),
 							A2(
@@ -13778,7 +13695,7 @@ var $author$project$Main$currentMatch = function (model) {
 											$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
 													$author$project$League$Win(
-														{lost: playerA, won: playerB}))))
+														{c5: playerA, dR: playerB}))))
 										]))
 								])),
 							A2(
@@ -13835,7 +13752,7 @@ var $author$project$Main$currentMatch = function (model) {
 											$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 												$author$project$Main$MatchFinished(
 													$author$project$League$Draw(
-														{playerA: playerA, playerB: playerB}))))
+														{dh: playerA, di: playerB}))))
 										])),
 									A2(
 									$rtfeldman$elm_css$Html$Styled$div,
@@ -13964,7 +13881,7 @@ var $author$project$Main$currentMatch = function (model) {
 									$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
-												{lost: playerB, won: playerA}))))
+												{c5: playerB, dR: playerA}))))
 								])),
 							A2(
 							$rtfeldman$elm_css$Html$Styled$div,
@@ -13985,7 +13902,7 @@ var $author$project$Main$currentMatch = function (model) {
 									$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Draw(
-												{playerA: playerA, playerB: playerB}))))
+												{dh: playerA, di: playerB}))))
 								])),
 							A2(
 							$rtfeldman$elm_css$Html$Styled$div,
@@ -14006,7 +13923,7 @@ var $author$project$Main$currentMatch = function (model) {
 									$author$project$Main$isVotingDisabled(model) ? $elm$core$Maybe$Nothing : $elm$core$Maybe$Just(
 										$author$project$Main$MatchFinished(
 											$author$project$League$Win(
-												{lost: playerA, won: playerB}))))
+												{c5: playerA, dR: playerB}))))
 								]))
 						])),
 					A2(
@@ -14192,7 +14109,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							model.showCustomMatchup ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
+							model.aP ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
 						])),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$div,
@@ -14251,7 +14168,7 @@ var $author$project$Main$currentMatch = function (model) {
 										function (_v2) {
 											return $author$project$Main$KeeperWantsToUndo;
 										},
-										$author$project$History$peekBack(model.history))),
+										$author$project$History$peekBack(model.b))),
 									A3(
 									$author$project$Main$button,
 									$rtfeldman$elm_css$Css$hex('999'),
@@ -14282,13 +14199,13 @@ var $author$project$Main$currentMatch = function (model) {
 									'ADD PLAYER',
 									$elm$core$Maybe$Just($author$project$Main$KeeperWantsToAddNewPlayer))
 								])),
-							model.showCustomMatchup ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
+							model.aP ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
 						]))
 				]));
 	}
 };
 var $author$project$Main$SetTimeFilter = function (a) {
-	return {$: 'SetTimeFilter', a: a};
+	return {$: 24, a: a};
 };
 var $author$project$Main$toggleBtn = F3(
 	function (isOn, label, maybeMsg) {
@@ -14319,7 +14236,7 @@ var $author$project$Main$toggleBtn = F3(
 							$author$project$Main$modernSansSerif
 						])),
 					function () {
-					if (maybeMsg.$ === 'Just') {
+					if (!maybeMsg.$) {
 						var m = maybeMsg.a;
 						return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 					} else {
@@ -14372,25 +14289,25 @@ var $author$project$Main$filterBar = function (model) {
 					])),
 				A3(
 				$author$project$Main$toggleBtn,
-				_Utils_eq(model.timeFilter, $author$project$Main$All),
+				!model.az,
 				'All',
 				$elm$core$Maybe$Just(
-					$author$project$Main$SetTimeFilter($author$project$Main$All))),
+					$author$project$Main$SetTimeFilter(0))),
 				A3(
 				$author$project$Main$toggleBtn,
-				_Utils_eq(model.timeFilter, $author$project$Main$AMOnly),
+				model.az === 1,
 				'AM',
 				$elm$core$Maybe$Just(
-					$author$project$Main$SetTimeFilter($author$project$Main$AMOnly))),
+					$author$project$Main$SetTimeFilter(1))),
 				A3(
 				$author$project$Main$toggleBtn,
-				_Utils_eq(model.timeFilter, $author$project$Main$PMOnly),
+				model.az === 2,
 				'PM',
 				$elm$core$Maybe$Just(
-					$author$project$Main$SetTimeFilter($author$project$Main$PMOnly)))
+					$author$project$Main$SetTimeFilter(2)))
 			]));
 };
-var $rtfeldman$elm_css$Css$fixed = {backgroundAttachment: $rtfeldman$elm_css$Css$Structure$Compatible, position: $rtfeldman$elm_css$Css$Structure$Compatible, tableLayout: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'fixed'};
+var $rtfeldman$elm_css$Css$fixed = {bm: 0, bv: 0, bV: 0, ae: 'fixed'};
 var $rtfeldman$elm_css$Html$Styled$main_ = $rtfeldman$elm_css$Html$Styled$node('main');
 var $rtfeldman$elm_css$Css$Global$a = $rtfeldman$elm_css$Css$Global$typeSelector('a');
 var $rtfeldman$elm_css$Css$Global$article = $rtfeldman$elm_css$Css$Global$typeSelector('article');
@@ -14404,7 +14321,7 @@ var $rtfeldman$elm_css$Css$borderSpacing = $rtfeldman$elm_css$Css$prop1('border-
 var $rtfeldman$elm_css$Css$Global$canvas = $rtfeldman$elm_css$Css$Global$typeSelector('canvas');
 var $rtfeldman$elm_css$Css$Global$caption = $rtfeldman$elm_css$Css$Global$typeSelector('caption');
 var $rtfeldman$elm_css$Css$Global$code = $rtfeldman$elm_css$Css$Global$typeSelector('code');
-var $rtfeldman$elm_css$Css$collapse = {borderCollapse: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'collapse', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$collapse = {cE: 0, ae: 'collapse', bC: 0};
 var $rtfeldman$elm_css$Css$Global$dd = $rtfeldman$elm_css$Css$Global$typeSelector('dd');
 var $rtfeldman$elm_css$Css$Global$details = $rtfeldman$elm_css$Css$Global$typeSelector('details');
 var $rtfeldman$elm_css$Css$Global$div = $rtfeldman$elm_css$Css$Global$typeSelector('div');
@@ -14416,7 +14333,7 @@ var $rtfeldman$elm_css$Css$Global$collectSelectors = function (declarations) {
 		if (!declarations.b) {
 			return _List_Nil;
 		} else {
-			if (declarations.a.$ === 'StyleBlockDeclaration') {
+			if (!declarations.a.$) {
 				var _v5 = declarations.a.a;
 				var firstSelector = _v5.a;
 				var otherSelectors = _v5.b;
@@ -14444,7 +14361,7 @@ var $rtfeldman$elm_css$Css$Global$unwrapSelector = F2(
 		var mPseudo = _v0.c;
 		var unwrapSequenceSelector = F2(
 			function (style, s) {
-				if (style.$ === 'ExtendSelector') {
+				if (style.$ === 1) {
 					var nestedSelector = style.a;
 					var evenMoreNestedStyles = style.b;
 					return A3(
@@ -14458,7 +14375,7 @@ var $rtfeldman$elm_css$Css$Global$unwrapSelector = F2(
 			});
 		var unwrapCombinatorSelector = F2(
 			function (style, cs) {
-				if (style.$ === 'NestSnippet') {
+				if (style.$ === 2) {
 					var combinator = style.a;
 					var snippets = style.b;
 					return A2(
@@ -14488,16 +14405,15 @@ var $rtfeldman$elm_css$Css$Global$each = F2(
 	function (snippetCreators, styles) {
 		var selectorsToSnippet = function (selectors) {
 			if (!selectors.b) {
-				return $rtfeldman$elm_css$Css$Preprocess$Snippet(_List_Nil);
+				return _List_Nil;
 			} else {
 				var first = selectors.a;
 				var rest = selectors.b;
-				return $rtfeldman$elm_css$Css$Preprocess$Snippet(
-					_List_fromArray(
-						[
-							$rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration(
-							A3($rtfeldman$elm_css$Css$Preprocess$StyleBlock, first, rest, styles))
-						]));
+				return _List_fromArray(
+					[
+						$rtfeldman$elm_css$Css$Preprocess$StyleBlockDeclaration(
+						A3($rtfeldman$elm_css$Css$Preprocess$StyleBlock, first, rest, styles))
+					]);
 			}
 		};
 		return selectorsToSnippet(
@@ -14727,16 +14643,16 @@ var $BrianHicks$elm_css_reset$Css$Reset$meyerV2 = $rtfeldman$elm_css$Css$Global$
 					$rtfeldman$elm_css$Css$borderSpacing($rtfeldman$elm_css$Css$zero)
 				]))
 		]));
-var $rtfeldman$elm_css$Css$notAllowed = {cursor: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'not-allowed'};
+var $rtfeldman$elm_css$Css$notAllowed = {c: 0, ae: 'not-allowed'};
 var $rtfeldman$elm_css$Css$opacity = $rtfeldman$elm_css$Css$prop1('opacity');
 var $author$project$Main$KeeperWantsToRetirePlayer = function (a) {
-	return {$: 'KeeperWantsToRetirePlayer', a: a};
+	return {$: 46, a: a};
 };
 var $author$project$Main$TogglePlayerAM = function (a) {
-	return {$: 'TogglePlayerAM', a: a};
+	return {$: 20, a: a};
 };
 var $author$project$Main$TogglePlayerPM = function (a) {
-	return {$: 'TogglePlayerPM', a: a};
+	return {$: 21, a: a};
 };
 var $rtfeldman$elm_css$Css$borderBottom3 = $rtfeldman$elm_css$Css$prop3('border-bottom');
 var $rtfeldman$elm_css$Css$borderRight3 = $rtfeldman$elm_css$Css$prop3('border-right');
@@ -14803,21 +14719,21 @@ var $author$project$Main$downArrow = function (color) {
 var $rtfeldman$elm_css$Css$flexStart = $rtfeldman$elm_css$Css$prop1('flex-start');
 var $rtfeldman$elm_css$Css$flexWrap = $rtfeldman$elm_css$Css$prop1('flex-wrap');
 var $author$project$Player$htmlKey = function (_v0) {
-	var player = _v0.a;
-	var _v1 = player.id;
-	var idInt = _v1.a;
+	var player = _v0;
+	var _v1 = player.ab;
+	var idInt = _v1;
 	return $elm$core$String$fromInt(idInt);
 };
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
-var $rtfeldman$elm_css$Css$noWrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'nowrap', whiteSpace: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$noWrap = {bp: 0, bH: 0, ae: 'nowrap', aD: 0};
 var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
 	function (a, b, c) {
-		return {$: 'KeyedNode', a: a, b: b, c: c};
+		return {$: 2, a: a, b: b, c: c};
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$keyedNode = $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode;
 var $rtfeldman$elm_css$Html$Styled$Keyed$node = $rtfeldman$elm_css$VirtualDom$Styled$keyedNode;
-var $rtfeldman$elm_css$Css$normal = {featureTagValue: $rtfeldman$elm_css$Css$Structure$Compatible, fontStyle: $rtfeldman$elm_css$Css$Structure$Compatible, fontWeight: $rtfeldman$elm_css$Css$Structure$Compatible, overflowWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'normal', whiteSpace: $rtfeldman$elm_css$Css$Structure$Compatible};
+var $rtfeldman$elm_css$Css$normal = {b0: 0, a2: 0, am: 0, cd: 0, ae: 'normal', aD: 0};
 var $rtfeldman$elm_css$Css$overflowX = $rtfeldman$elm_css$Css$prop1('overflow-x');
 var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
 var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
@@ -14841,7 +14757,7 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 						$rtfeldman$elm_css$Css$boxSizing($rtfeldman$elm_css$Css$borderBox),
 						$rtfeldman$elm_css$Css$textAlign($rtfeldman$elm_css$Css$center),
 						function () {
-						if (maybeMsg.$ === 'Just') {
+						if (!maybeMsg.$) {
 							return $rtfeldman$elm_css$Css$backgroundColor(
 								$rtfeldman$elm_css$Css$hex('E02020'));
 						} else {
@@ -14892,7 +14808,7 @@ var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
 							]))
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -15011,8 +14927,8 @@ var $author$project$Main$upArrow = function (color) {
 			]),
 		_List_Nil);
 };
-var $rtfeldman$elm_css$Css$visible = {overflow: $rtfeldman$elm_css$Css$Structure$Compatible, pointerEvents: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'visible', visibility: $rtfeldman$elm_css$Css$Structure$Compatible};
-var $rtfeldman$elm_css$Css$wrap = {flexDirectionOrWrap: $rtfeldman$elm_css$Css$Structure$Compatible, flexWrap: $rtfeldman$elm_css$Css$Structure$Compatible, value: 'wrap'};
+var $rtfeldman$elm_css$Css$visible = {a8: 0, U: 0, ae: 'visible', bC: 0};
+var $rtfeldman$elm_css$Css$wrap = {bp: 0, bH: 0, ae: 'wrap'};
 var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$button,
@@ -15096,7 +15012,7 @@ var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 							]))
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -15193,7 +15109,7 @@ var $author$project$Main$zzzUnignoreButtonSmall = function (maybeMsg) {
 							]))
 					])),
 				function () {
-				if (maybeMsg.$ === 'Just') {
+				if (!maybeMsg.$) {
 					var m = maybeMsg.a;
 					return $rtfeldman$elm_css$Html$Styled$Events$onClick(m);
 				} else {
@@ -15253,8 +15169,8 @@ var $author$project$Main$rankings = function (model) {
 				$author$project$League$players(
 					A2(
 						$elm$core$Maybe$withDefault,
-						$author$project$History$current(model.history),
-						$author$project$History$peekBack(model.history))))));
+						$author$project$History$current(model.b),
+						$author$project$History$peekBack(model.b))))));
 	var numericRank = $rtfeldman$elm_css$Css$batch(
 		_List_fromArray(
 			[
@@ -15571,7 +15487,7 @@ var $author$project$Main$rankings = function (model) {
 												$author$project$Player$id(b));
 										},
 										$author$project$League$currentMatch(
-											$author$project$History$current(model.history))));
+											$author$project$History$current(model.b))));
 								var isIgnored = A2($author$project$Main$isPlayerLocallyIgnored, player, model);
 								return _Utils_Tuple2(
 									$author$project$Player$htmlKey(player),
@@ -16037,7 +15953,7 @@ var $author$project$Main$rankings = function (model) {
 								$elm$core$List$filter,
 								$author$project$Main$timePlayerFilter(model),
 								$author$project$League$players(
-									$author$project$History$current(model.history)))))))));
+									$author$project$History$current(model.b)))))))));
 };
 var $rtfeldman$elm_css$Css$spaceAround = $rtfeldman$elm_css$Css$prop1('space-around');
 var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
@@ -16046,7 +15962,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyles = F2(
 		var cssTemplate = _v0.c;
 		if (isCssStyles) {
 			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
-			if (_v1.$ === 'Just') {
+			if (!_v1.$) {
 				return styles;
 			} else {
 				return A3(
@@ -16066,7 +15982,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttribute = F2(
 		var cssTemplate = _v0.c;
 		if (isCssStyles) {
 			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
-			if (_v1.$ === 'Just') {
+			if (!_v1.$) {
 				var classname = _v1.a;
 				return A2(
 					$elm$virtual_dom$VirtualDom$property,
@@ -16089,7 +16005,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$extractUnstyledAttributeNS = F2(
 		var cssTemplate = _v0.c;
 		if (isCssStyles) {
 			var _v1 = A2($elm$core$Dict$get, cssTemplate, styles);
-			if (_v1.$ === 'Just') {
+			if (!_v1.$) {
 				var classname = _v1.a;
 				return A2($elm$virtual_dom$VirtualDom$attribute, 'class', classname);
 			} else {
@@ -16124,7 +16040,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml = F2(
 		var pairs = _v7.a;
 		var styles = _v7.b;
 		switch (html.$) {
-			case 'Unstyled':
+			case 4:
 				var vdom = html.a;
 				return _Utils_Tuple2(
 					A2(
@@ -16132,7 +16048,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml = F2(
 						_Utils_Tuple2(key, vdom),
 						pairs),
 					styles);
-			case 'Node':
+			case 0:
 				var elemType = html.a;
 				var properties = html.b;
 				var children = html.c;
@@ -16158,7 +16074,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml = F2(
 						_Utils_Tuple2(key, vdom),
 						pairs),
 					finalStyles);
-			case 'NodeNS':
+			case 1:
 				var ns = html.a;
 				var elemType = html.b;
 				var properties = html.c;
@@ -16186,7 +16102,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateKeyedStyledHtml = F2(
 						_Utils_Tuple2(key, vdom),
 						pairs),
 					finalStyles);
-			case 'KeyedNode':
+			case 2:
 				var elemType = html.a;
 				var properties = html.b;
 				var children = html.c;
@@ -16247,12 +16163,12 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
 		var nodes = _v0.a;
 		var styles = _v0.b;
 		switch (html.$) {
-			case 'Unstyled':
+			case 4:
 				var vdomNode = html.a;
 				return _Utils_Tuple2(
 					A2($elm$core$List$cons, vdomNode, nodes),
 					styles);
-			case 'Node':
+			case 0:
 				var elemType = html.a;
 				var properties = html.b;
 				var children = html.c;
@@ -16275,7 +16191,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
 				return _Utils_Tuple2(
 					A2($elm$core$List$cons, vdomNode, nodes),
 					finalStyles);
-			case 'NodeNS':
+			case 1:
 				var ns = html.a;
 				var elemType = html.b;
 				var properties = html.c;
@@ -16300,7 +16216,7 @@ var $rtfeldman$elm_css$VirtualDom$Styled$accumulateStyledHtml = F2(
 				return _Utils_Tuple2(
 					A2($elm$core$List$cons, vdomNode, nodes),
 					finalStyles);
-			case 'KeyedNode':
+			case 2:
 				var elemType = html.a;
 				var properties = html.b;
 				var children = html.c;
@@ -16373,8 +16289,8 @@ var $rtfeldman$elm_css$VirtualDom$Styled$toStyleNode = F2(
 					$elm$virtual_dom$VirtualDom$node,
 					'style',
 					function () {
-						if (maybeNonce.$ === 'Just') {
-							var nonce = maybeNonce.a.a;
+						if (!maybeNonce.$) {
+							var nonce = maybeNonce.a;
 							return _List_fromArray(
 								[
 									A2($elm$virtual_dom$VirtualDom$attribute, 'nonce', nonce)
@@ -16539,21 +16455,21 @@ var $rtfeldman$elm_css$VirtualDom$Styled$unstyleNS = F5(
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$toUnstyled = function (vdom) {
 	switch (vdom.$) {
-		case 'Unstyled':
+		case 4:
 			var plainNode = vdom.a;
 			return plainNode;
-		case 'Node':
+		case 0:
 			var elemType = vdom.a;
 			var properties = vdom.b;
 			var children = vdom.c;
 			return A4($rtfeldman$elm_css$VirtualDom$Styled$unstyle, $elm$core$Maybe$Nothing, elemType, properties, children);
-		case 'NodeNS':
+		case 1:
 			var ns = vdom.a;
 			var elemType = vdom.b;
 			var properties = vdom.c;
 			var children = vdom.d;
 			return A5($rtfeldman$elm_css$VirtualDom$Styled$unstyleNS, $elm$core$Maybe$Nothing, ns, elemType, properties, children);
-		case 'KeyedNode':
+		case 2:
 			var elemType = vdom.a;
 			var properties = vdom.b;
 			var children = vdom.c;
@@ -16570,7 +16486,7 @@ var $rtfeldman$elm_css$Html$Styled$toUnstyled = $rtfeldman$elm_css$VirtualDom$St
 var $rtfeldman$elm_css$Html$Styled$Attributes$type_ = $rtfeldman$elm_css$Html$Styled$Attributes$stringProperty('type');
 var $author$project$Main$view = function (model) {
 	return {
-		body: A2(
+		d2: A2(
 			$elm$core$List$map,
 			$rtfeldman$elm_css$Html$Styled$toUnstyled,
 			_Utils_ap(
@@ -16620,7 +16536,7 @@ var $author$project$Main$view = function (model) {
 							]))
 					]),
 				_Utils_ap(
-					model.isSyncing ? _List_fromArray(
+					model.ao ? _List_fromArray(
 						[
 							A2(
 							$rtfeldman$elm_css$Html$Styled$div,
@@ -16748,8 +16664,8 @@ var $author$project$Main$view = function (model) {
 						]) : _List_Nil,
 					_Utils_ap(
 						function () {
-							var _v0 = model.playerDeletionConfirmation;
-							if (_v0.$ === 'Just') {
+							var _v0 = model.aN;
+							if (!_v0.$) {
 								var _v1 = _v0.a;
 								var player = _v1.a;
 								var step = _v1.b;
@@ -16956,8 +16872,8 @@ var $author$project$Main$view = function (model) {
 						}(),
 						_Utils_ap(
 							function () {
-								var _v2 = model.timeToggleConfirmation;
-								if (_v2.$ === 'Just') {
+								var _v2 = model.aS;
+								if (!_v2.$) {
 									var _v3 = _v2.a;
 									var player = _v3.a;
 									var timeType = _v3.b;
@@ -17164,7 +17080,7 @@ var $author$project$Main$view = function (model) {
 								}
 							}(),
 							_Utils_ap(
-								model.showAddPlayerPopup ? _List_fromArray(
+								model.V ? _List_fromArray(
 									[
 										A2(
 										$rtfeldman$elm_css$Html$Styled$div,
@@ -17282,7 +17198,7 @@ var $author$project$Main$view = function (model) {
 																	[
 																		$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Enter player name'),
-																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerName),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.O),
 																		$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerName),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																		_List_fromArray(
@@ -17355,7 +17271,7 @@ var $author$project$Main$view = function (model) {
 																	[
 																		$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('500'),
-																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.addPlayerRating),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.aE),
 																		$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerRating),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																		_List_fromArray(
@@ -17456,7 +17372,7 @@ var $author$project$Main$view = function (model) {
 																				_List_fromArray(
 																					[
 																						$rtfeldman$elm_css$Html$Styled$Attributes$type_('checkbox'),
-																						$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.addPlayerAM),
+																						$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.af),
 																						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperToggledAddPlayerAM),
 																						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																						_List_fromArray(
@@ -17493,7 +17409,7 @@ var $author$project$Main$view = function (model) {
 																				_List_fromArray(
 																					[
 																						$rtfeldman$elm_css$Html$Styled$Attributes$type_('checkbox'),
-																						$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.addPlayerPM),
+																						$rtfeldman$elm_css$Html$Styled$Attributes$checked(model.ag),
 																						$rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperToggledAddPlayerPM),
 																						$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																						_List_fromArray(
@@ -17592,7 +17508,7 @@ var $author$project$Main$view = function (model) {
 																					])),
 																				$author$project$Main$modernSansSerif,
 																				($elm$core$String$isEmpty(
-																				$elm$core$String$trim(model.addPlayerName)) || A2(
+																				$elm$core$String$trim(model.O)) || A2(
 																				$elm$core$Maybe$withDefault,
 																				false,
 																				A2(
@@ -17600,7 +17516,7 @@ var $author$project$Main$view = function (model) {
 																					function (_v4) {
 																						return true;
 																					},
-																					model.addPlayerNotice))) ? $rtfeldman$elm_css$Css$batch(
+																					model.H))) ? $rtfeldman$elm_css$Css$batch(
 																				_List_fromArray(
 																					[
 																						$rtfeldman$elm_css$Css$opacity(
@@ -17609,7 +17525,7 @@ var $author$project$Main$view = function (model) {
 																					])) : $rtfeldman$elm_css$Css$batch(_List_Nil)
 																			])),
 																		($elm$core$String$isEmpty(
-																		$elm$core$String$trim(model.addPlayerName)) || A2(
+																		$elm$core$String$trim(model.O)) || A2(
 																		$elm$core$Maybe$withDefault,
 																		false,
 																		A2(
@@ -17617,7 +17533,7 @@ var $author$project$Main$view = function (model) {
 																			function (_v5) {
 																				return true;
 																			},
-																			model.addPlayerNotice))) ? $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true) : $rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperConfirmedAddPlayer)
+																			model.H))) ? $rtfeldman$elm_css$Html$Styled$Attributes$disabled(true) : $rtfeldman$elm_css$Html$Styled$Events$onClick($author$project$Main$KeeperConfirmedAddPlayer)
 																	]),
 																_List_fromArray(
 																	[
@@ -17625,8 +17541,8 @@ var $author$project$Main$view = function (model) {
 																	]))
 															])),
 														function () {
-														var _v6 = model.addPlayerNotice;
-														if (_v6.$ === 'Just') {
+														var _v6 = model.H;
+														if (!_v6.$) {
 															var note = _v6.a;
 															return A2(
 																$rtfeldman$elm_css$Html$Styled$div,
@@ -17668,12 +17584,12 @@ var $author$project$Main$view = function (model) {
 																				]),
 																			_List_fromArray(
 																				[
-																					$rtfeldman$elm_css$Html$Styled$text(note.message)
+																					$rtfeldman$elm_css$Html$Styled$text(note.b6)
 																				]))
 																		]),
 																	function () {
-																		var _v7 = note.restoreId;
-																		if (_v7.$ === 'Just') {
+																		var _v7 = note.cn;
+																		if (!_v7.$) {
 																			var pid = _v7.a;
 																			return _List_fromArray(
 																				[
@@ -17741,8 +17657,8 @@ var $author$project$Main$view = function (model) {
 											]))
 									]) : _List_Nil,
 								function () {
-									var _v8 = model.status;
-									if (_v8.$ === 'Just') {
+									var _v8 = model.o;
+									if (!_v8.$) {
 										var message = _v8.a;
 										return _List_fromArray(
 											[
@@ -17759,7 +17675,7 @@ var $author$project$Main$view = function (model) {
 																$rtfeldman$elm_css$Css$right(
 																$rtfeldman$elm_css$Css$px(20)),
 																$rtfeldman$elm_css$Css$backgroundColor(
-																model.autoSaveInProgress ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
+																model.bl ? $rtfeldman$elm_css$Css$hex('EF4444') : $rtfeldman$elm_css$Css$hex('10B981')),
 																$rtfeldman$elm_css$Css$color(
 																$rtfeldman$elm_css$Css$hex('FFFFFF')),
 																A4(
@@ -17817,7 +17733,7 @@ var $author$project$Main$view = function (model) {
 																		$rtfeldman$elm_css$Html$Styled$text(
 																		_Utils_ap(
 																			message,
-																			model.autoSaveInProgress ? ' (Voting disabled - autoSave)' : (model.isSyncing ? ' (Voting disabled - syncing)' : ' (Voting enabled)')))
+																			model.bl ? ' (Voting disabled - autoSave)' : (model.ao ? ' (Voting disabled - syncing)' : '')))
 																	])),
 																A2(
 																$rtfeldman$elm_css$Html$Styled$button,
@@ -17860,11 +17776,11 @@ var $author$project$Main$view = function (model) {
 										return _List_Nil;
 									}
 								}())))))),
-		title: 'Hockey Rater 🏒'
+		e$: 'Hockey Rater 🏒'
 	};
 };
 var $author$project$Main$main = $elm$browser$Browser$document(
-	{init: $author$project$Main$init, subscriptions: $author$project$Main$subscriptions, update: $author$project$Main$update, view: $author$project$Main$view});
+	{ep: $author$project$Main$init, eY: $author$project$Main$subscriptions, e1: $author$project$Main$update, e4: $author$project$Main$view});
 _Platform_export({'Main':{'init':$author$project$Main$main(
 	$elm$json$Json$Decode$succeed(
 		{}))(0)}});}(this));

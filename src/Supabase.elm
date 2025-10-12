@@ -392,10 +392,7 @@ deletePlayer config playerId toMsg =
                 Http.GoodStatus_ _ _ ->
                     Ok ()
                 Http.BadStatus_ metadata body ->
-                    -- Log the error body for debugging
-                    let
-                        _ = Debug.log "Player deletion error" (String.fromInt metadata.statusCode ++ ": " ++ body)
-                    in
+                    -- Error occurred during player deletion
                     Err (Http.BadStatus metadata.statusCode)
                 Http.BadUrl_ url ->
                     Err (Http.BadUrl url)

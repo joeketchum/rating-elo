@@ -350,7 +350,7 @@ timePlayerFilter model =
 setTemporaryStatus : String -> Model -> ( Model, Cmd Msg )
 setTemporaryStatus message model =
     ( { model | status = Just message, isStatusTemporary = True }
-    , Task.perform (\_ -> ClearStatus) (Process.sleep 2000)
+    , Task.perform (\_ -> ClearStatus) (Process.sleep 3000)
     )
 
 
@@ -1544,7 +1544,7 @@ view model =
                                 [ Html.text (message ++ 
                                     (if model.autoSaveInProgress then " (Voting disabled - autoSave)" 
                                      else if model.isSyncing then " (Voting disabled - syncing)"
-                                     else " (Voting enabled)")) ]
+                                     else "")) ]
                             , Html.button
                                 [ css
                                     [ Css.backgroundColor Css.transparent
