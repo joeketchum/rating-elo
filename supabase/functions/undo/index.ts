@@ -26,6 +26,8 @@ serve(async (req: Request) => {
 
     const supabaseClient = createClient(supabaseUrl, supabaseServiceKey)
 
+    console.log('Supabase client created successfully')
+
     // Find the most recent match overall
     const { data: matches, error: matchErr } = await supabaseClient
       .from('matches')
@@ -33,34 +35,43 @@ serve(async (req: Request) => {
       .order('played_at', { ascending: false })
       .limit(1)
 
+    console.log('Match query result:', { matches, matchErr })
+
     if (matchErr) {
       throw new Error(`Failed to fetch last match: ${matchErr.message}`)
     }
 
     if (!matches || matches.length === 0) {
+      console.log('No matches found to undo')
       return new Response(JSON.stringify({ success: false, reason: 'No match found' }), { headers: { ...corsHeaders, 'Content-Type': 'application/json' }, status: 404 })
     }
 
     const m = matches[0]
+    console.log('Found match to undo:', m)
 
     // Fetch current players to know matches_played
+    console.log('Fetching players:', [m.player_a_id, m.player_b_id])
     const { data: players, error: playersErr } = await supabaseClient
       .from('players')
       .select('id, rating, matches_played')
       .in('id', [m.player_a_id, m.player_b_id])
 
+    console.log('Player query result:', { players, playersErr })
+
     if (playersErr) {
       throw new Error(`Failed to fetch players: ${playersErr.message}`)
     }
 
-    const pa = players?.find(p => p.id === m.player_a_id)
-    const pb = players?.find(p => p.id === m.player_b_id)
+    const pa = players?.find((p: any) => p.id === m.player_a_id)
+    const pb = players?.find((p: any) => p.id === m.player_b_id)
+    console.log('Found players:', { pa, pb })
+    
     if (!pa || !pb) {
       throw new Error('Player rows not found for undo')
     }
 
     // Revert both players to their rating_before and decrement matches_played
-    const { error: upErr } = await supabaseClient.from('players').upsert([
+    const playerUpdates = [
       {
         id: m.player_a_id,
         rating: m.player_a_rating_before,
@@ -73,17 +84,26 @@ serve(async (req: Request) => {
         matches_played: Math.max(0, (pb.matches_played ?? 1) - 1),
         updated_at: new Date().toISOString()
       }
-    ])
+    ]
+    
+    console.log('Updating players with:', playerUpdates)
+    
+    const { error: upErr } = await supabaseClient.from('players').upsert(playerUpdates)
+
+    console.log('Player update result:', { upErr })
 
     if (upErr) {
       throw new Error(`Failed to revert players: ${upErr.message}`)
     }
 
     // Delete the match
+    console.log('Deleting match:', m.id)
     const { error: delErr } = await supabaseClient
       .from('matches')
       .delete()
       .eq('id', m.id)
+
+    console.log('Match deletion result:', { delErr })
 
     if (delErr) {
       throw new Error(`Failed to delete match: ${delErr.message}`)
