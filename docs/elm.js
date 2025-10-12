@@ -7746,11 +7746,16 @@ var $author$project$Elo$draw = F2(
 	function (kFactor, _v0) {
 		var playerA = _v0.dh;
 		var playerB = _v0.di;
+		var oddsB = A2($author$project$Elo$odds, playerB, playerA);
+		var rawBChange = kFactor * (0.5 - oddsB);
+		var oddsA = A2($author$project$Elo$odds, playerA, playerB);
+		var rawAChange = kFactor * (0.5 - oddsA);
+		var maxChange = 4;
+		var bChange = (oddsB > 0.7) ? A2($elm$core$Basics$min, rawBChange, maxChange) : ((oddsB < 0.3) ? A2($elm$core$Basics$max, rawBChange, -maxChange) : rawBChange);
+		var aChange = (oddsA > 0.7) ? A2($elm$core$Basics$min, rawAChange, maxChange) : ((oddsA < 0.3) ? A2($elm$core$Basics$max, rawAChange, -maxChange) : rawAChange);
 		return {
-			dh: $elm$core$Basics$round(
-				playerA + (kFactor * (0.5 - A2($author$project$Elo$odds, playerA, playerB)))),
-			di: $elm$core$Basics$round(
-				playerB + (kFactor * (0.5 - A2($author$project$Elo$odds, playerB, playerA))))
+			dh: $elm$core$Basics$round(playerA + aChange),
+			di: $elm$core$Basics$round(playerB + bChange)
 		};
 	});
 var $author$project$League$higherRankedPlayer = F2(
@@ -7761,7 +7766,7 @@ var $author$project$League$higherRankedPlayer = F2(
 	});
 var $author$project$Elo$dynamicKFactor = F2(
 	function (gamesPlayed, currentRating) {
-		return (gamesPlayed <= 20) ? 24 : ((gamesPlayed <= 50) ? 16 : ((currentRating >= 800) ? 8 : 12));
+		return (gamesPlayed <= 20) ? 12 : ((gamesPlayed <= 50) ? 8 : ((currentRating >= 800) ? 4 : 6));
 	});
 var $author$project$Elo$getKFactor = F2(
 	function (gamesPlayed, currentRating) {
@@ -7823,11 +7828,16 @@ var $author$project$Elo$win = F2(
 	function (kFactor, _v0) {
 		var won = _v0.dR;
 		var lost = _v0.c5;
+		var winOdds = A2($author$project$Elo$odds, won, lost);
+		var rawWinChange = kFactor * (1 - winOdds);
+		var maxChange = 4;
+		var winChange = (winOdds > 0.7) ? A2($elm$core$Basics$min, rawWinChange, maxChange) : rawWinChange;
+		var loseOdds = A2($author$project$Elo$odds, lost, won);
+		var rawLoseChange = kFactor * (0 - loseOdds);
+		var loseChange = (loseOdds > 0.7) ? A2($elm$core$Basics$max, rawLoseChange, -maxChange) : rawLoseChange;
 		return {
-			c5: $elm$core$Basics$round(
-				lost + (kFactor * (0 - A2($author$project$Elo$odds, lost, won)))),
-			dR: $elm$core$Basics$round(
-				won + (kFactor * (1 - A2($author$project$Elo$odds, won, lost))))
+			c5: $elm$core$Basics$round(lost + loseChange),
+			dR: $elm$core$Basics$round(won + winChange)
 		};
 	});
 var $author$project$League$finishMatch = F2(

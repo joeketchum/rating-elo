@@ -34,13 +34,13 @@ Adjusted for 500 base rating system with lots of voting.
 dynamicKFactor : Int -> Int -> Int
 dynamicKFactor gamesPlayed currentRating =
     if gamesPlayed <= 20 then
-        24  -- New players need adjustment, but reduced from 40
+        12  -- New players: lower volatility
     else if gamesPlayed <= 50 then
-        16  -- Still learning, reduced from 24
+        8   -- Developing players: even lower
     else if currentRating >= 800 then
-        8   -- High-rated players get extra stability, reduced from 12
+        4   -- High-rated: very stable
     else
-        12  -- Standard for established players, reduced from 16
+        6   -- Established: stable
 
 
 {-| Get the appropriate K-factor for a player based on their experience.
@@ -101,8 +101,26 @@ oddsAsPercentage ratingA ratingB =
 -}
 win : Int -> { won : Int, lost : Int } -> { won : Int, lost : Int }
 win kFactor { won, lost } =
-    { won = toFloat won + toFloat kFactor * (1 - odds won lost) |> round
-    , lost = toFloat lost + toFloat kFactor * (0 - odds lost won) |> round
+    let
+        winOdds = odds won lost
+        loseOdds = odds lost won
+        rawWinChange = toFloat kFactor * (1 - winOdds)
+        rawLoseChange = toFloat kFactor * (0 - loseOdds)
+        -- Cap rating change for expected wins/losses
+        maxChange = 4
+        winChange =
+            if winOdds > 0.7 then
+                min rawWinChange (toFloat maxChange)
+            else
+                rawWinChange
+        loseChange =
+            if loseOdds > 0.7 then
+                max rawLoseChange (-(toFloat maxChange))
+            else
+                rawLoseChange
+    in
+    { won = toFloat won + winChange |> round
+    , lost = toFloat lost + loseChange |> round
     }
 
 
@@ -110,6 +128,27 @@ win kFactor { won, lost } =
 -}
 draw : Int -> { playerA : Int, playerB : Int } -> { playerA : Int, playerB : Int }
 draw kFactor { playerA, playerB } =
-    { playerA = toFloat playerA + toFloat kFactor * (0.5 - odds playerA playerB) |> round
-    , playerB = toFloat playerB + toFloat kFactor * (0.5 - odds playerB playerA) |> round
+    let
+        oddsA = odds playerA playerB
+        oddsB = odds playerB playerA
+        rawAChange = toFloat kFactor * (0.5 - oddsA)
+        rawBChange = toFloat kFactor * (0.5 - oddsB)
+        maxChange = 4
+        aChange =
+            if oddsA > 0.7 then
+                min rawAChange (toFloat maxChange)
+            else if oddsA < 0.3 then
+                max rawAChange (-(toFloat maxChange))
+            else
+                rawAChange
+        bChange =
+            if oddsB > 0.7 then
+                min rawBChange (toFloat maxChange)
+            else if oddsB < 0.3 then
+                max rawBChange (-(toFloat maxChange))
+            else
+                rawBChange
+    in
+    { playerA = toFloat playerA + aChange |> round
+    , playerB = toFloat playerB + bChange |> round
     }
