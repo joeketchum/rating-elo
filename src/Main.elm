@@ -963,18 +963,6 @@ update msg model =
                     )
                         |> startNextMatchIfPossible
 
-                ( "Backspace", _ ) ->
-                    let
-                        newHistory = History.goBack model.history |> Maybe.withDefault model.history
-                    in
-                    ( { model | history = newHistory }
-                    , Supabase.undoEdgeFunction Config.supabaseConfig (\res ->
-                        case res of
-                            Ok _ -> PlayerRestored (Ok ())
-                            Err e -> PlayerRestored (Err e)
-                      )
-                    )
-
                 _ ->
                     ( model, Cmd.none )
 
@@ -1971,7 +1959,7 @@ currentMatch model =
                         , Media.withMedia [ Media.only Media.screen [ Media.maxWidth (Css.px 640) ] ] [ Css.display Css.none ]
                         ]
                     ]
-                    [ Html.text "Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc) • Undo (Backspace)" ]
+                    [ Html.text "Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc)" ]
                 , Html.div
                     [ css
                         [ Css.displayFlex

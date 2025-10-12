@@ -9529,7 +9529,7 @@ var $author$project$Main$update = F2(
 					key,
 					$author$project$League$currentMatch(
 						$author$project$History$current(model.b)));
-				_v23$5:
+				_v23$4:
 				while (true) {
 					switch (_v23.a) {
 						case '1':
@@ -9545,7 +9545,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v23$5;
+								break _v23$4;
 							}
 						case '2':
 							if (!_v23.b.$) {
@@ -9560,7 +9560,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v23$5;
+								break _v23$4;
 							}
 						case '0':
 							if (!_v23.b.$) {
@@ -9575,7 +9575,7 @@ var $author$project$Main$update = F2(
 									return A2($author$project$Main$handleMatchFinished, outcome, model);
 								}
 							} else {
-								break _v23$5;
+								break _v23$4;
 							}
 						case 'Escape':
 							return $author$project$Main$startNextMatchIfPossible(
@@ -9586,30 +9586,8 @@ var $author$project$Main$update = F2(
 											b: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.b)
 										}),
 									$elm$core$Platform$Cmd$none));
-						case 'Backspace':
-							var newHistory = A2(
-								$elm$core$Maybe$withDefault,
-								model.b,
-								$author$project$History$goBack(model.b));
-							return _Utils_Tuple2(
-								_Utils_update(
-									model,
-									{b: newHistory}),
-								A2(
-									$author$project$Supabase$undoEdgeFunction,
-									$author$project$Config$supabaseConfig,
-									function (res) {
-										if (!res.$) {
-											return $author$project$Main$PlayerRestored(
-												$elm$core$Result$Ok(0));
-										} else {
-											var e = res.a;
-											return $author$project$Main$PlayerRestored(
-												$elm$core$Result$Err(e));
-										}
-									}));
 						default:
-							break _v23$5;
+							break _v23$4;
 					}
 				}
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
@@ -13964,7 +13942,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							$rtfeldman$elm_css$Html$Styled$text('Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc) • Undo (Backspace)')
+							$rtfeldman$elm_css$Html$Styled$text('Shortcuts: Left (1) • Right (2) • Tie (0) • Skip (Esc)')
 						])),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$div,
