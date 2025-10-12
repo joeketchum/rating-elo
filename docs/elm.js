@@ -7766,7 +7766,7 @@ var $author$project$League$higherRankedPlayer = F2(
 	});
 var $author$project$Elo$dynamicKFactor = F2(
 	function (gamesPlayed, currentRating) {
-		return (gamesPlayed <= 20) ? 12 : ((gamesPlayed <= 50) ? 8 : ((currentRating >= 800) ? 4 : 6));
+		return (gamesPlayed <= 20) ? 12 : ((gamesPlayed <= 50) ? 8 : ((currentRating >= 800) ? 4 : 3));
 	});
 var $author$project$Elo$getKFactor = F2(
 	function (gamesPlayed, currentRating) {

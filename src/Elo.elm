@@ -40,7 +40,7 @@ dynamicKFactor gamesPlayed currentRating =
     else if currentRating >= 800 then
         4   -- High-rated: very stable
     else
-        6   -- Established: stable
+        3   -- Established: very stable
 
 
 {-| Get the appropriate K-factor for a player based on their experience.
