@@ -302,6 +302,11 @@ isVotingDisabled model =
     model.autoSaveInProgress || model.isSyncing
 
 
+hasOpenPopup : Model -> Bool
+hasOpenPopup model =
+    model.showAddPlayerPopup || model.showCustomMatchup
+
+
 maybeAutoSave : ( Model, Cmd Msg ) -> ( Model, Cmd Msg )
 maybeAutoSave ( model, cmd ) =
     if model.autoSave then
@@ -925,46 +930,50 @@ update msg model =
             )
 
         KeyPressed key ->
-            case ( key, League.currentMatch (History.current model.history) ) of
-                ( "1", Just (League.Match playerA playerB) ) ->
-                    -- Left player wins
-                    if isVotingDisabled model then
-                        setTemporaryStatus "Voting disabled during sync" model
-                    else
-                        let
-                            outcome = League.Win { won = playerA, lost = playerB }
-                        in
-                        handleMatchFinished outcome model
+            -- Ignore keyboard shortcuts if there's a popup open
+            if hasOpenPopup model then
+                ( model, Cmd.none )
+            else
+                case ( key, League.currentMatch (History.current model.history) ) of
+                    ( "1", Just (League.Match playerA playerB) ) ->
+                        -- Left player wins
+                        if isVotingDisabled model then
+                            setTemporaryStatus "Voting disabled during sync" model
+                        else
+                            let
+                                outcome = League.Win { won = playerA, lost = playerB }
+                            in
+                            handleMatchFinished outcome model
 
-                ( "2", Just (League.Match playerA playerB) ) ->
-                    -- Right player wins  
-                    if isVotingDisabled model then
-                        setTemporaryStatus "Voting disabled during sync" model
-                    else
-                        let
-                            outcome = League.Win { won = playerB, lost = playerA }
-                        in
-                        handleMatchFinished outcome model
+                    ( "2", Just (League.Match playerA playerB) ) ->
+                        -- Right player wins  
+                        if isVotingDisabled model then
+                            setTemporaryStatus "Voting disabled during sync" model
+                        else
+                            let
+                                outcome = League.Win { won = playerB, lost = playerA }
+                            in
+                            handleMatchFinished outcome model
 
-                ( "0", Just (League.Match playerA playerB) ) ->
-                    -- Tie/Draw
-                    if isVotingDisabled model then
-                        setTemporaryStatus "Voting disabled during sync" model
-                    else
-                        let
-                            outcome = League.Draw { playerA = playerA, playerB = playerB }
-                        in
-                        handleMatchFinished outcome model
+                    ( "0", Just (League.Match playerA playerB) ) ->
+                        -- Tie/Draw
+                        if isVotingDisabled model then
+                            setTemporaryStatus "Voting disabled during sync" model
+                        else
+                            let
+                                outcome = League.Draw { playerA = playerA, playerB = playerB }
+                            in
+                            handleMatchFinished outcome model
 
-                ( "Escape", _ ) ->
-                    -- Skip match
-                    ( { model | history = History.mapInPlace League.clearMatch model.history }
-                    , Cmd.none
-                    )
-                        |> startNextMatchIfPossible
+                    ( "Escape", _ ) ->
+                        -- Skip match
+                        ( { model | history = History.mapInPlace League.clearMatch model.history }
+                        , Cmd.none
+                        )
+                            |> startNextMatchIfPossible
 
-                _ ->
-                    ( model, Cmd.none )
+                    _ ->
+                        ( model, Cmd.none )
 
         IgnoredKey ->
             ( model, Cmd.none )

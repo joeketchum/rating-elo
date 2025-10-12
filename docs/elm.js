@@ -4387,7 +4387,7 @@ var _Http_toTask = F3(function(router, toTask, request)
 		xhr.addEventListener('error', function() { done($elm$http$Http$NetworkError_); });
 		xhr.addEventListener('timeout', function() { done($elm$http$Http$Timeout_); });
 		xhr.addEventListener('load', function() { done(_Http_toResponse(request.aj.b, xhr)); });
-		$elm$core$Maybe$isJust(request.aB) && _Http_track(router, xhr, request.aB.a);
+		$elm$core$Maybe$isJust(request.aC) && _Http_track(router, xhr, request.aC.a);
 
 		try {
 			xhr.open(request.ar, request.e3, true);
@@ -4413,7 +4413,7 @@ function _Http_configureRequest(xhr, request)
 	{
 		xhr.setRequestHeader(headers.a.a, headers.a.b);
 	}
-	xhr.timeout = request.aA.a || 0;
+	xhr.timeout = request.aB.a || 0;
 	xhr.responseType = request.aj.d;
 	xhr.withCredentials = request.dX;
 }
@@ -6182,7 +6182,7 @@ var $elm$http$Http$updateReqs = F3(
 					return A2(
 						$elm$core$Task$andThen,
 						function (pid) {
-							var _v4 = req.aB;
+							var _v4 = req.aC;
 							if (_v4.$ === 1) {
 								return A3($elm$http$Http$updateReqs, router, otherCmds, reqs);
 							} else {
@@ -6274,8 +6274,8 @@ var $elm$http$Http$cmdMap = F2(
 					aj: A2(_Http_mapExpect, func, r.aj),
 					an: r.an,
 					ar: r.ar,
-					aA: r.aA,
 					aB: r.aB,
+					aC: r.aC,
 					e3: r.e3
 				});
 		}
@@ -6299,7 +6299,7 @@ var $elm$http$Http$subscription = _Platform_leaf('Http');
 var $elm$http$Http$request = function (r) {
 	return $elm$http$Http$command(
 		$elm$http$Http$Request(
-			{dX: false, d2: r.d2, aj: r.aj, an: r.an, ar: r.ar, aA: r.aA, aB: r.aB, e3: r.e3}));
+			{dX: false, d2: r.d2, aj: r.aj, an: r.an, ar: r.ar, aB: r.aB, aC: r.aC, e3: r.e3}));
 };
 var $author$project$Supabase$supabaseRequest = F6(
 	function (config, method, endpoint, body, decoder, toMsg) {
@@ -6315,8 +6315,8 @@ var $author$project$Supabase$supabaseRequest = F6(
 						A2($elm$http$Http$header, 'Prefer', 'return=representation')
 					]),
 				ar: method,
-				aA: $elm$core$Maybe$Nothing,
 				aB: $elm$core$Maybe$Nothing,
+				aC: $elm$core$Maybe$Nothing,
 				e3: config.e3 + ('/rest/v1' + endpoint)
 			});
 	});
@@ -6334,7 +6334,7 @@ var $author$project$Supabase$getPlayers = F2(
 var $author$project$History$History = $elm$core$Basics$identity;
 var $author$project$History$init = F2(
 	function (retention, initial) {
-		return {P: initial, aI: _List_Nil, at: _List_Nil, dv: retention};
+		return {Q: initial, aJ: _List_Nil, at: _List_Nil, dv: retention};
 	});
 var $author$project$League$League = $elm$core$Basics$identity;
 var $rtfeldman$elm_sorter_experiment$Internal$Dict$Leaf = function (a) {
@@ -6377,7 +6377,7 @@ var $author$project$Main$GotNextMatch = function (a) {
 };
 var $author$project$History$current = function (_v0) {
 	var guts = _v0;
-	return guts.P;
+	return guts.Q;
 };
 var $author$project$League$currentMatch = function (_v0) {
 	var league = _v0;
@@ -6504,7 +6504,7 @@ var $author$project$Main$isPlayerLocallyIgnored = F2(
 		return A2(
 			$elm$core$Set$member,
 			$elm$core$String$fromInt(idInt),
-			model.Q);
+			model.R);
 	});
 var $elm$core$Basics$neq = _Utils_notEqual;
 var $author$project$League$Match = F2(
@@ -6965,7 +6965,7 @@ var $author$project$Player$playsPM = function (_v0) {
 };
 var $author$project$Main$timePlayerFilter = function (model) {
 	return function (player) {
-		var _v0 = model.az;
+		var _v0 = model.aA;
 		switch (_v0) {
 			case 0:
 				return true;
@@ -7005,17 +7005,17 @@ var $author$project$Main$init = function (_v0) {
 		_Utils_Tuple2(
 			{
 				af: true,
-				O: '',
+				P: '',
 				H: $elm$core$Maybe$Nothing,
 				ag: true,
-				aE: '500',
+				aF: '500',
 				aW: true,
 				bl: false,
 				_: $elm$core$Maybe$Nothing,
 				aa: $elm$core$Maybe$Nothing,
 				b_: 1,
 				b: A2($author$project$History$init, 50, $author$project$League$init),
-				Q: $elm$core$Set$empty,
+				R: $elm$core$Set$empty,
 				t: false,
 				ao: false,
 				bJ: 0,
@@ -7026,12 +7026,12 @@ var $author$project$Main$init = function (_v0) {
 				av: _List_Nil,
 				aw: '',
 				ax: _List_Nil,
-				aN: $elm$core$Maybe$Nothing,
+				aO: $elm$core$Maybe$Nothing,
 				dz: false,
-				V: false,
-				aP: false,
+				O: false,
+				az: false,
 				o: $elm$core$Maybe$Nothing,
-				az: 0,
+				aA: 0,
 				aS: $elm$core$Maybe$Nothing,
 				aV: 0
 			},
@@ -7642,8 +7642,8 @@ var $author$project$Supabase$createNewPlayer = F6(
 						A2($elm$http$Http$header, 'Prefer', 'return=representation')
 					]),
 				ar: 'POST',
-				aA: $elm$core$Maybe$Nothing,
 				aB: $elm$core$Maybe$Nothing,
+				aC: $elm$core$Maybe$Nothing,
 				e3: config.e3 + '/rest/v1/players'
 			});
 	});
@@ -7721,8 +7721,8 @@ var $author$project$History$goBack = function (_v0) {
 			_Utils_update(
 				guts,
 				{
-					P: mostRecent,
-					aI: A2($elm$core$List$cons, guts.P, guts.aI),
+					Q: mostRecent,
+					aJ: A2($elm$core$List$cons, guts.Q, guts.aJ),
 					at: rest
 				}));
 	} else {
@@ -8010,12 +8010,12 @@ var $author$project$History$push = F2(
 		return _Utils_update(
 			guts,
 			{
-				P: a,
-				aI: _List_Nil,
+				Q: a,
+				aJ: _List_Nil,
 				at: A2(
 					$elm$core$List$take,
 					guts.dv,
-					A2($elm$core$List$cons, guts.P, guts.at))
+					A2($elm$core$List$cons, guts.Q, guts.at))
 			});
 	});
 var $author$project$History$mapPush = F2(
@@ -8075,8 +8075,8 @@ var $author$project$Supabase$voteEdgeFunction = F5(
 						A2($elm$http$Http$header, 'Content-Type', 'application/json')
 					]),
 				ar: 'POST',
-				aA: $elm$core$Maybe$Nothing,
 				aB: $elm$core$Maybe$Nothing,
+				aC: $elm$core$Maybe$Nothing,
 				e3: config.e3 + '/functions/v1/vote'
 			});
 	});
@@ -8127,6 +8127,9 @@ var $author$project$Main$handleMatchFinished = F2(
 			}
 		}
 	});
+var $author$project$Main$hasOpenPopup = function (model) {
+	return model.O || model.az;
+};
 var $author$project$Main$httpErrorToString = function (err) {
 	switch (err.$) {
 		case 0:
@@ -8158,7 +8161,7 @@ var $author$project$History$mapInPlace = F2(
 		return _Utils_update(
 			guts,
 			{
-				P: fn(guts.P)
+				Q: fn(guts.Q)
 			});
 	});
 var $author$project$Player$name = function (_v0) {
@@ -8211,8 +8214,8 @@ var $author$project$Supabase$restorePlayer = F3(
 						A2($elm$http$Http$header, 'Prefer', 'return=minimal')
 					]),
 				ar: 'PATCH',
-				aA: $elm$core$Maybe$Nothing,
 				aB: $elm$core$Maybe$Nothing,
+				aC: $elm$core$Maybe$Nothing,
 				e3: config.e3 + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
 			});
 	});
@@ -8674,8 +8677,8 @@ var $author$project$Supabase$retirePlayer = F3(
 						A2($elm$http$Http$header, 'Prefer', 'return=minimal')
 					]),
 				ar: 'PATCH',
-				aA: $elm$core$Maybe$Nothing,
 				aB: $elm$core$Maybe$Nothing,
+				aC: $elm$core$Maybe$Nothing,
 				e3: config.e3 + ('/rest/v1/players?id=eq.' + $elm$core$String$fromInt(playerId))
 			});
 	});
@@ -8784,8 +8787,8 @@ var $author$project$Supabase$undoEdgeFunction = F2(
 						A2($elm$http$Http$header, 'Content-Type', 'application/json')
 					]),
 				ar: 'POST',
-				aA: $elm$core$Maybe$Nothing,
 				aB: $elm$core$Maybe$Nothing,
+				aC: $elm$core$Maybe$Nothing,
 				e3: config.e3 + '/functions/v1/undo'
 			});
 	});
@@ -8862,19 +8865,19 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{V: true}),
+						{O: true}),
 					$elm$core$Platform$Cmd$none);
 			case 36:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{V: true}),
+						{O: true}),
 					$elm$core$Platform$Cmd$none);
 			case 37:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{af: true, O: '', ag: true, aE: '500', V: false}),
+						{af: true, P: '', ag: true, aF: '500', O: false}),
 					$elm$core$Platform$Cmd$none);
 			case 38:
 				var name = msg.a;
@@ -8882,18 +8885,18 @@ var $author$project$Main$update = F2(
 				return ($elm$core$String$length(trimmed) < 1) ? _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{O: name, H: $elm$core$Maybe$Nothing}),
+						{P: name, H: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none) : _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{O: name, H: $elm$core$Maybe$Nothing}),
+						{P: name, H: $elm$core$Maybe$Nothing}),
 					A3($author$project$Supabase$getPlayerByName, $author$project$Config$supabaseConfig, trimmed, $author$project$Main$CheckedExistingByName));
 			case 39:
 				var rating = msg.a;
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aE: rating}),
+						{aF: rating}),
 					$elm$core$Platform$Cmd$none);
 			case 40:
 				return _Utils_Tuple2(
@@ -8911,12 +8914,12 @@ var $author$project$Main$update = F2(
 				var rating = A2(
 					$elm$core$Maybe$withDefault,
 					500,
-					$elm$core$String$toInt(model.aE));
+					$elm$core$String$toInt(model.aF));
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{af: true, O: '', H: $elm$core$Maybe$Nothing, ag: true, aE: '500', V: false}),
-					A6($author$project$Supabase$createNewPlayer, $author$project$Config$supabaseConfig, model.O, rating, model.af, model.ag, $author$project$Main$NewPlayerCreated));
+						{af: true, P: '', H: $elm$core$Maybe$Nothing, ag: true, aF: '500', O: false}),
+					A6($author$project$Supabase$createNewPlayer, $author$project$Config$supabaseConfig, model.P, rating, model.af, model.ag, $author$project$Main$NewPlayerCreated));
 			case 43:
 				var result = msg.a;
 				if (!result.$) {
@@ -8956,14 +8959,14 @@ var $author$project$Main$update = F2(
 			case 45:
 				var result = msg.a;
 				if (!result.$) {
-					var statusMsg = model.V ? 'Player restored' : 'Undid last vote';
+					var statusMsg = model.O ? 'Player restored' : 'Undid last vote';
 					return _Utils_Tuple2(
 						_Utils_update(
 							model,
 							{
 								H: $elm$core$Maybe$Nothing,
 								t: true,
-								V: false,
+								O: false,
 								o: $elm$core$Maybe$Just(statusMsg)
 							}),
 						A2(
@@ -8980,7 +8983,7 @@ var $author$project$Main$update = F2(
 							{
 								t: false,
 								o: $elm$core$Maybe$Just(
-									model.V ? ('Failed to restore player: ' + $author$project$Main$httpErrorToString(err)) : ('Failed to undo last vote: ' + $author$project$Main$httpErrorToString(err)))
+									model.O ? ('Failed to restore player: ' + $author$project$Main$httpErrorToString(err)) : ('Failed to undo last vote: ' + $author$project$Main$httpErrorToString(err)))
 							}),
 						$elm$core$Platform$Cmd$none);
 				}
@@ -8990,7 +8993,7 @@ var $author$project$Main$update = F2(
 					_Utils_update(
 						model,
 						{
-							aN: $elm$core$Maybe$Just(
+							aO: $elm$core$Maybe$Just(
 								_Utils_Tuple2(player, 1))
 						}),
 					$elm$core$Platform$Cmd$none);
@@ -9003,7 +9006,7 @@ var $author$project$Main$update = F2(
 					var newIgnoredPlayers = A2(
 						$elm$core$Set$insert,
 						$elm$core$String$fromInt(playerId),
-						model.Q);
+						model.R);
 					var serializedIgnored = A2(
 						$elm$core$String$join,
 						',',
@@ -9018,8 +9021,8 @@ var $author$project$Main$update = F2(
 											$author$project$History$mapPush,
 											$author$project$League$retirePlayer(player),
 											model.b),
-										Q: newIgnoredPlayers,
-										aN: $elm$core$Maybe$Nothing
+										R: newIgnoredPlayers,
+										aO: $elm$core$Maybe$Nothing
 									}),
 								$elm$core$Platform$Cmd$batch(
 									_List_fromArray(
@@ -9032,7 +9035,7 @@ var $author$project$Main$update = F2(
 						_Utils_update(
 							model,
 							{
-								aN: $elm$core$Maybe$Just(
+								aO: $elm$core$Maybe$Just(
 									_Utils_Tuple2(player, 2))
 							}),
 						$elm$core$Platform$Cmd$none);
@@ -9041,7 +9044,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{aN: $elm$core$Maybe$Nothing}),
+						{aO: $elm$core$Maybe$Nothing}),
 					$elm$core$Platform$Cmd$none);
 			case 49:
 				var player = msg.a;
@@ -9050,7 +9053,7 @@ var $author$project$Main$update = F2(
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$insert,
 					$elm$core$String$fromInt(idInt),
-					model.Q);
+					model.R);
 				var serializedIgnored = A2(
 					$elm$core$String$join,
 					',',
@@ -9059,7 +9062,7 @@ var $author$project$Main$update = F2(
 					_Utils_Tuple2(
 						_Utils_update(
 							model,
-							{Q: newIgnoredPlayers}),
+							{R: newIgnoredPlayers}),
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
 			case 50:
 				var player = msg.a;
@@ -9068,7 +9071,7 @@ var $author$project$Main$update = F2(
 				var newIgnoredPlayers = A2(
 					$elm$core$Set$remove,
 					$elm$core$String$fromInt(idInt),
-					model.Q);
+					model.R);
 				var serializedIgnored = A2(
 					$elm$core$String$join,
 					',',
@@ -9077,7 +9080,7 @@ var $author$project$Main$update = F2(
 					_Utils_Tuple2(
 						_Utils_update(
 							model,
-							{Q: newIgnoredPlayers}),
+							{R: newIgnoredPlayers}),
 						$author$project$Main$saveIgnoredPlayers(serializedIgnored)));
 			case 51:
 				return $author$project$Main$startNextMatchIfPossible(
@@ -9297,13 +9300,13 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, au: '', av: _List_Nil, aw: '', ax: _List_Nil, aP: true}),
+						{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, au: '', av: _List_Nil, aw: '', ax: _List_Nil, az: true}),
 					$elm$core$Platform$Cmd$none);
 			case 6:
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, au: '', av: _List_Nil, aw: '', ax: _List_Nil, aP: false}),
+						{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, au: '', av: _List_Nil, aw: '', ax: _List_Nil, az: false}),
 					$elm$core$Platform$Cmd$none);
 			case 7:
 				var player = msg.a;
@@ -9408,7 +9411,7 @@ var $author$project$Main$update = F2(
 						return _Utils_Tuple2(
 							_Utils_update(
 								model,
-								{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, b: updatedHistory, au: '', av: _List_Nil, aw: '', ax: _List_Nil, aP: false}),
+								{_: $elm$core$Maybe$Nothing, aa: $elm$core$Maybe$Nothing, b: updatedHistory, au: '', av: _List_Nil, aw: '', ax: _List_Nil, az: false}),
 							$elm$core$Platform$Cmd$none);
 					}
 				} else {
@@ -9525,72 +9528,76 @@ var $author$project$Main$update = F2(
 					$elm$core$Platform$Cmd$none);
 			case 18:
 				var key = msg.a;
-				var _v23 = _Utils_Tuple2(
-					key,
-					$author$project$League$currentMatch(
-						$author$project$History$current(model.b)));
-				_v23$4:
-				while (true) {
-					switch (_v23.a) {
-						case '1':
-							if (!_v23.b.$) {
-								var _v24 = _v23.b.a;
-								var playerA = _v24.a;
-								var playerB = _v24.b;
-								if ($author$project$Main$isVotingDisabled(model)) {
-									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
+				if ($author$project$Main$hasOpenPopup(model)) {
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
+				} else {
+					var _v23 = _Utils_Tuple2(
+						key,
+						$author$project$League$currentMatch(
+							$author$project$History$current(model.b)));
+					_v23$4:
+					while (true) {
+						switch (_v23.a) {
+							case '1':
+								if (!_v23.b.$) {
+									var _v24 = _v23.b.a;
+									var playerA = _v24.a;
+									var playerB = _v24.b;
+									if ($author$project$Main$isVotingDisabled(model)) {
+										return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
+									} else {
+										var outcome = $author$project$League$Win(
+											{c5: playerB, dR: playerA});
+										return A2($author$project$Main$handleMatchFinished, outcome, model);
+									}
 								} else {
-									var outcome = $author$project$League$Win(
-										{c5: playerB, dR: playerA});
-									return A2($author$project$Main$handleMatchFinished, outcome, model);
+									break _v23$4;
 								}
-							} else {
-								break _v23$4;
-							}
-						case '2':
-							if (!_v23.b.$) {
-								var _v25 = _v23.b.a;
-								var playerA = _v25.a;
-								var playerB = _v25.b;
-								if ($author$project$Main$isVotingDisabled(model)) {
-									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
+							case '2':
+								if (!_v23.b.$) {
+									var _v25 = _v23.b.a;
+									var playerA = _v25.a;
+									var playerB = _v25.b;
+									if ($author$project$Main$isVotingDisabled(model)) {
+										return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
+									} else {
+										var outcome = $author$project$League$Win(
+											{c5: playerA, dR: playerB});
+										return A2($author$project$Main$handleMatchFinished, outcome, model);
+									}
 								} else {
-									var outcome = $author$project$League$Win(
-										{c5: playerA, dR: playerB});
-									return A2($author$project$Main$handleMatchFinished, outcome, model);
+									break _v23$4;
 								}
-							} else {
-								break _v23$4;
-							}
-						case '0':
-							if (!_v23.b.$) {
-								var _v26 = _v23.b.a;
-								var playerA = _v26.a;
-								var playerB = _v26.b;
-								if ($author$project$Main$isVotingDisabled(model)) {
-									return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
+							case '0':
+								if (!_v23.b.$) {
+									var _v26 = _v23.b.a;
+									var playerA = _v26.a;
+									var playerB = _v26.b;
+									if ($author$project$Main$isVotingDisabled(model)) {
+										return A2($author$project$Main$setTemporaryStatus, 'Voting disabled during sync', model);
+									} else {
+										var outcome = $author$project$League$Draw(
+											{dh: playerA, di: playerB});
+										return A2($author$project$Main$handleMatchFinished, outcome, model);
+									}
 								} else {
-									var outcome = $author$project$League$Draw(
-										{dh: playerA, di: playerB});
-									return A2($author$project$Main$handleMatchFinished, outcome, model);
+									break _v23$4;
 								}
-							} else {
+							case 'Escape':
+								return $author$project$Main$startNextMatchIfPossible(
+									_Utils_Tuple2(
+										_Utils_update(
+											model,
+											{
+												b: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.b)
+											}),
+										$elm$core$Platform$Cmd$none));
+							default:
 								break _v23$4;
-							}
-						case 'Escape':
-							return $author$project$Main$startNextMatchIfPossible(
-								_Utils_Tuple2(
-									_Utils_update(
-										model,
-										{
-											b: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.b)
-										}),
-									$elm$core$Platform$Cmd$none));
-						default:
-							break _v23$4;
+						}
 					}
+					return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 				}
-				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 19:
 				return _Utils_Tuple2(model, $elm$core$Platform$Cmd$none);
 			case 24:
@@ -9601,7 +9608,7 @@ var $author$project$Main$update = F2(
 							model,
 							{
 								b: A2($author$project$History$mapInPlace, $author$project$League$clearMatch, model.b),
-								az: tf
+								aA: tf
 							}),
 						$elm$core$Platform$Cmd$none));
 			case 25:
@@ -9613,7 +9620,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{az: tf}),
+						{aA: tf}),
 					$elm$core$Platform$Cmd$none);
 			default:
 				var raw = msg.a;
@@ -9622,7 +9629,7 @@ var $author$project$Main$update = F2(
 				return _Utils_Tuple2(
 					_Utils_update(
 						model,
-						{Q: ignoredIds}),
+						{R: ignoredIds}),
 					$elm$core$Platform$Cmd$none);
 		}
 	});
@@ -9731,8 +9738,8 @@ var $rtfeldman$elm_css$Css$Internal$lengthConverter = F3(
 			ap: 0,
 			a6: 0,
 			a7: 0,
-			aK: 0,
 			aL: 0,
+			aM: 0,
 			ac: 0,
 			as: numericValue,
 			bc: 0,
@@ -9751,7 +9758,7 @@ var $rtfeldman$elm_css$Css$alignItems = function (fn) {
 		'align-items',
 		fn($rtfeldman$elm_css$Css$Internal$lengthForOverloadedProperty));
 };
-var $rtfeldman$elm_css$Css$auto = {dW: 0, c: 0, a1: 0, bI: 0, er: 0, a5: 0, ap: 0, ac: 0, a8: 0, U: 0, bV: 0, bd: 0, L: 0, ae: 'auto'};
+var $rtfeldman$elm_css$Css$auto = {dW: 0, c: 0, a1: 0, bI: 0, er: 0, a5: 0, ap: 0, ac: 0, a8: 0, V: 0, bV: 0, bd: 0, L: 0, ae: 'auto'};
 var $rtfeldman$elm_css$Css$property = F2(
 	function (key, value) {
 		return $rtfeldman$elm_css$Css$Preprocess$AppendProperty(key + (':' + value));
@@ -11301,7 +11308,7 @@ var $rtfeldman$elm_css$Css$Global$typeSelector = F2(
 			]);
 	});
 var $rtfeldman$elm_css$Css$Global$html = $rtfeldman$elm_css$Css$Global$typeSelector('html');
-var $rtfeldman$elm_css$Css$initial = {cy: 0, s: 0, bm: 0, cA: 0, aX: 0, cB: 0, aY: 0, ai: 0, I: 0, bE: 0, Y: 0, c: 0, l: 0, a1: 0, b1: 0, bp: 0, bH: 0, aG: 0, D: 0, a2: 0, g: 0, am: 0, bI: 0, c$: 0, b5: 0, p: 0, a5: 0, ap: 0, a6: 0, a7: 0, aK: 0, aL: 0, ac: 0, bK: 0, e: 0, d: 0, cb: 0, bu: 0, as: 0, bO: 0, a8: 0, U: 0, bV: 0, bb: 0, aQ: 0, bc: 0, bd: 0, aR: 0, L: 0, be: '', bB: 0, ae: 'initial', bC: 0, aD: 0};
+var $rtfeldman$elm_css$Css$initial = {cy: 0, s: 0, bm: 0, cA: 0, aX: 0, cB: 0, aY: 0, ai: 0, I: 0, bE: 0, Y: 0, c: 0, l: 0, a1: 0, b1: 0, bp: 0, bH: 0, aH: 0, D: 0, a2: 0, g: 0, am: 0, bI: 0, c$: 0, b5: 0, p: 0, a5: 0, ap: 0, a6: 0, a7: 0, aL: 0, aM: 0, ac: 0, bK: 0, e: 0, d: 0, cb: 0, bu: 0, as: 0, bO: 0, a8: 0, V: 0, bV: 0, bb: 0, aQ: 0, bc: 0, bd: 0, aR: 0, L: 0, be: '', bB: 0, ae: 'initial', bC: 0, aE: 0};
 var $rtfeldman$elm_css$Css$inherit = _Utils_update(
 	$rtfeldman$elm_css$Css$initial,
 	{ae: 'inherit'});
@@ -11795,7 +11802,7 @@ var $rtfeldman$elm_css$Css$int = function (val) {
 	return {
 		am: 0,
 		bI: 0,
-		aL: 0,
+		aM: 0,
 		ac: 0,
 		bu: 0,
 		bM: 0,
@@ -12010,7 +12017,7 @@ var $rtfeldman$elm_css$Css$paddingLeft = $rtfeldman$elm_css$Css$prop1('padding-l
 var $rtfeldman$elm_css$Css$paddingRight = $rtfeldman$elm_css$Css$prop1('padding-right');
 var $rtfeldman$elm_css$Css$paddingTop = $rtfeldman$elm_css$Css$prop1('padding-top');
 var $rtfeldman$elm_css$Css$pointer = {c: 0, ae: 'pointer'};
-var $rtfeldman$elm_css$Css$zero = {p: 0, a5: 0, ap: 0, a6: 0, a7: 0, aK: 0, aL: 0, bu: 0, as: 0, bO: 0, be: '', bB: 0, ae: '0'};
+var $rtfeldman$elm_css$Css$zero = {p: 0, a5: 0, ap: 0, a6: 0, a7: 0, aL: 0, aM: 0, bu: 0, as: 0, bO: 0, be: '', bB: 0, ae: '0'};
 var $author$project$Main$zzzIgnoreButtonTiny = function (maybeMsg) {
 	return A2(
 		$rtfeldman$elm_css$Html$Styled$button,
@@ -12479,7 +12486,7 @@ var $rtfeldman$elm_css$Html$Styled$label = $rtfeldman$elm_css$Html$Styled$node('
 var $rtfeldman$elm_css$Css$left = $rtfeldman$elm_css$Css$prop1('left');
 var $rtfeldman$elm_css$Css$margin = $rtfeldman$elm_css$Css$prop1('margin');
 var $rtfeldman$elm_css$Css$maxHeight = $rtfeldman$elm_css$Css$prop1('max-height');
-var $rtfeldman$elm_css$Css$none = {aX: 0, cC: 0, I: 0, c: 0, l: 0, em: 0, cZ: 0, b5: 0, a7: 0, aK: 0, ac: 0, e: 0, d: 0, cb: 0, bO: 0, eM: 0, U: 0, bP: 0, eT: 0, bb: 0, aR: 0, L: 0, i: 0, e2: 0, ae: 'none'};
+var $rtfeldman$elm_css$Css$none = {aX: 0, cC: 0, I: 0, c: 0, l: 0, em: 0, cZ: 0, b5: 0, a7: 0, aL: 0, ac: 0, e: 0, d: 0, cb: 0, bO: 0, eM: 0, V: 0, bP: 0, eT: 0, bb: 0, aR: 0, L: 0, i: 0, e2: 0, ae: 'none'};
 var $rtfeldman$elm_css$Html$Styled$Events$alwaysStop = function (x) {
 	return _Utils_Tuple2(x, true);
 };
@@ -12995,7 +13002,7 @@ var $rtfeldman$elm_css$Css$Media$maxWidth = function (value) {
 var $rtfeldman$elm_css$Css$UnitlessFloat = 0;
 var $rtfeldman$elm_css$Css$num = function (val) {
 	return {
-		aL: 0,
+		aM: 0,
 		ac: 0,
 		bu: 0,
 		bM: 0,
@@ -14087,7 +14094,7 @@ var $author$project$Main$currentMatch = function (model) {
 						]),
 					_List_fromArray(
 						[
-							model.aP ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
+							model.az ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
 						])),
 					A2(
 					$rtfeldman$elm_css$Html$Styled$div,
@@ -14177,7 +14184,7 @@ var $author$project$Main$currentMatch = function (model) {
 									'ADD PLAYER',
 									$elm$core$Maybe$Just($author$project$Main$KeeperWantsToAddNewPlayer))
 								])),
-							model.aP ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
+							model.az ? $author$project$Main$customMatchupUI(model) : $rtfeldman$elm_css$Html$Styled$text('')
 						]))
 				]));
 	}
@@ -14267,19 +14274,19 @@ var $author$project$Main$filterBar = function (model) {
 					])),
 				A3(
 				$author$project$Main$toggleBtn,
-				!model.az,
+				!model.aA,
 				'All',
 				$elm$core$Maybe$Just(
 					$author$project$Main$SetTimeFilter(0))),
 				A3(
 				$author$project$Main$toggleBtn,
-				model.az === 1,
+				model.aA === 1,
 				'AM',
 				$elm$core$Maybe$Just(
 					$author$project$Main$SetTimeFilter(1))),
 				A3(
 				$author$project$Main$toggleBtn,
-				model.az === 2,
+				model.aA === 2,
 				'PM',
 				$elm$core$Maybe$Just(
 					$author$project$Main$SetTimeFilter(2)))
@@ -14704,14 +14711,14 @@ var $author$project$Player$htmlKey = function (_v0) {
 };
 var $rtfeldman$elm_css$Css$lastChild = $rtfeldman$elm_css$Css$pseudoClass('last-child');
 var $rtfeldman$elm_css$Css$middle = $rtfeldman$elm_css$Css$prop1('middle');
-var $rtfeldman$elm_css$Css$noWrap = {bp: 0, bH: 0, ae: 'nowrap', aD: 0};
+var $rtfeldman$elm_css$Css$noWrap = {bp: 0, bH: 0, ae: 'nowrap', aE: 0};
 var $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode = F3(
 	function (a, b, c) {
 		return {$: 2, a: a, b: b, c: c};
 	});
 var $rtfeldman$elm_css$VirtualDom$Styled$keyedNode = $rtfeldman$elm_css$VirtualDom$Styled$KeyedNode;
 var $rtfeldman$elm_css$Html$Styled$Keyed$node = $rtfeldman$elm_css$VirtualDom$Styled$keyedNode;
-var $rtfeldman$elm_css$Css$normal = {b0: 0, a2: 0, am: 0, cd: 0, ae: 'normal', aD: 0};
+var $rtfeldman$elm_css$Css$normal = {b0: 0, a2: 0, am: 0, cd: 0, ae: 'normal', aE: 0};
 var $rtfeldman$elm_css$Css$overflowX = $rtfeldman$elm_css$Css$prop1('overflow-x');
 var $rtfeldman$elm_css$Css$whiteSpace = $rtfeldman$elm_css$Css$prop1('white-space');
 var $author$project$Main$smallRedXButtonSmall = function (maybeMsg) {
@@ -14905,7 +14912,7 @@ var $author$project$Main$upArrow = function (color) {
 			]),
 		_List_Nil);
 };
-var $rtfeldman$elm_css$Css$visible = {a8: 0, U: 0, ae: 'visible', bC: 0};
+var $rtfeldman$elm_css$Css$visible = {a8: 0, V: 0, ae: 'visible', bC: 0};
 var $rtfeldman$elm_css$Css$wrap = {bp: 0, bH: 0, ae: 'wrap'};
 var $author$project$Main$zzzIgnoreButtonSmall = function (maybeMsg) {
 	return A2(
@@ -16642,7 +16649,7 @@ var $author$project$Main$view = function (model) {
 						]) : _List_Nil,
 					_Utils_ap(
 						function () {
-							var _v0 = model.aN;
+							var _v0 = model.aO;
 							if (!_v0.$) {
 								var _v1 = _v0.a;
 								var player = _v1.a;
@@ -17058,7 +17065,7 @@ var $author$project$Main$view = function (model) {
 								}
 							}(),
 							_Utils_ap(
-								model.V ? _List_fromArray(
+								model.O ? _List_fromArray(
 									[
 										A2(
 										$rtfeldman$elm_css$Html$Styled$div,
@@ -17176,7 +17183,7 @@ var $author$project$Main$view = function (model) {
 																	[
 																		$rtfeldman$elm_css$Html$Styled$Attributes$type_('text'),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('Enter player name'),
-																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.O),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.P),
 																		$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerName),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																		_List_fromArray(
@@ -17249,7 +17256,7 @@ var $author$project$Main$view = function (model) {
 																	[
 																		$rtfeldman$elm_css$Html$Styled$Attributes$type_('number'),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$placeholder('500'),
-																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.aE),
+																		$rtfeldman$elm_css$Html$Styled$Attributes$value(model.aF),
 																		$rtfeldman$elm_css$Html$Styled$Events$onInput($author$project$Main$KeeperUpdatedAddPlayerRating),
 																		$rtfeldman$elm_css$Html$Styled$Attributes$css(
 																		_List_fromArray(
@@ -17486,7 +17493,7 @@ var $author$project$Main$view = function (model) {
 																					])),
 																				$author$project$Main$modernSansSerif,
 																				($elm$core$String$isEmpty(
-																				$elm$core$String$trim(model.O)) || A2(
+																				$elm$core$String$trim(model.P)) || A2(
 																				$elm$core$Maybe$withDefault,
 																				false,
 																				A2(
@@ -17503,7 +17510,7 @@ var $author$project$Main$view = function (model) {
 																					])) : $rtfeldman$elm_css$Css$batch(_List_Nil)
 																			])),
 																		($elm$core$String$isEmpty(
-																		$elm$core$String$trim(model.O)) || A2(
+																		$elm$core$String$trim(model.P)) || A2(
 																		$elm$core$Maybe$withDefault,
 																		false,
 																		A2(
