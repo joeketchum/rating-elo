@@ -107,7 +107,7 @@ win kFactor { won, lost } =
         rawWinChange = toFloat kFactor * (1 - winOdds)
         rawLoseChange = toFloat kFactor * (0 - loseOdds)
         -- Cap rating change for expected wins/losses
-        maxChange = 4
+        maxChange = 2
         winChange =
             if winOdds > 0.7 then
                 min rawWinChange (toFloat maxChange)
@@ -133,7 +133,7 @@ draw kFactor { playerA, playerB } =
         oddsB = odds playerB playerA
         rawAChange = toFloat kFactor * (0.5 - oddsA)
         rawBChange = toFloat kFactor * (0.5 - oddsB)
-        maxChange = 4
+        maxChange = 2
         aChange =
             if oddsA > 0.7 then
                 min rawAChange (toFloat maxChange)

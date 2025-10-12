@@ -7750,7 +7750,7 @@ var $author$project$Elo$draw = F2(
 		var rawBChange = kFactor * (0.5 - oddsB);
 		var oddsA = A2($author$project$Elo$odds, playerA, playerB);
 		var rawAChange = kFactor * (0.5 - oddsA);
-		var maxChange = 4;
+		var maxChange = 2;
 		var bChange = (oddsB > 0.7) ? A2($elm$core$Basics$min, rawBChange, maxChange) : ((oddsB < 0.3) ? A2($elm$core$Basics$max, rawBChange, -maxChange) : rawBChange);
 		var aChange = (oddsA > 0.7) ? A2($elm$core$Basics$min, rawAChange, maxChange) : ((oddsA < 0.3) ? A2($elm$core$Basics$max, rawAChange, -maxChange) : rawAChange);
 		return {
@@ -7830,7 +7830,7 @@ var $author$project$Elo$win = F2(
 		var lost = _v0.c5;
 		var winOdds = A2($author$project$Elo$odds, won, lost);
 		var rawWinChange = kFactor * (1 - winOdds);
-		var maxChange = 4;
+		var maxChange = 2;
 		var winChange = (winOdds > 0.7) ? A2($elm$core$Basics$min, rawWinChange, maxChange) : rawWinChange;
 		var loseOdds = A2($author$project$Elo$odds, lost, won);
 		var rawLoseChange = kFactor * (0 - loseOdds);
