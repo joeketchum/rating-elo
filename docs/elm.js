@@ -7732,6 +7732,10 @@ var $author$project$History$goBack = function (_v0) {
 var $author$project$Main$MatchSaved = function (a) {
 	return {$: 28, a: a};
 };
+var $elm$core$Basics$clamp = F3(
+	function (low, high, number) {
+		return (_Utils_cmp(number, low) < 0) ? low : ((_Utils_cmp(number, high) > 0) ? high : number);
+	});
 var $author$project$Elo$odds = F2(
 	function (a, b) {
 		var rB = A2($elm$core$Basics$pow, 10, b / 600);
@@ -7751,8 +7755,8 @@ var $author$project$Elo$draw = F2(
 		var oddsA = A2($author$project$Elo$odds, playerA, playerB);
 		var rawAChange = kFactor * (0.5 - oddsA);
 		var maxChange = 2;
-		var bChange = (oddsB > 0.7) ? A2($elm$core$Basics$min, rawBChange, maxChange) : ((oddsB < 0.3) ? A2($elm$core$Basics$max, rawBChange, -maxChange) : rawBChange);
-		var aChange = (oddsA > 0.7) ? A2($elm$core$Basics$min, rawAChange, maxChange) : ((oddsA < 0.3) ? A2($elm$core$Basics$max, rawAChange, -maxChange) : rawAChange);
+		var bChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawBChange);
+		var aChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawAChange);
 		return {
 			dh: $elm$core$Basics$round(playerA + aChange),
 			di: $elm$core$Basics$round(playerB + bChange)
@@ -7831,10 +7835,10 @@ var $author$project$Elo$win = F2(
 		var winOdds = A2($author$project$Elo$odds, won, lost);
 		var rawWinChange = kFactor * (1 - winOdds);
 		var maxChange = 2;
-		var winChange = (winOdds > 0.7) ? A2($elm$core$Basics$min, rawWinChange, maxChange) : rawWinChange;
+		var winChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawWinChange);
 		var loseOdds = A2($author$project$Elo$odds, lost, won);
 		var rawLoseChange = kFactor * (0 - loseOdds);
-		var loseChange = (loseOdds > 0.7) ? A2($elm$core$Basics$max, rawLoseChange, -maxChange) : rawLoseChange;
+		var loseChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawLoseChange);
 		return {
 			c5: $elm$core$Basics$round(lost + loseChange),
 			dR: $elm$core$Basics$round(won + winChange)
