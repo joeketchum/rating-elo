@@ -53,7 +53,7 @@ serve(async (req: Request) => {
     console.log('Fetching players:', [m.player_a_id, m.player_b_id])
     const { data: players, error: playersErr } = await supabaseClient
       .from('players')
-      .select('id, rating, matches_played')
+      .select('id, name, rating, matches_played, plays_am, plays_pm, is_deleted')
       .in('id', [m.player_a_id, m.player_b_id])
 
     console.log('Player query result:', { players, playersErr })
@@ -74,14 +74,22 @@ serve(async (req: Request) => {
     const playerUpdates = [
       {
         id: m.player_a_id,
+        name: pa.name,
         rating: m.player_a_rating_before,
         matches_played: Math.max(0, (pa.matches_played ?? 1) - 1),
+        plays_am: pa.plays_am,
+        plays_pm: pa.plays_pm,
+        is_deleted: pa.is_deleted,
         updated_at: new Date().toISOString()
       },
       {
         id: m.player_b_id,
+        name: pb.name,
         rating: m.player_b_rating_before,
         matches_played: Math.max(0, (pb.matches_played ?? 1) - 1),
+        plays_am: pb.plays_am,
+        plays_pm: pb.plays_pm,
+        is_deleted: pb.is_deleted,
         updated_at: new Date().toISOString()
       }
     ]
