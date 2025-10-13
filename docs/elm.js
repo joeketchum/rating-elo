@@ -7755,8 +7755,8 @@ var $author$project$Elo$draw = F2(
 		var oddsA = A2($author$project$Elo$odds, playerA, playerB);
 		var rawAChange = kFactor * (0.5 - oddsA);
 		var maxChange = 2;
-		var bChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawBChange);
-		var aChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawAChange);
+		var bChange = (oddsB > 0.7) ? A3($elm$core$Basics$clamp, -4, 4, rawBChange) : ((oddsB < 0.3) ? rawBChange : A3($elm$core$Basics$clamp, -kFactor, kFactor, rawBChange));
+		var aChange = (oddsA > 0.7) ? A3($elm$core$Basics$clamp, -4, 4, rawAChange) : ((oddsA < 0.3) ? rawAChange : A3($elm$core$Basics$clamp, -kFactor, kFactor, rawAChange));
 		return {
 			dh: $elm$core$Basics$round(playerA + aChange),
 			di: $elm$core$Basics$round(playerB + bChange)
@@ -7770,7 +7770,7 @@ var $author$project$League$higherRankedPlayer = F2(
 	});
 var $author$project$Elo$dynamicKFactor = F2(
 	function (gamesPlayed, currentRating) {
-		return (gamesPlayed <= 20) ? 12 : ((gamesPlayed <= 50) ? 8 : ((currentRating >= 800) ? 4 : 3));
+		return (gamesPlayed <= 20) ? 12 : ((gamesPlayed <= 50) ? 6 : ((currentRating >= 800) ? 3 : 3));
 	});
 var $author$project$Elo$getKFactor = F2(
 	function (gamesPlayed, currentRating) {
@@ -7834,11 +7834,11 @@ var $author$project$Elo$win = F2(
 		var lost = _v0.c5;
 		var winOdds = A2($author$project$Elo$odds, won, lost);
 		var rawWinChange = kFactor * (1 - winOdds);
+		var winChange = (winOdds > 0.7) ? A3($elm$core$Basics$clamp, -4, 4, rawWinChange) : ((winOdds < 0.3) ? rawWinChange : A3($elm$core$Basics$clamp, -kFactor, kFactor, rawWinChange));
 		var maxChange = 2;
-		var winChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawWinChange);
 		var loseOdds = A2($author$project$Elo$odds, lost, won);
 		var rawLoseChange = kFactor * (0 - loseOdds);
-		var loseChange = A3($elm$core$Basics$clamp, -maxChange, maxChange, rawLoseChange);
+		var loseChange = (loseOdds > 0.7) ? A3($elm$core$Basics$clamp, -4, 4, rawLoseChange) : ((loseOdds < 0.3) ? rawLoseChange : A3($elm$core$Basics$clamp, -kFactor, kFactor, rawLoseChange));
 		return {
 			c5: $elm$core$Basics$round(lost + loseChange),
 			dR: $elm$core$Basics$round(won + winChange)

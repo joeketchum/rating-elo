@@ -34,11 +34,11 @@ Adjusted for 500 base rating system with lots of voting.
 dynamicKFactor : Int -> Int -> Int
 dynamicKFactor gamesPlayed currentRating =
     if gamesPlayed <= 20 then
-        12  -- New players: lower volatility
+        12  -- New players: more volatility
     else if gamesPlayed <= 50 then
-        8   -- Developing players: even lower
+        6   -- Developing players: moderate
     else if currentRating >= 800 then
-        4   -- High-rated: very stable
+        3   -- High-rated: very stable
     else
         3   -- Established: very stable
 
@@ -109,9 +109,19 @@ win kFactor { won, lost } =
         -- Cap rating change for expected wins/losses
         maxChange = 2
         winChange =
-            clamp (-(toFloat maxChange)) (toFloat maxChange) rawWinChange
+            if winOdds > 0.7 then
+                clamp (-(toFloat 4)) (toFloat 4) rawWinChange
+            else if winOdds < 0.3 then
+                rawWinChange -- allow full K for upsets
+            else
+                clamp (-(toFloat kFactor)) (toFloat kFactor) rawWinChange
         loseChange =
-            clamp (-(toFloat maxChange)) (toFloat maxChange) rawLoseChange
+            if loseOdds > 0.7 then
+                clamp (-(toFloat 4)) (toFloat 4) rawLoseChange
+            else if loseOdds < 0.3 then
+                rawLoseChange
+            else
+                clamp (-(toFloat kFactor)) (toFloat kFactor) rawLoseChange
     in
     { won = toFloat won + winChange |> round
     , lost = toFloat lost + loseChange |> round
@@ -129,9 +139,19 @@ draw kFactor { playerA, playerB } =
         rawBChange = toFloat kFactor * (0.5 - oddsB)
         maxChange = 2
         aChange =
-            clamp (-(toFloat maxChange)) (toFloat maxChange) rawAChange
+            if oddsA > 0.7 then
+                clamp (-(toFloat 4)) (toFloat 4) rawAChange
+            else if oddsA < 0.3 then
+                rawAChange
+            else
+                clamp (-(toFloat kFactor)) (toFloat kFactor) rawAChange
         bChange =
-            clamp (-(toFloat maxChange)) (toFloat maxChange) rawBChange
+            if oddsB > 0.7 then
+                clamp (-(toFloat 4)) (toFloat 4) rawBChange
+            else if oddsB < 0.3 then
+                rawBChange
+            else
+                clamp (-(toFloat kFactor)) (toFloat kFactor) rawBChange
     in
     { playerA = toFloat playerA + aChange |> round
     , playerB = toFloat playerB + bChange |> round
